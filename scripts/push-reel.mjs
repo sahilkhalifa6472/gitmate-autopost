@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Adds a finished reel to the dashboard queue: uploads the mp4 to Vercel Blob, then POSTs the metadata.
-// Usage: UPLOAD_TOKEN=... node push-reel.mjs https://YOUR-APP.vercel.app path/to/reel.mp4 path/to/N.json
+// Usage: GITMATE_QUEUE_KEY=... node push-reel.mjs https://YOUR-APP.vercel.app path/to/reel.mp4 path/to/N.json
 // N.json: { title, slug, instagram: { caption, hashtags?, cover_offset_ms }, video: { duration_sec } }
 // Needs @vercel/blob installed next to it (npm i @vercel/blob@2).
 import fs from "fs";
@@ -8,9 +8,9 @@ import path from "path";
 import { upload } from "@vercel/blob/client";
 
 const [base, mp4, jsonFile] = process.argv.slice(2);
-const token = process.env.UPLOAD_TOKEN;
+const token = process.env.GITMATE_QUEUE_KEY;
 if (!base || !mp4 || !jsonFile || !token) {
-  console.error("Usage: UPLOAD_TOKEN=... node push-reel.mjs <dashboard url> <mp4> <json>");
+  console.error("Usage: GITMATE_QUEUE_KEY=... node push-reel.mjs <dashboard url> <mp4> <json>");
   process.exit(1);
 }
 const root = base.replace(/\/$/, "");

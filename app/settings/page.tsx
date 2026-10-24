@@ -11,7 +11,7 @@ export default async function SettingsPage() {
     "Upstash Redis": storeKind === "redis",
     "Vercel Blob": !!process.env.BLOB_READ_WRITE_TOKEN,
     "CRON_SECRET": (process.env.CRON_SECRET || "").length >= 8,
-    "UPLOAD_TOKEN": (process.env.UPLOAD_TOKEN || "").length >= 16,
+    "QUEUE_KEY": (process.env.QUEUE_KEY || "").length >= 16,
   };
   return (
     <>

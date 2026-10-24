@@ -5,7 +5,7 @@ import { hasUploadToken } from "@/lib/auth";
 export const dynamic = "force-dynamic";
 
 // Large videos go straight from the browser / the daily task to Vercel Blob (no 4.5 MB body limit).
-// Dashboard users are allowed by cookie; the daily task passes UPLOAD_TOKEN as clientPayload.
+// Dashboard users are allowed by cookie; the daily task passes QUEUE_KEY as clientPayload.
 export async function POST(req: Request) {
   const body = (await req.json()) as HandleUploadBody;
   try {

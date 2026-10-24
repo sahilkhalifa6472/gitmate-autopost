@@ -10,10 +10,10 @@ Roz 1 reel, New York time pe random slot, views dekh ke best time seekhta hai.
 
 ## 2. Vercel pe deploy
 1. https://vercel.com pe GitHub se login karo → **Add New → Project** → `gitmate-autopost` → **Import**
-2. **Environment Variables** me ye 3 daalo:
+2. **Environment Variables** me ye 3 daalo (DigitalOcean/Growaun se koi lena-dena nahi):
    - `DASHBOARD_PASSWORD` = dashboard ka password (kuch bhi strong)
    - `CRON_SECRET` = koi bhi lamba random text (jaise 30 letters)
-   - `UPLOAD_TOKEN` = wahi value jo Claude ke environment me `UPLOAD_TOKEN` hai (server pe: `grep UPLOAD_TOKEN /var/www/nextn/.env.local`)
+   - `QUEUE_KEY` = koi bhi lamba random text (30+ letters). Yahi value Claude ke cloud environment me `GITMATE_QUEUE_KEY` naam se bhi daalni hai (Project settings → Environment), taaki daily task reels queue me daal sake.
 3. **Deploy** dabao.
 
 ## 3. Storage jodna (free)

@@ -20,9 +20,9 @@ function safeEqual(a: string, b: string) {
   return r === 0;
 }
 
-// The daily reel task sends UPLOAD_TOKEN in x-upload-token
+// The daily reel task sends QUEUE_KEY in x-upload-token (own key, separate from the Growaun server)
 export function hasUploadToken(given: string | null | undefined) {
-  const want = process.env.UPLOAD_TOKEN || "";
+  const want = process.env.QUEUE_KEY || "";
   return want.length >= 16 && !!given && safeEqual(given, want);
 }
 
