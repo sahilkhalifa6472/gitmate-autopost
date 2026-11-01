@@ -16,7 +16,7 @@ export default function Login() {
         setBusy(false);
         if (r.ok) router.push("/"); else setErr(j.error || "Login failed");
       }}>
-        <div className="brand" style={{ marginBottom: 18 }}><span className="bead">&gt;_</span>git.mate autopost</div>
+        <div className="brand" style={{ marginBottom: 18 }}><span className="bead">&gt;_</span>git.mate<small>autopost</small></div>
         <label>Password</label>
         <input type="password" value={pw} onChange={(e) => setPw(e.target.value)} autoFocus />
         <div className="row" style={{ marginTop: 16 }}><button className="btn pri" disabled={busy}>{busy ? "…" : "Log in"}</button></div>

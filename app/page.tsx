@@ -2,6 +2,7 @@ import Link from "next/link";
 import Nav from "@/components/Nav";
 import Act from "@/components/Act";
 import AutoRefresh from "@/components/AutoRefresh";
+import Thumb from "@/components/Thumb";
 import { getConfig, getQueue, getPlans } from "@/lib/data";
 import { getLogs, storeKind } from "@/lib/store";
 import { windowScores } from "@/lib/engine";
@@ -34,34 +35,33 @@ export default async function Dashboard() {
       <Nav />
       <AutoRefresh seconds={30} />
       <div className="wrap">
-        <h1>Dashboard</h1>
-        <div className="sub row">
+        <div className="ph"><h1>Dashboard</h1></div>
+        <div className="chips">
           {cfg.username ? <span className="pill"><span className="dot on" />@{cfg.username} connected</span> : <span className="pill err">Instagram not connected · <Link href="/settings">Settings</Link></span>}
           {cfg.paused && <span className="pill err">Paused</span>}
           <span className="pill">{cfg.posts_per_day}/day · {cfg.timezone}</span>
-          <span className="pill">Now {hhmm(min)} New York · {fmtIn(IST, Date.now()).split(", ")[1]} IST</span>
+          <span className="pill">Now {hhmm(min)} NY · {fmtIn(IST, Date.now()).split(", ")[1]} IST</span>
         </div>
         {storeKind === "file" && <div className="warnbox">No Upstash Redis connected. Data is only kept locally. Add Upstash Redis in Vercel → Storage.</div>}
 
-        <div className="grid g2" style={{ marginTop: 18 }}>
+        <div className="grid g2" style={{ marginTop: 14 }}>
           <div className="card">
-            <h2>Next post</h2>
-            {posting ? (
-              <div className="hero"><div className="big">Posting…</div><div><b>#{posting.id} {posting.title}</b><div className="msg">Instagram is processing the video. It goes live in a few minutes.</div></div></div>
-            ) : nextReel?.force ? (
-              <div className="hero"><div className="big">Next run</div><div><b>#{nextReel.id} {nextReel.title}</b><div className="msg">"Post now" requested. It starts within 5 minutes.</div></div></div>
-            ) : next && nextMs ? (
-              <div className="hero">
-                <div className="big mono">{hhmm(next.min)}</div>
-                <div>
-                  <div><b>{nextReel ? `#${nextReel.id} ${nextReel.title}` : "Queue is empty"}</b></div>
-                  <div className="msg">New York time · {fmtIn(IST, nextMs)} IST</div>
-                </div>
+            <div className="hero">
+              {(posting || nextReel) && <Thumb item={(posting || nextReel)!} />}
+              <div className="info">
+                <div className="k">{posting ? "Posting now" : "Next post"}</div>
+                {posting ? (
+                  <><div className="big">Posting…</div><div className="ttl">#{posting.id} {posting.title}</div><div className="msg">Instagram is processing the video. It goes live in a few minutes.</div></>
+                ) : nextReel?.force ? (
+                  <><div className="big">Next run</div><div className="ttl">#{nextReel.id} {nextReel.title}</div><div className="msg">"Post now" requested. It starts within 5 minutes.</div></>
+                ) : next && nextMs ? (
+                  <><div className="big mono">{hhmm(next.min)}</div><div className="ttl">{nextReel ? `#${nextReel.id} ${nextReel.title}` : "Queue is empty"}</div><div className="msg">New York time · {fmtIn(IST, nextMs)} IST</div></>
+                ) : (
+                  <><div className="ttl" style={{ marginTop: 6 }}>{nextReel ? `#${nextReel.id} ${nextReel.title}` : "Queue is empty"}</div><div className="msg">No more posts planned today. Tomorrow's random time is picked after midnight New York time.</div></>
+                )}
+                {nextReel && !posting && <div className="act"><Act url="/api/queue" method="PATCH" body={{ id: nextReel.id, action: "post_now" }} label="Post it now" cls="btn pri" confirm={`Post #${nextReel.id} now?`} /></div>}
               </div>
-            ) : (
-              <div className="empty">No more posts planned today. Tomorrow's random time is picked after midnight New York time.</div>
-            )}
-            {nextReel && !posting && <div className="row" style={{ marginTop: 16 }}><Act url="/api/queue" method="PATCH" body={{ id: nextReel.id, action: "post_now" }} label="Post it now" confirm={`Post #${nextReel.id} now?`} /></div>}
+            </div>
           </div>
           <div className="card">
             <h2>Today's plan <small>{day}</small></h2>
@@ -76,32 +76,37 @@ export default async function Dashboard() {
           </div>
         </div>
 
-        <div className="grid g4" style={{ marginTop: 16 }}>
+        <div className="grid g4" style={{ marginTop: 12 }}>
           <div className="card stat"><span>In queue</span><b>{queued.length}</b><span>{daysLeft} day{daysLeft === 1 ? "" : "s"} of posts</span></div>
           <div className="card stat"><span>Posted</span><b>{posted.length}</b><span>{failed.length ? `${failed.length} failed` : "no failures"}</span></div>
           <div className="card stat"><span>Total views</span><b>{n(totalViews)}</b><span>latest numbers</span></div>
           <div className="card stat"><span>Avg views at 12h</span><b>{n(avg12 ?? undefined)}</b><span>{measured.length} reels measured</span></div>
         </div>
 
-        <div className="grid g2" style={{ marginTop: 16 }}>
+        <div className="sec">
+          <div className="lbl">Recent posts</div>
+          {posted.length ? (
+            <div className="cards c3">
+              {posted.slice(0, 10).map((i) => (
+                <div className="card reel" key={i.id}>
+                  <Thumb item={i} href={i.permalink} />
+                  <div className="body">
+                    <div className="hd"><span className="id">#{i.id}</span><span className="pill">posted</span></div>
+                    <div className="ttl">{i.permalink ? <a href={i.permalink} target="_blank" style={{ textDecoration: "none" }}>{i.title}</a> : i.title}</div>
+                    <div className="meta">{fmtIn(cfg.timezone, Date.parse(i.posted_at!))} NY</div>
+                    <div className="metrics">
+                      {([["views", i.latest?.views], ["reach", i.latest?.reach], ["likes", i.latest?.likes], ["shares", i.latest?.shares], ["saves", i.latest?.saved]] as [string, number | undefined][]).map(([k, v]) => <div key={k}><b>{n(v)}</b><span>{k}</span></div>)}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : <div className="card empty">Nothing posted yet. Numbers show up 12 hours after each post.</div>}
+        </div>
+
+        <div className="grid g2" style={{ marginTop: 26 }}>
           <div className="card">
-            <h2>Recent posts</h2>
-            {posted.length ? (
-              <div className="tw"><table>
-                <thead><tr><th>Reel</th><th className="num">Views</th><th className="num">Reach</th><th className="num">Likes</th><th className="num">Shares</th><th className="num">Saves</th></tr></thead>
-                <tbody>
-                  {posted.slice(0, 10).map((i) => (
-                    <tr key={i.id}>
-                      <td className="t"><div>{i.permalink ? <a href={i.permalink} target="_blank">#{i.id} {i.title}</a> : `#${i.id} ${i.title}`}</div><small>{fmtIn(cfg.timezone, Date.parse(i.posted_at!))} NY</small></td>
-                      <td className="num">{n(i.latest?.views)}</td><td className="num">{n(i.latest?.reach)}</td><td className="num">{n(i.latest?.likes)}</td><td className="num">{n(i.latest?.shares)}</td><td className="num">{n(i.latest?.saved)}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table></div>
-            ) : <div className="empty">Nothing posted yet. Numbers show up 12 hours after each post.</div>}
-          </div>
-          <div className="card">
-            <h2>Best time windows <small>avg views at 12h, NY time</small></h2>
+            <h2>Best time windows <small>avg views at 12h, NY</small></h2>
             <div className="bars">
               {cfg.windows.map((w, i) => (
                 <div className="bar" key={i}>
@@ -113,13 +118,12 @@ export default async function Dashboard() {
             </div>
             <div className="msg">Windows with more views get picked more often. 25% of picks stay random to keep testing.</div>
           </div>
-        </div>
-
-        <div className="card" style={{ marginTop: 16 }}>
-          <h2>Latest activity <small><Link href="/logs">all logs →</Link></small></h2>
-          {logs.length ? logs.map((l: any, k: number) => (
-            <div className="log" key={k}><time>{fmtIn(IST, Date.parse(l.at))} IST</time><span className={`lv ${l.level}`}>{l.level}</span><span>{l.msg}</span></div>
-          )) : <div className="empty">No activity yet.</div>}
+          <div className="card">
+            <h2>Latest activity <small><Link href="/logs">all logs →</Link></small></h2>
+            {logs.length ? logs.map((l: any, k: number) => (
+              <div className="log" key={k}><span className={`lv ${l.level}`}>{l.level}</span><span className="m">{l.msg}</span><time>{fmtIn(IST, Date.parse(l.at))} IST</time></div>
+            )) : <div className="empty">No activity yet.</div>}
+          </div>
         </div>
       </div>
     </>

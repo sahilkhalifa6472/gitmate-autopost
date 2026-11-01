@@ -10,13 +10,12 @@ export default function LogList({ logs }: { logs: L[] }) {
   const shown = logs.filter((l) => (lv === "all" || l.level === lv) && (!qq || l.msg.toLowerCase().includes(qq.toLowerCase())));
   return (
     <>
-      <div className="row" style={{ marginBottom: 14 }}>
-        {["all", "ok", "info", "warn", "error"].map((x) => <button key={x} className={`btn sm ${lv === x ? "pri" : ""}`} onClick={() => setLv(x)}>{x}</button>)}
-        <div className="sp" />
-        <input style={{ maxWidth: 260 }} placeholder="Search…" value={qq} onChange={(e) => setQ(e.target.value)} />
+      <div className="logbar">
+        <div className="chips">{["all", "ok", "info", "warn", "error"].map((x) => <button key={x} className={`btn sm ${lv === x ? "pri" : ""}`} onClick={() => setLv(x)}>{x}</button>)}</div>
+        <input placeholder="Search logs…" value={qq} onChange={(e) => setQ(e.target.value)} />
       </div>
       {shown.length ? shown.map((l, k) => (
-        <div className="log" key={k}><time>{fmt(l.at)} IST</time><span className={`lv ${l.level}`}>{l.level}</span><span>{l.msg}</span></div>
+        <div className="log" key={k}><span className={`lv ${l.level}`}>{l.level}</span><span className="m">{l.msg}</span><time>{fmt(l.at)} IST</time></div>
       )) : <div className="empty">No log lines.</div>}
     </>
   );
