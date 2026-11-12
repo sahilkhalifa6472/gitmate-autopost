@@ -5,7 +5,7 @@ export default function ReplyBox({ recipientId, username }: { recipientId: strin
   const [t, setT] = useState("");
   const [st, setSt] = useState("");
   return (
-    <div className="row" style={{ marginTop: 8, flexWrap: "nowrap" }}>
+    <div className="inrow">
       <input value={t} onChange={(e) => setT(e.target.value)} placeholder={`Reply to @${username}…`} />
       <button className="btn sm pri" disabled={!t.trim() || st === "…"} onClick={async () => {
         setSt("…");

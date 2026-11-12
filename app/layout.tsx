@@ -1,7 +1,8 @@
 import "./globals.css";
 import type { ReactNode } from "react";
 
-export const metadata = { title: "git.mate autopost", description: "Instagram auto-posting dashboard for @git.mate" };
+export const metadata = { title: "git.mate autopost", description: "Instagram auto-posting dashboard for @git.mate", appleWebApp: { capable: true, title: "git.mate", statusBarStyle: "black-translucent" as const } };
+export const viewport = { width: "device-width", initialScale: 1, viewportFit: "cover" as const, themeColor: "#050506" };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
