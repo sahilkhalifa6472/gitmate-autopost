@@ -8,8 +8,8 @@ export default function LinkInput({ mediaId, value, fallback }: { mediaId: strin
   const [v, setV] = useState(value);
   const [st, setSt] = useState("");
   return (
-    <div className="row" style={{ flexWrap: "nowrap" }}>
-      <input value={v} onChange={(e) => setV(e.target.value)} placeholder={fallback || "https://github.com/…"} style={{ minWidth: 220 }} />
+    <div className="inrow">
+      <input value={v} onChange={(e) => setV(e.target.value)} placeholder={fallback || "https://github.com/…"} />
       <button className="btn sm" onClick={async () => {
         setSt("…");
         const r = await fetch("/api/autoreply", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ media_id: mediaId, link: v }) });

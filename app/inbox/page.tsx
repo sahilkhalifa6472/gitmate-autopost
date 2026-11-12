@@ -24,50 +24,10 @@ export default async function InboxPage() {
     <>
       <Nav />
       <div className="wrap">
-        <h1>Inbox</h1>
+        <div className="ph"><h1>Inbox</h1></div>
         <div className="sub">Auto DMs for people who comment the keyword, your DMs, and links per post. Runs every 5 minutes with the cron.</div>
         {ar.last_error && <div className="warnbox">Last auto-reply run stopped: {ar.last_error}</div>}
         <div className="grid g2" style={{ marginTop: 16 }}>
-          <div className="grid" style={{ alignContent: "start" }}>
-            <div className="card">
-              <h2>Post links <small>DM link per post (last 15 posts)</small></h2>
-              {mediaErr ? <div className="msg e">{mediaErr}</div> : media.length ? (
-                <div className="tw"><table>
-                  <thead><tr><th>Post</th><th className="num">Comments</th><th>Link sent in DM</th></tr></thead>
-                  <tbody>{media.map((m) => {
-                    const { link } = linkFor(ar, q, m.id);
-                    const it = q.find((i) => i.media_id === m.id);
-                    return (
-                      <tr key={m.id}>
-                        <td className="t"><div>{(it?.title || m.caption || "").split("\n")[0].slice(0, 70) || m.id}</div><small>{fmt(m.timestamp)} IST{m.permalink ? <> · <a href={m.permalink} target="_blank">open</a></> : null}{!link ? <> · <span style={{ color: "var(--err)" }}>no link</span></> : null}</small></td>
-                        <td className="num">{m.comments_count ?? "–"}</td>
-                        <td><LinkInput mediaId={m.id} value={ar.links[m.id] || ""} fallback={it?.link || ar.default_link} /></td>
-                      </tr>
-                    );
-                  })}</tbody>
-                </table></div>
-              ) : <div className="empty">No posts found.</div>}
-            </div>
-            <div className="card">
-              <h2>DMs <small>last 25 chats · reply works within 24h of their last message</small></h2>
-              {dmErr ? <div className="msg e">Can't read DMs yet: {dmErr}</div> : convos.length ? convos.map((c) => {
-                const other = c.participants?.data.find((p) => p.username !== cfg.username);
-                const msgs = [...(c.messages?.data || [])].reverse();
-                const open = Date.now() - Date.parse(c.updated_time) < 24 * 3600e3;
-                return (
-                  <div key={c.id} style={{ borderBottom: "1px solid var(--line)", padding: "12px 0" }}>
-                    <div className="row"><b>@{other?.username || "user"}</b><span className="msg" style={{ marginTop: 0 }}>{fmt(c.updated_time)} IST</span></div>
-                    {msgs.map((m) => (
-                      <div key={m.id} style={{ fontSize: 14, margin: "4px 0", color: m.from?.username === cfg.username ? "var(--mut)" : "var(--ink)" }}>
-                        <span className="mono" style={{ fontSize: 11, color: "var(--dim)" }}>{m.from?.username === cfg.username ? "you" : "them"} · </span>{m.message || "(media)"}
-                      </div>
-                    ))}
-                    {other && open && <ReplyBox recipientId={other.id} username={other.username || ""} />}
-                  </div>
-                );
-              }) : <div className="empty">No DMs found.</div>}
-            </div>
-          </div>
           <div className="grid" style={{ alignContent: "start" }}>
             <ArForm enabled={ar.enabled} dm_enabled={ar.dm_enabled} keyword={ar.keyword} dm_text={ar.dm_text} dm_inbox_text={ar.dm_inbox_text} public_replies={ar.public_replies} default_link={ar.default_link} max_per_run={ar.max_per_run} />
             <div className="card">
@@ -77,6 +37,43 @@ export default async function InboxPage() {
                   <span>@{e.username}: “{e.text}” {e.status === "sent" ? "→ DM sent" : e.status}{e.note ? ` (${e.note})` : ""}</span></div>
               )) : <div className="empty">Nothing yet. Turn it on and press Run now.</div>}
               {sent > 0 && <div className="msg">{sent} sent in the last {events.length} events.</div>}
+            </div>
+          </div>
+          <div className="grid" style={{ alignContent: "start" }}>
+            <div className="card">
+              <h2>Post links <small>DM link per post (last 15 posts)</small></h2>
+              {mediaErr ? <div className="msg e">{mediaErr}</div> : media.length ? (
+                <div className="plist">{media.map((m) => {
+                  const { link } = linkFor(ar, q, m.id);
+                  const it = q.find((i) => i.media_id === m.id);
+                  return (
+                    <div className="prow" key={m.id}>
+                      <div className="hd"><div className="ttl">{(it?.title || m.caption || "").split("\n")[0].slice(0, 80) || m.id}</div><span className="cc">💬 {m.comments_count ?? "–"}</span></div>
+                      <small>{fmt(m.timestamp)} IST{m.permalink ? <> · <a href={m.permalink} target="_blank">open</a></> : null}{!link ? <> · <span style={{ color: "var(--err)" }}>no link yet</span></> : null}</small>
+                      <LinkInput mediaId={m.id} value={ar.links[m.id] || ""} fallback={it?.link || ar.default_link} />
+                    </div>
+                  );
+                })}</div>
+              ) : <div className="empty">No posts found.</div>}
+            </div>
+            <div className="card">
+              <h2>DMs <small>last 25 chats · reply works within 24h of their last message</small></h2>
+              {dmErr ? <div className="msg e">Can't read DMs yet: {dmErr}</div> : convos.length ? convos.map((c) => {
+                const other = c.participants?.data.find((p) => p.username !== cfg.username);
+                const msgs = [...(c.messages?.data || [])].reverse();
+                const open = Date.now() - Date.parse(c.updated_time) < 24 * 3600e3;
+                return (
+                  <div key={c.id} className="dm">
+                    <div className="row"><b>@{other?.username || "user"}</b><span className="msg" style={{ marginTop: 0 }}>{fmt(c.updated_time)} IST</span></div>
+                    {msgs.map((m) => (
+                      <div key={m.id} className={`ln ${m.from?.username === cfg.username ? "me" : ""}`}>
+                        <span className="who">{m.from?.username === cfg.username ? "you" : "them"} · </span>{m.message || "(media)"}
+                      </div>
+                    ))}
+                    {other && open && <ReplyBox recipientId={other.id} username={other.username || ""} />}
+                  </div>
+                );
+              }) : <div className="empty">No DMs found.</div>}
             </div>
           </div>
         </div>

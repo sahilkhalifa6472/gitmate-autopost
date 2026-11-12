@@ -17,7 +17,7 @@ export default async function SettingsPage() {
     <>
       <Nav />
       <div className="wrap">
-        <h1>Settings</h1>
+        <div className="ph"><h1>Settings</h1></div>
         <div className="sub">Account, posting schedule and setup checks.</div>
         <SettingsForm username={cfg.username} timezone={cfg.timezone} windows={cfg.windows.map((w) => w.join("-")).join(",")} posts={cfg.posts_per_day} paused={cfg.paused} />
         <div className="card" style={{ marginTop: 16 }}>

@@ -21,7 +21,7 @@ export default function ArForm(p: P) {
   return (
     <div className="card">
       <h2>Comment → DM auto-reply</h2>
-      <div className="row">
+      <div className="tog">
         <button className={`btn ${p.enabled ? "pri" : ""}`} disabled={busy} onClick={() => post({ enabled: !p.enabled }, p.enabled ? "Comments auto-reply OFF" : "Comments auto-reply ON")}>{p.enabled ? "Comments: ON" : "Comments: OFF"}</button>
         <button className={`btn ${p.dm_enabled ? "pri" : ""}`} disabled={busy} onClick={() => post({ dm_enabled: !p.dm_enabled }, p.dm_enabled ? "DM auto-reply OFF" : "DM auto-reply ON")}>{p.dm_enabled ? "DM keyword: ON" : "DM keyword: OFF"}</button>
         <button className="btn" disabled={busy} onClick={() => post({ action: "run" }, "Done")}>Run now</button>

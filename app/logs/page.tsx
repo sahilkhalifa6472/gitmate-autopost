@@ -12,7 +12,7 @@ export default async function LogsPage() {
       <Nav />
       <AutoRefresh seconds={20} />
       <div className="wrap">
-        <h1>Logs</h1>
+        <div className="ph"><h1>Logs</h1></div>
         <div className="sub">Every run, post, insight check and error. Refreshes by itself.</div>
         <div className="card"><LogList logs={logs as any} /></div>
       </div>
