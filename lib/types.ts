@@ -8,6 +8,7 @@ export type Item = {
   cover_offset_ms: number;
   duration_sec?: number;
   slug?: string;
+  link?: string;              // repo/link sent in DMs to people who comment the keyword
   added_at: string;
   status: "queued" | "posting" | "posted" | "failed" | "skipped";
   force?: boolean;            // "post now" from the dashboard
@@ -50,3 +51,35 @@ export const DEFAULT_CONFIG: Config = {
   explore: 0.25,
   keep_video_days: 7,
 };
+
+// Comment-to-DM auto reply (like ManyChat), stored under "ar_config"
+export type AutoReplyConfig = {
+  enabled: boolean;           // comments -> DM
+  dm_enabled: boolean;        // keyword in a DM -> reply with latest links
+  keyword: string;            // matched case-insensitively anywhere in the comment
+  dm_text: string;            // {username} {link} {title}
+  dm_inbox_text: string;      // {username} {links}
+  public_replies: string[];   // one is picked per comment
+  default_link: string;       // used when a post has no link
+  links: Record<string, string>; // media_id -> link (manual overrides from the dashboard)
+  days: number;               // Instagram allows a private reply only within 7 days of the comment
+  max_per_run: number;
+  last_run_at?: string;
+  last_error?: string;
+  sent_total?: number;
+};
+
+export const DEFAULT_AR: AutoReplyConfig = {
+  enabled: false,
+  dm_enabled: false,
+  keyword: "gitmate",
+  dm_text: "Hey {username}! 👋 Here's the link you asked for:\n{link}\n\nFollow @git.mate for 1 useful repo every day 🤝",
+  dm_inbox_text: "Hey {username}! 👋 Here are the latest repos from @git.mate:\n{links}\n\nWant a specific one? Just tell me which reel 🙌",
+  public_replies: ["Sent it to your DMs 📩", "Check your DMs, mate 🤝", "Link's in your DMs 🔗", "Just DM'd you the link 🚀", "Done! Check your inbox 📬"],
+  default_link: "",
+  links: {},
+  days: 7,
+  max_per_run: 15,
+};
+
+export type ArEvent = { at: string; kind: "comment" | "dm"; username: string; text: string; media_id?: string; status: "sent" | "failed" | "skipped"; note?: string };

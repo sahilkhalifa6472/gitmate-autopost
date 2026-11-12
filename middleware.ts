@@ -7,4 +7,4 @@ export async function middleware(req: NextRequest) {
   return NextResponse.redirect(new URL("/login", req.url));
 }
 
-export const config = { matcher: ["/", "/queue", "/logs", "/settings"] };
+export const config = { matcher: ["/", "/queue", "/logs", "/settings", "/inbox"] };

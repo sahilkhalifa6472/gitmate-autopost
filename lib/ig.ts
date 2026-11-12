@@ -54,3 +54,49 @@ export async function insights(mediaId: string, token: string) {
   for (const m of body.data || []) out[m.name] = m.values?.[0]?.value ?? 0;
   return out;
 }
+
+// ---- comments + messages (needs instagram_business_manage_comments + instagram_business_manage_messages)
+const tq = (token: string) => `access_token=${encodeURIComponent(token)}`;
+const json = (o: unknown) => ({ method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify(o) });
+
+export type IgMedia = { id: string; caption?: string; timestamp: string; permalink?: string; comments_count?: number; media_product_type?: string; thumbnail_url?: string };
+export async function listMedia(userId: string, token: string, limit = 25): Promise<IgMedia[]> {
+  const b = await http(`${IG}/${userId}/media?fields=id,caption,timestamp,permalink,comments_count,media_product_type,thumbnail_url&limit=${limit}&${tq(token)}`);
+  return b.data || [];
+}
+
+export type IgComment = { id: string; text: string; timestamp: string; username?: string; from?: { id: string; username: string } };
+// newest first; stops at pages older than `sinceMs`
+export async function listComments(mediaId: string, token: string, sinceMs: number, maxPages = 10): Promise<IgComment[]> {
+  const out: IgComment[] = [];
+  let url: string | undefined = `${IG}/${mediaId}/comments?fields=id,text,timestamp,username,from&limit=50&${tq(token)}`;
+  for (let p = 0; url && p < maxPages; p++) {
+    const b: any = await http(url);
+    const page: IgComment[] = b.data || [];
+    out.push(...page);
+    if (!page.length || page.every((c) => Date.parse(c.timestamp) < sinceMs)) break;
+    url = b.paging?.next;
+  }
+  return out;
+}
+
+export async function replyToComment(commentId: string, token: string, message: string) {
+  return http(`${IG}/${commentId}/replies`, { method: "POST", body: form({ message, access_token: token }) });
+}
+
+// "private reply": a DM to the person who wrote the comment (once per comment, within 7 days)
+export async function privateReply(userId: string, token: string, commentId: string, text: string) {
+  return http(`${IG}/${userId}/messages?${tq(token)}`, json({ recipient: { comment_id: commentId }, message: { text } }));
+}
+
+export async function sendDM(userId: string, token: string, recipientId: string, text: string) {
+  return http(`${IG}/${userId}/messages?${tq(token)}`, json({ recipient: { id: recipientId }, message: { text } }));
+}
+
+export type IgMsg = { id: string; message?: string; created_time: string; from?: { id: string; username?: string }; to?: { data: { id: string; username?: string }[] } };
+export type IgConvo = { id: string; updated_time: string; participants?: { data: { id: string; username?: string }[] }; messages?: { data: IgMsg[] } };
+export async function conversations(userId: string, token: string, limit = 25): Promise<IgConvo[]> {
+  const f = encodeURIComponent("id,updated_time,participants,messages.limit(8){id,message,created_time,from,to}");
+  const b = await http(`${IG}/${userId}/conversations?platform=instagram&fields=${f}&limit=${limit}&${tq(token)}`);
+  return b.data || [];
+}

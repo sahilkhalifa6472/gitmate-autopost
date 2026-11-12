@@ -42,6 +42,7 @@ const res = await fetch(`${root}/api/queue`, {
   body: JSON.stringify({
     title: meta.title, slug: meta.slug, caption: ig.caption, hashtags: ig.hashtags || [],
     cover_offset_ms: ig.cover_offset_ms, duration_sec: meta.video?.duration_sec, video_url: blob.url,
+    link: meta.link || meta.repo || undefined,
   }),
 });
 const out = await res.json();
