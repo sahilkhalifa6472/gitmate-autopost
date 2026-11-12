@@ -30,6 +30,7 @@ export async function POST(req: Request) {
     cover_offset_ms: Math.max(0, Math.round(Number(b.cover_offset_ms) || 2500)),
     duration_sec: Number(b.duration_sec) || undefined,
     slug: b.slug ? String(b.slug) : undefined,
+    link: typeof b.link === "string" && /^https?:\/\//.test(b.link) ? b.link.slice(0, 500) : undefined,
     added_at: new Date().toISOString(),
     status: "queued",
   };
@@ -63,6 +64,7 @@ export async function PATCH(req: Request) {
     case "edit":
       if (typeof b.caption === "string") it.caption = b.caption.slice(0, 2200);
       if (typeof b.title === "string") it.title = b.title.slice(0, 140);
+      if (typeof b.link === "string") it.link = /^https?:\/\//.test(b.link) ? b.link.slice(0, 500) : undefined;
       if (b.cover_offset_ms != null) it.cover_offset_ms = Math.max(0, Math.round(Number(b.cover_offset_ms) || 0));
       break;
     case "delete":

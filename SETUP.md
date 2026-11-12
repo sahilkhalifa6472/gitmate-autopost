@@ -34,3 +34,20 @@ Vercel free plan me cron din me sirf 1 baar chalta hai, isliye:
 3. Settings ke "Setup checks" me sab safed (green jaisa) dikhna chahiye.
 
 Phir Claude ko app ka URL bata do: woh 6 ready reels queue me daal dega, aur daily task naye reels khud daalega.
+
+## 6. Comment GITMATE → auto DM (Inbox page)
+Koi reel pe "GITMATE" comment kare toh dashboard usko DM mein us reel ka link bhejta hai, aur comment ke neeche chhota reply deta hai ("Sent it to your DMs 📩"). Ye har 5 min wale cron ke saath chalta hai. Webhook ki zarurat nahi hai.
+
+Ek baar ka setup:
+1. **Instagram app** (phone): Settings → Messages and story replies → Message controls → Connected tools → **Allow access to messages** ON.
+2. **Meta developer app** → Use cases → Instagram API → Customize → Permissions mein ye dono add karo:
+   - `instagram_business_manage_comments`
+   - `instagram_business_manage_messages`
+   (`instagram_business_basic` aur `instagram_business_content_publish` pehle se hain.)
+3. Usi page pe **Generate token** dabao (naya token in permissions ke saath banega) → dashboard **Settings** → token paste → **Connect**.
+4. Dashboard **Inbox** page kholo:
+   - "Post links" mein dekho, har reel ke saath sahi GitHub link ho (naye reels ka link daily task khud daalega). Jis post pe link nahi hai, uske comments tab tak ruke rahenge.
+   - **Comments: ON** dabao, phir **Run now**. Activity mein "DM sent" dikhna chahiye.
+5. (Optional) **DM keyword: ON**: koi DM mein "gitmate" likhe toh latest 3 reels ke links reply mein jaate hain.
+
+Instagram ke rules: comment ka private DM sirf comment ke 7 din ke andar, har comment pe ek baar. Normal DM ka reply sirf unke last message ke 24 ghante ke andar. Ek run mein max 15 DMs jaate hain (Settings mein badal sakte ho), taaki account spam na lage. Agar error aaye ki permission nahi hai, toh Meta app ko **Live** mode mein daalna pad sakta hai.

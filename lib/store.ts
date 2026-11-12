@@ -35,6 +35,25 @@ export async function pushLog(entry: unknown, max = 1500) {
   const d = fileRead(); d.logs = [entry, ...(d.logs || [])].slice(0, max); fileWrite(d);
 }
 
+export async function pushList(key: string, entry: unknown, max = 500) {
+  if (redis) { await redis.lpush(P + key, entry); await redis.ltrim(P + key, 0, max - 1); return; }
+  const d = fileRead(); d[key] = [entry, ...(d[key] || [])].slice(0, max); fileWrite(d);
+}
+export async function getList(key: string, n = 200): Promise<any[]> {
+  if (redis) return (await redis.lrange(P + key, 0, n - 1)) as any[];
+  return (fileRead()[key] || []).slice(0, n);
+}
+
+// sets of handled ids (comments / DM messages we already answered)
+export async function setHas(key: string, member: string): Promise<boolean> {
+  if (redis) return (await redis.sismember(P + key, member)) === 1;
+  return (fileRead()[key] || []).includes(member);
+}
+export async function setAdd(key: string, member: string) {
+  if (redis) { await redis.sadd(P + key, member); return; }
+  const d = fileRead(); d[key] = [...new Set([...(d[key] || []), member])]; fileWrite(d);
+}
+
 export async function getLogs(n = 500): Promise<any[]> {
   if (redis) return (await redis.lrange(P + "logs", 0, n - 1)) as any[];
   return (fileRead().logs || []).slice(0, n);
