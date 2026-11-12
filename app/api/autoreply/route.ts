@@ -1,5 +1,6 @@
 import { getAr, saveAr, arEvents, runAutoReply } from "@/lib/autoreply";
-import { getQueue, saveQueue, log } from "@/lib/data";
+import { getQueue, saveQueue, log, getConfig } from "@/lib/data";
+import * as ig from "@/lib/ig";
 import { allowed, loggedIn, deny } from "@/lib/guard";
 
 export const dynamic = "force-dynamic";
@@ -9,6 +10,7 @@ const isUrl = (s: unknown) => typeof s === "string" && /^https?:\/\/\S+$/.test(s
 
 export async function GET(req: Request) {
   if (!(await allowed(req))) return deny();
+  if (new URL(req.url).searchParams.get("diag")) return Response.json(await diag());
   const ar = await getAr();
   return Response.json({ config: ar, events: await arEvents(100) });
 }
@@ -51,4 +53,27 @@ export async function PUT(req: Request) {
   const ar = await getAr();
   if (isUrl(b.default_link)) { ar.default_link = b.default_link.trim(); await saveAr(ar); }
   return Response.json({ ok: true, updated: n });
+}
+
+// Read-only check: does the saved token actually see comments / DMs? (counts only, sends nothing)
+async function diag() {
+  const cfg = await getConfig();
+  if (!cfg.ig_token || !cfg.ig_user_id) return { error: "not connected" };
+  const t = cfg.ig_token;
+  const out: any = { user_id: cfg.ig_user_id, username: cfg.username, token_prefix: t.slice(0, 4) };
+  const tryIt = async (k: string, f: () => Promise<any>) => { try { out[k] = await f(); } catch (e: any) { out[k] = { error: e.message.slice(0, 300) }; } };
+  await tryIt("me", () => ig.me(t));
+  let media: ig.IgMedia[] = [];
+  await tryIt("media", async () => { media = await ig.listMedia(cfg.ig_user_id!, t, 6); return media.length; });
+  out.posts = [];
+  for (const m of media.slice(0, 4)) {
+    const row: any = { id: m.id, at: m.timestamp, comments_count: m.comments_count };
+    try { const c = await ig.listComments(m.id, t, 0, 2); row.fetched = c.length; row.keyword = c.filter((x) => /gitmate/i.test(x.text || "")).length; row.with_from = c.filter((x) => x.from).length; }
+    catch (e: any) { row.error = e.message.slice(0, 200); }
+    try { const r = await fetch(`https://graph.instagram.com/v23.0/${m.id}/comments?access_token=${encodeURIComponent(t)}`, { cache: "no-store" }); const b = await r.json(); row.plain = b.data ? b.data.length : b.error?.message?.slice(0, 150); }
+    catch (e: any) { row.plain = String(e).slice(0, 100); }
+    out.posts.push(row);
+  }
+  await tryIt("conversations", async () => (await ig.conversations(cfg.ig_user_id!, t, 10)).length);
+  return out;
 }
