@@ -15,8 +15,8 @@ export default async function InboxPage() {
   let media: ig.IgMedia[] = [], convos: ig.IgConvo[] = [], mediaErr = "", dmErr = "";
   if (cfg.ig_token && cfg.ig_user_id) {
     [media, convos] = await Promise.all([
-      ig.listMedia(cfg.ig_user_id, cfg.ig_token, 15).catch((e) => { mediaErr = e.message; return []; }),
-      ig.conversations(cfg.ig_user_id, cfg.ig_token, 25).catch((e) => { dmErr = e.message; return []; }),
+      ig.listMedia(cfg.ig_user_id, ig.replyTokenFor(cfg), 15).catch((e) => { mediaErr = e.message; return []; }),
+      ig.conversations(cfg.ig_user_id, ig.replyTokenFor(cfg), 25).catch((e) => { dmErr = e.message; return []; }),
     ]);
   }
   const sent = events.filter((e) => e.status === "sent").length;

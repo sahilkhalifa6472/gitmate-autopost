@@ -27,6 +27,8 @@ export type Item = {
 
 export type Config = {
   ig_token?: string;
+  reply_token?: string; // optional Facebook-Graph (EAA...) token used only for comments/DMs
+  reply_token_at?: number;
   ig_user_id?: string;
   username?: string;
   account_type?: string;

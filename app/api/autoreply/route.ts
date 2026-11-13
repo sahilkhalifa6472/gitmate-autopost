@@ -1,6 +1,7 @@
 import { getAr, saveAr, arEvents, runAutoReply } from "@/lib/autoreply";
 import { getQueue, saveQueue, log, getConfig } from "@/lib/data";
 import * as ig from "@/lib/ig";
+import { setReplyToken } from "@/lib/replytoken";
 import { allowed, loggedIn, deny } from "@/lib/guard";
 
 export const dynamic = "force-dynamic";
@@ -50,6 +51,10 @@ export async function PUT(req: Request) {
     if (it && isUrl(link)) { it.link = String(link).trim(); n++; }
   }
   if (n) { await saveQueue(q); await log("info", `Auto-reply: links set for ${n} reel(s)`); }
+  if (typeof b.reply_token === "string") {
+    const r = await setReplyToken(b.reply_token.trim());
+    if (r.error) return Response.json(r, { status: 400 });
+  }
   const ar = await getAr();
   if (isUrl(b.default_link)) { ar.default_link = b.default_link.trim(); await saveAr(ar); }
   return Response.json({ ok: true, updated: n });
@@ -58,11 +63,11 @@ export async function PUT(req: Request) {
 // Read-only check: does the saved token actually see comments / DMs? (counts only, sends nothing)
 async function diag() {
   const cfg = await getConfig();
-  if (!cfg.ig_token || !cfg.ig_user_id) return { error: "not connected" };
-  const t = cfg.ig_token;
-  const out: any = { user_id: cfg.ig_user_id, username: cfg.username, token_prefix: t.slice(0, 4) };
+  const t = ig.replyTokenFor(cfg);
+  if (!t || !cfg.ig_user_id) return { error: "not connected" };
+  const out: any = { user_id: cfg.ig_user_id, username: cfg.username, token_prefix: t.slice(0, 4), reply_token_at: cfg.reply_token_at };
   const tryIt = async (k: string, f: () => Promise<any>) => { try { out[k] = await f(); } catch (e: any) { out[k] = { error: e.message.slice(0, 300) }; } };
-  await tryIt("me", () => ig.me(t));
+  await tryIt("me", () => (t.startsWith("EAA") ? ig.fbAccount(cfg.ig_user_id!, t) : ig.me(t)));
   let media: ig.IgMedia[] = [];
   await tryIt("media", async () => { media = await ig.listMedia(cfg.ig_user_id!, t, 6); return media.length; });
   out.posts = [];
@@ -70,7 +75,7 @@ async function diag() {
     const row: any = { id: m.id, at: m.timestamp, comments_count: m.comments_count };
     try { const c = await ig.listComments(m.id, t, 0, 2); row.fetched = c.length; row.keyword = c.filter((x) => /gitmate/i.test(x.text || "")).length; row.with_from = c.filter((x) => x.from).length; }
     catch (e: any) { row.error = e.message.slice(0, 200); }
-    try { const r = await fetch(`https://graph.instagram.com/v23.0/${m.id}/comments?access_token=${encodeURIComponent(t)}`, { cache: "no-store" }); const b = await r.json(); row.plain = b.data ? b.data.length : b.error?.message?.slice(0, 150); }
+    try { const r = await fetch(`${t.startsWith("EAA") ? "https://graph.facebook.com" : "https://graph.instagram.com"}/v23.0/${m.id}/comments?access_token=${encodeURIComponent(t)}`, { cache: "no-store" }); const b = await r.json(); row.plain = b.data ? b.data.length : b.error?.message?.slice(0, 150); }
     catch (e: any) { row.plain = String(e).slice(0, 100); }
     out.posts.push(row);
   }
