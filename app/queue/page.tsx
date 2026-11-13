@@ -33,7 +33,7 @@ export default async function QueuePage() {
                   <div className="card reel" key={i.id}>
                     <Thumb item={i} />
                     <div className="body">
-                      <div className="hd"><span className="id">#{i.id}</span><span className={`pill ${i.status === "failed" ? "err" : i.status === "posting" || i.force ? "solid" : ""}`}>{i.force && i.status === "queued" ? "post now" : i.status}</span></div>
+                      <div className="hd"><span className="id">#{i.id}</span><span className={`pill ${i.status === "failed" ? "err" : i.status === "posting" || i.force ? "solid" : ""}`}>{i.force && i.status === "queued" ? "post now" : i.status}</span>{i.post_on && i.status === "queued" && <span className="pill solid">📅 {new Date(i.post_on + "T12:00:00Z").toLocaleDateString("en-GB", { day: "2-digit", month: "short" })}</span>}</div>
                       <div className="ttl">{i.title}</div>
                       <div className="meta">
                         cover {(i.cover_offset_ms / 1000).toFixed(1)}s{i.duration_sec ? ` · ${Math.round(i.duration_sec)}s` : ""}{!i.blob_deleted && <> · <a href={i.video_url} target="_blank">video</a></>}{i.permalink ? <> · <a href={i.permalink} target="_blank">on Instagram</a></> : null}

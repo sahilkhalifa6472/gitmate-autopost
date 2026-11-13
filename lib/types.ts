@@ -9,6 +9,7 @@ export type Item = {
   duration_sec?: number;
   slug?: string;
   link?: string;              // repo/link sent in DMs to people who comment the keyword
+  post_on?: string;           // YYYY-MM-DD (audience timezone): post only on this day (paid features get a fixed date)
   added_at: string;
   status: "queued" | "posting" | "posted" | "failed" | "skipped";
   force?: boolean;            // "post now" from the dashboard
