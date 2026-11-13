@@ -66,6 +66,9 @@ export type AutoReplyConfig = {
   links: Record<string, string>; // media_id -> link (manual overrides from the dashboard)
   days: number;               // Instagram allows a private reply only within 7 days of the comment
   max_per_run: number;
+  follow_gate?: boolean;
+  gate_text?: string;         // {username} {title}
+  follow_text?: string;       // {username} {account}      // ask "send me the link" first and only send it to followers
   last_run_at?: string;
   last_error?: string;
   sent_total?: number;
@@ -82,6 +85,7 @@ export const DEFAULT_AR: AutoReplyConfig = {
   links: {},
   days: 7,
   max_per_run: 15,
+  follow_gate: true,
 };
 
 export type ArEvent = { at: string; kind: "comment" | "dm"; username: string; text: string; media_id?: string; status: "sent" | "failed" | "skipped"; note?: string };

@@ -102,6 +102,31 @@ export async function privateReplyCard(userId: string, token: string, commentId:
   return http(`${B(token)}/${userId}/messages?${tq(token)}`, json({ recipient: { comment_id: commentId }, message: { attachment: { type: "template", payload: { template_type: "generic", elements: [element] } } } }));
 }
 
+export type QR = { title: string; payload: string };
+const qrs = (q: QR[]) => q.map((x) => ({ content_type: "text", title: x.title.slice(0, 20), payload: x.payload }));
+export type CardBtn = { title: string; url: string };
+const card = (p: { title: string; subtitle?: string; image_url?: string; buttons: CardBtn[] }) => ({
+  attachment: { type: "template", payload: { template_type: "generic", elements: [{
+    title: p.title.slice(0, 80), ...(p.subtitle ? { subtitle: p.subtitle.slice(0, 80) } : {}), ...(p.image_url ? { image_url: p.image_url } : {}),
+    buttons: p.buttons.slice(0, 3).map((b) => ({ type: "web_url", url: b.url, title: b.title.slice(0, 20) })),
+  }] } },
+});
+// private reply (to a comment) with quick-reply buttons; a tap comes back as a normal DM we can read
+export async function privateReplyQR(userId: string, token: string, commentId: string, text: string, q: QR[]) {
+  return http(`${B(token)}/${userId}/messages?${tq(token)}`, json({ recipient: { comment_id: commentId }, message: { text, quick_replies: qrs(q) } }));
+}
+export async function sendQR(userId: string, token: string, recipientId: string, text: string, q: QR[]) {
+  return http(`${B(token)}/${userId}/messages?${tq(token)}`, json({ recipient: { id: recipientId }, message: { text, quick_replies: qrs(q) } }));
+}
+export async function sendCard(userId: string, token: string, recipientId: string, p: Parameters<typeof card>[0]) {
+  return http(`${B(token)}/${userId}/messages?${tq(token)}`, json({ recipient: { id: recipientId }, message: card(p) }));
+}
+// does this person (who messaged us) follow the account?
+export async function followsUs(igsid: string, token: string): Promise<boolean> {
+  const b = await http(`${B(token)}/${igsid}?fields=is_user_follow_business&${tq(token)}`);
+  return !!b.is_user_follow_business;
+}
+
 export async function sendDM(userId: string, token: string, recipientId: string, text: string) {
   return http(`${B(token)}/${userId}/messages?${tq(token)}`, json({ recipient: { id: recipientId }, message: { text } }));
 }
