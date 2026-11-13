@@ -96,6 +96,12 @@ export async function privateReply(userId: string, token: string, commentId: str
   return http(`${B(token)}/${userId}/messages?${tq(token)}`, json({ recipient: { comment_id: commentId }, message: { text } }));
 }
 
+// Same private reply, but the link goes in a button card (Instagram refuses some raw links in text)
+export async function privateReplyCard(userId: string, token: string, commentId: string, p: { title: string; subtitle: string; url: string; button: string }) {
+  const element = { title: p.title.slice(0, 80), subtitle: p.subtitle.slice(0, 80), buttons: [{ type: "web_url", url: p.url, title: p.button.slice(0, 20) }] };
+  return http(`${B(token)}/${userId}/messages?${tq(token)}`, json({ recipient: { comment_id: commentId }, message: { attachment: { type: "template", payload: { template_type: "generic", elements: [element] } } } }));
+}
+
 export async function sendDM(userId: string, token: string, recipientId: string, text: string) {
   return http(`${B(token)}/${userId}/messages?${tq(token)}`, json({ recipient: { id: recipientId }, message: { text } }));
 }
