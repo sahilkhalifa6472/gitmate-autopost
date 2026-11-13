@@ -69,11 +69,13 @@ export async function runAutoReply(opts: { force?: boolean } = {}) {
           let how = "text";
           try {
             try {
+              if (await get<boolean>("ar_card_mode", false)) throw new Error("2534122 card mode");
               await ig.privateReply(cfg.ig_user_id, tok, c.id, fill(ar.dm_text, { username: user ? "@" + user : "there", link, title }));
             } catch (e: any) {
               if (!/2534122|Link can.t be shared/i.test(e.message)) throw e;
               // Instagram refused the raw link: send it as a button card instead
               how = "card";
+              await set("ar_card_mode", true); // Instagram refuses raw links for this account: go straight to cards next time
               await ig.privateReplyCard(cfg.ig_user_id, tok, c.id, {
                 title: `Hey ${user ? "@" + user : "there"}! Here's your link 🔗`,
                 subtitle: (title.split(":")[0] || "From @git.mate") + " · follow @git.mate for 1 repo a day",
