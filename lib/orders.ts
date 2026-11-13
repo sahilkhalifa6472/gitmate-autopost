@@ -20,7 +20,11 @@ export type Order = {
   created_at: string;
   updated_at: string;
 };
-export type FreeRepo = { repo: string; igsid: string; user?: string; at: string; status: "new" | "featured" | "dismissed" };
+// Repos people DM'd before paid spots started (owner rule 2026-11-14): made for free, one a day, as bait.
+// status: new (waiting) -> featured (reel in queue) -> live (posted, share it with them) ; dismissed = skip
+export type FreeRepo = { repo: string; igsid: string; user?: string; at: string; status: "new" | "featured" | "live" | "dismissed"; legacy?: boolean; item_id?: number; permalink?: string; shared?: boolean; dm?: string };
+// DMs before this moment count as "old" (free); repo links after it get the paid offer
+export const FREE_CUTOFF = "2026-11-14T00:00:00Z";
 export type OrderCfg = { price: number; paypal: string; usdc: string; per_day: number };
 export const DEFAULT_ORDER_CFG: OrderCfg = { price: 9, paypal: "", usdc: "", per_day: 1 };
 
@@ -97,18 +101,17 @@ export async function handleOrderDM(m: { igsid: string; mid: string; text: strin
   const name = async () => (await ig.userName(m.igsid, tok)) || undefined;
   const say = async (text: string) => { try { await ig.sendDM(cfg.ig_user_id!, tok, m.igsid, text); } catch (e: any) { await log("warn", `Orders: DM failed: ${e.message.slice(0, 160)}`); } };
 
-  // free repo submission (no open paid order)
+  // repo link from someone whose repo is already on the old free list: nothing to sell, stay quiet
   if (!o && !wantsFeature && repo) {
     const free = await getFree();
-    if (!free.some((f) => f.repo.toLowerCase() === repo.toLowerCase())) {
-      free.unshift({ repo, igsid: m.igsid, user: await name(), at: now, status: "new" }); await saveFree(free.slice(0, 500));
-    }
-    return true;
+    if (free.some((f) => f.igsid === m.igsid || f.repo.toLowerCase() === repo.toLowerCase())) return true;
   }
   if (!o) {
     o = { id: m.igsid, igsid: m.igsid, user: await name(), status: "asked", created_at: now, updated_at: now, proof: [], notes: [] };
     orders.unshift(o);
+    // new repo links (no FEATURE) also get the paid offer now
     if (wantsFeature) await say(OFFER(oc));
+    else if (repo) await say("Thanks for sharing your repo! 🙌 Featured spots on @git.mate are paid now:\n\n" + OFFER(oc).replace(/^Hey! 👋 Thanks for wanting to feature your repo on @git\.mate 🚀\n\n/, ""));
   } else if (wantsFeature && !repo && !m.images.length && !tx) {
     await say(OFFER(oc)); // asked again
   }
@@ -129,7 +132,7 @@ export async function handleOrderDM(m: { igsid: string; mid: string; text: strin
   if (had !== "proof" && o.status === "proof") {
     await say("Got it, thank you! ✅ We're checking your payment now and will send you your reel date here soon 🚀");
     await log("info", `Orders: new paid order to confirm (${o.repo})`);
-  } else if (o.status === "asked" && (repo || m.images.length || tx)) {
+  } else if (o.status === "asked" && had === "asked" && o.created_at !== now && (repo || m.images.length || tx)) {
     await say(!o.repo ? "Thanks! 🙌 Now send your GitHub repo link here." : "Thanks! 🙌 Now send the payment screenshot (or the Solana tx link) here.");
   }
   return true;
@@ -152,10 +155,46 @@ export async function confirmOrder(id: string, date?: string) {
 
 // after a paid reel is posted: tell the buyer (best effort, Instagram allows it only within 24h of their last message)
 export async function notifyLive(itemId: number, permalink?: string) {
+  await freeLive(itemId, permalink);
   const orders = await getOrders(); const o = orders.find((x) => x.item_id === itemId);
   if (!o || o.status === "live") return;
   o.status = "live"; o.updated_at = new Date().toISOString(); await saveOrders(orders);
   const cfg = await getConfig();
   try { await ig.sendDM(cfg.ig_user_id!, ig.replyTokenFor(cfg), o.igsid, `Your reel is live! 🚀🔥\n${permalink || "Check @git.mate"}\n\nThanks for building cool stuff 🙌`); }
   catch { o.notes = [...(o.notes || []), "live DM failed (24h window), tell them yourself"]; await saveOrders(orders); }
+}
+
+export const shareText = (f: FreeRepo, permalink?: string) =>
+  `Hey${f.user ? " @" + f.user : ""}! 🚀 We featured your repo on @git.mate 🙌\n${permalink || f.permalink || ""}\n\nShare it with your followers / repost it, and thanks for building cool stuff 🔥`;
+
+// an old free repo's reel was posted: mark it live and try to DM them (works only within Instagram's 24h window)
+async function freeLive(itemId: number, permalink?: string) {
+  const free = await getFree(); const f = free.find((x) => x.item_id === itemId);
+  if (!f || f.status === "live") return;
+  f.status = "live"; f.permalink = permalink; await saveFree(free);
+  const cfg = await getConfig();
+  try { await ig.sendDM(cfg.ig_user_id!, ig.replyTokenFor(cfg), f.igsid, shareText(f, permalink)); f.shared = true; f.dm = "sent"; }
+  catch { f.dm = "auto DM not allowed (24h window), send it yourself"; }
+  await saveFree(free);
+}
+
+// Pull every GitHub repo link people DM'd us before FREE_CUTOFF into the free list (one-time / re-runnable)
+export async function importOldRepos() {
+  const cfg = await getConfig(); const tok = ig.replyTokenFor(cfg);
+  if (!tok || !cfg.ig_user_id) return { error: "Instagram not connected" };
+  const convos = await ig.allConversations(cfg.ig_user_id, tok, 12, 50);
+  const free = await getFree(); const orders = await getOrders();
+  const paid = new Set(orders.filter((o) => o.repo).map((o) => o.repo!.toLowerCase()));
+  let added = 0, seen = 0;
+  for (const cv of convos) for (const msg of (cv.messages?.data || []).slice().reverse()) {
+    const from = msg.from?.id; if (!from || from === cfg.ig_user_id || msg.created_time > FREE_CUTOFF.replace("Z", "+0000")) continue;
+    const repo = repoOf(msg.message || ""); if (!repo) continue; seen++;
+    if (paid.has(repo.toLowerCase()) || free.some((f) => f.repo.toLowerCase() === repo.toLowerCase())) continue;
+    free.push({ repo, igsid: from, user: msg.from?.username, at: new Date(msg.created_time).toISOString(), status: "new", legacy: true }); added++;
+  }
+  for (const f of free) if (f.at < FREE_CUTOFF) f.legacy = true;
+  free.sort((a, b) => a.at.localeCompare(b.at));
+  await saveFree(free);
+  await log("info", `Orders: imported ${added} old DM repos (${seen} links seen in ${convos.length} chats)`);
+  return { ok: true, added, seen, chats: convos.length, waiting: free.filter((f) => f.status === "new").length };
 }

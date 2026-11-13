@@ -143,6 +143,15 @@ export async function conversations(userId: string, token: string, limit = 25): 
   return b.data || [];
 }
 
+// Every DM thread (paged), with up to `perConvo` latest messages each; used to import old repo links
+export async function allConversations(userId: string, token: string, maxPages = 10, perConvo = 40): Promise<IgConvo[]> {
+  const f = encodeURIComponent(`id,updated_time,participants,messages.limit(${perConvo}){id,message,created_time,from,to}`);
+  let url: string | undefined = `${B(token)}/${userId}/conversations?platform=instagram&fields=${f}&limit=25&${tq(token)}`;
+  const out: IgConvo[] = [];
+  for (let i = 0; url && i < maxPages; i++) { const b = await http(url); out.push(...(b.data || [])); url = b.paging?.next; }
+  return out;
+}
+
 export async function mediaThumb(mediaId: string, token: string): Promise<string | undefined> {
   try {
     const b = await http(`${B(token)}/${mediaId}?fields=thumbnail_url,media_url&access_token=${encodeURIComponent(token)}`);
