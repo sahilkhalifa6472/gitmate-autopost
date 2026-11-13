@@ -71,23 +71,30 @@ export async function nextFreeDate(cfgTz: string, perDay: number, orders: Order[
 }
 export const niceDate = (d: string) => new Date(d + "T12:00:00Z").toLocaleDateString("en-GB", { day: "numeric", month: "long" });
 
-const OFFER = (c: OrderCfg) => `Hey! 👋 Thanks for wanting to feature your repo on @git.mate 🚀
-
-⚡ $${c.price} one time
+const OFFER_BODY = (c: OrderCfg) => `⚡ $${c.price} one time
 → a full motion reel made for your repo
 → posted on @git.mate with your GitHub link + tag
 → you get a fixed date
 
 How to book:
-1. Pay $${c.price}${c.paypal ? `\n   PayPal: ${c.paypal}` : ""}${c.usdc ? `\n   or ${c.price} USDC (Solana): ${c.usdc}` : ""}
+1. Pay $${c.price} (tap PayPal or Crypto below 👇)
 2. Send your GitHub repo link here
 3. Send the payment screenshot (or the Solana tx link) here
 
 We'll confirm and send you your date 🙌`;
+const OFFER = (c: OrderCfg) => `Hey! 👋 Thanks for wanting to feature your repo on @git.mate 🚀\n\n${OFFER_BODY(c)}`;
+const PAY_QR = (c: OrderCfg) => [
+  ...(c.paypal ? [{ title: "💳 PayPal", payload: "GM_PAY_PAYPAL" }] : []),
+  ...(c.usdc ? [{ title: "🪙 Crypto (USDC)", payload: "GM_PAY_USDC" }] : []),
+];
 
 // One incoming DM (from the webhook). Returns true when it was an order/repo message.
-export async function handleOrderDM(m: { igsid: string; mid: string; text: string; images: string[] }) {
+export async function handleOrderDM(m: { igsid: string; mid: string; text: string; images: string[]; payload?: string }) {
   const t = m.text || "";
+  // payment method picked (button tap, or typed "paypal" / "crypto")
+  const pay = m.payload === "GM_PAY_PAYPAL" || /^\W*pay\s*pal\W*$/i.test(t) ? "paypal"
+    : m.payload === "GM_PAY_USDC" || /^\W*(crypto|usdc|solana|sol)(\s*\(usdc\))?\W*$/i.test(t) ? "usdc" : "";
+  if (pay) return payMethod(m.igsid, m.mid, pay);
   const wantsFeature = /\bfeature\b/i.test(t);
   const repo = repoOf(t);
   const tx = TX_RE.exec(t)?.[1];
@@ -100,6 +107,11 @@ export async function handleOrderDM(m: { igsid: string; mid: string; text: strin
   const now = new Date().toISOString();
   const name = async () => (await ig.userName(m.igsid, tok)) || undefined;
   const say = async (text: string) => { try { await ig.sendDM(cfg.ig_user_id!, tok, m.igsid, text); } catch (e: any) { await log("warn", `Orders: DM failed: ${e.message.slice(0, 160)}`); } };
+  const offer = async (text: string) => {
+    const q = PAY_QR(oc);
+    if (!q.length) return say(text);
+    try { await ig.sendQR(cfg.ig_user_id!, tok, m.igsid, text, q); } catch { await say(text); }
+  };
 
   // repo link from someone whose repo is already on the old free list: nothing to sell, stay quiet
   if (!o && !wantsFeature && repo) {
@@ -110,10 +122,10 @@ export async function handleOrderDM(m: { igsid: string; mid: string; text: strin
     o = { id: m.igsid, igsid: m.igsid, user: await name(), status: "asked", created_at: now, updated_at: now, proof: [], notes: [] };
     orders.unshift(o);
     // new repo links (no FEATURE) also get the paid offer now
-    if (wantsFeature) await say(OFFER(oc));
-    else if (repo) await say("Thanks for sharing your repo! 🙌 Featured spots on @git.mate are paid now:\n\n" + OFFER(oc).replace(/^Hey! 👋 Thanks for wanting to feature your repo on @git\.mate 🚀\n\n/, ""));
+    if (wantsFeature) await offer(OFFER(oc));
+    else if (repo) await offer("Thanks for sharing your repo! 🙌 Featured spots on @git.mate are paid now:\n\n" + OFFER_BODY(oc));
   } else if (wantsFeature && !repo && !m.images.length && !tx) {
-    await say(OFFER(oc)); // asked again
+    await offer(OFFER(oc)); // asked again
   }
   if (repo) o.repo = repo;
   for (const url of m.images) {
@@ -135,6 +147,27 @@ export async function handleOrderDM(m: { igsid: string; mid: string; text: strin
   } else if (o.status === "asked" && had === "asked" && o.created_at !== now && (repo || m.images.length || tx)) {
     await say(!o.repo ? "Thanks! 🙌 Now send your GitHub repo link here." : "Thanks! 🙌 Now send the payment screenshot (or the Solana tx link) here.");
   }
+  return true;
+}
+
+// PayPal / Crypto button: send only that payment's details (address in its own message so it's easy to copy)
+async function payMethod(igsid: string, mid: string, pay: "paypal" | "usdc") {
+  if (!(await lock("om:" + mid, 3600))) return true;
+  const cfg = await getConfig(); const tok = ig.replyTokenFor(cfg); const oc = await getOrderCfg();
+  const orders = await getOrders(); const now = new Date().toISOString();
+  let o = orders.find((x) => x.igsid === igsid && ["asked", "proof"].includes(x.status));
+  if (!o) { o = { id: igsid, igsid, user: (await ig.userName(igsid, tok)) || undefined, status: "asked", created_at: now, updated_at: now, proof: [], notes: [] }; orders.unshift(o); }
+  o.notes = [...(o.notes || []).filter((n) => !n.startsWith("pays with")), `pays with ${pay === "paypal" ? "PayPal" : "USDC"}`]; o.updated_at = now;
+  await saveOrders(orders);
+  const dest = pay === "paypal" ? oc.paypal : oc.usdc;
+  const first = pay === "paypal" ? `💳 PayPal: send $${oc.price} to this email 👇` : `🪙 Send ${oc.price} USDC on the Solana network to this address 👇`;
+  const after = pay === "paypal"
+    ? `After paying, send here:\n1. your GitHub repo link\n2. the payment screenshot\n\nWe'll confirm and send you your date 🙌`
+    : `After sending, paste here:\n1. your GitHub repo link\n2. the Solana tx link (we verify it automatically ⚡)\n\nOnly USDC on Solana please, other tokens or networks get lost.`;
+  try {
+    if (!dest) throw new Error("not set");
+    for (const t of [first, dest, after]) await ig.sendDM(cfg.ig_user_id!, tok, igsid, t);
+  } catch (e: any) { await log("warn", `Orders: pay-method DM failed: ${e.message.slice(0, 160)}`); }
   return true;
 }
 
