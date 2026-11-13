@@ -69,10 +69,11 @@ export async function runAutoReply(opts: { force?: boolean } = {}) {
           try {
             await ig.privateReply(cfg.ig_user_id, tok, c.id, fill(ar.dm_text, { username: user ? "@" + user : "there", link, title }));
           } catch (e: any) {
-            if (isFatal(e.message)) throw e;
+            // Instagram refused the link itself: stop and keep the comment unanswered (sending to others would fail the same way)
+            if (isFatal(e.message) || /2534122|Link can.t be shared/i.test(e.message)) throw e;
             await setAdd("ar_done", c.id);
             seen--;
-            await event({ kind: "comment", username: user, text: c.text.slice(0, 200), media_id: m.id, status: "failed", note: e.message.slice(0, 200) });
+            await event({ kind: "comment", username: user, text: c.text.slice(0, 200), media_id: m.id, status: "failed", note: e.message.slice(0, 600) });
             continue;
           }
           await setAdd("ar_done", c.id);
