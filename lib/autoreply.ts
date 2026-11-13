@@ -15,8 +15,8 @@ export async function saveAr(c: AutoReplyConfig) { await set("ar_config", c); }
 export async function arEvents(n = 150): Promise<ArEvent[]> { return getList("ar_events", n); }
 const event = (e: Omit<ArEvent, "at">) => pushList("ar_events", { at: new Date().toISOString(), ...e }, 600);
 
-const DEFAULT_GATE = "Hey {username}! 👋 Here's {title} from our reel 🔥\n\nTap below and I'll send you the link in just a sec ✨";
-const DEFAULT_FOLLOW = "Almost there {username}! 🙌\n\nThe link is for followers only. Follow {account} (1 useful repo every day), then tap below 👇";
+const DEFAULT_GATE = "Hey {username}! 👋 Here's {title} from our reel 🔥\n\nJust reply \"LINK\" here and I'll send it to you in a sec ✨";
+const DEFAULT_FOLLOW = "Almost there {username}! 🙌\n\nThe link is for followers only. Follow {account} (1 useful repo every day), then reply \"DONE\" here 👇";
 // "git mate", "Git-Mate", "GITMATE" all count
 const hasKw = (t: string | undefined, kw: string) => !!t && t.toLowerCase().replace(/[\s._-]+/g, "").includes(kw.replace(/[\s._-]+/g, ""));
 const fill = (t: string, v: Record<string, string>) => t.replace(/\{(\w+)\}/g, (m, k) => (k in v ? v[k] : m));
