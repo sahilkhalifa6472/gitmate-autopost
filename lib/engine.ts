@@ -51,8 +51,14 @@ export function makePlan(cfg: Config, q: Item[], nowMin: number, count: number):
   return [];
 }
 
-const nextItem = (q: Item[]) =>
-  q.find((it) => it.status === "queued" && it.force) || q.find((it) => it.status === "queued" && (it.tries || 0) < MAX_TRIES);
+// a reel with a fixed date (post_on) goes first on its day, waits before it, and is posted asap if its day was missed
+const nextItem = (q: Item[], day: string) => {
+  const ok = (it: Item) => it.status === "queued" && (it.tries || 0) < MAX_TRIES;
+  return q.find((it) => it.status === "queued" && it.force)
+    || q.find((it) => ok(it) && it.post_on === day)
+    || q.find((it) => ok(it) && it.post_on && it.post_on < day)
+    || q.find((it) => ok(it) && !it.post_on);
+};
 
 async function refreshIfNeeded(cfg: Config) {
   if (!cfg.ig_token || Date.now() - (cfg.token_refreshed_at || 0) < 7 * 864e5) return;
@@ -200,7 +206,7 @@ export async function tick(opts: { source?: string } = {}) {
     for (const t of plans[day]) {
       if (t.id || t.skipped || min < t.min) continue;
       if (min > t.min + POST_WINDOW_MIN) { t.skipped = true; t.note = "missed"; await savePlans(plans); continue; }
-      const it = nextItem(q);
+      const it = nextItem(q, day);
       if (!it) { t.note = "queue empty"; await savePlans(plans); await log("warn", `${hhmm(t.min)}: queue is empty, nothing to post`); break; }
       t.id = it.id;
       await startPost(cfg, it, t.window);

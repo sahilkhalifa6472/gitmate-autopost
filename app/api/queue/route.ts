@@ -31,6 +31,7 @@ export async function POST(req: Request) {
     duration_sec: Number(b.duration_sec) || undefined,
     slug: b.slug ? String(b.slug) : undefined,
     link: typeof b.link === "string" && /^https?:\/\//.test(b.link) ? b.link.slice(0, 500) : undefined,
+    post_on: typeof b.post_on === "string" && /^\d{4}-\d{2}-\d{2}$/.test(b.post_on) ? b.post_on : undefined,
     added_at: new Date().toISOString(),
     status: "queued",
   };
@@ -65,6 +66,7 @@ export async function PATCH(req: Request) {
       if (typeof b.caption === "string") it.caption = b.caption.slice(0, 2200);
       if (typeof b.title === "string") it.title = b.title.slice(0, 140);
       if (typeof b.link === "string") it.link = /^https?:\/\//.test(b.link) ? b.link.slice(0, 500) : undefined;
+      if (typeof b.post_on === "string") it.post_on = /^\d{4}-\d{2}-\d{2}$/.test(b.post_on) ? b.post_on : undefined;
       if (b.cover_offset_ms != null) it.cover_offset_ms = Math.max(0, Math.round(Number(b.cover_offset_ms) || 0));
       break;
     case "delete":
