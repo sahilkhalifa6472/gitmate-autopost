@@ -49,6 +49,10 @@ export async function setHas(key: string, member: string): Promise<boolean> {
   if (redis) return (await redis.sismember(P + key, member)) === 1;
   return (fileRead()[key] || []).includes(member);
 }
+export async function setRemove(key: string, member: string) {
+  if (redis) { await redis.srem(P + key, member); return; }
+  const d = fileRead(); d[key] = (d[key] || []).filter((x: string) => x !== member); fileWrite(d);
+}
 export async function setAdd(key: string, member: string) {
   if (redis) { await redis.sadd(P + key, member); return; }
   const d = fileRead(); d[key] = [...new Set([...(d[key] || []), member])]; fileWrite(d);
