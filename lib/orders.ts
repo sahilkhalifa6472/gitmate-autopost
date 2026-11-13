@@ -96,11 +96,13 @@ export async function handleOrderDM(m: { igsid: string; mid: string; text: strin
     : m.payload === "GM_PAY_USDC" || /^\W*(crypto|usdc|solana|sol)(\s*\(usdc\))?\W*$/i.test(t) ? "usdc" : "";
   if (pay) return payMethod(m.igsid, m.mid, pay);
   const wantsFeature = /\bfeature\b/i.test(t);
-  const repo = repoOf(t);
   const tx = TX_RE.exec(t)?.[1];
-  if (!wantsFeature && !repo && !tx && !m.images.length) return false;
+  const anyUrl = /https?:\/\/[^\s]+/i.exec(t)?.[0].replace(/[.,)]+$/, "") || "";
+  if (!wantsFeature && !anyUrl && !tx && !m.images.length) return false;
   const orders = await getOrders();
   let o = orders.find((x) => x.igsid === m.igsid && ["asked", "proof"].includes(x.status));
+  // GitHub link, or (for someone with an open order) any project link like a Play Store / website URL
+  const repo = repoOf(t) || (o && anyUrl && !/solscan|solana\.fm|explorer\.solana|paypal\.(com|me)/i.test(anyUrl) ? anyUrl : "");
   if (!wantsFeature && !o && !repo) return false;
   if (!(await lock("om:" + m.mid, 3600))) return true; // already handled (Meta retries)
   const cfg = await getConfig(); const tok = ig.replyTokenFor(cfg); const oc = await getOrderCfg();
@@ -142,10 +144,16 @@ export async function handleOrderDM(m: { igsid: string; mid: string; text: strin
   o.updated_at = now;
   await saveOrders(orders);
   if (had !== "proof" && o.status === "proof") {
-    await say("Got it, thank you! ✅ We're checking your payment now and will send you your reel date here soon 🚀");
+    const okTx = (o.proof || []).some((p) => p.kind === "tx" && p.verified);
+    const viaPaypal = (o.notes || []).includes("pays with PayPal") || (!okTx && (o.proof || []).some((p) => p.kind === "image"));
+    await say(okTx
+      ? "Payment verified on chain ✅ Thank you! We'll send you your reel date here very soon 🚀"
+      : viaPaypal
+        ? "Got it, thank you! ✅ Our team is checking your PayPal payment now and will message you here with your reel date soon 🚀"
+        : "Got it, thank you! ✅ Our team is checking your payment now and will message you here with your reel date soon 🚀");
     await log("info", `Orders: new paid order to confirm (${o.repo})`);
   } else if (o.status === "asked" && had === "asked" && o.created_at !== now && (repo || m.images.length || tx)) {
-    await say(!o.repo ? "Thanks! 🙌 Now send your GitHub repo link here." : "Thanks! 🙌 Now send the payment screenshot (or the Solana tx link) here.");
+    await say(!o.repo ? "Thanks! 🙌 Now send your GitHub repo (or project) link here." : "Thanks! 🙌 Now send the payment screenshot (or the Solana tx link) here.");
   }
   return true;
 }
@@ -169,6 +177,17 @@ async function payMethod(igsid: string, mid: string, pay: "paypal" | "usdc") {
     for (const t of [first, dest, after]) await ig.sendDM(cfg.ig_user_id!, tok, igsid, t);
   } catch (e: any) { await log("warn", `Orders: pay-method DM failed: ${e.message.slice(0, 160)}`); }
   return true;
+}
+
+// owner pressed Reject: let them know politely (best effort, 24h window)
+export async function rejectDM(o: Order) {
+  const cfg = await getConfig();
+  const paid = (o.proof || []).length > 0;
+  const text = paid
+    ? "Hey! 🙏 Sorry, we couldn't verify your payment for this one. If you did pay, just reply here with the details and our team will sort it out (or refund you) 🙌"
+    : "Hey! 🙏 Thanks for reaching out. We can't feature this one right now, but keep building, and feel free to send us another project anytime 🙌";
+  try { await ig.sendDM(cfg.ig_user_id!, ig.replyTokenFor(cfg), o.igsid, text); return "sent"; }
+  catch { o.notes = [...(o.notes || []), "reject DM failed (24h window), tell them yourself"]; return "failed"; }
 }
 
 // owner pressed Confirm: book the next free date and tell the user
