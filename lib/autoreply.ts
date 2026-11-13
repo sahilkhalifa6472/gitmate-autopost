@@ -17,6 +17,8 @@ const event = (e: Omit<ArEvent, "at">) => pushList("ar_events", { at: new Date()
 
 const DEFAULT_GATE = "Hey {username}! 👋 Here's {title} from our reel 🔥\n\nTap below and I'll send you the link in just a sec ✨";
 const DEFAULT_FOLLOW = "Almost there {username}! 🙌\n\nThe link is for followers only. Follow {account} (1 useful repo every day), then tap below 👇";
+// "git mate", "Git-Mate", "GITMATE" all count
+const hasKw = (t: string | undefined, kw: string) => !!t && t.toLowerCase().replace(/[\s._-]+/g, "").includes(kw.replace(/[\s._-]+/g, ""));
 const fill = (t: string, v: Record<string, string>) => t.replace(/\{(\w+)\}/g, (m, k) => (k in v ? v[k] : m));
 const pick = <T,>(a: T[], seed: string) => a[[...seed].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7) % a.length];
 
@@ -103,7 +105,7 @@ export async function runAutoReply(opts: { force?: boolean } = {}) {
         for (const c of comments.sort((a, b) => Date.parse(a.timestamp) - Date.parse(b.timestamp))) {
           if (Date.parse(c.timestamp) < sinceMs) continue;
           const user = c.from?.username || c.username || "";
-          if (!c.text?.toLowerCase().includes(kw) || user === cfg.username) continue;
+          if (!hasKw(c.text, kw) || user === cfg.username) continue;
           if (await setHas("ar_done", c.id)) continue;
           seen++;
           if (!link) { // nothing to send yet: leave it unanswered so it goes out once a link is set
@@ -169,7 +171,7 @@ export async function runAutoReply(opts: { force?: boolean } = {}) {
         if (Date.now() - Date.parse(cv.updated_time) > 23 * 3600e3) continue; // outside the 24h reply window
         const last = cv.messages?.data?.[0];
         if (!last?.message || !last.from || last.from.username === cfg.username) continue;
-        if (!last.message.toLowerCase().includes(kw) || !links) continue;
+        if (!hasKw(last.message, kw) || !links) continue;
         if (await setHas("ar_dm_done", last.id)) continue;
         await setAdd("ar_dm_done", last.id);
         const user = last.from.username || "";
