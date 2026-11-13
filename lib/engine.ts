@@ -1,4 +1,5 @@
 // The auto-post engine. /api/cron calls tick() every 5 minutes.
+import { notifyLive } from "./orders";
 // Each day in the audience timezone gets a plan of random post times inside the
 // configured windows. A post is done in small steps across ticks (create container -> Instagram
 // processes it -> publish), so no call runs long. Views 12h after a post score its window, and
@@ -124,6 +125,7 @@ async function advancePending(cfg: Config, it: Item, plans: Record<string, PlanS
       it.force = false;
       it.error = undefined;
       await log("ok", `Posted #${it.id} "${it.title}" ${it.permalink}`, it.id);
+      try { await notifyLive(it.id, it.permalink); } catch {}
       return true;
     }
     if (s.status_code === "ERROR" || s.status_code === "EXPIRED") {

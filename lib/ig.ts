@@ -127,6 +127,10 @@ export async function followsUs(igsid: string, token: string): Promise<boolean> 
   return !!b.is_user_follow_business;
 }
 
+export async function userName(igsid: string, token: string): Promise<string | undefined> {
+  try { return (await http(`${B(token)}/${igsid}?fields=username&${tq(token)}`)).username; } catch { return undefined; }
+}
+
 export async function sendDM(userId: string, token: string, recipientId: string, text: string) {
   return http(`${B(token)}/${userId}/messages?${tq(token)}`, json({ recipient: { id: recipientId }, message: { text } }));
 }

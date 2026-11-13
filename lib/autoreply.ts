@@ -3,6 +3,7 @@
 //    -> private reply DM with that post's link, plus a short public reply under the comment
 // 2) someone sends the keyword in a DM -> reply with the latest links (only inside Instagram's 24h window)
 import * as ig from "./ig";
+import { handleOrderDM } from "./orders";
 import { get, set, setAdd, setHas, setRemove, pushList, getList, lock, unlock } from "./store";
 import { getConfig, getQueue, log } from "./data";
 import { ArEvent, AutoReplyConfig, DEFAULT_AR, Item } from "./types";
@@ -154,6 +155,11 @@ export async function handleWebhook(body: any) {
         if (msg?.is_echo || !ev.sender?.id || ev.sender.id === cfg.ig_user_id) continue;
         const text = String(msg?.text || pb?.title || "");
         const payload = String(msg?.quick_reply?.payload || pb?.payload || "");
+        const images = (msg?.attachments || []).filter((a: any) => a?.type === "image" && a?.payload?.url).map((a: any) => String(a.payload.url));
+        if (!payload && msg?.mid) {
+          try { if (await handleOrderDM({ igsid: String(ev.sender.id), mid: String(msg.mid), text, images })) continue; }
+          catch (e: any) { await log("error", `Orders: ${e.message}`); }
+        }
         if (!pending[ev.sender.id] || !(/^GM_/.test(payload) || GATE_RE.test(text))) continue;
         const mid = String(msg?.mid || pb?.mid || `${ev.sender.id}:${ev.timestamp}`);
         if (await handleGateDM(ctx, { mid, fromId: String(ev.sender.id), text, payload })) sent++;
