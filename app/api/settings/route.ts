@@ -1,6 +1,7 @@
 import * as ig from "@/lib/ig";
 import { getConfig, saveConfig, log } from "@/lib/data";
 import { loggedIn, deny } from "@/lib/guard";
+import { setReplyToken } from "@/lib/replytoken";
 
 export const dynamic = "force-dynamic";
 
@@ -9,6 +10,10 @@ export async function POST(req: Request) {
   const b = await req.json().catch(() => ({}));
   const cfg = await getConfig();
 
+  if (typeof b.token === "string" && b.token.trim().startsWith("EAA")) {
+    const r = await setReplyToken(b.token.trim());
+    return Response.json(r.error ? r : { ok: true, username: r.username, note: "Saved as the comments/DM token (posting keeps the old token)" }, { status: r.error ? 400 : 200 });
+  }
   if (typeof b.token === "string" && b.token.trim()) {
     const tok = b.token.trim();
     try {

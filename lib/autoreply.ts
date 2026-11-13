@@ -40,7 +40,8 @@ export async function runAutoReply(opts: { force?: boolean } = {}) {
   let sent = 0, seen = 0;
   try {
     const cfg = await getConfig();
-    if (!cfg.ig_token || !cfg.ig_user_id) return { ok: false, note: "not connected" };
+    const tok = ig.replyTokenFor(cfg);
+    if (!tok || !cfg.ig_user_id) return { ok: false, note: "not connected" };
     const q = await getQueue();
     const kw = ar.keyword.trim().toLowerCase();
     if (!kw) return { ok: false, note: "no keyword" };
@@ -49,11 +50,11 @@ export async function runAutoReply(opts: { force?: boolean } = {}) {
     const timeLeft = () => Date.now() - t0 < 40e3;
 
     if (ar.enabled) {
-      const media = (await ig.listMedia(cfg.ig_user_id, cfg.ig_token, 25)).filter((m) => Date.parse(m.timestamp) >= sinceMs - 7 * 864e5 && (m.comments_count ?? 1) > 0);
+      const media = (await ig.listMedia(cfg.ig_user_id, tok, 25)).filter((m) => Date.parse(m.timestamp) >= sinceMs - 7 * 864e5 && (m.comments_count ?? 1) > 0);
       outer: for (const m of media) {
         if (!timeLeft() || sent >= budget) break;
         const { link, title } = linkFor(ar, q, m.id);
-        const comments = await ig.listComments(m.id, cfg.ig_token, sinceMs);
+        const comments = await ig.listComments(m.id, tok, sinceMs);
         // oldest first, so the backlog is answered in order
         for (const c of comments.sort((a, b) => Date.parse(a.timestamp) - Date.parse(b.timestamp))) {
           if (Date.parse(c.timestamp) < sinceMs) continue;
@@ -66,7 +67,7 @@ export async function runAutoReply(opts: { force?: boolean } = {}) {
           }
           if (sent >= budget || !timeLeft()) break outer;
           try {
-            await ig.privateReply(cfg.ig_user_id, cfg.ig_token, c.id, fill(ar.dm_text, { username: user ? "@" + user : "there", link, title }));
+            await ig.privateReply(cfg.ig_user_id, tok, c.id, fill(ar.dm_text, { username: user ? "@" + user : "there", link, title }));
           } catch (e: any) {
             if (isFatal(e.message)) throw e;
             await setAdd("ar_done", c.id);
@@ -78,7 +79,7 @@ export async function runAutoReply(opts: { force?: boolean } = {}) {
           sent++;
           let note = "";
           if (ar.public_replies.length) {
-            try { await ig.replyToComment(c.id, cfg.ig_token, pick(ar.public_replies, c.id)); }
+            try { await ig.replyToComment(c.id, tok, pick(ar.public_replies, c.id)); }
             catch (e: any) { note = `DM sent, public reply failed: ${e.message.slice(0, 120)}`; }
           }
           await event({ kind: "comment", username: user, text: c.text.slice(0, 200), media_id: m.id, status: "sent", note });
@@ -91,7 +92,7 @@ export async function runAutoReply(opts: { force?: boolean } = {}) {
     if (ar.dm_enabled && timeLeft() && sent < budget) {
       const posted = q.filter((i) => i.status === "posted" && i.link).sort((a, b) => Date.parse(b.posted_at || "") - Date.parse(a.posted_at || "")).slice(0, 3);
       const links = posted.map((i) => `• ${i.title.split(":")[0]}: ${i.link}`).join("\n") || ar.default_link;
-      for (const cv of await ig.conversations(cfg.ig_user_id, cfg.ig_token, 25)) {
+      for (const cv of await ig.conversations(cfg.ig_user_id, tok, 25)) {
         if (sent >= budget || !timeLeft()) break;
         if (Date.now() - Date.parse(cv.updated_time) > 23 * 3600e3) continue; // outside the 24h reply window
         const last = cv.messages?.data?.[0];
@@ -101,7 +102,7 @@ export async function runAutoReply(opts: { force?: boolean } = {}) {
         await setAdd("ar_dm_done", last.id);
         const user = last.from.username || "";
         try {
-          await ig.sendDM(cfg.ig_user_id, cfg.ig_token, last.from.id, fill(ar.dm_inbox_text, { username: user ? "@" + user : "there", links }));
+          await ig.sendDM(cfg.ig_user_id, tok, last.from.id, fill(ar.dm_inbox_text, { username: user ? "@" + user : "there", links }));
           sent++;
           await event({ kind: "dm", username: user, text: last.message.slice(0, 200), status: "sent" });
         } catch (e: any) {
