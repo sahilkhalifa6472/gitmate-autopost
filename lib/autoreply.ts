@@ -66,8 +66,20 @@ export async function runAutoReply(opts: { force?: boolean } = {}) {
             continue;
           }
           if (sent >= budget || !timeLeft()) break outer;
+          let how = "text";
           try {
-            await ig.privateReply(cfg.ig_user_id, tok, c.id, fill(ar.dm_text, { username: user ? "@" + user : "there", link, title }));
+            try {
+              await ig.privateReply(cfg.ig_user_id, tok, c.id, fill(ar.dm_text, { username: user ? "@" + user : "there", link, title }));
+            } catch (e: any) {
+              if (!/2534122|Link can.t be shared/i.test(e.message)) throw e;
+              // Instagram refused the raw link: send it as a button card instead
+              how = "card";
+              await ig.privateReplyCard(cfg.ig_user_id, tok, c.id, {
+                title: `Hey ${user ? "@" + user : "there"}! Here's your link 🔗`,
+                subtitle: (title.split(":")[0] || "From @git.mate") + " · follow @git.mate for 1 repo a day",
+                url: link, button: "Open on GitHub",
+              });
+            }
           } catch (e: any) {
             // Instagram refused the link itself: stop and keep the comment unanswered (sending to others would fail the same way)
             if (isFatal(e.message) || /2534122|Link can.t be shared/i.test(e.message)) throw e;
@@ -83,7 +95,7 @@ export async function runAutoReply(opts: { force?: boolean } = {}) {
             try { await ig.replyToComment(c.id, tok, pick(ar.public_replies, c.id)); }
             catch (e: any) { note = `DM sent, public reply failed: ${e.message.slice(0, 120)}`; }
           }
-          await event({ kind: "comment", username: user, text: c.text.slice(0, 200), media_id: m.id, status: "sent", note });
+          await event({ kind: "comment", username: user, text: c.text.slice(0, 200), media_id: m.id, status: "sent", note: [how === "card" ? "sent as link card" : "", note].filter(Boolean).join(" · ") });
         }
       }
       const noLink = media.filter((m) => !linkFor(ar, q, m.id).link).length;
