@@ -1,5 +1,5 @@
 import { allowed, deny } from "@/lib/guard";
-import { getOrders, saveOrders, getFree, saveFree, getOrderCfg, confirmOrder, OrderCfg } from "@/lib/orders";
+import { getOrders, saveOrders, getFree, saveFree, getOrderCfg, confirmOrder, importOldRepos, OrderCfg } from "@/lib/orders";
 import { set } from "@/lib/store";
 import { getQueue, saveQueue, log } from "@/lib/data";
 
@@ -14,6 +14,7 @@ export async function GET(req: Request) {
 
 // Actions: confirm {id, date?} · reject {id} · made {id, item_id} · reopen {id} · delete {id}
 //          free {repo, status: "featured"|"dismissed"|"new"} · cfg {price?, paypal?, usdc?, per_day?}
+//          import (old DM repo links -> free list) · free_made {repo, item_id} (daily task made its reel) · shared {repo}
 export async function POST(req: Request) {
   if (!(await allowed(req))) return deny();
   const b = await req.json().catch(() => ({}));
@@ -26,6 +27,13 @@ export async function POST(req: Request) {
       usdc: typeof b.usdc === "string" ? b.usdc.trim().slice(0, 64) : c.usdc,
       per_day: b.per_day != null ? Math.max(1, Math.min(5, Number(b.per_day) || 1)) : c.per_day };
     await set("order_cfg", n); return Response.json({ ok: true, cfg: n });
+  }
+  if (b.action === "import") return Response.json(await importOldRepos());
+  if (b.action === "free_made" || b.action === "shared") {
+    const f = await getFree(); const r = f.find((x) => x.repo === b.repo);
+    if (!r) return Response.json({ error: "not found" }, { status: 404 });
+    if (b.action === "shared") r.shared = true; else { r.status = "featured"; r.item_id = Number(b.item_id) || undefined; }
+    await saveFree(f); return Response.json({ ok: true });
   }
   if (b.action === "free") {
     const f = await getFree(); const r = f.find((x) => x.repo === b.repo);

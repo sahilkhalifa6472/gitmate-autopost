@@ -1,7 +1,8 @@
 import Nav from "@/components/Nav";
 import Act from "@/components/Act";
 import OrderCfgForm from "@/components/OrderCfgForm";
-import { getOrders, getFree, getOrderCfg, niceDate, Order } from "@/lib/orders";
+import { getOrders, getFree, getOrderCfg, niceDate, shareText, Order } from "@/lib/orders";
+import Copy from "@/components/Copy";
 
 export const dynamic = "force-dynamic";
 const fmt = (s: string) => new Intl.DateTimeFormat("en-GB", { timeZone: "Asia/Kolkata", day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).format(new Date(s));
@@ -31,13 +32,13 @@ export default async function OrdersPage() {
   const [orders, free, cfg] = await Promise.all([getOrders(), getFree(), getOrderCfg()]);
   const todo = orders.filter((o) => o.status === "proof"), open = orders.filter((o) => o.status === "asked"),
     booked = orders.filter((o) => o.status === "confirmed" || o.status === "made"), done = orders.filter((o) => o.status === "live" || o.status === "rejected");
-  const fresh = free.filter((f) => f.status === "new");
+  const fresh = free.filter((f) => f.status === "new"), inq = free.filter((f) => f.status === "featured"), live = free.filter((f) => f.status === "live");
   return (
     <>
       <Nav />
       <div className="wrap">
         <div className="ph"><h1>Orders</h1><span className="pill solid">{todo.length} to confirm</span></div>
-        <div className="sub">People who DM "FEATURE" get the offer automatically. When they send their repo + payment proof it shows up here. Press Confirm and they get the next free date by DM. Repo links sent without FEATURE go to Free repos.</div>
+        <div className="sub">People who DM "FEATURE" get the offer automatically. When they send their repo + payment proof it shows up here. Press Confirm and they get the next free date by DM. New repo links sent without FEATURE also get the paid offer. Old repos (DM'd before 14 Nov) are made free, one a day.</div>
         {!cfg.paypal && !cfg.usdc && <div className="warnbox">Add your PayPal / USDC below so the offer DM has payment details.</div>}
         <div className="grid g2" style={{ marginTop: 16 }}>
           <div className="grid" style={{ alignContent: "start" }}>
@@ -49,17 +50,28 @@ export default async function OrdersPage() {
               {open.length ? <div className="plist">{open.map((o) => <OrderCard key={o.id} o={o} />)}</div> : <div className="empty">Nobody waiting.</div>}</div>
           </div>
           <div className="grid" style={{ alignContent: "start" }}>
-            <div className="card"><h2>Free repos <small>{fresh.length} new · sent by DM</small></h2>
-              {fresh.length ? <div className="plist">{fresh.slice(0, 100).map((f) => (
+            <div className="card"><h2>Old repos · free <small>{fresh.length} waiting · 1 a day</small></h2>
+              <div className="sub">Repos people DM'd before 14 Nov. The daily task makes the oldest one each day (paid orders go first). When it's posted, send them the reel so they share it.</div>
+              <Act url="/api/orders" body={{ action: "import" }} label="↻ Import repo links from old DMs" />
+              {live.filter((f) => !f.shared).length > 0 && <><h3 style={{ marginTop: 14 }}>📣 Send them their reel</h3><div className="plist">{live.filter((f) => !f.shared).map((f) => (
                 <div className="prow" key={f.repo}>
-                  <div className="hd"><div className="ttl"><a href={f.repo} target="_blank">{f.repo.replace("https://github.com/", "")}</a></div></div>
+                  <div className="hd"><div className="ttl">@{f.user || f.igsid}</div><span className="pill solid">posted</span></div>
+                  <small>{f.repo.replace("https://github.com/", "")} · {f.dm || ""}</small>
+                  <div style={{ display: "flex", gap: 8, marginTop: 8, flexWrap: "wrap" }}>
+                    <Copy text={shareText(f)} label="Copy message" />
+                    {f.user && <a className="btn sm" href={`https://ig.me/m/${f.user}`} target="_blank">Open their DM</a>}
+                    <Act url="/api/orders" body={{ action: "shared", repo: f.repo }} label="✓ Sent" />
+                  </div>
+                </div>))}</div></>}
+              {inq.length > 0 && <div className="sub" style={{ marginTop: 12 }}>🎬 reel in queue: {inq.map((f) => "@" + (f.user || f.igsid)).join(", ")}</div>}
+              {fresh.length ? <div className="plist" style={{ marginTop: 12 }}>{fresh.slice(0, 100).map((f, i) => (
+                <div className="prow" key={f.repo}>
+                  <div className="hd"><div className="ttl"><a href={f.repo} target="_blank">{f.repo.replace("https://github.com/", "")}</a></div><span className="pill">#{i + 1} in line</span></div>
                   <small>@{f.user || f.igsid} · {fmt(f.at)} IST</small>
                   <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
-                    <Act url="/api/orders" body={{ action: "free", repo: f.repo, status: "featured" }} label="⭐ Make a reel" />
                     <Act url="/api/orders" body={{ action: "free", repo: f.repo, status: "dismissed" }} label="Skip" />
                   </div>
-                </div>))}</div> : <div className="empty">No new repos.</div>}
-              {free.some((f) => f.status === "featured") && <div className="sub" style={{ marginTop: 12 }}>⭐ picked for a reel: {free.filter((f) => f.status === "featured").map((f) => f.repo.replace("https://github.com/", "")).join(", ")}</div>}
+                </div>))}</div> : <div className="empty">No old repos waiting.</div>}
             </div>
             <div className="card"><h2>Offer settings</h2><OrderCfgForm price={cfg.price} paypal={cfg.paypal} usdc={cfg.usdc} per_day={cfg.per_day} /></div>
             {done.length > 0 && <div className="card"><h2>Done</h2><div className="plist">{done.slice(0, 30).map((o) => <OrderCard key={o.id} o={o} />)}</div></div>}
