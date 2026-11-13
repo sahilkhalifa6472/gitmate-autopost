@@ -49,14 +49,15 @@ export async function checkSolanaTx(sig: string, wallet: string, price: number) 
   } catch (e: any) { return { ok: false, note: "could not check: " + e.message.slice(0, 80) }; }
 }
 
-// next day (from tomorrow) that has fewer than per_day booked paid reels
+// next day (from the day after tomorrow) that has fewer than per_day booked paid reels
 export async function nextFreeDate(cfgTz: string, perDay: number, orders: Order[]) {
   const q = await getQueue();
   const taken: Record<string, number> = {};
   for (const o of orders) if (o.date && ["confirmed", "made"].includes(o.status)) taken[o.date] = (taken[o.date] || 0) + 1;
   for (const it of q) if (it.post_on && it.status === "queued" && !orders.some((o) => o.item_id === it.id)) taken[it.post_on] = (taken[it.post_on] || 0) + 1;
   const today = tzParts(cfgTz).day;
-  let d = new Date(today + "T12:00:00Z");
+  // earliest is the day after tomorrow, so the daily reel task has a run to make it
+  let d = new Date(Date.parse(today + "T12:00:00Z") + 864e5);
   for (let i = 0; i < 120; i++) {
     d = new Date(d.getTime() + 864e5);
     const k = d.toISOString().slice(0, 10);
