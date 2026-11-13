@@ -2,6 +2,7 @@ import { getAr, saveAr, arEvents, runAutoReply } from "@/lib/autoreply";
 import { getQueue, saveQueue, log, getConfig } from "@/lib/data";
 import * as ig from "@/lib/ig";
 import { setReplyToken } from "@/lib/replytoken";
+import { setRemove } from "@/lib/store";
 import { allowed, loggedIn, deny } from "@/lib/guard";
 
 export const dynamic = "force-dynamic";
@@ -51,6 +52,8 @@ export async function PUT(req: Request) {
     if (it && isUrl(link)) { it.link = String(link).trim(); n++; }
   }
   if (n) { await saveQueue(q); await log("info", `Auto-reply: links set for ${n} reel(s)`); }
+  // retry comments whose DM failed: take them out of the "done" set
+  if (Array.isArray(b.retry_comment_ids)) for (const id of b.retry_comment_ids.slice(0, 200)) await setRemove("ar_done", String(id));
   if (typeof b.reply_token === "string") {
     const r = await setReplyToken(b.reply_token.trim());
     if (r.error) return Response.json(r, { status: 400 });
