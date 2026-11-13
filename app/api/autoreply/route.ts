@@ -54,6 +54,7 @@ export async function PUT(req: Request) {
   if (n) { await saveQueue(q); await log("info", `Auto-reply: links set for ${n} reel(s)`); }
   // retry comments whose DM failed: take them out of the "done" set
   if (Array.isArray(b.retry_comment_ids)) for (const id of b.retry_comment_ids.slice(0, 200)) await setRemove("ar_done", String(id));
+  if (typeof b.webhook_token === "string" && /^[\w-]{12,80}$/.test(b.webhook_token)) { const a = await getAr(); a.webhook_token = b.webhook_token; await saveAr(a); }
   if (typeof b.reply_token === "string") {
     const r = await setReplyToken(b.reply_token.trim());
     if (r.error) return Response.json(r, { status: 400 });

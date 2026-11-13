@@ -138,3 +138,10 @@ export async function conversations(userId: string, token: string, limit = 25): 
   const b = await http(`${B(token)}/${userId}/conversations?platform=instagram&fields=${f}&limit=${limit}&${tq(token)}`);
   return b.data || [];
 }
+
+export async function mediaThumb(mediaId: string, token: string): Promise<string | undefined> {
+  try {
+    const b = await http(`${B(token)}/${mediaId}?fields=thumbnail_url,media_url&access_token=${encodeURIComponent(token)}`);
+    return b.thumbnail_url || b.media_url;
+  } catch { return undefined; }
+}

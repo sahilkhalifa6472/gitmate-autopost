@@ -72,6 +72,8 @@ export type AutoReplyConfig = {
   last_run_at?: string;
   last_error?: string;
   sent_total?: number;
+  webhook_at?: string;        // last Instagram webhook received (cron scans less while webhooks work)
+  webhook_token?: string;     // "Verify token" pasted in the Meta app Webhooks section
 };
 
 export const DEFAULT_AR: AutoReplyConfig = {
