@@ -89,11 +89,15 @@ export async function runAutoReply(opts: { force?: boolean } = {}) {
       }
     }
 
+    const counts = await get<Record<string, number>>("ar_ccount", {});
     if (ar.enabled) {
       const media = (await ig.listMedia(cfg.ig_user_id, tok, 25)).filter((m) => Date.parse(m.timestamp) >= sinceMs - 7 * 864e5 && (m.comments_count ?? 1) > 0);
       outer: for (const m of media) {
         if (!timeLeft() || sent >= budget) break;
         const { link, title } = linkFor(ar, q, m.id);
+        // save API calls (Meta's hourly app limit): skip posts whose comment count didn't change since they were fully handled
+        if (link && m.comments_count != null && counts[m.id] === m.comments_count) continue;
+        let leftover = false;
         const comments = await ig.listComments(m.id, tok, sinceMs);
         // oldest first, so the backlog is answered in order
         for (const c of comments.sort((a, b) => Date.parse(a.timestamp) - Date.parse(b.timestamp))) {
@@ -103,9 +107,10 @@ export async function runAutoReply(opts: { force?: boolean } = {}) {
           if (await setHas("ar_done", c.id)) continue;
           seen++;
           if (!link) { // nothing to send yet: leave it unanswered so it goes out once a link is set
+            leftover = true;
             continue;
           }
-          if (sent >= budget || !timeLeft()) break outer;
+          if (sent >= budget || !timeLeft()) { leftover = true; break outer; }
           let how = "text";
           try {
             let gated = false;
@@ -150,6 +155,7 @@ export async function runAutoReply(opts: { force?: boolean } = {}) {
           }
           await event({ kind: "comment", username: user, text: c.text.slice(0, 200), media_id: m.id, status: "sent", note: [how === "card" ? "sent as link card" : how === "gate" ? "asked to tap for the link" : "", note].filter(Boolean).join(" · ") });
         }
+        if (!leftover && m.comments_count != null) { counts[m.id] = m.comments_count; await set("ar_ccount", counts); }
       }
       const noLink = media.filter((m) => !linkFor(ar, q, m.id).link).length;
       if (seen > sent && noLink && (await lock("ar_warn", 3 * 3600))) await log("warn", `Auto-reply: ${noLink} recent post(s) have no link set, their "${ar.keyword}" comments wait (Inbox page → Post links)`);
