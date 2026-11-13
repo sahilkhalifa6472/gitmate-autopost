@@ -59,6 +59,7 @@ export async function PUT(req: Request) {
     if (r.error) return Response.json(r, { status: 400 });
   }
   const ar = await getAr();
+  if (Array.isArray(b.public_replies)) { ar.public_replies = b.public_replies.map((x: unknown) => String(x).trim()).filter(Boolean).slice(0, 20); await saveAr(ar); }
   if (isUrl(b.default_link)) { ar.default_link = b.default_link.trim(); await saveAr(ar); }
   return Response.json({ ok: true, updated: n });
 }
