@@ -1,5 +1,5 @@
 import { allowed, deny } from "@/lib/guard";
-import { getOrders, saveOrders, getFree, saveFree, getOrderCfg, confirmOrder, importOldRepos, OrderCfg } from "@/lib/orders";
+import { getOrders, saveOrders, getFree, saveFree, getOrderCfg, confirmOrder, importOldRepos, rejectDM, OrderCfg } from "@/lib/orders";
 import { set } from "@/lib/store";
 import { getQueue, saveQueue, log } from "@/lib/data";
 
@@ -45,7 +45,7 @@ export async function POST(req: Request) {
   if (i < 0) return Response.json({ error: "not found" }, { status: 404 });
   const o = orders[i];
   switch (b.action) {
-    case "reject": o.status = "rejected"; break;
+    case "reject": o.status = "rejected"; if (b.silent !== true) await rejectDM(o); break;
     case "reopen": o.status = o.repo && o.proof?.length ? "proof" : "asked"; break;
     case "delete": orders.splice(i, 1); break;
     case "made": {

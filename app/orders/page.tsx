@@ -20,7 +20,7 @@ function OrderCard({ o }: { o: Order }) {
       {(o.notes || []).map((n, k) => <div key={k} className="msg e">{n}</div>)}
       <div className="row" style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 10 }}>
         {(o.status === "proof" || o.status === "asked") && <Act url="/api/orders" body={{ action: "confirm", id: o.id }} label="✅ Confirm payment" cls="btn pri sm" confirm={`Confirm payment from @${o.user || o.igsid}? They get the next free date by DM.`} />}
-        {(o.status === "proof" || o.status === "asked") && <Act url="/api/orders" body={{ action: "reject", id: o.id }} label="Reject" />}
+        {(o.status === "proof" || o.status === "asked") && <Act url="/api/orders" body={{ action: "reject", id: o.id }} label="Reject" confirm={`Reject @${o.user || o.igsid}? They get a polite "sorry, we couldn't verify / can't feature this" DM.`} />}
         {o.status === "rejected" && <Act url="/api/orders" body={{ action: "reopen", id: o.id }} label="Reopen" />}
         {o.status !== "made" && o.status !== "confirmed" && <Act url="/api/orders" body={{ action: "delete", id: o.id }} label="Delete" confirm="Delete this order?" />}
       </div>
