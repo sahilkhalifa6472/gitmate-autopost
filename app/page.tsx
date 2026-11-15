@@ -6,7 +6,7 @@ import Thumb from "@/components/Thumb";
 import { getConfig, getQueue, getPlans } from "@/lib/data";
 import { getLogs, storeKind } from "@/lib/store";
 import { windowScores } from "@/lib/engine";
-import { tzParts, tzToUtc, fmtIn, hhmm } from "@/lib/time";
+import { tzParts, tzToUtc, t12, d12 } from "@/lib/time";
 
 export const dynamic = "force-dynamic";
 const IST = "Asia/Kolkata";
@@ -40,7 +40,7 @@ export default async function Dashboard() {
           {cfg.username ? <span className="pill"><span className="dot on" />@{cfg.username} connected</span> : <span className="pill err">Instagram not connected · <Link href="/settings">Settings</Link></span>}
           {cfg.paused && <span className="pill err">Paused</span>}
           <span className="pill">{cfg.posts_per_day}/day · {cfg.timezone}</span>
-          <span className="pill">Now {hhmm(min)} NY · {fmtIn(IST, Date.now()).split(", ")[1]} IST</span>
+          <span className="pill">Now {t12(cfg.timezone, Date.now())} NY · {t12(IST, Date.now())} IST</span>
         </div>
         {storeKind === "file" && <div className="warnbox">No Upstash Redis connected. Data is only kept locally. Add Upstash Redis in Vercel → Storage.</div>}
 
@@ -55,7 +55,7 @@ export default async function Dashboard() {
                 ) : nextReel?.force ? (
                   <><div className="big">Next run</div><div className="ttl">#{nextReel.id} {nextReel.title}</div><div className="msg">"Post now" requested. It starts within 5 minutes.</div></>
                 ) : next && nextMs ? (
-                  <><div className="big mono">{hhmm(next.min)}</div><div className="ttl">{nextReel ? `#${nextReel.id} ${nextReel.title}` : "Queue is empty"}</div><div className="msg">New York time · {fmtIn(IST, nextMs)} IST</div></>
+                  <><div className="big mono">{t12(cfg.timezone, nextMs)} <small style={{ fontSize: "0.45em" }}>NY</small></div><div className="big mono" style={{ fontSize: "1.4em" }}>{t12(IST, nextMs)} <small style={{ fontSize: "0.6em" }}>IST</small></div><div className="ttl">{nextReel ? `#${nextReel.id} ${nextReel.title}` : "Queue is empty"}</div><div className="msg">{d12(cfg.timezone, nextMs)} New York · {d12(IST, nextMs)} India</div></>
                 ) : (
                   <><div className="ttl" style={{ marginTop: 6 }}>{nextReel ? `#${nextReel.id} ${nextReel.title}` : "Queue is empty"}</div><div className="msg">No more posts planned today. Tomorrow's random time is picked after midnight New York time.</div></>
                 )}
@@ -68,7 +68,7 @@ export default async function Dashboard() {
             <div className="plan">
               {today.length ? today.map((t, i) => (
                 <div className="slot" key={i}>
-                  <span className="mono">{hhmm(t.min)} <span style={{ color: "var(--mut)" }}>NY · {fmtIn(IST, tzToUtc(cfg.timezone, day, t.min)).split(", ")[1]} IST</span></span>
+                  <span className="mono">{t12(cfg.timezone, tzToUtc(cfg.timezone, day, t.min))} NY <span style={{ color: "var(--mut)" }}>· {d12(IST, tzToUtc(cfg.timezone, day, t.min))} IST</span></span>
                   <span className="pill">{t.id ? `#${t.id}` : t.skipped ? (t.note || "skipped") : t.min <= min ? "due" : "planned"}</span>
                 </div>
               )) : <div className="empty">Plan is made on the next run.</div>}
@@ -93,7 +93,7 @@ export default async function Dashboard() {
                   <div className="body">
                     <div className="hd"><span className="id">#{i.id}</span><span className="pill">posted</span></div>
                     <div className="ttl">{i.permalink ? <a href={i.permalink} target="_blank" style={{ textDecoration: "none" }}>{i.title}</a> : i.title}</div>
-                    <div className="meta">{fmtIn(cfg.timezone, Date.parse(i.posted_at!))} NY</div>
+                    <div className="meta">{d12(cfg.timezone, Date.parse(i.posted_at!))} NY · {t12(IST, Date.parse(i.posted_at!))} IST</div>
                     <div className="metrics">
                       {([["views", i.latest?.views], ["reach", i.latest?.reach], ["likes", i.latest?.likes], ["shares", i.latest?.shares], ["saves", i.latest?.saved]] as [string, number | undefined][]).map(([k, v]) => <div key={k}><b>{n(v)}</b><span>{k}</span></div>)}
                     </div>
@@ -121,7 +121,7 @@ export default async function Dashboard() {
           <div className="card">
             <h2>Latest activity <small><Link href="/logs">all logs →</Link></small></h2>
             {logs.length ? logs.map((l: any, k: number) => (
-              <div className="log" key={k}><span className={`lv ${l.level}`}>{l.level}</span><span className="m">{l.msg}</span><time>{fmtIn(IST, Date.parse(l.at))} IST</time></div>
+              <div className="log" key={k}><span className={`lv ${l.level}`}>{l.level}</span><span className="m">{l.msg}</span><time>{d12(IST, Date.parse(l.at))} IST</time></div>
             )) : <div className="empty">No activity yet.</div>}
           </div>
         </div>

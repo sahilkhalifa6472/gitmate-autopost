@@ -53,7 +53,7 @@ export function makePlan(cfg: Config, q: Item[], nowMin: number, count: number):
 }
 
 // a reel with a fixed date (post_on) goes first on its day, waits before it, and is posted asap if its day was missed
-const nextItem = (q: Item[], day: string) => {
+export const nextItem = (q: Item[], day: string) => {
   const ok = (it: Item) => it.status === "queued" && (it.tries || 0) < MAX_TRIES;
   return q.find((it) => it.status === "queued" && it.force)
     || q.find((it) => ok(it) && it.post_on === day)

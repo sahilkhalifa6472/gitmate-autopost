@@ -20,3 +20,8 @@ export function tzToUtc(tz: string, day: string, min: number) {
 export function fmtIn(tz: string, ms: number) {
   return new Intl.DateTimeFormat("en-GB", { timeZone: tz, day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).format(new Date(ms));
 }
+
+// 12-hour clock, e.g. "9:26 PM" / "16 Nov, 9:26 PM"
+export const IST_TZ = "Asia/Kolkata";
+export const t12 = (tz: string, ms: number) => new Intl.DateTimeFormat("en-US", { timeZone: tz, hour: "numeric", minute: "2-digit", hour12: true }).format(new Date(ms));
+export const d12 = (tz: string, ms: number) => `${new Intl.DateTimeFormat("en-GB", { timeZone: tz, day: "numeric", month: "short" }).format(new Date(ms))}, ${t12(tz, ms)}`;
