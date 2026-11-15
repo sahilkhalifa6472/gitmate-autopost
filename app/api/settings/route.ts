@@ -1,12 +1,12 @@
 import * as ig from "@/lib/ig";
 import { getConfig, saveConfig, log } from "@/lib/data";
-import { loggedIn, deny } from "@/lib/guard";
+import { allowed, deny } from "@/lib/guard";
 import { setReplyToken } from "@/lib/replytoken";
 
 export const dynamic = "force-dynamic";
 
 export async function POST(req: Request) {
-  if (!(await loggedIn())) return deny();
+  if (!(await allowed(req))) return deny();
   const b = await req.json().catch(() => ({}));
   const cfg = await getConfig();
 
