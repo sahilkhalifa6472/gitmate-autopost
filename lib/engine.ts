@@ -202,6 +202,15 @@ export async function tick(opts: { source?: string } = {}) {
       const doneToday = q.filter((it) => it.posted_at && tzParts(cfg.timezone, Date.parse(it.posted_at)).day === day).length;
       const count = Math.max(0, cfg.posts_per_day - doneToday);
       plans[day] = makePlan(cfg, q, min, count);
+      // a reel booked for today (paid, post_on) must go out early in the day (7am-12pm New York = evening IST),
+      // so it's live on the booked date for the buyer too, wherever they are
+      const p0 = plans[day][0];
+      if (p0 && p0.min > 12 * 60 && min < 12 * 60 - 10 && q.some((it) => it.status === "queued" && it.post_on && it.post_on <= day)) {
+        const lo = Math.max(7 * 60, min + 5), early = lo + Math.floor(Math.random() * Math.max(1, 12 * 60 - lo));
+        const w = cfg.windows.findIndex(([a, b]) => early >= a * 60 && early < b * 60);
+        plans[day][0] = { window: w < 0 ? 0 : w, min: early };
+        plans[day].sort((a, b) => a.min - b.min);
+      }
       await savePlans(plans);
       await log("info", `Plan for ${day}: ${plans[day].map((t) => hhmm(t.min)).join(", ") || "nothing left today"} (${cfg.timezone})`);
     }
