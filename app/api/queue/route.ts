@@ -8,6 +8,10 @@ export const dynamic = "force-dynamic";
 export async function GET(req: Request) {
   if (!(await allowed(req))) return deny();
   const q = await getQueue();
+  if (new URL(req.url).searchParams.get("debug")) {
+    const { getPlans } = await import("@/lib/data"); const { getLogs } = await import("@/lib/store");
+    return Response.json({ plans: await getPlans(), logs: (await getLogs(300)).filter((l: any) => !/^(Orders|Auto-reply|Webhook)/.test(l.msg || "")).slice(0, 80) });
+  }
   return Response.json({ count: q.length, max_id: Math.max(0, ...q.map((i) => i.id)), items: q.map(({ pending, ...i }) => i) });
 }
 
