@@ -2,13 +2,16 @@ import Nav from "@/components/Nav";
 import Act from "@/components/Act";
 import UploadForm from "@/components/UploadForm";
 import Thumb from "@/components/Thumb";
-import { getConfig, getQueue } from "@/lib/data";
-import { fmtIn } from "@/lib/time";
+import { getConfig, getQueue, getPlans } from "@/lib/data";
+import { d12, IST_TZ } from "@/lib/time";
+import { estimate } from "@/lib/estimate";
 
 export const dynamic = "force-dynamic";
 
 export default async function QueuePage() {
-  const [cfg, q] = await Promise.all([getConfig(), getQueue()]);
+  const [cfg, q, plans] = await Promise.all([getConfig(), getQueue(), getPlans()]);
+  const eta = estimate(cfg, q, plans);
+  const dayName = (d: string) => new Date(d + "T12:00:00Z").toLocaleDateString("en-GB", { day: "numeric", month: "short" });
   const order = { posting: 0, queued: 1, failed: 2, skipped: 3, posted: 4 } as const;
   const rows = [...q].sort((a, b) => order[a.status] - order[b.status] || (a.status === "posted" ? Date.parse(b.posted_at!) - Date.parse(a.posted_at!) : 0));
   const GROUPS: [string, (i: (typeof rows)[number]) => boolean][] = [["Posting now", (i) => i.status === "posting"], ["Up next", (i) => i.status === "queued"], ["Failed", (i) => i.status === "failed"], ["Skipped", (i) => i.status === "skipped"], ["Posted", (i) => i.status === "posted"]];
@@ -37,7 +40,10 @@ export default async function QueuePage() {
                       <div className="ttl">{i.title}</div>
                       <div className="meta">
                         cover {(i.cover_offset_ms / 1000).toFixed(1)}s{i.duration_sec ? ` · ${Math.round(i.duration_sec)}s` : ""}{!i.blob_deleted && <> · <a href={i.video_url} target="_blank">video</a></>}{i.permalink ? <> · <a href={i.permalink} target="_blank">on Instagram</a></> : null}
-                        {i.posted_at && <><br />posted {fmtIn(cfg.timezone, Date.parse(i.posted_at))} NY</>}
+                        {i.posted_at && <><br />posted {d12(cfg.timezone, Date.parse(i.posted_at))} NY · {d12(IST_TZ, Date.parse(i.posted_at))} IST</>}
+                        {i.status === "queued" && eta[i.id] && <><br />⏰ {eta[i.id].ms
+                          ? <b>{d12(cfg.timezone, eta[i.id].ms!)} NY · {d12(IST_TZ, eta[i.id].ms!)} IST</b>
+                          : <>~{dayName(eta[i.id].day)} NY{i.post_on ? " (7 AM–12 PM NY · 5:30–10:30 PM IST)" : " · time is picked that day"}</>}</>}
                       </div>
                       {i.error && i.status !== "posted" && <div className="msg e">{i.error.slice(0, 160)}</div>}
                       <div className="acts">
