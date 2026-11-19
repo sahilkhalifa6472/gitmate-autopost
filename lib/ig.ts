@@ -158,3 +158,10 @@ export async function mediaThumb(mediaId: string, token: string): Promise<string
     return b.thumbnail_url || b.media_url;
   } catch { return undefined; }
 }
+
+// Latest messages of the DM thread with one person (newest first), for the AI sales replies
+export async function convoWith(userId: string, token: string, igsid: string, n = 20): Promise<IgMsg[]> {
+  const f = encodeURIComponent(`messages.limit(${n}){id,message,created_time,from}`);
+  const b = await http(`${B(token)}/${userId}/conversations?platform=instagram&user_id=${igsid}&fields=${f}&${tq(token)}`);
+  return b.data?.[0]?.messages?.data || [];
+}

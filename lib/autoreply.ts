@@ -4,6 +4,7 @@
 // 2) someone sends the keyword in a DM -> reply with the latest links (only inside Instagram's 24h window)
 import * as ig from "./ig";
 import { handleOrderDM } from "./orders";
+import { noteInbound, salesReply } from "./salesai";
 import { get, set, setAdd, setHas, setRemove, pushList, getList, lock, unlock } from "./store";
 import { getConfig, getQueue, log } from "./data";
 import { ArEvent, AutoReplyConfig, DEFAULT_AR, Item } from "./types";
@@ -156,13 +157,15 @@ export async function handleWebhook(body: any) {
         const text = String(msg?.text || pb?.title || "");
         const payload = String(msg?.quick_reply?.payload || pb?.payload || "");
         const images = (msg?.attachments || []).filter((a: any) => a?.type === "image" && a?.payload?.url).map((a: any) => String(a.payload.url));
+        if (msg?.mid) await noteInbound(String(ev.sender.id)).catch(() => {});
         if ((!payload || payload.startsWith("GM_PAY_")) && (msg?.mid || pb?.mid)) {
           try { if (await handleOrderDM({ igsid: String(ev.sender.id), mid: String(msg?.mid || pb?.mid), text, images, payload })) continue; }
           catch (e: any) { await log("error", `Orders: ${e.message}`); }
         }
-        if (!pending[ev.sender.id] || !(/^GM_/.test(payload) || GATE_RE.test(text))) continue;
         const mid = String(msg?.mid || pb?.mid || `${ev.sender.id}:${ev.timestamp}`);
-        if (await handleGateDM(ctx, { mid, fromId: String(ev.sender.id), text, payload })) sent++;
+        if (pending[ev.sender.id] && (/^GM_/.test(payload) || GATE_RE.test(text))) { if (await handleGateDM(ctx, { mid, fromId: String(ev.sender.id), text, payload })) sent++; continue; }
+        // anything else (questions, "yes", "how much?"...): the AI salesman answers, if it's on
+        if (msg?.mid && !payload && text) await salesReply({ igsid: String(ev.sender.id), mid, text });
       }
     }
     return { ok: true, sent };
