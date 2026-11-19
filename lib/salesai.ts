@@ -33,7 +33,8 @@ export const saveNeeds = (n: Record<string, Need>) => set("sales_needs", n);
 export const getSalesLog = (n = 40) => getList("sales_log", n) as Promise<SalesLog[]>;
 const getSeen = () => get<Record<string, Seen>>("sales_seen", {});
 
-const MODEL = process.env.GEMINI_MODEL || "gemini-2.5-flash";
+// tried in order: Google often answers "high demand" (503) on one model while another is free
+const MODELS = [...(process.env.GEMINI_MODEL ? [process.env.GEMINI_MODEL] : []), "gemini-3.8-flash", "gemini-3.5-flash", "gemini-flash-latest", "gemini-3.1-flash-lite"];
 const MAX_AI_PER_DAY = 12; // per person, so a chatty or looping chat can't run up the bill
 
 type Out = { reply: string; pay_buttons: boolean; needs_owner: boolean; owner_note: string };
@@ -85,17 +86,27 @@ async function draft(igsid: string, latest: string, mode: "reply" | "followup") 
   const task = mode === "reply"
     ? "Write our next reply to their latest message."
     : "They went quiet after showing interest. Write ONE short, friendly follow-up nudge (no pressure) that moves them to the next step. If the chat shows they declined or it's not a sales chat, return an empty reply.";
-  const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`, {
-    method: "POST", cache: "no-store", signal: AbortSignal.timeout(40_000),
-    headers: { "content-type": "application/json", "x-goog-api-key": await getKey() },
-    body: JSON.stringify({
-      systemInstruction: { parts: [{ text: SYSTEM(oc, s) }] },
-      contents: [{ role: "user", parts: [{ text: `Instagram user: @${o?.user || "unknown"}\n${orderLine(o)}\n\nChat so far (oldest first):\n${chat.join("\n") || "(empty)"}\n\n${task}` }] }],
-      generationConfig: { temperature: 0.6, maxOutputTokens: 2000, responseMimeType: "application/json", responseSchema: SCHEMA },
-    }),
+  const key = await getKey(); const t0 = Date.now();
+  const body = JSON.stringify({
+    systemInstruction: { parts: [{ text: SYSTEM(oc, s) }] },
+    contents: [{ role: "user", parts: [{ text: `Instagram user: @${o?.user || "unknown"}\n${orderLine(o)}\n\nChat so far (oldest first):\n${chat.join("\n") || "(empty)"}\n\n${task}` }] }],
+    generationConfig: { temperature: 0.6, maxOutputTokens: 2000, responseMimeType: "application/json", responseSchema: SCHEMA },
   });
-  const j = await r.json().catch(() => ({}));
-  if (!r.ok) throw new Error(`Gemini ${r.status}: ${JSON.stringify(j?.error?.message || j).slice(0, 160)}`);
+  let j: any = null; let err = "";
+  for (const model of MODELS) {
+    const left = 50_000 - (Date.now() - t0); if (left < 5_000) break; // stay inside the webhook's 60s
+    try {
+      const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
+        method: "POST", cache: "no-store", signal: AbortSignal.timeout(Math.min(20_000, left)),
+        headers: { "content-type": "application/json", "x-goog-api-key": key }, body,
+      });
+      const b = await r.json().catch(() => ({}));
+      if (r.ok && b?.candidates?.[0]?.content) { j = b; break; }
+      err = `${model} ${r.status}: ${String(b?.error?.message || "empty answer").slice(0, 120)}`;
+      if (r.status === 400 || r.status === 401 || r.status === 403) break; // bad key / request: other models won't help
+    } catch (e: any) { err = `${model}: ${e.message.slice(0, 120)}`; }
+  }
+  if (!j) throw new Error(`Gemini: ${err}`);
   try {
     const o2 = JSON.parse(j?.candidates?.[0]?.content?.parts?.map((p: any) => p.text || "").join("") || "") as Out;
     return { reply: String(o2.reply || ""), pay_buttons: !!o2.pay_buttons, needs_owner: !!o2.needs_owner, owner_note: String(o2.owner_note || "") };
