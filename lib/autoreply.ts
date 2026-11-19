@@ -157,7 +157,7 @@ export async function handleWebhook(body: any) {
         const text = String(msg?.text || pb?.title || "");
         const payload = String(msg?.quick_reply?.payload || pb?.payload || "");
         const images = (msg?.attachments || []).filter((a: any) => a?.type === "image" && a?.payload?.url).map((a: any) => String(a.payload.url));
-        if (msg?.mid) await noteInbound(String(ev.sender.id)).catch(() => {});
+        if (msg?.mid) await noteInbound(String(ev.sender.id), String(msg.mid)).catch(() => {});
         if ((!payload || payload.startsWith("GM_PAY_")) && (msg?.mid || pb?.mid)) {
           try {
             const r = await handleOrderDM({ igsid: String(ev.sender.id), mid: String(msg?.mid || pb?.mid), text, images, payload });
