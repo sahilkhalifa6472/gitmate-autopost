@@ -34,7 +34,7 @@ export const getSalesLog = (n = 40) => getList("sales_log", n) as Promise<SalesL
 const getSeen = () => get<Record<string, Seen>>("sales_seen", {});
 
 // tried in order: Google often answers "high demand" (503) on one model while another is free
-const MODELS = [...(process.env.GEMINI_MODEL ? [process.env.GEMINI_MODEL] : []), "gemini-3.8-flash", "gemini-flash-latest", "gemini-3.1-flash-lite", "gemini-3.5-flash"];
+const MODELS = [...(process.env.GEMINI_MODEL ? [process.env.GEMINI_MODEL] : []), "gemini-3.5-flash-lite", "gemini-flash-lite-latest", "gemini-3.1-flash-lite", "gemini-3.8-flash"];
 const MAX_AI_PER_DAY = 12; // per person, so a chatty or looping chat can't run up the bill
 
 type Out = { reply: string; pay_buttons: boolean; needs_owner: boolean; owner_note: string };
@@ -118,7 +118,7 @@ async function draft(igsid: string, latest: string, mode: "reply" | "followup") 
     const left = 50_000 - (Date.now() - t0); if (left < 5_000) break; // stay inside the webhook's 60s
     try {
       const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
-        method: "POST", cache: "no-store", signal: AbortSignal.timeout(Math.min(12_000, left)),
+        method: "POST", cache: "no-store", signal: AbortSignal.timeout(Math.min(10_000, left)),
         headers: { "content-type": "application/json", "x-goog-api-key": key }, body,
       });
       const b = await r.json().catch(() => ({}));
