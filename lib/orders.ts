@@ -152,10 +152,20 @@ export async function handleOrderDM(m: { igsid: string; mid: string; text: strin
         ? "Got it, thank you! ✅ Our team is checking your PayPal payment now and will message you here with your reel date soon 🚀"
         : "Got it, thank you! ✅ Our team is checking your payment now and will message you here with your reel date soon 🚀");
     await log("info", `Orders: new paid order to confirm (${o.repo})`);
+  } else if (o.status === "asked" && had === "asked" && o.created_at !== now && repo && !m.images.length && !tx && (await aiWillAnswer(t))) {
+    return "ai"; // link + a question ("review it and share feedback"): the AI answers both instead of the fixed nudge
   } else if (o.status === "asked" && had === "asked" && o.created_at !== now && (repo || m.images.length || tx)) {
     await say(!o.repo ? "Thanks! 🙌 Now send your GitHub repo (or project) link here." : "Thanks! 🙌 Now send the payment screenshot (or the Solana tx link) here.");
   }
   return true;
+}
+
+// a link sent with real words next to it, and the AI salesman is on
+async function aiWillAnswer(t: string) {
+  const words = t.replace(/https?:\/\/\S+/g, " ").trim().split(/\s+/).filter((w) => /[a-z\u0900-\u097f]{2,}/i.test(w));
+  if (words.length < 3) return false;
+  const s = await get<{ enabled?: boolean }>("sales_ai", {});
+  return !!s.enabled && !!(process.env.GEMINI_API_KEY || (await get<string>("sales_key", "")));
 }
 
 // PayPal / Crypto button: send only that payment's details (address in its own message so it's easy to copy)

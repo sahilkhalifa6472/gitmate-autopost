@@ -159,7 +159,11 @@ export async function handleWebhook(body: any) {
         const images = (msg?.attachments || []).filter((a: any) => a?.type === "image" && a?.payload?.url).map((a: any) => String(a.payload.url));
         if (msg?.mid) await noteInbound(String(ev.sender.id)).catch(() => {});
         if ((!payload || payload.startsWith("GM_PAY_")) && (msg?.mid || pb?.mid)) {
-          try { if (await handleOrderDM({ igsid: String(ev.sender.id), mid: String(msg?.mid || pb?.mid), text, images, payload })) continue; }
+          try {
+            const r = await handleOrderDM({ igsid: String(ev.sender.id), mid: String(msg?.mid || pb?.mid), text, images, payload });
+            if (r === "ai") await salesReply({ igsid: String(ev.sender.id), mid: String(msg?.mid), text });
+            if (r) continue;
+          }
           catch (e: any) { await log("error", `Orders: ${e.message}`); }
         }
         const mid = String(msg?.mid || pb?.mid || `${ev.sender.id}:${ev.timestamp}`);

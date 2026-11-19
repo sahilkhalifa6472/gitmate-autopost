@@ -68,8 +68,28 @@ RULES
 - Reply in the language they use (English, Hinglish, Hindi...). Keep it short: 1 to 3 short sentences like a real DM, at most one emoji or two. No markdown, no bullet lists unless they ask how it works.
 - Move them one step forward each time (ask for the link, point to the pay buttons, or answer the doubt then ask for the link). Don't repeat the full offer if they already got it.
 - If they say no or not now, be kind, don't push.
-- Messages from "US" in the chat include automatic messages (offer, payment details); treat them as already sent.
+- Messages from "US" in the chat include automatic messages (offer, payment details); treat them as already sent. Never repeat what an automatic message just said.
+- Speak as "we" / the git.mate team. Never claim to be a specific person or role (not "the designer", not "the founder").
+- FEEDBACK / REVIEW requests on their project: if THEIR PROJECT info is given below, give a genuine quick first look in 2-3 short points: one specific thing that's strong, and one or two concrete tips that would help it get noticed (clear one-line README intro, demo GIF/video at the top, live demo link, install in one command...). Be honest and specific to their repo, never generic praise. Say it's a quick first look, not a full code audit. Then, in one line, connect it to the feature (e.g. the reel will show off exactly that strength). If no project info is available, ask for the link first.
 ${s.notes ? `\nOWNER NOTES (follow these):\n${s.notes}` : ""}`;
+
+// Their GitHub repo (description, stars, README start) so the AI can give real feedback; cached a day
+async function repoInfo(url?: string) {
+  const m = /github\.com\/([\w.-]+)\/([\w.-]+)/i.exec(url || ""); if (!m) return "";
+  const key = `sales_repo:${m[1]}/${m[2]}`.toLowerCase();
+  const hit = await get<{ at: number; text: string } | null>(key, null);
+  if (hit && Date.now() - hit.at < 864e5) return hit.text;
+  try {
+    const h = { "user-agent": "gitmate-dashboard", accept: "application/vnd.github+json" };
+    const r = await fetch(`https://api.github.com/repos/${m[1]}/${m[2]}`, { headers: h, cache: "no-store", signal: AbortSignal.timeout(8000) });
+    if (!r.ok) return "";
+    const g = await r.json();
+    const rd = await fetch(`https://api.github.com/repos/${m[1]}/${m[2]}/readme`, { headers: { ...h, accept: "application/vnd.github.raw" }, cache: "no-store", signal: AbortSignal.timeout(8000) }).then((x) => (x.ok ? x.text() : "")).catch(() => "");
+    const text = `${g.full_name}: ${g.description || "(no description)"} · ${g.stargazers_count} stars · ${g.forks_count} forks · language ${g.language || "?"} · topics ${(g.topics || []).join(", ") || "none"} · homepage ${g.homepage || "none"} · last push ${String(g.pushed_at || "").slice(0, 10)}\nREADME (start):\n${rd.replace(/<[^>]+>/g, " ").replace(/\n{3,}/g, "\n\n").slice(0, 3000)}`;
+    await set(key, { at: Date.now(), text });
+    return text;
+  } catch { return ""; }
+}
 
 const orderLine = (o?: Order) => !o ? "No order yet."
   : `Order status: ${o.status}${o.repo ? `, repo/link sent: ${o.repo}` : ", no repo link yet"}${o.proof?.length ? `, payment proof sent (${o.proof.length})` : ", no payment proof yet"}${o.date ? `, booked for ${o.date}` : ""}${o.notes?.length ? `, notes: ${o.notes.join("; ")}` : ""}.`;
@@ -83,13 +103,14 @@ async function draft(igsid: string, latest: string, mode: "reply" | "followup") 
   try { msgs = await ig.convoWith(cfg.ig_user_id!, tok, igsid, 20); } catch (e: any) { await log("warn", `Sales AI: could not read chat: ${e.message.slice(0, 120)}`); }
   const chat = msgs.slice().reverse().map((m) => `${m.from?.id === igsid ? "THEM" : "US"}: ${(m.message || "[photo/attachment]").slice(0, 600)}`);
   if (mode === "reply" && latest && !chat.some((l) => l.startsWith("THEM: " + latest.slice(0, 40)))) chat.push(`THEM: ${latest.slice(0, 600)}`);
+  const proj = await repoInfo(o?.repo);
   const task = mode === "reply"
     ? "Write our next reply to their latest message."
     : "They went quiet after showing interest. Write ONE short, friendly follow-up nudge (no pressure) that moves them to the next step. If the chat shows they declined or it's not a sales chat, return an empty reply.";
   const key = await getKey(); const t0 = Date.now();
   const body = JSON.stringify({
     systemInstruction: { parts: [{ text: SYSTEM(oc, s) }] },
-    contents: [{ role: "user", parts: [{ text: `Instagram user: @${o?.user || "unknown"}\n${orderLine(o)}\n\nChat so far (oldest first):\n${chat.join("\n") || "(empty)"}\n\n${task}` }] }],
+    contents: [{ role: "user", parts: [{ text: `Instagram user: @${o?.user || "unknown"}\n${orderLine(o)}\n\n${proj ? `\nTHEIR PROJECT (from GitHub):\n${proj}\n` : ""}\nChat so far (oldest first):\n${chat.join("\n") || "(empty)"}\n\n${task}` }] }],
     generationConfig: { temperature: 0.6, maxOutputTokens: 2000, responseMimeType: "application/json", responseSchema: SCHEMA },
   });
   let j: any = null; let err = "";
@@ -134,11 +155,15 @@ export async function salesReply(m: { igsid: string; mid: string; text: string }
   const s = await getSales();
   if (!s.enabled || (await getPaused()).includes(m.igsid)) return false;
   if (!(await lock("sai:" + m.mid, 3600))) return true;
+  const started = Date.now();
   const seen = await getSeen(); const day = new Date().toISOString().slice(0, 10);
   const me = seen[m.igsid] || { at: new Date().toISOString() };
   if (me.day === day && (me.n || 0) >= MAX_AI_PER_DAY) return false;
   try {
     const out = await draft(m.igsid, m.text, "reply");
+    // they wrote again while we were thinking (e.g. "hi" then "FEATURE"): that newer message gets the answer, drop this one
+    const now = (await getSeen())[m.igsid];
+    if (now && Date.parse(now.at) > started) { await log("info", `Sales AI: skipped a reply to @${m.igsid}, they sent a newer message`); return true; }
     const cfg = await getConfig(); const user = (await ig.userName(m.igsid, ig.replyTokenFor(cfg))) || undefined;
     if (out.reply.trim()) await send(m.igsid, out.reply.trim(), out.pay_buttons);
     if (out.needs_owner) { const n = await getNeeds(); n[m.igsid] = { igsid: m.igsid, user, said: m.text.slice(0, 300), why: out.owner_note || "needs you", at: new Date().toISOString() }; await saveNeeds(n); }
