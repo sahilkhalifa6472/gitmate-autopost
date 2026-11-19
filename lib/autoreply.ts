@@ -35,7 +35,21 @@ function isFatal(msg: string) {
 // link for a post: manual override > queue item link > default
 export function linkFor(ar: AutoReplyConfig, q: Item[], mediaId: string) {
   const it = q.find((i) => i.media_id === mediaId);
+  // weekly carousel: no single link, the DM is one GitHub card per repo (never a dashboard page)
+  if (!ar.links[mediaId] && it?.kind === "carousel" && it.links?.length) return { link: WEEK + it.id, title: `the ${it.links.length} repos: ${it.title}` };
   return { link: ar.links[mediaId] || it?.link || ar.default_link || "", title: it?.title || "" };
+}
+
+const WEEK = "week:";
+// the GitHub cards for a carousel's link marker ("week:<id>"), or null for a normal link
+function weekCards(q: Item[], link: string): ig.CardEl[] | null {
+  if (!link.startsWith(WEEK)) return null;
+  const it = q.find((i) => i.id === Number(link.slice(WEEK.length)));
+  const imgs = it && !it.blob_deleted ? it.images || [] : [];
+  return (it?.links || []).slice(0, 10).map((l, k) => ({
+    title: l.title, subtitle: l.url.replace(/^https?:\/\/(www\.)?/, ""), image_url: imgs[k + 1], url: l.url,
+    button: /github\.com/.test(l.url) ? "Open on GitHub" : "Open link",
+  }));
 }
 
 type Pending = { link: string; title: string; thumb?: string; user: string; at: number };
@@ -53,11 +67,13 @@ async function handleGateDM(ctx: Ctx, m: { mid: string; fromId: string; username
   const said = (m.text || m.payload).slice(0, 200);
   try {
     if (await ig.followsUs(m.fromId, tok)) {
-      await ig.sendCard(cfg.ig_user_id, tok, m.fromId, {
+      const cards = weekCards(ctx.q, pend.link);
+      if (cards) await ig.sendCards(cfg.ig_user_id, tok, m.fromId, cards);
+      else await ig.sendCard(cfg.ig_user_id, tok, m.fromId, {
         title: `${(pend.title.split(":")[0] || "Your repo").trim()} 🔥`,
         subtitle: "Here's the repo from our reel. Thanks for following! 🙌",
         image_url: pend.thumb,
-        buttons: [{ title: /github\.com/.test(pend.link) ? "Open on GitHub" : "Open the repos", url: pend.link }, { title: "More repos 🔥", url: `https://www.instagram.com/${cfg.username || "git.mate"}/` }],
+        buttons: [{ title: "Open on GitHub", url: pend.link }, { title: "More repos 🔥", url: `https://www.instagram.com/${cfg.username || "git.mate"}/` }],
       });
       const fresh = await get<Record<string, Pending>>("ar_pending", {});
       delete fresh[m.fromId]; delete pending[m.fromId]; await set("ar_pending", fresh);
@@ -94,7 +110,9 @@ async function handleComment(ctx: Ctx, c: ig.IgComment, m: { id: string; thumbna
         if (isFatal(e.message)) throw e; // otherwise fall back to sending the link card straight away
       }
     }
-    if (!gated) try {
+    const cards = gated ? null : weekCards(ctx.q, link);
+    if (cards) { how = "card"; await ig.privateReplyCards(cfg.ig_user_id, tok, c.id, cards); }
+    else if (!gated) try {
       if (await get<boolean>("ar_card_mode", false)) throw new Error("2534122 card mode");
       await ig.privateReply(cfg.ig_user_id, tok, c.id, fill(ar.dm_text, { username: user ? "@" + user : "there", link, title }));
     } catch (e: any) {
@@ -105,7 +123,7 @@ async function handleComment(ctx: Ctx, c: ig.IgComment, m: { id: string; thumbna
       await ig.privateReplyCard(cfg.ig_user_id, tok, c.id, {
         title: `Hey ${user ? "@" + user : "there"}! Here's your link 🔗`,
         subtitle: (title.split(":")[0] || "From @git.mate") + " · follow @git.mate for 1 repo a day",
-        url: link, button: /github\.com/.test(link) ? "Open on GitHub" : "Open the repos",
+        url: link, button: "Open on GitHub",
       });
     }
   } catch (e: any) {
@@ -250,7 +268,7 @@ export async function runAutoReply(opts: { force?: boolean } = {}) {
     }
 
     if (ar.dm_enabled && timeLeft() && sent < budget) {
-      const posted = q.filter((i) => i.status === "posted" && i.link).sort((a, b) => Date.parse(b.posted_at || "") - Date.parse(a.posted_at || "")).slice(0, 3);
+      const posted = q.filter((i) => i.status === "posted" && i.kind !== "carousel" && i.link).sort((a, b) => Date.parse(b.posted_at || "") - Date.parse(a.posted_at || "")).slice(0, 3);
       const links = posted.map((i) => `• ${i.title.split(":")[0]}: ${i.link}`).join("\n") || ar.default_link;
       for (const cv of await ig.conversations(cfg.ig_user_id, tok, 25)) {
         if (sent >= budget || !timeLeft()) break;

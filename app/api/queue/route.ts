@@ -68,8 +68,7 @@ async function addCarousel(req: Request, b: any) {
     video_url: images[0], images, links,
     cover_offset_ms: 0,
     slug: b.slug ? String(b.slug) : undefined,
-    // people who comment the keyword get a card to the public page that lists every repo of the week
-    link: links.length ? `${new URL(req.url).origin}/week/${id}` : undefined,
+    // no single link: people who comment the keyword get one GitHub card per repo (see lib/autoreply weekCards)
     post_on: b.post_on,
     post_min: Number.isFinite(pm) && pm >= 0 && pm < 1440 ? Math.round(pm) : undefined,
     added_at: new Date().toISOString(),
@@ -78,7 +77,7 @@ async function addCarousel(req: Request, b: any) {
   q.push(item);
   await saveQueue(q);
   await log("info", `Added carousel #${item.id} "${item.title}" (${images.length} slides, ${item.post_on})`, item.id);
-  return Response.json({ ok: true, id: item.id, link: item.link });
+  return Response.json({ ok: true, id: item.id });
 }
 
 // Dashboard actions: { id, action: skip | unskip | retry | up | down | post_now | delete | edit, ...fields }

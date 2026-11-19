@@ -28,7 +28,7 @@ export type Item = {
   kind?: "reel" | "carousel";
   images?: string[];          // 2-10 public JPEG urls, in slide order
   post_min?: number;          // carousel: minute of post_on day (audience timezone) to post at
-  links?: { title: string; url: string }[]; // carousel: repos shown on the public /week/<id> page
+  links?: { title: string; url: string }[]; // carousel: repos sent as GitHub DM cards to keyword commenters
 };
 
 export const isCarousel = (it: Pick<Item, "kind">) => it.kind === "carousel";
