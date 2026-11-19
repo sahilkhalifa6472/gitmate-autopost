@@ -1,6 +1,6 @@
 // AI salesman for Instagram DMs: answers questions from people interested in a paid git.mate feature,
 // using the whole DM thread + their order status, and nudges quiet leads once inside Instagram's 24h window.
-// Runs on Google Gemini (cheap). Off until the owner adds GEMINI_API_KEY in Vercel and presses "Turn AI on" on the Orders page.
+// Runs on Google Gemini (cheap). Off until the owner pastes a Gemini key on the Orders page (or sets GEMINI_API_KEY in Vercel) and presses "Turn AI on" on the Orders page.
 import * as ig from "./ig";
 import { get, set, lock, pushList, getList } from "./store";
 import { getConfig, log } from "./data";
@@ -12,7 +12,19 @@ export type Seen = { at: string; user?: string; followed?: string; day?: string;
 export type Need = { igsid: string; user?: string; said: string; why: string; at: string };
 export type SalesLog = { at: string; igsid: string; user?: string; said: string; reply: string; kind: "reply" | "followup"; buttons?: boolean; needs?: string };
 
-export const hasKey = () => !!process.env.GEMINI_API_KEY;
+// key: pasted on the Orders page (Redis), or Vercel env GEMINI_API_KEY
+export const getKey = async () => process.env.GEMINI_API_KEY || (await get<string>("sales_key", "")) || "";
+export const hasKey = async () => !!(await getKey());
+export const keyHint = async () => { const k = await getKey(); return k ? "…" + k.slice(-4) : ""; };
+// check a key with Google before saving it
+export async function testKey(k: string) {
+  try {
+    const r = await fetch("https://generativelanguage.googleapis.com/v1beta/models?pageSize=1", { headers: { "x-goog-api-key": k }, cache: "no-store", signal: AbortSignal.timeout(15_000) });
+    if (r.ok) return { ok: true };
+    const j = await r.json().catch(() => ({}));
+    return { ok: false, error: String(j?.error?.message || `Google said ${r.status}`).slice(0, 200) };
+  } catch (e: any) { return { ok: false, error: e.message.slice(0, 200) }; }
+}
 export async function getSales(): Promise<SalesCfg> { return { ...DEFAULT_SALES, ...(await get<Partial<SalesCfg>>("sales_ai", {})) }; }
 export const saveSales = (c: SalesCfg) => set("sales_ai", c);
 export const getPaused = () => get<string[]>("sales_paused", []);
@@ -75,7 +87,7 @@ async function draft(igsid: string, latest: string, mode: "reply" | "followup") 
     : "They went quiet after showing interest. Write ONE short, friendly follow-up nudge (no pressure) that moves them to the next step. If the chat shows they declined or it's not a sales chat, return an empty reply.";
   const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`, {
     method: "POST", cache: "no-store", signal: AbortSignal.timeout(40_000),
-    headers: { "content-type": "application/json", "x-goog-api-key": process.env.GEMINI_API_KEY! },
+    headers: { "content-type": "application/json", "x-goog-api-key": await getKey() },
     body: JSON.stringify({
       systemInstruction: { parts: [{ text: SYSTEM(oc, s) }] },
       contents: [{ role: "user", parts: [{ text: `Instagram user: @${o?.user || "unknown"}\n${orderLine(o)}\n\nChat so far (oldest first):\n${chat.join("\n") || "(empty)"}\n\n${task}` }] }],
@@ -107,7 +119,7 @@ export async function noteInbound(igsid: string) {
 
 // A DM none of the fixed flows handled: let the AI answer. Returns true when it replied.
 export async function salesReply(m: { igsid: string; mid: string; text: string }) {
-  if (!m.text.trim() || !hasKey()) return false;
+  if (!m.text.trim() || !(await hasKey())) return false;
   const s = await getSales();
   if (!s.enabled || (await getPaused()).includes(m.igsid)) return false;
   if (!(await lock("sai:" + m.mid, 3600))) return true;
@@ -130,7 +142,7 @@ export async function salesReply(m: { igsid: string; mid: string; text: string }
 
 // Cron: one gentle nudge to people who got the offer but sent nothing, 3h-20h after their last message
 export async function salesFollowups(max = 3) {
-  if (!hasKey()) return { skipped: "no key" };
+  if (!(await hasKey())) return { skipped: "no key" };
   const s = await getSales();
   if (!s.enabled || !s.followup) return { skipped: "off" };
   if (!(await lock("sales_fu", 240))) return { skipped: "busy" };

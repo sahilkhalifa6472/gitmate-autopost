@@ -4,7 +4,8 @@ import OrderCfgForm from "@/components/OrderCfgForm";
 import { getOrders, getFree, getOrderCfg, niceDate, shareText, Order } from "@/lib/orders";
 import Copy from "@/components/Copy";
 import SalesForm from "@/components/SalesForm";
-import { getSales, getPaused, getNeeds, getSalesLog, hasKey } from "@/lib/salesai";
+import { getSales, getPaused, getNeeds, getSalesLog, hasKey, keyHint } from "@/lib/salesai";
+import GeminiKeyForm from "@/components/GeminiKeyForm";
 
 export const dynamic = "force-dynamic";
 const fmt = (s: string) => new Intl.DateTimeFormat("en-GB", { timeZone: "Asia/Kolkata", day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).format(new Date(s));
@@ -32,7 +33,7 @@ function OrderCard({ o }: { o: Order }) {
 
 export default async function OrdersPage() {
   const [orders, free, cfg, sc, paused, needs, slog] = await Promise.all([getOrders(), getFree(), getOrderCfg(), getSales(), getPaused(), getNeeds(), getSalesLog(30)]);
-  const key = hasKey(), need = Object.values(needs).sort((a, b) => b.at.localeCompare(a.at));
+  const key = await hasKey(), hint = await keyHint(), need = Object.values(needs).sort((a, b) => b.at.localeCompare(a.at));
   const todo = orders.filter((o) => o.status === "proof"), open = orders.filter((o) => o.status === "asked"),
     booked = orders.filter((o) => o.status === "confirmed" || o.status === "made"), done = orders.filter((o) => o.status === "live" || o.status === "rejected");
   const fresh = free.filter((f) => f.status === "new"), inq = free.filter((f) => f.status === "featured"), live = free.filter((f) => f.status === "live");
@@ -49,7 +50,8 @@ export default async function OrdersPage() {
             <span className={`pill ${sc.enabled && key ? "solid" : ""}`}>{!key ? "no API key" : sc.enabled ? "ON" : "OFF"}</span>
           </div>
           <div className="sub">Answers questions in DMs (price, what you get, is it worth it, how to pay) using the whole chat, and shows the PayPal / Crypto buttons when they're ready. It never confirms payments or gives dates, and never promises views. Anything tricky (refund, complaint, custom deal) lands in "Needs you".</div>
-          {!key && <div className="warnbox">Add <b>GEMINI_API_KEY</b> in Vercel → Project → Settings → Environment Variables, then Redeploy. Don't paste the key in chat.</div>}
+          {!key && <div className="warnbox">Paste your Gemini API key below (get it free at aistudio.google.com/apikey), then press Turn AI on.</div>}
+          <GeminiKeyForm hint={hint} />
           <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 8 }}>
             {key && <Act url="/api/sales" body={{ action: "cfg", enabled: !sc.enabled }} label={sc.enabled ? "Turn AI off" : "▶ Turn AI on"} cls={sc.enabled ? "btn sm" : "btn pri sm"} />}
             <Act url="/api/sales" body={{ action: "cfg", followup: !sc.followup }} label={sc.followup ? "Follow-ups: ON (1 nudge after 3h)" : "Follow-ups: OFF"} />
