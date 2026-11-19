@@ -1,11 +1,20 @@
 import { allowed, deny } from "@/lib/guard";
 import { getSales, saveSales, getPaused, getNeeds, saveNeeds, getSalesLog, hasKey, keyHint, testKey } from "@/lib/salesai";
 import { set } from "@/lib/store";
+import { getConfig } from "@/lib/data";
+import * as ig from "@/lib/ig";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(req: Request) {
   if (!(await allowed(req))) return deny();
+  // ?chat=<igsid>: that person's latest DMs (to check what the AI and the fixed flows sent)
+  const chat = new URL(req.url).searchParams.get("chat");
+  if (chat) {
+    const c = await getConfig();
+    const msgs = await ig.convoWith(c.ig_user_id!, ig.replyTokenFor(c), chat, 40).catch((e) => ({ error: e.message }));
+    return Response.json(Array.isArray(msgs) ? msgs.slice().reverse().map((m) => ({ at: m.created_time, from: m.from?.id === chat ? "them" : "us", text: m.message || "[attachment]" })) : msgs);
+  }
   const [cfg, paused, needs, logs] = await Promise.all([getSales(), getPaused(), getNeeds(), getSalesLog(60)]);
   return Response.json({ key: await hasKey(), key_hint: await keyHint(), cfg, paused, needs, logs });
 }
