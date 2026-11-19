@@ -58,7 +58,7 @@ export async function nextFreeDate(cfgTz: string, perDay: number, orders: Order[
   const q = await getQueue();
   const taken: Record<string, number> = {};
   for (const o of orders) if (o.date && ["confirmed", "made"].includes(o.status)) taken[o.date] = (taken[o.date] || 0) + 1;
-  for (const it of q) if (it.post_on && it.status === "queued" && !orders.some((o) => o.item_id === it.id)) taken[it.post_on] = (taken[it.post_on] || 0) + 1;
+  for (const it of q) if (it.post_on && it.status === "queued" && it.kind !== "carousel" && !orders.some((o) => o.item_id === it.id)) taken[it.post_on] = (taken[it.post_on] || 0) + 1;
   const today = tzParts(cfgTz).day;
   // earliest is the day after tomorrow, so the daily reel task has a run to make it
   let d = new Date(Date.parse(today + "T12:00:00Z") + 864e5);

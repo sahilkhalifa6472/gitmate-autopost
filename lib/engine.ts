@@ -9,13 +9,14 @@ import * as ig from "./ig";
 import { getConfig, saveConfig, getQueue, saveQueue, getPlans, savePlans, log } from "./data";
 import { lock, unlock } from "./store";
 import { tzParts, hhmm } from "./time";
-import { Config, Item, PlanSlot } from "./types";
+import { Config, Item, PlanSlot, isCarousel } from "./types";
 
 const SNAPSHOT_HOURS = 12;
 const STATS_AT_HOURS = [12, 24, 72, 168];
 const POST_WINDOW_MIN = 120;     // a missed time still posts within 2h
 const MAX_TRIES = 3;
 const PROCESS_TIMEOUT_MIN = 40;  // give Instagram this long to process a video
+const CAROUSEL_DEFAULT_MIN = 10 * 60 + 30; // weekly carousel: 10:30 AM New York (9 PM IST) on its day
 
 export function windowScores(cfg: Config, q: Item[]) {
   const w = cfg.windows.map(() => ({ n: 0, views: 0 }));
@@ -53,13 +54,19 @@ export function makePlan(cfg: Config, q: Item[], nowMin: number, count: number):
 }
 
 // a reel with a fixed date (post_on) goes first on its day, waits before it, and is posted asap if its day was missed
+// (carousels never take a reel slot: they post on their own day/time, see dueCarousel)
 export const nextItem = (q: Item[], day: string) => {
-  const ok = (it: Item) => it.status === "queued" && (it.tries || 0) < MAX_TRIES;
-  return q.find((it) => it.status === "queued" && it.force)
+  const ok = (it: Item) => it.status === "queued" && !isCarousel(it) && (it.tries || 0) < MAX_TRIES;
+  return q.find((it) => it.status === "queued" && !isCarousel(it) && it.force)
     || q.find((it) => ok(it) && it.post_on === day)
     || q.find((it) => ok(it) && it.post_on && it.post_on < day)
     || q.find((it) => ok(it) && !it.post_on);
 };
+
+// a weekly carousel whose day + time has come (or whose day was missed)
+export const dueCarousel = (q: Item[], day: string, min: number) =>
+  q.find((it) => it.status === "queued" && isCarousel(it) && (it.tries || 0) < MAX_TRIES && !!it.post_on
+    && (it.post_on < day || (it.post_on === day && min >= (it.post_min ?? CAROUSEL_DEFAULT_MIN))));
 
 async function refreshIfNeeded(cfg: Config) {
   if (!cfg.ig_token || Date.now() - (cfg.token_refreshed_at || 0) < 7 * 864e5) return;
@@ -95,7 +102,7 @@ async function cleanupVideos(cfg: Config, q: Item[]) {
   for (const it of q) {
     if (it.status !== "posted" || it.blob_deleted || !it.posted_at || !it.video_url.includes(".blob.vercel-storage.com")) continue;
     if (Date.now() - Date.parse(it.posted_at) < cfg.keep_video_days * 864e5) continue;
-    try { await del(it.video_url); it.blob_deleted = true; changed = true; await log("info", `Deleted stored video file of #${it.id} (posted ${cfg.keep_video_days}+ days ago)`, it.id); }
+    try { await del(isCarousel(it) && it.images?.length ? it.images : it.video_url); it.blob_deleted = true; changed = true; await log("info", `Deleted stored video file of #${it.id} (posted ${cfg.keep_video_days}+ days ago)`, it.id); }
     catch (e: any) { await log("warn", `Could not delete video file of #${it.id}: ${e.message}`, it.id); }
   }
   return changed;
@@ -150,10 +157,12 @@ async function advancePending(cfg: Config, it: Item, plans: Record<string, PlanS
 // Step 1: send the video to Instagram
 async function startPost(cfg: Config, it: Item, window: number) {
   try {
-    const c = await ig.createReel(cfg.ig_user_id!, cfg.ig_token!, { video_url: it.video_url, caption: it.caption, thumb_offset: it.cover_offset_ms });
+    const c = isCarousel(it)
+      ? await ig.createCarousel(cfg.ig_user_id!, cfg.ig_token!, { images: it.images || [], caption: it.caption })
+      : await ig.createReel(cfg.ig_user_id!, cfg.ig_token!, { video_url: it.video_url, caption: it.caption, thumb_offset: it.cover_offset_ms });
     it.status = "posting";
     it.pending = { container_id: c.id, started_at: new Date().toISOString(), window };
-    await log("info", `#${it.id} sent to Instagram, waiting for processing`, it.id);
+    await log("info", `#${it.id} ${isCarousel(it) ? "carousel " : ""}sent to Instagram, waiting for processing`, it.id);
   } catch (e: any) {
     fail(it, e.message);
     await log("error", `#${it.id} could not start post: ${e.message} (try ${it.tries}/${MAX_TRIES})`, it.id);
@@ -191,13 +200,21 @@ export async function tick(opts: { source?: string } = {}) {
       await log("info", `Post now requested for #${forced.id}`, forced.id);
       await startPost(cfg, forced, -1);
       // a manual post takes the next open slot of today's plan, so the day's total stays the same
-      const slot = (plans[day] || []).find((t) => !t.id && !t.skipped);
+      const slot = isCarousel(forced) ? undefined : (plans[day] || []).find((t) => !t.id && !t.skipped);
       if (slot && forced.status === "posting") { slot.id = forced.id; slot.note = "posted manually"; await savePlans(plans); }
       await saveQueue(q);
       return { ok: true, note: "forced post started" };
     }
 
-    // 3) today's plan
+    // 3) weekly carousel on its day (outside the reel plan, so the daily reel still posts)
+    const car = dueCarousel(q, day, min);
+    if (car) {
+      await startPost(cfg, car, -1);
+      await saveQueue(q);
+      return { ok: true, note: "carousel post started" };
+    }
+
+    // 4) today's plan
     if (!plans[day]) {
       const doneToday = q.filter((it) => it.posted_at && tzParts(cfg.timezone, Date.parse(it.posted_at)).day === day).length;
       const count = Math.max(0, cfg.posts_per_day - doneToday);
@@ -205,7 +222,7 @@ export async function tick(opts: { source?: string } = {}) {
       // a reel booked for today (paid, post_on) must go out early in the day (7am-12pm New York = evening IST),
       // so it's live on the booked date for the buyer too, wherever they are
       const p0 = plans[day][0];
-      if (p0 && p0.min > 12 * 60 && min < 12 * 60 - 10 && q.some((it) => it.status === "queued" && it.post_on && it.post_on <= day)) {
+      if (p0 && p0.min > 12 * 60 && min < 12 * 60 - 10 && q.some((it) => it.status === "queued" && !isCarousel(it) && it.post_on && it.post_on <= day)) {
         const lo = Math.max(7 * 60, min + 5), early = lo + Math.floor(Math.random() * Math.max(1, 12 * 60 - lo));
         const w = cfg.windows.findIndex(([a, b]) => early >= a * 60 && early < b * 60);
         plans[day][0] = { window: w < 0 ? 0 : w, min: early };

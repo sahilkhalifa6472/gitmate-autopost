@@ -14,7 +14,7 @@ export async function POST(req: Request) {
       request: req,
       onBeforeGenerateToken: async (pathname, clientPayload) => {
         if (!(await loggedIn()) && !hasUploadToken(clientPayload)) throw new Error("unauthorized");
-        return { allowedContentTypes: ["video/mp4", "video/quicktime"], maximumSizeInBytes: 300 * 1024 * 1024, addRandomSuffix: true };
+        return { allowedContentTypes: ["video/mp4", "video/quicktime", "image/jpeg"], maximumSizeInBytes: 300 * 1024 * 1024, addRandomSuffix: true };
       },
       onUploadCompleted: async () => {},
     });

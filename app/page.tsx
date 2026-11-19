@@ -19,7 +19,7 @@ export default async function Dashboard() {
   const next = today.find((t) => !t.id && !t.skipped && t.min + 120 >= min);
   const nextMs = next ? tzToUtc(cfg.timezone, day, next.min) : null;
   const queued = q.filter((i) => i.status === "queued");
-  const nextReel = queued.find((i) => i.force) || queued[0];
+  const nextReel = queued.find((i) => i.force && i.kind !== "carousel") || queued.find((i) => i.kind !== "carousel");
   const posting = q.find((i) => i.status === "posting");
   const posted = q.filter((i) => i.status === "posted").sort((a, b) => Date.parse(b.posted_at!) - Date.parse(a.posted_at!));
   const failed = q.filter((i) => i.status === "failed");

@@ -39,6 +39,19 @@ export async function createReel(userId: string, token: string, p: { video_url: 
   }) as Promise<{ id: string }>;
 }
 
+// Carousel (photo) post: one child container per image, then the CAROUSEL container
+export async function createCarousel(userId: string, token: string, p: { images: string[]; caption: string }) {
+  const children: string[] = [];
+  for (const image_url of p.images.slice(0, 10)) {
+    const c = await http(`${IG}/${userId}/media`, { method: "POST", body: form({ image_url, is_carousel_item: "true", access_token: token }) });
+    children.push(c.id);
+  }
+  return http(`${IG}/${userId}/media`, {
+    method: "POST",
+    body: form({ media_type: "CAROUSEL", children: children.join(","), caption: p.caption, access_token: token }),
+  }) as Promise<{ id: string }>;
+}
+
 export async function containerStatus(id: string, token: string) {
   return http(`${IG}/${id}?fields=status_code,status&access_token=${encodeURIComponent(token)}`) as Promise<{ status_code: string; status?: string }>;
 }
