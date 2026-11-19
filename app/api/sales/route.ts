@@ -1,5 +1,5 @@
 import { allowed, deny } from "@/lib/guard";
-import { getSales, saveSales, getPaused, getNeeds, saveNeeds, getSalesLog, hasKey } from "@/lib/salesai";
+import { getSales, saveSales, getPaused, getNeeds, saveNeeds, getSalesLog, hasKey, keyHint, testKey } from "@/lib/salesai";
 import { set } from "@/lib/store";
 
 export const dynamic = "force-dynamic";
@@ -7,10 +7,10 @@ export const dynamic = "force-dynamic";
 export async function GET(req: Request) {
   if (!(await allowed(req))) return deny();
   const [cfg, paused, needs, logs] = await Promise.all([getSales(), getPaused(), getNeeds(), getSalesLog(60)]);
-  return Response.json({ key: hasKey(), cfg, paused, needs, logs });
+  return Response.json({ key: await hasKey(), key_hint: await keyHint(), cfg, paused, needs, logs });
 }
 
-// Actions: cfg {enabled?, followup?, discount?, notes?} · pause {igsid} · resume {igsid} · done {igsid} (clear "needs you")
+// Actions: key {key} (Gemini key, tested first; empty removes) · cfg {enabled?, followup?, discount?, notes?} · pause {igsid} · resume {igsid} · done {igsid} (clear "needs you")
 export async function POST(req: Request) {
   if (!(await allowed(req))) return deny();
   const b = await req.json().catch(() => ({}));
@@ -21,6 +21,13 @@ export async function POST(req: Request) {
     if (b.discount != null) c.discount = Math.max(0, Number(b.discount) || 0);
     if (typeof b.notes === "string") c.notes = b.notes.slice(0, 2000);
     await saveSales(c); return Response.json({ ok: true, cfg: c });
+  }
+  if (b.action === "key") {
+    const k = String(b.key || "").trim();
+    if (!k) { await set("sales_key", ""); return Response.json({ ok: true, removed: true }); }
+    const t = await testKey(k);
+    if (!t.ok) return Response.json({ error: "Key not working: " + t.error }, { status: 400 });
+    await set("sales_key", k); return Response.json({ ok: true });
   }
   const id = String(b.igsid || "");
   if (!id) return Response.json({ error: "igsid needed" }, { status: 400 });
