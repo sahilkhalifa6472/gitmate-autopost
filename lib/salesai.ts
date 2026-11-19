@@ -8,7 +8,7 @@ import { getOrders, getOrderCfg, OrderCfg, Order } from "./orders";
 
 export type SalesCfg = { enabled: boolean; followup: boolean; discount: number; notes: string };
 export const DEFAULT_SALES: SalesCfg = { enabled: false, followup: true, discount: 0, notes: "" };
-export type Seen = { at: string; user?: string; followed?: string; day?: string; n?: number };
+export type Seen = { at: string; mid?: string; user?: string; followed?: string; day?: string; n?: number };
 export type Need = { igsid: string; user?: string; said: string; why: string; at: string };
 export type SalesLog = { at: string; igsid: string; user?: string; said: string; reply: string; kind: "reply" | "followup"; buttons?: boolean; needs?: string };
 
@@ -118,7 +118,7 @@ async function draft(igsid: string, latest: string, mode: "reply" | "followup") 
     const left = 50_000 - (Date.now() - t0); if (left < 5_000) break; // stay inside the webhook's 60s
     try {
       const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
-        method: "POST", cache: "no-store", signal: AbortSignal.timeout(Math.min(20_000, left)),
+        method: "POST", cache: "no-store", signal: AbortSignal.timeout(Math.min(12_000, left)),
         headers: { "content-type": "application/json", "x-goog-api-key": key }, body,
       });
       const b = await r.json().catch(() => ({}));
@@ -142,9 +142,10 @@ async function send(igsid: string, text: string, buttons: boolean) {
 }
 
 // every incoming DM: remember when they last wrote (for the 24h follow-up window)
-export async function noteInbound(igsid: string) {
+export async function noteInbound(igsid: string, mid: string) {
   const seen = await getSeen(); const now = new Date().toISOString();
-  seen[igsid] = { ...(seen[igsid] || {}), at: now };
+  if (seen[igsid]?.mid === mid) return; // Meta re-sent the same message
+  seen[igsid] = { ...(seen[igsid] || {}), at: now, mid };
   for (const [k, v] of Object.entries(seen)) if (Date.now() - Date.parse(v.at) > 3 * 864e5) delete seen[k];
   await set("sales_seen", seen);
 }
@@ -155,7 +156,6 @@ export async function salesReply(m: { igsid: string; mid: string; text: string }
   const s = await getSales();
   if (!s.enabled || (await getPaused()).includes(m.igsid)) return false;
   if (!(await lock("sai:" + m.mid, 3600))) return true;
-  const started = Date.now();
   const seen = await getSeen(); const day = new Date().toISOString().slice(0, 10);
   const me = seen[m.igsid] || { at: new Date().toISOString() };
   if (me.day === day && (me.n || 0) >= MAX_AI_PER_DAY) return false;
@@ -163,7 +163,7 @@ export async function salesReply(m: { igsid: string; mid: string; text: string }
     const out = await draft(m.igsid, m.text, "reply");
     // they wrote again while we were thinking (e.g. "hi" then "FEATURE"): that newer message gets the answer, drop this one
     const now = (await getSeen())[m.igsid];
-    if (now && Date.parse(now.at) > started) { await log("info", `Sales AI: skipped a reply to @${m.igsid}, they sent a newer message`); return true; }
+    if (now?.mid && now.mid !== m.mid) { await log("info", `Sales AI: skipped a reply to @${m.igsid}, they sent a newer message`); return true; }
     const cfg = await getConfig(); const user = (await ig.userName(m.igsid, ig.replyTokenFor(cfg))) || undefined;
     if (out.reply.trim()) await send(m.igsid, out.reply.trim(), out.pay_buttons);
     if (out.needs_owner) { const n = await getNeeds(); n[m.igsid] = { igsid: m.igsid, user, said: m.text.slice(0, 300), why: out.owner_note || "needs you", at: new Date().toISOString() }; await saveNeeds(n); }

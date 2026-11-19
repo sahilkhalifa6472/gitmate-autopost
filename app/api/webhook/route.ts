@@ -1,6 +1,7 @@
 // Instagram webhooks (Meta app → Instagram API → Configure webhooks).
 // Callback URL: https://<site>/api/webhook   Verify token: shown on the Inbox page / set via PUT /api/autoreply
 import crypto from "crypto";
+import { after } from "next/server";
 import { getAr, handleWebhook } from "@/lib/autoreply";
 
 export const dynamic = "force-dynamic";
@@ -25,6 +26,7 @@ export async function POST(req: Request) {
   }
   let body: any;
   try { body = JSON.parse(raw); } catch { return new Response("bad json", { status: 400 }); }
-  const r = await handleWebhook(body);
-  return Response.json(r); // always 200 so Meta doesn't disable the subscription
+  // answer Meta right away (slow AI replies made Meta re-send the event), do the work just after
+  after(() => handleWebhook(body).catch(() => {}));
+  return Response.json({ ok: true }); // always 200 so Meta doesn't disable the subscription
 }
