@@ -8,8 +8,10 @@ export default function Thumb({ item, href }: { item: Item; href?: string }) {
   const sec = Math.max(0.1, (item.cover_offset_ms || 0) / 1000);
   const inner = (
     <>
-      {has ? <CoverVideo src={item.video_url} sec={sec} /> : <div className="ph0"><span className="bead">&gt;_</span></div>}
-      <span className="play"><svg viewBox="0 0 10 10"><path d="M2 1l7 4-7 4z" fill="#fff" /></svg></span>
+      {has ? (item.kind === "carousel" ? <img src={item.video_url} alt="" /> : <CoverVideo src={item.video_url} sec={sec} />) : <div className="ph0"><span className="bead">&gt;_</span></div>}
+      {item.kind === "carousel"
+        ? <span className="dur" style={{ left: 6, right: "auto", top: 6, bottom: "auto" }}>▦ {item.images?.length || 0}</span>
+        : <span className="play"><svg viewBox="0 0 10 10"><path d="M2 1l7 4-7 4z" fill="#fff" /></svg></span>}
       {item.duration_sec ? <span className="dur">{Math.round(item.duration_sec)}s</span> : null}
     </>
   );

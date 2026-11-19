@@ -24,7 +24,14 @@ export type Item = {
   latest?: Stats;
   stats_at?: number[];
   blob_deleted?: boolean;
+  // weekly carousel post (photos, 4:5). video_url then holds the first image (for previews).
+  kind?: "reel" | "carousel";
+  images?: string[];          // 2-10 public JPEG urls, in slide order
+  post_min?: number;          // carousel: minute of post_on day (audience timezone) to post at
+  links?: { title: string; url: string }[]; // carousel: repos shown on the public /week/<id> page
 };
+
+export const isCarousel = (it: Pick<Item, "kind">) => it.kind === "carousel";
 
 export type Config = {
   ig_token?: string;

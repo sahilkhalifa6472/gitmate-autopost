@@ -57,7 +57,7 @@ async function handleGateDM(ctx: Ctx, m: { mid: string; fromId: string; username
         title: `${(pend.title.split(":")[0] || "Your repo").trim()} 🔥`,
         subtitle: "Here's the repo from our reel. Thanks for following! 🙌",
         image_url: pend.thumb,
-        buttons: [{ title: "Open on GitHub", url: pend.link }, { title: "More repos 🔥", url: `https://www.instagram.com/${cfg.username || "git.mate"}/` }],
+        buttons: [{ title: /github\.com/.test(pend.link) ? "Open on GitHub" : "Open the repos", url: pend.link }, { title: "More repos 🔥", url: `https://www.instagram.com/${cfg.username || "git.mate"}/` }],
       });
       const fresh = await get<Record<string, Pending>>("ar_pending", {});
       delete fresh[m.fromId]; delete pending[m.fromId]; await set("ar_pending", fresh);
@@ -105,7 +105,7 @@ async function handleComment(ctx: Ctx, c: ig.IgComment, m: { id: string; thumbna
       await ig.privateReplyCard(cfg.ig_user_id, tok, c.id, {
         title: `Hey ${user ? "@" + user : "there"}! Here's your link 🔗`,
         subtitle: (title.split(":")[0] || "From @git.mate") + " · follow @git.mate for 1 repo a day",
-        url: link, button: "Open on GitHub",
+        url: link, button: /github\.com/.test(link) ? "Open on GitHub" : "Open the repos",
       });
     }
   } catch (e: any) {

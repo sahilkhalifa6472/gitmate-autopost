@@ -39,7 +39,8 @@ export default async function QueuePage() {
                       <div className="hd"><span className="id">#{i.id}</span><span className={`pill ${i.status === "failed" ? "err" : i.status === "posting" || i.force ? "solid" : ""}`}>{i.force && i.status === "queued" ? "post now" : i.status}</span>{i.post_on && i.status === "queued" && <span className="pill solid">📅 {new Date(i.post_on + "T12:00:00Z").toLocaleDateString("en-GB", { day: "2-digit", month: "short" })}</span>}</div>
                       <div className="ttl">{i.title}</div>
                       <div className="meta">
-                        cover {(i.cover_offset_ms / 1000).toFixed(1)}s{i.duration_sec ? ` · ${Math.round(i.duration_sec)}s` : ""}{!i.blob_deleted && <> · <a href={i.video_url} target="_blank">video</a></>}{i.permalink ? <> · <a href={i.permalink} target="_blank">on Instagram</a></> : null}
+                        {i.kind === "carousel" ? <>▦ carousel · {i.images?.length || 0} slides{i.link ? <> · <a href={i.link} target="_blank">repos page</a></> : null}{i.permalink ? <> · <a href={i.permalink} target="_blank">on Instagram</a></> : null}</> : <>
+                        cover {(i.cover_offset_ms / 1000).toFixed(1)}s{i.duration_sec ? ` · ${Math.round(i.duration_sec)}s` : ""}{!i.blob_deleted && <> · <a href={i.video_url} target="_blank">video</a></>}{i.permalink ? <> · <a href={i.permalink} target="_blank">on Instagram</a></> : null}</>}
                         {i.posted_at && <><br />posted {d12(cfg.timezone, Date.parse(i.posted_at))} NY · {d12(IST_TZ, Date.parse(i.posted_at))} IST</>}
                         {i.status === "queued" && eta[i.id] && <><br />⏰ {eta[i.id].ms
                           ? <b>{d12(cfg.timezone, eta[i.id].ms!)} NY · {d12(IST_TZ, eta[i.id].ms!)} IST</b>
