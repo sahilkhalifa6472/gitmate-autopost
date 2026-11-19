@@ -131,6 +131,18 @@ export async function privateReplyQR(userId: string, token: string, commentId: s
 export async function sendQR(userId: string, token: string, recipientId: string, text: string, q: QR[]) {
   return http(`${B(token)}/${userId}/messages?${tq(token)}`, json({ recipient: { id: recipientId }, message: { text, quick_replies: qrs(q) } }));
 }
+// Several cards in one DM (Instagram shows them as a swipeable row, max 10), each with its own button
+export type CardEl = { title: string; subtitle?: string; image_url?: string; url: string; button: string };
+const cardsMsg = (els: CardEl[]) => ({ attachment: { type: "template", payload: { template_type: "generic", elements: els.slice(0, 10).map((e) => ({
+  title: e.title.slice(0, 80), ...(e.subtitle ? { subtitle: e.subtitle.slice(0, 80) } : {}), ...(e.image_url ? { image_url: e.image_url } : {}),
+  buttons: [{ type: "web_url", url: e.url, title: e.button.slice(0, 20) }],
+})) } } });
+export async function privateReplyCards(userId: string, token: string, commentId: string, els: CardEl[]) {
+  return http(`${B(token)}/${userId}/messages?${tq(token)}`, json({ recipient: { comment_id: commentId }, message: cardsMsg(els) }));
+}
+export async function sendCards(userId: string, token: string, recipientId: string, els: CardEl[]) {
+  return http(`${B(token)}/${userId}/messages?${tq(token)}`, json({ recipient: { id: recipientId }, message: cardsMsg(els) }));
+}
 export async function sendCard(userId: string, token: string, recipientId: string, p: Parameters<typeof card>[0]) {
   return http(`${B(token)}/${userId}/messages?${tq(token)}`, json({ recipient: { id: recipientId }, message: card(p) }));
 }

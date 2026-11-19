@@ -48,4 +48,4 @@ const res = await fetch(`${root}/api/queue`, {
 });
 const out = await res.json();
 if (!res.ok) throw new Error(`queue add failed: ${JSON.stringify(out)}`);
-console.log(`queued carousel as #${out.id} (repos page ${out.link || "-"})`);
+console.log(`queued carousel as #${out.id}`);
