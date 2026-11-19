@@ -3,6 +3,8 @@ import Act from "@/components/Act";
 import OrderCfgForm from "@/components/OrderCfgForm";
 import { getOrders, getFree, getOrderCfg, niceDate, shareText, Order } from "@/lib/orders";
 import Copy from "@/components/Copy";
+import SalesForm from "@/components/SalesForm";
+import { getSales, getPaused, getNeeds, getSalesLog, hasKey } from "@/lib/salesai";
 
 export const dynamic = "force-dynamic";
 const fmt = (s: string) => new Intl.DateTimeFormat("en-GB", { timeZone: "Asia/Kolkata", day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).format(new Date(s));
@@ -29,7 +31,8 @@ function OrderCard({ o }: { o: Order }) {
 }
 
 export default async function OrdersPage() {
-  const [orders, free, cfg] = await Promise.all([getOrders(), getFree(), getOrderCfg()]);
+  const [orders, free, cfg, sc, paused, needs, slog] = await Promise.all([getOrders(), getFree(), getOrderCfg(), getSales(), getPaused(), getNeeds(), getSalesLog(30)]);
+  const key = hasKey(), need = Object.values(needs).sort((a, b) => b.at.localeCompare(a.at));
   const todo = orders.filter((o) => o.status === "proof"), open = orders.filter((o) => o.status === "asked"),
     booked = orders.filter((o) => o.status === "confirmed" || o.status === "made"), done = orders.filter((o) => o.status === "live" || o.status === "rejected");
   const fresh = free.filter((f) => f.status === "new"), inq = free.filter((f) => f.status === "featured"), live = free.filter((f) => f.status === "live");
@@ -40,6 +43,36 @@ export default async function OrdersPage() {
         <div className="ph"><h1>Orders</h1><span className="pill solid">{todo.length} to confirm</span></div>
         <div className="sub">People who DM "FEATURE" get the offer automatically. When they send their repo + payment proof it shows up here. Press Confirm and they get the next free date by DM. New repo links sent without FEATURE also get the paid offer. Old repos (DM'd before 14 Nov) are made free, one a day.</div>
         {!cfg.paypal && !cfg.usdc && <div className="warnbox">Add your PayPal / USDC below so the offer DM has payment details.</div>}
+        <div className="card" style={{ marginTop: 16 }}>
+          <div className="hd" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+            <h2 style={{ margin: 0 }}>🤖 AI salesman <small>Gemini · answers DMs and closes the sale</small></h2>
+            <span className={`pill ${sc.enabled && key ? "solid" : ""}`}>{!key ? "no API key" : sc.enabled ? "ON" : "OFF"}</span>
+          </div>
+          <div className="sub">Answers questions in DMs (price, what you get, is it worth it, how to pay) using the whole chat, and shows the PayPal / Crypto buttons when they're ready. It never confirms payments or gives dates, and never promises views. Anything tricky (refund, complaint, custom deal) lands in "Needs you".</div>
+          {!key && <div className="warnbox">Add <b>GEMINI_API_KEY</b> in Vercel → Project → Settings → Environment Variables, then Redeploy. Don't paste the key in chat.</div>}
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginTop: 8 }}>
+            {key && <Act url="/api/sales" body={{ action: "cfg", enabled: !sc.enabled }} label={sc.enabled ? "Turn AI off" : "▶ Turn AI on"} cls={sc.enabled ? "btn sm" : "btn pri sm"} />}
+            <Act url="/api/sales" body={{ action: "cfg", followup: !sc.followup }} label={sc.followup ? "Follow-ups: ON (1 nudge after 3h)" : "Follow-ups: OFF"} />
+          </div>
+          <SalesForm discount={sc.discount} notes={sc.notes} />
+          {need.length > 0 && <><h3 style={{ marginTop: 14 }}>🙋 Needs you</h3><div className="plist">{need.map((n) => (
+            <div className="prow" key={n.igsid}>
+              <div className="hd"><div className="ttl">@{n.user || n.igsid}</div><span className="pill err">{n.why}</span></div>
+              <small>“{n.said}” · {fmt(n.at)} IST</small>
+              <div style={{ display: "flex", gap: 8, marginTop: 8, flexWrap: "wrap" }}>
+                {n.user && <a className="btn sm" href={`https://ig.me/m/${n.user}`} target="_blank">Open their DM</a>}
+                <Act url="/api/sales" body={{ action: paused.includes(n.igsid) ? "resume" : "pause", igsid: n.igsid }} label={paused.includes(n.igsid) ? "Let AI reply again" : "Pause AI for them"} />
+                <Act url="/api/sales" body={{ action: "done", igsid: n.igsid }} label="✓ Handled" />
+              </div>
+            </div>))}</div></>}
+          {slog.length > 0 && <><h3 style={{ marginTop: 14 }}>Latest AI replies</h3><div className="plist">{slog.map((l, i) => (
+            <div className="prow" key={i}>
+              <div className="hd"><div className="ttl">@{l.user || l.igsid}</div><span className="pill">{l.kind === "followup" ? "follow-up" : l.buttons ? "+ pay buttons" : "reply"}</span></div>
+              <small>{fmt(l.at)} IST · they said: “{l.said}”</small>
+              <div className="msg" style={{ marginTop: 6 }}>{l.reply || "(no reply needed)"}</div>
+              <div style={{ marginTop: 6 }}><Act url="/api/sales" body={{ action: paused.includes(l.igsid) ? "resume" : "pause", igsid: l.igsid }} label={paused.includes(l.igsid) ? "Let AI reply again" : "Pause AI for them"} /></div>
+            </div>))}</div></>}
+        </div>
         <div className="grid g2" style={{ marginTop: 16 }}>
           <div className="grid" style={{ alignContent: "start" }}>
             <div className="card"><h2>Check payment <small>repo + proof received</small></h2>

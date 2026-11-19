@@ -1,6 +1,7 @@
 import { tick } from "@/lib/engine";
 import { runAutoReply } from "@/lib/autoreply";
 import { hasCronSecret } from "@/lib/auth";
+import { salesFollowups } from "@/lib/salesai";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -10,5 +11,6 @@ export async function GET(req: Request) {
   if (!hasCronSecret(req)) return Response.json({ error: "unauthorized" }, { status: 401 });
   const post = await tick({ source: "cron" });
   const autoreply = await runAutoReply().catch((e) => ({ ok: false, error: String(e?.message || e) }));
-  return Response.json({ ...post, autoreply });
+  const sales = await salesFollowups().catch((e) => ({ error: String(e?.message || e) }));
+  return Response.json({ ...post, autoreply, sales });
 }
