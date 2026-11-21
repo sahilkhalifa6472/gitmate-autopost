@@ -1,0 +1,7 @@
+[frustrated] You saw it on your screen three days ago... and now you can't find it anywhere.
+[excited] Mate, meet Recall AI. It quietly remembers what was on your screen, so you can just ask.
+"What was I working on yesterday?" And it tells you.
+[impressed] And the best part? Everything stays on your PC. Passwords and secrets get filtered out, the text is encrypted, and the AI runs locally with Ollama.
+[warm] Free and open-source, built by a solo dev, Madhur.
+Want your repo featured too? DM us FEATURE.
+Comment GITMATE and I'll send you the link.

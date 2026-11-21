@@ -1,0 +1,8 @@
+{
+ "video": "gitmate_ruff.mp4",
+ "title": "Ruff: the Python linter + formatter that lints all of CPython in 0.29s",
+ "description": "Your Python linter takes over a minute... Ruff does it in 0.29 seconds. \u26a1\n\nRuff (by Astral) is an extremely fast Python linter + code formatter, written in Rust:\n\u2192 Linting all of CPython from scratch: Pylint >60s, Flake8 12.26s, Ruff 0.29s\n\u2192 Replaces Flake8 (+ dozens of plugins), Black, isort, pyupgrade and more\n\u2192 900+ built-in rules, with auto-fix (e.g. removes unused imports)\n\u2192 pyproject.toml support, built-in caching, VS Code + editor integrations\n\u2192 Used by FastAPI, pandas, Hugging Face, SciPy, Apache Airflow\n\n\u2705 Free + open source (MIT) \u00b7 51k \u2605\nTry it: uvx ruff check && uvx ruff format\n\nComment GITMATE and I'll send you the link \ud83d\udc47\nFollow @git.mate for 1 useful repo every day.\n\n#python #github #opensource #ruff #rust #linter #devtools #developer #programming #coding #pythonprogramming #softwareengineering\n",
+ "repo": "https://github.com/astral-sh/ruff",
+ "theme": "light",
+ "duration": 38.4
+}

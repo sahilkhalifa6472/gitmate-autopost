@@ -1,0 +1,385 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<title>git.mate personal-erp</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<style>
+:root{--ink:#0b0b0c;--mut:#8b8d91;--dim:#cfd0d2;--bg:#f7f7f5}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#fff}
+.f{position:relative;width:1080px;height:1920px;overflow:hidden;background:radial-gradient(ellipse 110% 70% at 50% 45%,#ffffff 0%,#f7f7f5 55%,#eeeeec 100%);color:var(--ink);font-family:'Inter',sans-serif}
+#cam{position:absolute;inset:0}
+#stage{position:absolute;inset:0;perspective:1800px;perspective-origin:50% 50%}
+#world{position:absolute;left:0;top:0;width:1080px;height:1920px;transform-style:preserve-3d;transform-origin:540px 960px}
+.sc{position:absolute;left:0;top:0;width:1080px;height:1920px;transform-style:preserve-3d;transform-origin:540px 960px;visibility:hidden}
+.ring{position:absolute;border-radius:50%;border:70px solid rgba(10,10,12,.045);filter:blur(26px)}
+.grain{position:absolute;inset:0;opacity:.05;mix-blend-mode:multiply;z-index:8;pointer-events:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
+.top{position:absolute;left:64px;right:64px;top:84px;height:80px;z-index:6}
+.brand{position:absolute;left:0;top:0;display:flex;align-items:center;gap:16px;font-family:'JetBrains Mono';font-weight:700;font-size:28px}
+.mk{width:58px;height:58px;border-radius:50%;display:grid;place-items:center;font-family:'JetBrains Mono';font-weight:800;font-size:22px;color:#fff;background:radial-gradient(circle at 34% 28%,#5a5c61 0 10%,#1a1b1e 45%,#000 100%);box-shadow:inset 0 2px 3px rgba(255,255,255,.35),0 8px 18px rgba(0,0,0,.25)}
+.tag{position:absolute;right:0;top:14px;font-family:'JetBrains Mono';font-size:24px;color:var(--mut);white-space:nowrap}
+.tag b{color:var(--ink);font-weight:700}
+.C{position:absolute;left:0;right:0;text-align:center;white-space:nowrap}
+.kick{font-family:'JetBrains Mono';font-size:26px;color:var(--mut);letter-spacing:1px}
+.sans{font-weight:600;letter-spacing:-.035em;line-height:1}
+.ser{font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;letter-spacing:-.01em;line-height:1}
+.ch{display:inline-block;white-space:pre}
+.mono{font-family:'JetBrains Mono'}
+.card{position:absolute;background:#fff;border-radius:26px;box-shadow:0 0 0 2px var(--ink),0 8px 0 var(--ink),0 40px 70px rgba(0,0,0,.14);overflow:hidden}
+.bpill{display:inline-block;padding:4px 26px 12px;border-radius:24px;background:var(--ink);color:#fff;font-family:'Inter';font-style:normal;font-weight:600;letter-spacing:-.035em;vertical-align:6px}
+/* S1 first terminal + minted coin */
+.cur1{display:inline-block;vertical-align:-6px}
+/* S1 subscription receipt printer */
+.prn{position:absolute;left:190px;top:640px;width:700px;height:150px;border-radius:30px;background:var(--ink);box-shadow:0 12px 0 #3a3b3e,0 40px 70px rgba(0,0,0,.22);z-index:2}
+.prn .slotp{position:absolute;left:60px;right:60px;bottom:26px;height:14px;border-radius:7px;background:#000;box-shadow:inset 0 2px 4px #000,0 1px 0 #4a4b4f}
+.prn .lbp{position:absolute;left:44px;top:30px;font-family:'JetBrains Mono';font-weight:700;font-size:22px;color:#9a9ca1;letter-spacing:3px}
+.prn .ledp{position:absolute;right:44px;top:34px;width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 0 14px #fff}
+.papw{position:absolute;left:260px;top:770px;width:560px;height:720px;overflow:hidden}
+.pap{position:absolute;left:0;top:0;width:560px;background:#fff;box-shadow:0 0 0 2px var(--ink),0 30px 50px rgba(0,0,0,.12);padding:20px 34px 26px;font-family:'JetBrains Mono';font-size:25px;transform-origin:50% 0}
+.pap .rl{display:flex;justify-content:space-between;height:44px;align-items:center;border-bottom:2px dashed #d9dadc;white-space:nowrap}
+.pap .rl b{font-weight:800}
+.pap .rh{font-weight:800;font-size:22px;color:var(--mut);letter-spacing:2px;height:40px}
+.pap .up{background:var(--ink);color:#fff;padding:0 10px;border-radius:6px}
+.pap .tot{display:flex;justify-content:space-between;font-weight:800;font-size:32px;padding-top:14px;white-space:nowrap}
+
+/* S2 real repo page swing */
+.ghcard{left:90px;top:640px;width:900px;height:620px}
+.ghcard img{position:absolute;left:0;top:0;width:900px;height:auto}
+.kp{position:absolute;left:0;right:0;top:1330px;display:flex;justify-content:center;gap:18px}
+.kp span{padding:14px 26px;border-radius:999px;border:2.5px solid var(--ink);font-family:'JetBrains Mono';font-weight:700;font-size:26px;background:#fff;white-space:nowrap}
+
+/* S3 3D monitor playing the real demo */
+.mon{position:absolute;left:70px;top:720px;width:940px;height:560px;transform-style:preserve-3d}
+.mon .bez{position:absolute;inset:0;border-radius:30px;background:var(--ink);box-shadow:0 10px 0 #3a3b3e,0 50px 90px rgba(0,0,0,.25)}
+.mon .scr{position:absolute;left:22px;top:22px;right:22px;bottom:22px;border-radius:14px;overflow:hidden;background:#fff}
+.mon .scr img{width:100%;height:100%;object-fit:cover;object-position:0 0;display:block}
+.mon .neck{position:absolute;left:400px;top:560px;width:140px;height:110px;background:linear-gradient(90deg,#2a2b2e,#55575b,#2a2b2e)}
+.mon .foot{position:absolute;left:300px;top:660px;width:340px;height:30px;border-radius:14px;background:var(--ink);box-shadow:0 8px 0 #3a3b3e}
+
+/* S4 rolodex of real screens */
+.rolo{position:absolute;left:90px;top:760px;width:900px;height:470px;transform-style:preserve-3d}
+.rc{position:absolute;left:0;top:0;width:900px;height:470px;border-radius:24px;overflow:hidden;background:#fff;box-shadow:0 0 0 2.5px var(--ink),0 8px 0 var(--ink);transform-origin:50% 100%;backface-visibility:hidden}
+.rc img{width:100%;height:100%;object-fit:cover;object-position:0 0;display:block}
+.rc .rtab{position:absolute;right:20px;top:18px;padding:8px 18px;border-radius:10px;background:var(--ink);color:#fff;font-family:'JetBrains Mono';font-weight:800;font-size:22px;letter-spacing:1px}
+.rbase{position:absolute;left:160px;top:1238px;width:760px;height:60px;border-radius:16px;background:var(--ink);box-shadow:0 8px 0 #3a3b3e}
+.rbase i{position:absolute;top:-30px;width:30px;height:40px;border-radius:10px;background:#55575b}
+.fl4{position:absolute;left:0;right:0;top:1360px;height:70px;display:flex;justify-content:center;gap:12px;flex-wrap:nowrap}
+.fl4 span{padding:12px 20px;border-radius:999px;font-family:'JetBrains Mono';font-weight:700;font-size:23px;border:2.5px solid var(--ink);background:#fff;white-space:nowrap}
+.fl4 span.on{background:var(--ink);color:#fff}
+
+/* S5 server + database */
+.srv{position:absolute;left:110px;top:800px;width:400px;height:430px;transform-style:preserve-3d}
+.ru{position:absolute;left:0;width:400px;height:120px;border-radius:18px;background:#fff;box-shadow:0 0 0 2.5px var(--ink),0 8px 0 var(--ink);display:flex;align-items:center;gap:16px;padding:0 26px;font-family:'JetBrains Mono';font-weight:700;font-size:22px}
+.ru i{width:16px;height:16px;border-radius:50%;background:#d9dadc;box-shadow:inset 0 0 0 2px var(--ink)}
+.ru i.on{background:var(--ink)}
+.ru .vent{margin-left:auto;width:90px;height:40px;background:repeating-linear-gradient(90deg,var(--ink) 0 4px,transparent 4px 12px);opacity:.6}
+.dbw{position:absolute;left:640px;top:800px;width:300px;height:430px}
+.disc{position:absolute;left:0;width:300px;height:90px}
+.disc .tp{position:absolute;left:0;top:0;width:300px;height:90px;border-radius:50%;background:#fff;box-shadow:inset 0 0 0 3px var(--ink)}
+.disc .sd{position:absolute;left:0;top:45px;width:300px;height:80px;background:#fff;border-left:3px solid var(--ink);border-right:3px solid var(--ink);border-bottom:3px solid var(--ink);border-radius:0 0 150px 150px / 0 0 45px 45px}
+.dbl{position:absolute;left:0;right:0;top:470px;text-align:center;font-family:'JetBrains Mono';font-weight:800;font-size:24px}
+.srl{position:absolute;left:110px;width:400px;top:1270px;text-align:center;font-family:'JetBrains Mono';font-weight:800;font-size:24px}
+.pkt{position:absolute;width:26px;height:26px;border-radius:7px;background:var(--ink);opacity:0}
+.lnk{position:absolute;left:520px;top:1010px;width:110px;height:0;border-top:3px dashed var(--ink)}
+
+/* S6 no seats, no renewals */
+.seat{position:absolute;left:110px;top:720px;width:860px;height:300px;border-radius:26px;background:#fff;box-shadow:0 0 0 2.5px var(--ink),0 8px 0 var(--ink);padding:30px 36px}
+.seat .sh{font-family:'JetBrains Mono';font-weight:800;font-size:22px;color:var(--mut);letter-spacing:2px}
+.seat .ppl{display:flex;gap:12px;margin-top:26px}
+.seat .ppl i{width:52px;height:52px;border-radius:50%;background:var(--ink)}
+.seat .sp{margin-top:28px;font-weight:700;font-size:44px;letter-spacing:-.03em;white-space:nowrap}
+.strike{position:absolute;left:30px;height:8px;background:var(--ink);border-radius:4px;transform-origin:0 50%}
+.zero{position:absolute;right:40px;top:50px;width:170px;height:170px;border-radius:50%;border:8px solid var(--ink);display:grid;place-items:center;font-weight:800;font-size:80px;transform:rotate(-12deg)}
+.mail{position:absolute;left:110px;top:1110px;width:860px;height:200px;border-radius:26px;background:#fff;box-shadow:0 0 0 2.5px var(--ink),0 8px 0 var(--ink);display:flex;align-items:center;gap:26px;padding:0 34px}
+.mail .env{width:96px;height:70px;border-radius:10px;border:4px solid var(--ink);position:relative;flex:none;overflow:hidden}
+.mail .env:after{content:'';position:absolute;left:6px;top:-30px;width:70px;height:70px;border:4px solid var(--ink);transform:rotate(45deg)}
+.mail .mt{font-weight:700;font-size:36px;letter-spacing:-.02em;white-space:nowrap}
+.mail .ms{font-family:'JetBrains Mono';font-size:22px;color:var(--mut);white-space:nowrap;margin-top:6px}
+
+/* S7 docker compose up */
+.term7{position:absolute;left:90px;top:700px;width:900px;height:600px;border-radius:26px;background:var(--ink);color:#fff;box-shadow:0 12px 0 #3a3b3e,0 50px 80px rgba(0,0,0,.25);overflow:hidden}
+.term7 .bar1{height:62px;background:#232427;display:flex;align-items:center;gap:12px;padding:0 26px;font-family:'JetBrains Mono';font-size:22px;color:#9a9ca1}
+.term7 .bar1 i{width:16px;height:16px;border-radius:50%;background:#55575b}
+.term7 .cmd{padding:30px 36px 10px;font-family:'JetBrains Mono';font-size:44px;font-weight:700;white-space:pre}
+.svc{display:flex;align-items:center;gap:22px;padding:0 36px;height:76px;font-family:'JetBrains Mono';font-size:30px;white-space:nowrap}
+.svc .ok{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:#fff;color:var(--ink);font-weight:800;font-size:26px}
+.svc .st{margin-left:auto;color:#9a9ca1;font-size:24px}
+.cur7{display:inline-block;width:22px;height:46px;background:#fff;vertical-align:-8px}
+
+/* S8 builder signature card */
+.bld{position:absolute;left:110px;top:700px;width:860px;height:560px;border-radius:30px;background:#fff;box-shadow:0 0 0 2.5px var(--ink),0 10px 0 var(--ink),0 40px 70px rgba(0,0,0,.12);padding:44px}
+.bld .bh{font-family:'JetBrains Mono';font-weight:800;font-size:24px;color:var(--mut);letter-spacing:3px}
+.bld .sig{position:absolute;left:44px;top:110px;font-family:'Instrument Serif';font-style:italic;font-size:170px;white-space:nowrap;line-height:1}
+.bld .ul{position:absolute;left:44px;top:300px;height:5px;background:var(--ink);border-radius:3px}
+.bld .stt{position:absolute;left:44px;right:44px;top:350px;display:flex;gap:18px}
+.bld .stt div{flex:1;border-radius:18px;border:2.5px solid var(--ink);padding:18px 20px}
+.bld .stt b{display:block;font-weight:700;font-size:54px;letter-spacing:-.04em}
+.bld .stt small{font-family:'JetBrains Mono';font-size:20px;color:var(--mut)}
+.bld .hdl{position:absolute;right:44px;top:44px;font-family:'JetBrains Mono';font-weight:800;font-size:26px;padding:8px 18px;border-radius:12px;background:var(--ink);color:#fff}
+
+/* S9 DM composer + paper plane */
+.dmc{position:absolute;left:90px;top:780px;width:900px;height:520px;border-radius:30px;background:#fff;box-shadow:0 0 0 2.5px var(--ink),0 10px 0 var(--ink),0 40px 70px rgba(0,0,0,.12);overflow:hidden}
+.dmc .dh{height:110px;display:flex;align-items:center;gap:20px;padding:0 34px;border-bottom:2.5px solid var(--ink)}
+.dmc .dh b{font-family:'JetBrains Mono';font-weight:800;font-size:30px}
+.dmc .dh small{font-family:'JetBrains Mono';font-size:20px;color:var(--mut)}
+.dmc .bub{position:absolute;right:34px;top:150px;padding:22px 32px;border-radius:36px 36px 10px 36px;background:var(--ink);color:#fff;font-weight:700;font-size:48px;letter-spacing:.04em}
+.dmc .rep{position:absolute;left:34px;top:290px;padding:20px 30px;border-radius:36px 36px 36px 10px;border:2.5px solid var(--ink);font-weight:600;font-size:34px;white-space:nowrap}
+.dmc .inp{position:absolute;left:34px;right:34px;bottom:30px;height:90px;border-radius:999px;border:2.5px solid var(--ink);display:flex;align-items:center;padding:0 30px;font-family:'JetBrains Mono';font-size:30px;font-weight:700}
+.plane{position:absolute;left:820px;top:1210px;width:110px;height:110px;opacity:0}
+/* ending */
+.cin{display:flex;align-items:center;gap:26px;padding:0 26px 0 30px;background:#fff;box-shadow:0 0 0 2px var(--ink),0 6px 0 var(--ink),0 30px 50px rgba(0,0,0,.12)}
+.cbar{position:absolute}
+.av{width:76px;height:76px;border-radius:50%;background:linear-gradient(135deg,#d9d9d7,#a9aaad);flex:none}
+.cin .tx{flex:1;font-size:46px;font-weight:600;letter-spacing:.02em}
+.send{width:84px;height:84px;border-radius:50%;background:var(--ink);display:grid;place-items:center;color:#fff;font-size:40px;flex:none}
+.dm{position:absolute;padding:30px 44px;border-radius:44px 44px 44px 12px;background:var(--ink);color:#fff;font-size:42px;font-weight:500;white-space:nowrap}
+.dm small{display:block;font-family:'JetBrains Mono';font-size:20px;color:#9a9ca1;margin-bottom:8px}
+.bigmk{position:absolute;left:400px;top:600px;width:280px;height:280px;border-radius:50%;display:grid;place-items:center;font-family:'JetBrains Mono';font-weight:800;font-size:96px;color:#fff;background:radial-gradient(circle at 34% 26%,#6a6c71 0 8%,#1c1d20 42%,#000 100%);box-shadow:inset 0 6px 10px rgba(255,255,255,.3),inset 0 -14px 26px rgba(0,0,0,.6),0 40px 80px rgba(0,0,0,.28)}
+.erings{position:absolute;left:290px;top:490px;width:500px;height:500px}
+.fol{position:absolute;left:300px;top:1390px;width:480px;height:132px;border-radius:999px;display:grid;place-items:center;font-size:50px;font-weight:600;background:var(--ink);color:#fff;box-shadow:0 22px 44px rgba(0,0,0,.22)}
+.fol2{position:absolute;left:300px;top:1390px;width:480px;height:132px;border-radius:999px;display:grid;place-items:center;font-size:50px;font-weight:600;background:#fff;color:var(--ink);border:3px solid var(--ink);opacity:0}
+.tapd{position:absolute;width:90px;height:90px;border-radius:50%;background:rgba(11,11,12,.18);border:3px solid rgba(11,11,12,.55);opacity:0}
+.rip{position:absolute;left:540px;top:1456px;width:10px;height:10px;margin:-5px;border-radius:50%;border:4px solid var(--ink);opacity:0}
+</style></head>
+<body>
+<svg width="0" height="0" style="position:absolute"><defs>
+  <filter id="mb" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur id="mbg" stdDeviation="0 0"/></filter>
+</defs></svg>
+<div class="f" id="F">
+ <div id="cam"><div id="stage"><div id="world">
+
+  <!-- S1 hook: monthly subscription receipt keeps printing -->
+  <div class="sc" id="s1" data-pose="0,0,0,0,0,0">
+    <div class="ring" style="left:-260px;top:-180px;width:720px;height:720px;transform:translateZ(-500px)"></div>
+    <div class="C sans ty" style="top:250px;font-size:136px;font-weight:700;letter-spacing:-.055em;transform:translateZ(120px)" data-t="0.15" data-cd=".04">Still paying</div>
+    <div class="C ser rv" style="top:400px;font-size:90px;transform:translateZ(120px)" data-t="1.3">monthly for your <span class="bpill">books?</span></div>
+    <div class="prn c3d" data-t="0.05" data-rx="12"><div class="lbp">SAAS · MONTHLY</div><div class="ledp" id="ledp"></div><div class="slotp"></div></div>
+    <div class="papw"><div class="pap" id="pap"></div></div>
+  </div>
+
+  <!-- S2 meet: the real repo page -->
+  <div class="sc" id="s2" data-pose="2600,0,-800,-28,0,0">
+    <div class="ring" style="left:600px;top:-200px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="C kick ty" style="top:250px;font-size:30px;transform:translateZ(120px)" data-t="4.35" data-cd=".03">mate, check this out</div>
+    <div class="C sans ty" style="top:330px;font-size:160px;font-weight:700;letter-spacing:-.06em;transform:translateZ(140px)" data-t="5.85" data-cd=".04">Personal ERP</div>
+    <div class="card ghcard c3d" data-t="4.3" data-rx="12" data-ry="10"><img src="media/gh_g.jpg"></div>
+    <div class="kp"><span class="pp" data-t="6.4">MIT licence</span><span class="pp" data-t="6.55">self-hosted</span><span class="pp" data-t="6.7">small business</span></div>
+  </div>
+
+  <!-- S3 free self-hosted: real demo on a 3D monitor -->
+  <div class="sc" id="s3" data-pose="2600,2600,-1400,0,24,0">
+    <div class="ring" style="left:640px;top:1300px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="C sans ty" style="top:250px;font-size:150px;font-weight:700;letter-spacing:-.055em;transform:translateZ(120px)" data-t="7.4" data-cd=".05">Free.</div>
+    <div class="C ser rv" style="top:410px;font-size:112px;transform:translateZ(120px)" data-t="8.0">self-hosted <span class="bpill">ERP.</span></div>
+    <div class="C kick rv" style="top:570px;font-size:30px;transform:translateZ(120px)" data-t="9.4">for small businesses</div>
+    <div class="mon c3d" id="mon" data-t="7.25" data-rx="10" data-ry="-12"><div class="neck"></div><div class="foot"></div><div class="bez"></div><div class="scr"><img id="mimg" src="media/seq/b096.jpg"></div></div>
+  </div>
+
+  <!-- S4 rolodex of real screens -->
+  <div class="sc" id="s4" data-pose="0,2600,-900,30,0,0">
+    <div class="ring" style="left:-300px;top:1200px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="C sans ty" style="top:250px;font-size:130px;font-weight:700;letter-spacing:-.055em;transform:translateZ(120px)" data-t="10.6" data-cd=".04">Your whole</div>
+    <div class="C ser rv" style="top:400px;font-size:120px;transform:translateZ(120px)" data-t="11.3">back <span class="bpill">office.</span></div>
+    <div class="rolo" id="rolo"></div>
+    <div class="rbase"><i style="left:120px"></i><i style="left:610px"></i></div>
+    <div class="fl4" id="fl4"></div>
+  </div>
+
+  <!-- S5 your server + your database -->
+  <div class="sc" id="s5" data-pose="-2600,2600,-1300,0,-22,0">
+    <div class="ring" style="left:640px;top:-200px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="C sans ty" style="top:250px;font-size:136px;font-weight:700;letter-spacing:-.055em;transform:translateZ(120px)" data-t="17.1" data-cd=".04">Your server.</div>
+    <div class="C ser rv" style="top:410px;font-size:116px;transform:translateZ(120px)" data-t="18.7">your <span class="bpill">database.</span></div>
+    <div class="srv c3d" id="srv" data-t="16.9" data-rx="10" data-ry="14"></div>
+    <div class="lnk" id="lnk"></div>
+    <div id="pkts"></div>
+    <div class="dbw c3d" id="dbw" data-t="17.4" data-rx="10" data-ry="-14"></div>
+    <div class="srl rv" data-t="17.6">your machine</div>
+  </div>
+
+  <!-- S6 no seats, no renewals -->
+  <div class="sc" id="s6" data-pose="-2600,5200,-800,-30,0,0">
+    <div class="ring" style="left:600px;top:1300px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="C sans ty" style="top:250px;font-size:124px;font-weight:700;letter-spacing:-.055em;transform:translateZ(120px)" data-t="20.75" data-cd=".035">No seat count.</div>
+    <div class="C ser rv" style="top:400px;font-size:112px;transform:translateZ(120px)" data-t="21.7">no renewal <span class="bpill">email.</span></div>
+    <div class="seat c3d" data-t="20.5" data-rx="10" data-ry="8"><div class="sh">TEAM PLAN · SEATS</div><div class="ppl">
+      <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="sp">12 seats × $15 / month</div>
+      <div class="strike" id="stk" style="top:228px;width:520px"></div><div class="zero" id="zero">$0</div></div>
+    <div class="mail" id="mail"><div class="env"></div><div><div class="mt">Your plan renews in 3 days</div><div class="ms">billing@saas.app · new pricing inside</div></div></div>
+  </div>
+
+  <!-- S7 docker compose up -->
+  <div class="sc" id="s7" data-pose="0,5200,-1400,0,24,0">
+    <div class="ring" style="left:-300px;top:-160px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="C sans ty" style="top:250px;font-size:132px;font-weight:700;letter-spacing:-.055em;transform:translateZ(120px)" data-t="22.95" data-cd=".04">One command.</div>
+    <div class="C ser rv" style="top:400px;font-size:116px;transform:translateZ(120px)" data-t="24.1">and it's <span class="bpill">running.</span></div>
+    <div class="term7 c3d" data-t="22.8" data-rx="12" data-ry="-8"><div class="bar1"><i></i><i></i><i></i>&nbsp;~/Personal-ERP</div><div class="cmd" id="cmd7"></div><div id="svcs"></div></div>
+  </div>
+
+  <!-- S8 built by -->
+  <div class="sc" id="s8" data-pose="2600,5200,-900,28,0,0">
+    <div class="ring" style="left:640px;top:1300px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="C sans ty" style="top:250px;font-size:136px;font-weight:700;letter-spacing:-.055em;transform:translateZ(120px)" data-t="25.1" data-cd=".05">Built by</div>
+    <div class="C ser rv" style="top:400px;font-size:116px;transform:translateZ(120px)" data-t="25.55">a <span class="bpill">solo dev.</span></div>
+    <div class="bld c3d" data-t="25.0" data-rx="10" data-ry="-10"><div class="bh">BUILT BY</div><div class="hdl">@madhur_772005</div><div class="sig" id="sig"></div><div class="ul" id="ul"></div>
+      <div class="stt"><div><b>1</b><small>contributor</small></div><div><b>127</b><small>commits</small></div><div><b>MIT</b><small>licence</small></div></div></div>
+  </div>
+
+  <!-- S9 DM FEATURE -->
+  <div class="sc" id="s9" data-pose="2600,7800,-1300,0,-24,0">
+    <div class="ring" style="left:620px;top:-200px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="C sans rv" style="top:250px;font-size:112px;font-weight:700;letter-spacing:-.05em;transform:translateZ(140px)" data-t="27.15">Want your repo</div>
+    <div class="C ser rv" style="top:380px;font-size:116px;transform:translateZ(140px)" data-t="27.8">featured <span class="bpill">too?</span></div>
+    <div class="dmc c3d" data-t="27.1" data-rx="12" data-ry="8"><div class="dh"><div class="mk">&gt;_</div><div><b>git.mate</b><br><small>Instagram · Direct</small></div></div>
+      <div class="bub" id="bub">FEATURE</div><div class="inp"><span id="ftx"></span><span class="cur1" id="cur9" style="background:var(--ink);width:18px;height:38px;margin-left:4px"></span></div></div>
+    <svg class="plane" id="plane" viewBox="0 0 100 100"><path d="M6 48 L94 8 L66 92 L50 60 Z" fill="#0b0b0c"/><path d="M50 60 L94 8" stroke="#fff" stroke-width="4"/></svg>
+  </div>
+  <div class="sc" id="s10" data-pose="0,7800,-800,-30,0,0">
+    <div class="ring" style="left:620px;top:1300px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="C sans rv" style="top:380px;font-size:120px;font-weight:500" data-t="30.0">Comment</div>
+    <div class="C sans ty" style="top:510px;font-size:196px;font-weight:700;letter-spacing:-.04em" data-t="30.4" data-cd=".05">GITMATE</div>
+    <div class="cbar cin c3d" style="left:64px;top:860px;width:952px;height:140px;border-radius:999px" data-t="30.2" data-rx="10"><div class="av"></div><div class="tx" id="ctx"></div><div class="send">↑</div></div>
+    <div class="dm pp" style="left:250px;top:1110px" data-t="31.1"><small>git.mate · message</small>Here's your link, mate →</div>
+  </div>
+
+  <!-- S11 end -->
+  <div class="sc" id="s11" data-pose="-2600,7800,-1400,24,0,0">
+    <div class="ring" style="left:-300px;top:-160px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="ring" style="left:640px;top:1400px;width:760px;height:760px;transform:translateZ(-800px)"></div>
+    <svg class="erings" viewBox="0 0 500 500"><circle id="er1" cx="250" cy="250" r="226" fill="none" stroke="#0b0b0c" stroke-width="3" stroke-dasharray="1420" stroke-dashoffset="1420" transform="rotate(-90 250 250)"/>
+      <circle id="er2" cx="250" cy="250" r="246" fill="none" stroke="#c9cacc" stroke-width="2" stroke-dasharray="1546" stroke-dashoffset="1546" transform="rotate(90 250 250)"/></svg>
+    <div class="bigmk" id="bigmk">&gt;_</div>
+    <div class="C sans ty" style="top:1050px;font-size:104px;font-weight:700" data-t="32.55" data-cd=".05">@git.mate</div>
+    <div class="C ser" style="top:1200px;font-size:96px"><span class="rv g" data-t="33.05">1 repo</span> <span class="rv" data-t="33.35">every</span> <span class="rv" data-t="33.6">day.</span></div>
+    <div class="fol pp" id="fol" data-t="32.7">Follow</div>
+    <div class="fol2" id="fol2">Following ✓</div>
+    <div class="rip" id="rip"></div>
+    <div class="tapd" id="tapd" style="left:640px;top:1560px"></div>
+  </div>
+
+ </div></div></div>
+ <div class="top"><div class="brand"><div class="mk">&gt;_</div>git.mate</div><div class="tag" id="tag"><b>01</b> / 11</div></div>
+ <div class="grain"></div>
+</div>
+<script>
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+const SPD = 1.0, RAWTOTAL = 35.3, TOTAL = RAWTOTAL; window.__TOTAL = TOTAL;
+const S = [0, 4.2, 7.15, 10.45, 16.75, 20.45, 22.8, 24.95, 27.0, 29.85, 32.2];
+const NS = S.length;
+const sm = (a, b, x) => { const k = Math.min(1, Math.max(0, (x - a) / (b - a))); return k * k * (3 - 2 * k); };
+const cl = (a, b, x) => Math.min(1, Math.max(0, (x - a) / (b - a)));
+const bump = (t, c, w) => Math.max(0, 1 - Math.abs(t - c) / w);
+const pad3 = n => String(n).padStart(3, '0');
+
+// S1 receipt
+const RL = [['JAN', '$49'], ['FEB', '$49'], ['MAR', '$49'], ['APR', '$59', 1], ['MAY', '$59'], ['JUN', '$59'], ['JUL', '$69', 1], ['AUG', '$69'], ['SEP', '$69']];
+$('#pap').innerHTML = '<div class="rh">ERP SUBSCRIPTION · 2026</div>' + RL.map(([m, p, u]) => `<div class="rl"><span>${m}</span>${u ? '<span class="up">price ↑</span>' : '<span></span>'}<b>${p}</b></div>`).join('') + '<div class="tot"><span>PAID</span><span id="ptot">$0</span></div>';
+// S4 rolodex cards (real frames from the repo's demo video)
+const RC = [[128, 'BILLING', 10.76], [165, 'DOUBLE-ENTRY', 11.5], [212, 'SALES · GST', 12.8], [227, 'INVENTORY', 14.92], [242, 'INVOICE SCAN', 15.56]];
+$('#rolo').innerHTML = RC.map(([f, l], k) => `<div class="rc" id="rc${k}"><img src="media/seq/b${pad3(f)}.jpg"><div class="rtab">${l}</div></div>`).join('');
+$('#fl4').innerHTML = ['Billing', 'Accounting', 'Sales + GST', 'Inventory', 'Scan'].map((w, k) => `<span id="fc${k}">${w}</span>`).join('');
+// S5 server units + db discs + packets
+$('#srv').innerHTML = ['api', 'web', 'worker'].map((n, k) => `<div class="ru" style="top:${k * 150}px"><i id="sl${k}a"></i><i id="sl${k}b"></i><span>${n}</span><span class="vent"></span></div>`).join('');
+$('#dbw').innerHTML = [0, 1, 2].map(k => `<div class="disc" style="top:${200 - k * 100}px"><div class="sd"></div><div class="tp"></div></div>`).join('') + '<div class="dbl">PostgreSQL · yours</div>';
+$('#pkts').innerHTML = Array.from({ length: 5 }, (_, i) => `<div class="pkt" id="pk${i}"></div>`).join('');
+// S7 services
+const SV = [['postgres', 24.0], ['redis', 24.12], ['api', 24.24], ['web', 24.36]];
+$('#svcs').innerHTML = SV.map(([n], k) => `<div class="svc" id="sv${k}"><span class="ok">✓</span>${n}<span class="st">running</span></div>`).join('');
+
+const scenes = $$('.sc');
+const poses = scenes.map(s => s.dataset.pose.split(',').map(Number));
+scenes.forEach((s, i) => { const [x, y, z, ry, rx, rz] = poses[i]; s.style.transform = `translate3d(${x}px,${y}px,${z}px) rotateY(${ry}deg) rotateX(${rx}deg) rotateZ(${rz}deg)`; });
+const tl = gsap.timeline({ paused: true });
+
+$$('.ty').forEach(el => { const t = +el.dataset.t, cd = +(el.dataset.cd || .045); const txt = el.textContent; el.textContent = '';
+  const chs = [...txt].map(c => { const s = document.createElement('span'); s.className = 'ch'; s.textContent = c; el.appendChild(s); return s; });
+  tl.set(chs, { opacity: 0 }, 0);
+  chs.forEach((c, i) => tl.fromTo(c, { opacity: 0, y: 26, filter: 'blur(14px)' }, { opacity: 1, y: 0, filter: 'blur(0px)', duration: .42, ease: 'power3.out', immediateRender: false }, Math.max(0.001, t + i * cd))); });
+$$('.rv').forEach(el => { const t = +el.dataset.t; if (isNaN(t)) return;
+  tl.set(el, { opacity: 0 }, 0); tl.fromTo(el, { opacity: 0, y: 46, filter: 'blur(16px)' }, { opacity: 1, y: 0, filter: 'blur(0px)', duration: .55, ease: 'power3.out', immediateRender: false }, Math.max(0.001, t)); });
+$$('.pp').forEach(el => { const t = +el.dataset.t;
+  tl.set(el, { opacity: 0 }, 0); tl.fromTo(el, { opacity: 0, scale: .55, filter: 'blur(10px)' }, { opacity: 1, scale: 1, filter: 'blur(0px)', duration: .5, ease: 'back.out(2.2)', immediateRender: false }, t); });
+$$('.c3d').forEach(el => { const t = +el.dataset.t, rx = +(el.dataset.rx || 0), ry = +(el.dataset.ry || 0);
+  tl.set(el, { opacity: 0, transformPerspective: 1500 }, 0);
+  tl.fromTo(el, { opacity: 0, rotationX: rx + 50, rotationY: ry * 2.5, y: 260, z: -500, scale: .9 }, { opacity: 1, rotationX: rx, rotationY: ry, y: 0, z: 0, scale: 1, duration: 1.05, ease: 'expo.out', immediateRender: false }, Math.max(0.001, t));
+  tl.to(el, { rotationX: rx * .4, rotationY: -ry * .5, duration: 3.2, ease: 'sine.inOut' }, Math.max(0.001, t) + 1.05); });
+
+// S6 strike + $0 stamp + email flicked away
+tl.set('#stk', { scaleX: 0 }, 0); tl.to('#stk', { scaleX: 1, duration: .3, ease: 'power2.out' }, 21.0);
+tl.set('#zero', { opacity: 0, scale: 2.4 }, 0); tl.to('#zero', { opacity: 1, scale: 1, duration: .25, ease: 'power3.in' }, 21.2);
+tl.set('#mail', { opacity: 0, y: 200, transformPerspective: 1500, rotationX: 40 }, 0); tl.to('#mail', { opacity: 1, y: 0, rotationX: 8, duration: .7, ease: 'expo.out' }, 20.9);
+tl.to('#mail', { x: 1300, rotationZ: 24, rotationY: 40, duration: .55, ease: 'power3.in' }, 22.15);
+// S9 bubble + plane
+tl.set('#bub', { opacity: 0, scale: .5, transformOrigin: '100% 100%' }, 0); tl.to('#bub', { opacity: 1, scale: 1, duration: .45, ease: 'back.out(2)' }, 29.4);
+tl.set('#plane', { opacity: 0 }, 0); tl.to('#plane', { opacity: 1, duration: .1 }, 29.4);
+tl.fromTo('#plane', { x: 0, y: 0, rotation: 0, scale: 1 }, { x: 260, y: -900, rotation: -20, scale: .4, duration: .9, ease: 'power2.in', immediateRender: false }, 29.45);
+// S10 comment typing
+const cm = { n: 0 };
+tl.fromTo(cm, { n: 0 }, { n: 7, duration: .45, ease: 'none', immediateRender: false, onUpdate: () => $('#ctx').textContent = 'GITMATE'.slice(0, Math.round(cm.n)) }, 30.6);
+// S11 end
+tl.set('#bigmk', { opacity: 0, scale: .2 }, 0);
+tl.to('#bigmk', { opacity: 1, scale: 1, duration: .9, ease: 'back.out(1.8)' }, 32.25);
+tl.fromTo('#er1', { attr: { 'stroke-dashoffset': 1420 } }, { attr: { 'stroke-dashoffset': 0 }, duration: 1.0, ease: 'power2.inOut', immediateRender: false }, 32.4);
+tl.fromTo('#er2', { attr: { 'stroke-dashoffset': 1546 } }, { attr: { 'stroke-dashoffset': 0 }, duration: 1.2, ease: 'power2.inOut', immediateRender: false }, 32.55);
+tl.to('#tapd', { opacity: 1, left: 560, top: 1440, duration: .5, ease: 'power2.out' }, 33.65);
+tl.to('#tapd', { scale: .7, duration: .1 }, 34.15); tl.to('#tapd', { scale: 1, duration: .15 }, 34.25);
+tl.to('#fol', { scale: .93, duration: .1 }, 34.15); tl.to('#fol', { scale: 1, duration: .2 }, 34.25);
+tl.set('#fol2', { opacity: 1 }, 34.25); tl.set('#fol', { opacity: 0 }, 34.25);
+tl.fromTo('#rip', { opacity: .7, width: 10, height: 10, margin: -5 }, { opacity: 0, width: 640, height: 640, margin: -320, duration: .8, ease: 'power2.out', immediateRender: false }, 34.2);
+tl.to('#tapd', { opacity: 0, duration: .3 }, 34.6);
+tl.to({}, { duration: .01 }, RAWTOTAL);
+
+const ease = x => x < .5 ? 16 * x ** 5 : 1 - Math.pow(-2 * x + 2, 5) / 2;
+const TD = .8, TPRE = .45;
+function camAt(t) {
+  let i = 0; for (let k = 0; k < S.length; k++) if (t >= S[k] - TPRE) i = k;
+  const ta = S[i] - TPRE; let p = poses[i].slice(), d = 0, rr = 0;
+  if (i > 0 && t < ta + TD) { const u = (t - ta) / TD, e = ease(u), a = poses[i - 1]; p = a.map((v, j) => v + (poses[i][j] - v) * e); d = Math.sin(u * Math.PI) * 700; rr = Math.sin(u * Math.PI) * (i % 2 ? 4 : -4); }
+  const st = Math.max(0, t - (S[i] - TPRE + TD)); const dz = Math.min(st, 6) * 8;
+  return { x: p[0], y: p[1], z: p[2] - dz, ry: p[3] + Math.sin(t * .6) * .6, rx: p[4] + Math.sin(t * .45) * .5, rz: p[5] + rr, d, i };
+}
+function camT(c) { return `translateZ(${-c.d + 60}px) rotateZ(${-c.rz}deg) rotateX(${-c.rx}deg) rotateY(${-c.ry}deg) translate3d(${-c.x}px,${-c.y}px,${-c.z}px)`; }
+const world = $('#world'), mbg = $('#mbg'), cam = $('#cam');
+const typeAt = (t, t0, dur, s) => s.slice(0, Math.max(0, Math.min(s.length, Math.round((t - t0) / dur * s.length))));
+function tick(t) {
+  const c = camAt(t), p = camAt(Math.max(0, t - SPD / 30));
+  world.style.transform = camT(c);
+  const hx = Math.abs(c.x - p.x) * .9 + Math.abs(c.ry - p.ry) * 32, vy = Math.abs(c.y - p.y) * .9 + Math.abs(c.rx - p.rx) * 32, zz = Math.abs(c.z - p.z + (p.d - c.d)) * .25;
+  const bx = Math.min(70, hx * .22 + zz * .05), by = Math.min(70, vy * .22 + zz * .05);
+  if (bx + by > .4) { mbg.setAttribute('stdDeviation', `${bx.toFixed(1)} ${by.toFixed(1)}`); cam.style.filter = 'url(#mb)'; } else cam.style.filter = 'none';
+  scenes.forEach((s, k) => { s.style.visibility = (k === c.i || (k === c.i - 1 && t < S[c.i] - TPRE + TD)) ? 'visible' : 'hidden'; });
+  $('#tag').innerHTML = `<b>${String(c.i + 1).padStart(2, '0')}</b> / ${NS}`;
+  // S1 receipt prints line by line, curls a little
+  { const n = 1 + RL.length + 1, pr = sm(0.4, 3.3, t), H = 40 + RL.length * 44 + 60; const shown = pr * H;
+    $('#pap').style.top = '0px'; $('.papw').style.height = shown + 'px'; $('#pap').style.transform = `rotateX(${-6 - pr * 6}deg)`;
+    let tot = 0; RL.forEach(([m, p], k) => { if (shown > H - (40 + (k + 1) * 44) - 60 + 30) tot += +p.slice(1); });
+    $('#ptot').textContent = '$' + Math.round(sm(0.4, 3.3, t) * 529);
+    $('#ledp').style.opacity = Math.floor(t * 6) % 2 ? .35 : 1; }
+  // S3 real demo plays on the monitor
+  { const f = Math.min(170, Math.max(96, 96 + Math.floor((t - 7.3) * 15))); const src = `media/seq/b${pad3(f)}.jpg`; const im = $('#mimg'); if (!im.src.endsWith(src)) im.src = src; }
+  // S4 rolodex flips forward card by card
+  { let cur = 0; RC.forEach((r, k) => { if (t >= r[2] - .1) cur = k; });
+    RC.forEach((r, k) => { const e = $('#rc' + k); const next = RC[k + 1]; const fl = next ? sm(next[2] - .3, next[2], t) : 0;
+      const depth = Math.max(0, k - cur);
+      e.style.transform = `translateZ(${-depth * 18 - (k > cur ? 0 : 0)}px) translateY(${-depth * 14}px) rotateX(${-fl * 105 + (k > cur ? 8 : 0)}deg)`;
+      e.style.zIndex = 20 - k; e.style.opacity = fl > .98 ? 0 : (depth > 2 ? 0 : 1);
+      $('#fc' + k).className = k === cur ? 'on' : ''; });
+    $('#rolo').style.transform = `perspective(1800px) rotateX(${10 + Math.sin(t) * 2}deg) rotateY(${-8 + Math.sin(t * .7) * 4}deg)`; }
+  // S5 LEDs blink, packets travel server -> database
+  { for (let k = 0; k < 3; k++) { $(`#sl${k}a`).className = Math.floor(t * 5 + k) % 2 ? 'on' : ''; $(`#sl${k}b`).className = 'on'; }
+    for (let i = 0; i < 5; i++) { const t0 = 18.3 + i * .3, q = cl(t0, t0 + .5, t), e = $('#pk' + i); e.style.left = (510 + q * 130) + 'px'; e.style.top = (997 - Math.sin(q * Math.PI) * 40) + 'px'; e.style.opacity = q > 0 && q < 1 ? 1 : 0; }
+    $('#lnk').style.opacity = sm(18.0, 18.3, t); }
+  // S7 command types, services come up
+  { const blink = Math.floor(t * 2.4) % 2 === 0; const cmd = typeAt(t, 23.1, .65, 'docker compose up');
+    $('#cmd7').innerHTML = '<span style="color:#8b8d91">$ </span>' + cmd + (t < 23.85 ? `<span class="cur7" style="opacity:${blink ? 1 : 0}"></span>` : '');
+    SV.forEach(([n, t0], k) => { const e = $('#sv' + k), q = sm(t0, t0 + .2, t); e.style.opacity = q; e.style.transform = `translateX(${(1 - q) * -40}px)`; }); }
+  // S8 signature typed, underline draws
+  { $('#sig').textContent = typeAt(t, 25.45, .55, 'Madhur'); $('#ul').style.width = (sm(25.9, 26.3, t) * 520) + 'px'; }
+  // S9 FEATURE typed into the DM box
+  { const blink = Math.floor(t * 2.4) % 2 === 0; $('#ftx').textContent = t < 29.4 ? typeAt(t, 28.8, .5, 'FEATURE') : ''; $('#cur9').style.opacity = blink ? 1 : 0; }
+}
+window.__seek = vt => { const t = vt * SPD; tl.time(t, false); tick(t); const ims = [...document.images].map(i => i.complete ? null : i.decode().catch(() => {})).filter(Boolean); return Promise.all(ims); };
+__seek(0);
+if (!navigator.webdriver) { const t0 = performance.now(); const loop = () => { window.__seek(((performance.now() - t0) / 1000) % TOTAL); requestAnimationFrame(loop); }; requestAnimationFrame(loop); }
+</script>
+</body></html>

@@ -1,0 +1,16 @@
+300K+ stars… for a folder of markdown files. 🤯
+
+Matt Pocock's "skills" = the agent skills he uses every day for real engineering, not vibe coding:
+→ /grill-me: your agent interviews you, question after question, until the plan is actually clear
+→ /tdd: failing test first, then make it pass. Red, green, refactor
+→ /improve-codebase-architecture: finds spots to deepen before your code turns into a ball of mud
+→ Small + composable: hack them, make them your own
+
+✅ Free + open source (MIT)
+✅ Works with Claude Code, Codex, GitHub Copilot, Cursor and more
+✅ Claude Code: claude plugin install mattpocock-skills@claude-plugins-official
+
+Comment GITMATE and I'll send you the link 👇
+Follow @git.mate for 1 useful repo every day.
+
+#github #opensource #ai #aiagents #claudecode #codex #copilot #cursor #tdd #softwareengineering #devtools #developer #programming #typescript

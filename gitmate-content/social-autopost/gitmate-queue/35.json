@@ -1,0 +1,22 @@
+{
+ "account": "git.mate",
+ "n": 35,
+ "slug": "recall-ai",
+ "title": "Recall AI: a private, on-device memory for your screen (by @madhur_772005)",
+ "video": {
+  "file": "35.mp4",
+  "duration_sec": 34.15,
+  "source": "/mnt/project-files/dev-reels/recall-ai/gitmate_recall-ai.mp4"
+ },
+ "instagram": {
+  "caption": "You saw it on your screen three days ago\u2026 and now you can't find it anywhere. \ud83e\udde0\n\nRecall AI, built by solo dev @madhur_772005, quietly remembers what was on your screen so you can just ask:\n\u2192 \"What was I working on yesterday?\" and it tells you\n\u2192 Periodic screenshots \u2192 OCR text \u2192 semantic search\n\u2192 Passwords and secrets get filtered out\n\u2192 Stored text is AES-encrypted\n\u2192 The AI runs locally with Ollama: nothing leaves your machine\n\u2192 Flutter desktop app for Windows 10/11 + FastAPI backend\n\nFree and open-source (MIT) \u00b7 built by @madhur_772005 \ud83d\ude4c\n\nWant your repo featured too? DM us FEATURE \ud83d\udce9\nComment GITMATE and I'll send you the link \ud83d\udc47\nFollow @git.mate for 1 useful repo every day.\n\n#ai #privacy #localai #ollama #opensource #github #productivity #windows #python #fastapi #flutter #rag #ocr #developer #programming #coding\n",
+  "hashtags": [],
+  "cover_offset_ms": 3950,
+  "share_to_feed": true
+ },
+ "posting": {
+  "audience": "US",
+  "timezone": "America/New_York"
+ },
+ "link": "https://github.com/Madhur-Prakash/Recall-AI"
+}

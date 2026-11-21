@@ -1,0 +1,18 @@
+Expenses in one app, crypto in another, stocks in a messy spreadsheet? 😵‍💫
+
+Plutus, built by @sebaptcd, is a free, open-source tracker that puts all your money in one place:
+→ Business expenses, income and ledgers
+→ Crypto, stocks, gold and cash, with live prices
+→ Exchange rates locked on the day you traded, average-cost or FIFO profit
+→ Private: no account, no sign-up, your data stays in your browser (optional encrypted sync)
+→ Nearly 1,000 commits from a tiny team
+
+Try it: just open plutus.inoculens.com in your browser.
+
+Free & open source · built by @sebaptcd 🙌
+
+Want your repo featured too? DM us FEATURE 📩
+Comment GITMATE and I'll send you the link 👇
+Follow @git.mate for 1 useful repo every day.
+
+#personalfinance #budgeting #expensetracker #portfoliotracker #crypto #stocks #investing #opensource #github #freeapps #privacy #localfirst #indiedev #developer #programming #coding

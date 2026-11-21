@@ -1,0 +1,489 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<title>git.mate hallmark</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<style>
+:root{--ink:#0b0b0c;--mut:#8b8d91;--dim:#cfd0d2;--bg:#f7f7f5}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#fff}
+.f{position:relative;width:1080px;height:1920px;overflow:hidden;background:radial-gradient(ellipse 110% 70% at 50% 45%,#ffffff 0%,#f7f7f5 55%,#eeeeec 100%);color:var(--ink);font-family:'Inter',sans-serif}
+#cam{position:absolute;inset:0}
+#stage{position:absolute;inset:0;perspective:1800px;perspective-origin:50% 50%}
+#world{position:absolute;left:0;top:0;width:1080px;height:1920px;transform-style:preserve-3d;transform-origin:540px 960px}
+.sc{position:absolute;left:0;top:0;width:1080px;height:1920px;transform-style:preserve-3d;transform-origin:540px 960px;visibility:hidden}
+.ring{position:absolute;border-radius:50%;border:70px solid rgba(10,10,12,.045);filter:blur(26px)}
+.grain{position:absolute;inset:0;opacity:.05;mix-blend-mode:multiply;z-index:8;pointer-events:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
+.top{position:absolute;left:64px;right:64px;top:84px;height:80px;z-index:6}
+.brand{position:absolute;left:0;top:0;display:flex;align-items:center;gap:16px;font-family:'JetBrains Mono';font-weight:700;font-size:28px}
+.mk{width:58px;height:58px;border-radius:50%;display:grid;place-items:center;font-family:'JetBrains Mono';font-weight:800;font-size:22px;color:#fff;background:radial-gradient(circle at 34% 28%,#5a5c61 0 10%,#1a1b1e 45%,#000 100%);box-shadow:inset 0 2px 3px rgba(255,255,255,.35),0 8px 18px rgba(0,0,0,.25)}
+.tag{position:absolute;right:0;top:14px;font-family:'JetBrains Mono';font-size:24px;color:var(--mut);white-space:nowrap}
+.tag b{color:var(--ink);font-weight:700}
+.C{position:absolute;left:0;right:0;text-align:center;white-space:nowrap}
+.kick{font-family:'JetBrains Mono';font-size:26px;color:var(--mut);letter-spacing:1px}
+.sans{font-weight:600;letter-spacing:-.035em;line-height:1}
+.ser{font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;letter-spacing:-.01em;line-height:1}
+.g{color:var(--mut)}
+.ch{display:inline-block;white-space:pre}
+.mono{font-family:'JetBrains Mono'}
+.gray{filter:grayscale(1) contrast(1.04)}
+.sheetc{position:absolute;background:#fff;border-radius:26px;box-shadow:0 0 0 2px var(--ink),0 8px 0 var(--ink),0 40px 70px rgba(0,0,0,.14);overflow:hidden}
+
+/* S1 skeleton page + scrubber + stamp */
+.sk{position:absolute;background:#e9e9e7;border-radius:12px}
+.sk.d{background:var(--ink)}
+.sk.o{background:transparent;box-shadow:inset 0 0 0 3px #d4d4d2}
+.track{position:absolute;left:140px;top:1500px;width:800px;height:10px;border-radius:5px;background:#dcdcda}
+.track i{position:absolute;left:0;top:0;height:10px;border-radius:5px;background:var(--ink)}
+.track b{position:absolute;top:-17px;width:44px;height:44px;margin-left:-22px;border-radius:50%;background:#fff;box-shadow:0 0 0 4px var(--ink),0 8px 18px rgba(0,0,0,.2)}
+.tks{position:absolute;left:140px;top:1530px;width:800px;display:flex;justify-content:space-between;font-family:'JetBrains Mono';font-size:22px;color:var(--mut)}
+.stamp{position:absolute;padding:20px 40px;border:8px solid var(--ink);border-radius:18px;font-family:'JetBrains Mono';font-weight:800;font-size:84px;letter-spacing:4px;color:var(--ink);background:rgba(255,255,255,.88);white-space:nowrap}
+.stamp small{display:block;font-size:24px;letter-spacing:2px;font-weight:700;color:#55575c;text-align:center;margin-top:4px}
+
+/* S2 generic landing page */
+.lp{position:absolute;left:64px;top:520px;width:952px;height:900px;background:#fff;border-radius:30px;box-shadow:0 0 0 2px var(--ink),0 10px 0 var(--ink),0 50px 80px rgba(0,0,0,.14)}
+.lp .nav{position:absolute;left:44px;right:44px;top:34px;height:60px;display:flex;align-items:center;justify-content:space-between;font-size:30px;font-weight:700}
+.lp .nav span{font-size:22px;font-weight:500;color:var(--mut);margin-left:26px}
+.lp .nav em{font-style:normal;font-size:22px;font-weight:600;padding:12px 24px;border-radius:999px;background:var(--ink);color:#fff}
+.eye{position:absolute;left:0;right:0;top:170px;text-align:center}
+.eye span{display:inline-block;font-family:'JetBrains Mono';font-size:22px;letter-spacing:5px;font-weight:700;padding:12px 26px;border-radius:999px;background:#efefed}
+.h1{position:absolute;left:0;right:0;top:250px;text-align:center;font-size:84px;font-weight:700;letter-spacing:-.045em;line-height:1.02}
+.hlw{background:linear-gradient(90deg,#9b9da2,#2b2c30);-webkit-background-clip:text;background-clip:text;color:transparent}
+.lsub{position:absolute;left:170px;right:170px;top:460px;height:16px;border-radius:8px;background:#e6e6e4}
+.lsub.b{top:494px;left:240px;right:240px}
+.lbtns{position:absolute;left:0;right:0;top:550px;display:flex;justify-content:center;gap:20px}
+.lbtns i{width:200px;height:64px;border-radius:999px;background:var(--ink)}
+.lbtns i+i{background:#fff;box-shadow:inset 0 0 0 3px #d4d4d2}
+.lcards{position:absolute;left:44px;right:44px;top:660px;height:90px;display:flex;gap:20px}
+.lcards i{flex:1;border-radius:18px;background:#f0f0ee}
+.sign{position:absolute;left:150px;right:150px;top:782px;height:76px;border-radius:999px;box-shadow:inset 0 0 0 3px #d4d4d2;display:flex;align-items:center;justify-content:space-between;padding:0 8px 0 30px;font-size:24px;color:var(--mut)}
+.sign b{font-size:22px;color:#fff;background:var(--ink);padding:16px 26px;border-radius:999px;font-weight:600}
+.ann{position:absolute;left:0;top:0;overflow:visible}
+.num{position:absolute;width:62px;height:62px;border-radius:50%;background:var(--ink);color:#fff;display:grid;place-items:center;font-family:'JetBrains Mono';font-weight:800;font-size:26px}
+.tally{position:absolute;left:100px;width:880px;top:1560px;display:flex;gap:18px}
+.tally div{flex:1;height:96px;border-radius:20px;box-shadow:inset 0 0 0 2.5px var(--ink);display:flex;align-items:center;gap:16px;padding:0 22px;font-family:'JetBrains Mono';font-size:23px;font-weight:700;position:relative;overflow:hidden;background:#fff}
+.tally s{position:absolute;inset:0;background:var(--ink);transform-origin:0 50%;transform:scaleX(0)}
+.tally u{text-decoration:none;position:relative;z-index:1;width:40px;height:40px;border-radius:10px;box-shadow:inset 0 0 0 2.5px currentColor;display:grid;place-items:center;flex:none;font-size:24px}
+.tally em{font-style:normal;position:relative;z-index:1}
+
+/* S3 punch */
+.paper{position:absolute;left:160px;top:820px;width:760px;height:620px;background:#fff;border-radius:22px;box-shadow:0 0 0 2px rgba(11,11,12,.25),0 6px 0 rgba(11,11,12,.12),0 50px 80px rgba(0,0,0,.12);transform-origin:50% 50%}
+.paper::before{content:"";position:absolute;inset:0;border-radius:22px;background-image:linear-gradient(rgba(11,11,12,.05) 1.5px,transparent 1.5px);background-size:100% 46px}
+.imp{position:absolute;left:150px;top:205px;width:460px;height:210px;border-radius:26px;display:grid;place-items:center;font-family:'Instrument Serif';font-style:italic;font-size:120px;color:#2a2b2e;box-shadow:inset 0 6px 10px rgba(0,0,0,.35),inset 0 -3px 0 rgba(255,255,255,.9),0 2px 0 rgba(255,255,255,.9);background:#f0f0ee}
+.imp b{font-family:'Inter';font-style:normal;font-weight:700;color:#0b0b0c;margin-right:6px}
+.punch{position:absolute;left:380px;top:560px;width:320px;height:620px}
+.punch .rod{position:absolute;left:90px;top:0;width:140px;height:420px;border-radius:14px;background:linear-gradient(90deg,#6c6e73,#e9e9e7 30%,#ffffff 42%,#a3a5a9 70%,#3e4044)}
+.punch .hd{position:absolute;left:0;top:400px;width:320px;height:200px;border-radius:24px 24px 16px 16px;background:linear-gradient(90deg,#55575c,#d9d9d7 28%,#fafafa 40%,#8d8f93 72%,#2e2f33);box-shadow:0 30px 50px rgba(0,0,0,.3)}
+.punch .hd i{position:absolute;left:24px;right:24px;bottom:-12px;height:24px;border-radius:0 0 12px 12px;background:#2a2b2e}
+.shock{position:absolute;left:540px;top:1130px;width:10px;height:10px;margin:-5px;border-radius:50%;border:5px solid var(--ink);opacity:0}
+
+/* S4 docks */
+.dock{position:absolute;top:1250px;width:280px;height:230px;border-radius:26px;background:#efefed;box-shadow:inset 0 10px 22px rgba(0,0,0,.14),inset 0 0 0 2px rgba(11,11,12,.18)}
+.dock .slot{position:absolute;left:40px;right:40px;top:40px;height:120px;border-radius:16px;background:#e2e2e0;box-shadow:inset 0 8px 14px rgba(0,0,0,.22)}
+.dock .lit{position:absolute;inset:0;border-radius:26px;box-shadow:inset 0 0 0 5px var(--ink);opacity:0}
+.dock .nm{position:absolute;left:0;right:0;top:250px;text-align:center;font-family:'JetBrains Mono';font-size:30px;font-weight:700;color:var(--mut)}
+.dock .nm.on{color:var(--ink)}
+.cart{position:absolute;left:40px;top:46px;width:200px;height:108px;border-radius:14px;background:linear-gradient(160deg,#2c2d31,#0b0b0c 60%);color:#fff;display:flex;flex-direction:column;justify-content:center;padding-left:22px;font-family:'JetBrains Mono';box-shadow:inset 0 2px 0 rgba(255,255,255,.18),0 18px 30px rgba(0,0,0,.25)}
+.cart b{font-size:26px}
+.cart small{font-size:16px;color:#9a9ca1;margin-top:6px}
+.cart i{position:absolute;right:16px;top:16px;width:14px;height:14px;border-radius:50%;background:#fff;box-shadow:0 0 12px #fff}
+
+/* S5 deck */
+.deck{position:absolute;left:390px;top:1340px;width:300px;height:188px;transform-style:preserve-3d}
+.deck .ly{position:absolute;inset:0;border-radius:16px;background:#fff;box-shadow:0 0 0 2px var(--ink)}
+.cback{position:absolute;inset:0;border-radius:inherit;background:var(--ink);color:#fff;display:grid;place-items:center;background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.08) 0 2px,transparent 2px 14px)}
+.cback span{font-family:'Instrument Serif';font-style:italic;font-size:56px}
+.dc{position:absolute;width:460px;height:288px;transform-style:preserve-3d}
+.dc .fa{position:absolute;inset:0;border-radius:22px;overflow:hidden;backface-visibility:hidden;box-shadow:0 0 0 2px var(--ink),0 30px 50px rgba(0,0,0,.18)}
+.dc .fr{transform:rotateY(180deg);background:#fff}
+.dc .fr img{width:100%;height:100%;object-fit:cover;display:block}
+.chip{position:absolute;left:18px;bottom:16px;font-family:'JetBrains Mono';font-size:22px;font-weight:700;background:var(--ink);color:#fff;padding:8px 16px;border-radius:8px}
+.cnt{position:absolute;left:0;right:0;top:1600px;text-align:center;font-family:'JetBrains Mono';font-size:30px;color:var(--mut)}
+.cnt b{color:var(--ink);font-size:44px}
+
+/* S6 composition */
+.cmp{position:absolute;left:64px;top:560px;width:952px;height:595px;border-radius:26px;background:#fff;box-shadow:0 0 0 2px var(--ink),0 8px 0 var(--ink),0 40px 70px rgba(0,0,0,.14);overflow:hidden;transform-style:preserve-3d}
+.cmp .wb{position:absolute;border-radius:12px;background:#ededeb;box-shadow:inset 0 0 0 2px #d9d9d7}
+.cmp .act{position:absolute;left:3.6%;top:69.5%;width:9.6%;height:7.4%;border-radius:8px;background:var(--ink)}
+.cmp img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.xh{position:absolute;left:80px;top:435px;width:0;height:0}
+.xh i{position:absolute;border-radius:50%;border:3px solid var(--ink)}
+.job{position:absolute;left:0;right:0;margin:0 auto;width:max-content;top:1250px;padding:18px 30px;border-radius:999px;background:var(--ink);color:#fff;font-family:'JetBrains Mono';font-size:28px;font-weight:700;white-space:nowrap}
+.leader{position:absolute;left:0;top:0;overflow:visible}
+
+/* S7 browser + gates */
+.brw{position:absolute;top:540px;height:640px;border-radius:24px;background:#fff;box-shadow:0 0 0 2px var(--ink),0 8px 0 var(--ink),0 40px 70px rgba(0,0,0,.14);overflow:hidden}
+.brw .bar{position:absolute;left:0;right:0;top:0;height:64px;border-bottom:2px solid #e2e2e0;display:flex;align-items:center;gap:12px;padding:0 22px;background:#fafaf8}
+.brw .bar i{width:16px;height:16px;border-radius:50%;background:#d4d4d2;flex:none}
+.brw .url{flex:1;margin-left:12px;height:36px;border-radius:10px;background:#efefed;font-family:'JetBrains Mono';font-size:18px;color:var(--mut);display:flex;align-items:center;padding:0 14px;overflow:hidden;white-space:nowrap}
+.brw .wd{font-family:'JetBrains Mono';font-size:22px;font-weight:800;background:var(--ink);color:#fff;padding:6px 12px;border-radius:8px;flex:none}
+.brw .vp{position:absolute;left:0;right:0;top:64px;bottom:0;overflow:hidden}
+.brw .vp img{position:absolute;left:0;top:0;width:952px;height:auto}
+.beam{position:absolute;left:0;right:0;height:120px;background:linear-gradient(rgba(11,11,12,0),rgba(11,11,12,.10));border-bottom:3px solid var(--ink)}
+.gate{position:absolute;left:90px;width:900px;height:96px;border-radius:20px;background:#fff;box-shadow:0 0 0 2px var(--ink),0 6px 0 var(--ink);display:flex;align-items:center;padding:0 28px;gap:24px}
+.gate b{font-family:'JetBrains Mono';font-size:26px;font-weight:800;width:150px;letter-spacing:2px}
+.gate span{flex:1;font-size:28px;color:#55575c;white-space:nowrap}
+.gate u{text-decoration:none;width:54px;height:54px;border-radius:50%;box-shadow:inset 0 0 0 3px #cfd0d2;display:grid;place-items:center;font-size:30px;font-weight:800;color:#fff;position:relative}
+.gate u s{position:absolute;inset:0;border-radius:50%;background:var(--ink);transform:scale(0)}
+.gate u em{position:relative;font-style:normal}
+
+/* S8 receipt printer */
+.prn{position:absolute;left:150px;top:640px;width:780px;height:190px;transform-style:preserve-3d}
+.prn .bd{position:absolute;inset:0;border-radius:30px;background:linear-gradient(180deg,#2e2f33,#0b0b0c);box-shadow:inset 0 3px 0 rgba(255,255,255,.18),0 30px 50px rgba(0,0,0,.25)}
+.prn .sl{position:absolute;left:80px;right:80px;bottom:34px;height:18px;border-radius:9px;background:#000;box-shadow:inset 0 3px 6px rgba(0,0,0,.9),0 1px 0 rgba(255,255,255,.15)}
+.prn .lb{position:absolute;left:44px;top:34px;font-family:'JetBrains Mono';font-size:22px;color:#9a9ca1;letter-spacing:2px}
+.prn .led{position:absolute;right:44px;top:38px;width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 0 14px #fff}
+.rcp{position:absolute;left:250px;top:800px;width:580px;height:0;overflow:hidden;background:#fff;box-shadow:0 0 0 2px rgba(11,11,12,.2),0 30px 50px rgba(0,0,0,.12)}
+.rcp .in{position:absolute;left:0;right:0;bottom:0;padding:36px 40px 40px;font-family:'JetBrains Mono';font-size:28px;line-height:1.6;color:var(--ink)}
+.rcp .in .k{color:var(--mut)}
+.rcp .in hr{border:0;border-top:3px dashed #c9cacc;margin:14px 0}
+.rcp .bc{height:70px;margin-top:16px;background:repeating-linear-gradient(90deg,#0b0b0c 0 4px,transparent 4px 7px,#0b0b0c 7px 9px,transparent 9px 15px,#0b0b0c 15px 21px,transparent 21px 24px)}
+.rcp .zz{position:absolute;left:0;right:0;bottom:-1px;height:16px;background:linear-gradient(135deg,transparent 33%,#f3f3f1 33% 66%,transparent 66%) 0 0/24px 16px}
+
+/* S9/S10 comment + end */
+.cin{display:flex;align-items:center;gap:26px;padding:0 26px 0 30px;background:#fff;box-shadow:0 0 0 2px var(--ink),0 6px 0 var(--ink),0 30px 50px rgba(0,0,0,.12)}
+.cbar{position:absolute}
+.av{width:76px;height:76px;border-radius:50%;background:linear-gradient(135deg,#d9d9d7,#a9aaad);flex:none}
+.cin .tx{flex:1;font-size:46px;font-weight:600;letter-spacing:.02em}
+.send{width:84px;height:84px;border-radius:50%;background:var(--ink);display:grid;place-items:center;color:#fff;font-size:40px;flex:none}
+.dm{position:absolute;padding:30px 44px;border-radius:44px 44px 44px 12px;background:var(--ink);color:#fff;font-size:42px;font-weight:500;white-space:nowrap}
+.dm small{display:block;font-family:'JetBrains Mono';font-size:20px;color:#9a9ca1;margin-bottom:8px}
+.bigmk{position:absolute;left:400px;top:600px;width:280px;height:280px;border-radius:50%;display:grid;place-items:center;font-family:'JetBrains Mono';font-weight:800;font-size:96px;color:#fff;background:radial-gradient(circle at 34% 26%,#6a6c71 0 8%,#1c1d20 42%,#000 100%);box-shadow:inset 0 6px 10px rgba(255,255,255,.3),inset 0 -14px 26px rgba(0,0,0,.6),0 40px 80px rgba(0,0,0,.28)}
+.erings{position:absolute;left:290px;top:490px;width:500px;height:500px}
+.fol{position:absolute;left:300px;top:1390px;width:480px;height:132px;border-radius:999px;display:grid;place-items:center;font-size:50px;font-weight:600;background:var(--ink);color:#fff;box-shadow:0 22px 44px rgba(0,0,0,.22)}
+.fol2{position:absolute;left:300px;top:1390px;width:480px;height:132px;border-radius:999px;display:grid;place-items:center;font-size:50px;font-weight:600;background:#fff;color:var(--ink);border:3px solid var(--ink);opacity:0}
+.tapd{position:absolute;width:90px;height:90px;border-radius:50%;background:rgba(11,11,12,.18);border:3px solid rgba(11,11,12,.55);opacity:0}
+.rip{position:absolute;left:540px;top:1456px;width:10px;height:10px;margin:-5px;border-radius:50%;border:4px solid var(--ink);opacity:0}
+</style></head>
+<body>
+<svg width="0" height="0" style="position:absolute"><defs>
+  <filter id="mb" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur id="mbg" stdDeviation="0 0"/></filter>
+</defs></svg>
+<div class="f" id="F">
+ <div id="cam"><div id="stage"><div id="world">
+
+  <!-- S1 hook: skeleton template page + 2s scrubber + stamp -->
+  <div class="sc" id="s1" data-pose="0,0,0,0,0,0">
+    <div class="ring" style="left:-260px;top:-180px;width:720px;height:720px;transform:translateZ(-500px)"></div>
+    <div class="C sans ty" style="top:250px;font-size:100px" data-t="0.7" data-cd=".04">you can spot</div>
+    <div class="C ser ty" style="top:365px;font-size:116px" data-t="1.4" data-cd=".035">an AI-made website</div>
+    <div class="sheetc c3d" id="skel" style="left:140px;top:560px;width:800px;height:760px" data-t="0.25" data-rx="14" data-ry="-8">
+      <div class="sk d" style="left:40px;top:36px;width:120px;height:30px" data-k="0.45"></div>
+      <div class="sk" style="left:470px;top:42px;width:70px;height:18px" data-k="0.5"></div>
+      <div class="sk" style="left:560px;top:42px;width:70px;height:18px" data-k="0.55"></div>
+      <div class="sk d" style="left:650px;top:30px;width:110px;height:42px;border-radius:999px" data-k="0.6"></div>
+      <div class="sk" style="left:290px;top:130px;width:220px;height:34px;border-radius:999px" data-k="0.7"></div>
+      <div class="sk d" style="left:120px;top:200px;width:560px;height:56px" data-k="0.8"></div>
+      <div class="sk d" style="left:180px;top:272px;width:440px;height:56px" data-k="0.9"></div>
+      <div class="sk" style="left:170px;top:356px;width:460px;height:16px" data-k="1.0"></div>
+      <div class="sk" style="left:220px;top:384px;width:360px;height:16px" data-k="1.05"></div>
+      <div class="sk d" style="left:240px;top:430px;width:150px;height:52px;border-radius:999px" data-k="1.15"></div>
+      <div class="sk o" style="left:410px;top:430px;width:150px;height:52px;border-radius:999px" data-k="1.2"></div>
+      <div class="sk" style="left:40px;top:530px;width:226px;height:180px;border-radius:18px" data-k="1.3"></div>
+      <div class="sk" style="left:287px;top:530px;width:226px;height:180px;border-radius:18px" data-k="1.38"></div>
+      <div class="sk" style="left:534px;top:530px;width:226px;height:180px;border-radius:18px" data-k="1.46"></div>
+      <div style="position:absolute;left:0;right:0;top:250px;text-align:center"><div class="stamp" id="stmp" style="position:relative;display:inline-block">AI-MADE<small>DETECTED IN 2.0s</small></div></div>
+    </div>
+    <div class="C mono" style="top:1400px;font-size:64px;font-weight:800" id="sw">0.00s</div>
+    <div class="track" id="trk"><i id="trki"></i><b id="trkb"></b></div>
+    <div class="tks"><span>0s</span><span>0.5</span><span>1.0</span><span>1.5</span><span>2s</span></div>
+    <div class="C ser rv g" style="top:1640px;font-size:96px" data-t="2.6">in two seconds.</div>
+  </div>
+
+  <!-- S2 the tells: generic landing page, ink annotations -->
+  <div class="sc" id="s2" data-pose="2400,0,-600,-30,0,0">
+    <div class="ring" style="left:640px;top:-160px;width:700px;height:700px;transform:translateZ(-600px)"></div>
+    <div class="C kick rv" style="top:250px" data-t="4.05">// spot the tells</div>
+    <div class="C ser" style="top:320px;font-size:116px;height:130px"><span class="swap" data-a="4.25" data-b="6.15" style="position:absolute;left:0;right:0">the little label.</span><span class="swap" data-a="6.2" data-b="8.0" style="position:absolute;left:0;right:0">one colored word.</span><span class="swap" data-a="8.05" data-b="99" style="position:absolute;left:0;right:0">the sign-up box.</span></div>
+    <div class="lp c3d" data-t="4.0" data-rx="10" data-ry="10">
+      <div class="nav"><div>Nimbus<span>Features</span><span>Pricing</span><span>Blog</span></div><em>Get started</em></div>
+      <div class="eye"><span>✦ INTRODUCING NIMBUS AI</span></div>
+      <div class="h1">Build faster with<br>the power of <span class="hlw">AI</span></div>
+      <div class="lsub"></div><div class="lsub b"></div>
+      <div class="lbtns"><i></i><i></i></div>
+      <div class="lcards"><i></i><i></i><i></i></div>
+      <div class="sign">you@email.com<b>Subscribe</b></div>
+      <svg class="ann" width="952" height="900">
+        <path class="dl" data-t="4.35" d="M250 196 C 250 150, 700 146, 704 194 C 708 240, 250 246, 246 200 C 244 172, 300 160, 360 158" stroke="#0b0b0c" stroke-width="5" fill="none" stroke-linecap="round"/>
+        <path class="dl" data-t="6.35" d="M655 384 C 650 340, 770 334, 776 380 C 782 424, 668 432, 654 392 C 650 374, 680 362, 714 360" stroke="#0b0b0c" stroke-width="5" fill="none" stroke-linecap="round"/>
+        <path class="dl" data-t="6.6" d="M660 440 C 690 446, 730 446, 770 438" stroke="#0b0b0c" stroke-width="5" fill="none" stroke-linecap="round"/>
+        <path class="dl" data-t="8.2" d="M130 770 L 826 766 L 830 872 L 126 876 Z" stroke="#0b0b0c" stroke-width="5" fill="none" stroke-linejoin="round" stroke-linecap="round"/>
+      </svg>
+      <div class="num pp" style="left:176px;top:166px" data-t="4.6">01</div>
+      <div class="num pp" style="left:796px;top:350px" data-t="6.6">02</div>
+      <div class="num pp" style="left:844px;top:790px" data-t="8.45">03</div>
+    </div>
+    <div class="tally">
+      <div id="ta1"><s></s><u>✓</u><em>EYEBROW</em></div>
+      <div id="ta2"><s></s><u>✓</u><em>ONE-COLOR</em></div>
+      <div id="ta3"><s></s><u>✓</u><em>END SIGN-UP</em></div>
+    </div>
+  </div>
+
+  <!-- S3 the hallmark punch -->
+  <div class="sc" id="s3" data-pose="2400,-2600,-600,0,25,0">
+    <div class="C sans ty" style="top:250px;font-size:150px;font-weight:700;letter-spacing:-.05em" data-t="10.55" data-cd=".045">Hallmark</div>
+    <div class="C ser rv" style="top:420px;font-size:120px" data-t="11.42"><span class="g">fixes</span> that.</div>
+    <div class="paper" id="pap"><div class="imp" id="imp"><span><b>/</b>hallmark</span></div></div>
+    <div class="shock" id="shk"></div>
+    <div class="punch" id="pch"><div class="rod"></div><div class="hd"><i></i></div></div>
+  </div>
+
+  <!-- S4 og + docks -->
+  <div class="sc" id="s4" data-pose="4800,-2600,-1800,30,0,0">
+    <div class="C kick rv" style="top:250px" data-t="12.2">// free · MIT · made by Together AI</div>
+    <div class="C sans rv" style="top:310px;font-size:104px" data-t="12.6">a <span class="ser" style="font-size:124px">design</span> skill</div>
+    <div class="sheetc c3d" style="left:64px;top:480px;width:952px;height:500px" data-t="12.1" data-rx="10" data-ry="-10"><img src="og.png" style="width:100%;height:100%;display:block" class="gray"></div>
+    <div class="C ser rv g" style="top:1060px;font-size:96px" data-t="14.4">plugs into your agent.</div>
+    <div class="dock" id="dk1" style="left:85px"><div class="slot"></div><div class="lit"></div><div class="cart" id="ct1"><i></i><b>/hallmark</b><small>skill · v2</small></div><div class="nm">Claude Code</div></div>
+    <div class="dock" id="dk2" style="left:400px"><div class="slot"></div><div class="lit"></div><div class="cart" id="ct2"><i></i><b>/hallmark</b><small>skill · v2</small></div><div class="nm">Codex</div></div>
+    <div class="dock" id="dk3" style="left:715px"><div class="slot"></div><div class="lit"></div><div class="cart" id="ct3"><i></i><b>/hallmark</b><small>skill · v2</small></div><div class="nm">Cursor</div></div>
+  </div>
+
+  <!-- S5 deal three themes from 48 -->
+  <div class="sc" id="s5" data-pose="4800,0,-3600,-25,0,0">
+    <div class="ring" style="left:-300px;top:1300px;width:800px;height:800px;transform:translateZ(-600px)"></div>
+    <div class="C sans rv" style="top:250px;font-size:110px" data-t="17.35">three themes</div>
+    <div class="C ser rv" style="top:370px;font-size:100px" data-t="18.3">from <span id="n48">48</span> real materials.</div>
+    <div class="dc" id="dc1" style="left:64px;top:580px"><div class="fa"><div class="cback"><span>/h</span></div></div><div class="fa fr"><img src="dusk.jpg" class="gray"><span class="chip">dusk</span></div></div>
+    <div class="dc" id="dc2" style="left:556px;top:580px"><div class="fa"><div class="cback"><span>/h</span></div></div><div class="fa fr"><img src="furrow.jpg" class="gray"><span class="chip">furrow</span></div></div>
+    <div class="dc" id="dc3" style="left:310px;top:910px"><div class="fa"><div class="cback"><span>/h</span></div></div><div class="fa fr"><img src="ribbon.jpg" class="gray"><span class="chip">ribbon</span></div></div>
+    <div class="deck" id="deck"></div>
+    <div class="cnt rv" data-t="18.9"><b id="dleft">48</b> in the deck · <b>3</b> dealt</div>
+  </div>
+
+  <!-- S6 built around the job -->
+  <div class="sc" id="s6" data-pose="7200,0,-3600,25,0,0">
+    <div class="C sans rv" style="top:250px;font-size:104px" data-t="20.0">built around</div>
+    <div class="C ser rv" style="top:365px;font-size:104px" data-t="20.9">what they came to do.</div>
+    <div class="cmp c3d" id="cmp" data-t="19.9" data-rx="10" data-ry="8">
+      <div class="wb" style="left:3%;top:3%;width:94%;height:6%" data-k="20.35"></div>
+      <div class="wb" style="left:3.6%;top:30%;width:42%;height:9%" data-k="20.45"></div>
+      <div class="wb" style="left:3.6%;top:41%;width:38%;height:9%" data-k="20.55"></div>
+      <div class="wb" style="left:3.6%;top:56%;width:30%;height:3.4%" data-k="20.65"></div>
+      <div class="wb" style="left:3.6%;top:61.4%;width:26%;height:3.4%" data-k="20.7"></div>
+      <div class="wb" style="left:61%;top:22%;width:32%;height:68%" data-k="20.8"></div>
+      <div class="wb" style="left:20%;top:70%;width:14%;height:7%" data-k="20.9"></div>
+      <img src="atelier.jpg" class="gray" id="atl">
+      <div class="act" id="act"></div>
+      <div class="xh" id="xh"><i style="left:-60px;top:-60px;width:120px;height:120px"></i><i style="left:-100px;top:-100px;width:200px;height:200px;opacity:.35"></i></div>
+    </div>
+        <div class="job pp" data-t="21.0">job: book a visit</div>
+    <div class="C mono g rv" style="top:1420px;font-size:26px" data-t="21.3">a booking page books · a shop sells</div>
+  </div>
+
+  <!-- S7 real browser + gates -->
+  <div class="sc" id="s7" data-pose="7200,2600,-4800,0,-25,0">
+    <div class="ring" style="left:600px;top:1400px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="C sans rv" style="top:250px;font-size:100px" data-t="22.6">checked in a</div>
+    <div class="C ser rv" style="top:360px;font-size:124px" data-t="23.45">real browser.</div>
+    <div class="brw c3d" id="brw" style="left:64px;width:952px" data-t="22.5" data-rx="8">
+      <div class="bar"><i></i><i></i><i></i><div class="url">sloplint --render · localhost:3000</div><div class="wd" id="wd">1440px</div></div>
+      <div class="vp"><img src="studio.jpg" class="gray" id="stu"><div class="beam" id="beam"></div></div>
+    </div>
+    <div class="gate" id="g1" style="top:1240px"><b>FLOOR</b><span>contrast · focus · phone layout</span><u><s></s><em>✓</em></u></div>
+    <div class="gate" id="g2" style="top:1360px"><b>REFLEX</b><span>eyebrows · one-color word</span><u><s></s><em>✓</em></u></div>
+    <div class="gate" id="g3" style="top:1480px"><b>FINISH</b><span>craft detail · fresh reviewer</span><u><s></s><em>✓</em></u></div>
+  </div>
+
+  <!-- S8 receipt printer -->
+  <div class="sc" id="s8" data-pose="9600,2600,-4800,-30,0,0">
+    <div class="C sans rv" style="top:250px;font-size:130px" data-t="26.6">One npx</div>
+    <div class="C ser rv" style="top:390px;font-size:150px" data-t="27.25">command.</div>
+    <div class="prn c3d" data-t="26.5" data-rx="16"><div class="bd"></div><div class="lb">GIT.MATE · PRINT</div><div class="led"></div><div class="sl"></div></div>
+    <div class="rcp" id="rcp"><div class="in">
+      <div class="k">git.mate · receipt #08</div><hr>
+      <div>$ npx skills add</div><div>&nbsp;&nbsp;nutlope/hallmark -g</div><hr>
+      <div>themes ........... 48</div><div>license ......... MIT</div><div>total ......... $0.00</div>
+      <div class="bc"></div></div><div class="zz"></div></div>
+  </div>
+
+  <!-- S9 comment -->
+  <div class="sc" id="s9" data-pose="9600,0,-6600,20,0,0">
+    <div class="ring" style="left:620px;top:1300px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="C sans rv" style="top:380px;font-size:120px;font-weight:500" data-t="28.65">Comment</div>
+    <div class="C sans ty" style="top:510px;font-size:196px;font-weight:700;letter-spacing:-.04em" data-t="29.15" data-cd=".05">GITMATE</div>
+    <div class="cbar cin c3d" style="left:64px;top:860px;width:952px;height:140px;border-radius:999px" data-t="28.7" data-rx="10"><div class="av"></div><div class="tx" id="ctx"></div><div class="send">↑</div></div>
+    <div class="dm pp" style="left:250px;top:1110px" data-t="30.2"><small>git.mate · message</small>Here's your link, mate 🔗</div>
+  </div>
+
+  <!-- S10 end -->
+  <div class="sc" id="s10" data-pose="12000,0,-6600,-24,0,0">
+    <div class="ring" style="left:-300px;top:-160px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="ring" style="left:640px;top:1400px;width:760px;height:760px;transform:translateZ(-800px)"></div>
+    <svg class="erings" viewBox="0 0 500 500"><circle id="er1" cx="250" cy="250" r="226" fill="none" stroke="#0b0b0c" stroke-width="3" stroke-dasharray="1420" stroke-dashoffset="1420" transform="rotate(-90 250 250)"/>
+      <circle id="er2" cx="250" cy="250" r="246" fill="none" stroke="#c9cacc" stroke-width="2" stroke-dasharray="1546" stroke-dashoffset="1546" transform="rotate(90 250 250)"/></svg>
+    <div class="bigmk" id="bigmk">&gt;_</div>
+    <div class="C sans ty" style="top:1050px;font-size:104px;font-weight:700" data-t="31.2" data-cd=".05">@git.mate</div>
+    <div class="C ser" style="top:1200px;font-size:96px"><span class="rv g" data-t="31.7">1 repo</span> <span class="rv" data-t="31.95">every</span> <span class="rv" data-t="32.2">day.</span></div>
+    <div class="fol pp" id="fol" data-t="31.4">Follow</div>
+    <div class="fol2" id="fol2">Following ✓</div>
+    <div class="rip" id="rip"></div>
+    <div class="tapd" id="tapd" style="left:640px;top:1560px"></div>
+  </div>
+
+ </div></div></div>
+ <div class="top"><div class="brand"><div class="mk">&gt;_</div>git.mate</div><div class="tag" id="tag"><b>01</b> / 10</div></div>
+ <div class="grain"></div>
+</div>
+<script>
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+const TOTAL = 34.4; window.__TOTAL = TOTAL;
+const S = [0, 4.0, 10.45, 12.05, 16.7, 19.85, 22.45, 26.5, 28.55, 30.85];
+const scenes = $$('.sc');
+const poses = scenes.map(s => s.dataset.pose.split(',').map(Number));
+scenes.forEach((s, i) => { const [x, y, z, ry, rx, rz] = poses[i]; s.style.transform = `translate3d(${x}px,${y}px,${z}px) rotateY(${ry}deg) rotateX(${rx}deg) rotateZ(${rz}deg)`; });
+const tl = gsap.timeline({ paused: true });
+
+// shell: typing / reveals / pops / 3D cards / line draws / swaps
+$$('.ty').forEach(el => { const t = +el.dataset.t, cd = +(el.dataset.cd || .045); const txt = el.textContent; el.textContent = '';
+  const chs = [...txt].map(c => { const s = document.createElement('span'); s.className = 'ch'; s.textContent = c; el.appendChild(s); return s; });
+  tl.set(chs, { opacity: 0 }, 0);
+  chs.forEach((c, i) => tl.fromTo(c, { opacity: 0, y: 26, filter: 'blur(14px)' }, { opacity: 1, y: 0, filter: 'blur(0px)', duration: .42, ease: 'power3.out', immediateRender: false }, Math.max(0.001, t + i * cd))); });
+$$('.rv').forEach(el => { const t = +el.dataset.t; if (isNaN(t)) return;
+  tl.set(el, { opacity: 0 }, 0); tl.fromTo(el, { opacity: 0, y: 46, filter: 'blur(16px)' }, { opacity: 1, y: 0, filter: 'blur(0px)', duration: .55, ease: 'power3.out', immediateRender: false }, Math.max(0.001, t)); });
+$$('.pp').forEach(el => { const t = +el.dataset.t;
+  tl.set(el, { opacity: 0 }, 0); tl.fromTo(el, { opacity: 0, scale: .55, filter: 'blur(10px)' }, { opacity: 1, scale: 1, filter: 'blur(0px)', duration: .5, ease: 'back.out(2.2)', immediateRender: false }, t); });
+$$('.c3d').forEach(el => { const t = +el.dataset.t, rx = +(el.dataset.rx || 0), ry = +(el.dataset.ry || 0);
+  tl.set(el, { opacity: 0, transformPerspective: 1500 }, 0);
+  tl.fromTo(el, { opacity: 0, rotationX: rx + 50, rotationY: ry * 2.5, y: 260, z: -500, scale: .9 }, { opacity: 1, rotationX: rx, rotationY: ry, y: 0, z: 0, scale: 1, duration: 1.05, ease: 'expo.out', immediateRender: false }, Math.max(0.001, t));
+  tl.to(el, { rotationX: rx * .4, rotationY: -ry * .5, duration: 3.2, ease: 'sine.inOut' }, Math.max(0.001, t) + 1.05); });
+$$('path.dl').forEach(p => { const L = p.getTotalLength(); p.style.strokeDasharray = L;
+  tl.set(p, { strokeDashoffset: L }, 0); tl.to(p, { strokeDashoffset: 0, duration: .5, ease: 'power2.inOut' }, +p.dataset.t); });
+$$('.swap').forEach(el => { tl.set(el, { opacity: 0 }, 0); tl.fromTo(el, { opacity: 0, y: 40, filter: 'blur(12px)' }, { opacity: 1, y: 0, filter: 'blur(0px)', duration: .35, immediateRender: false }, +el.dataset.a);
+  if (+el.dataset.b < 90) tl.to(el, { opacity: 0, y: -40, filter: 'blur(12px)', duration: .25 }, +el.dataset.b - .1); });
+// blocks that build in from depth
+$$('[data-k]').forEach(el => { const t = +el.dataset.k;
+  tl.set(el, { opacity: 0 }, 0); tl.fromTo(el, { opacity: 0, z: 260, y: -30, scale: 1.25 }, { opacity: 1, z: 0, y: 0, scale: 1, duration: .45, ease: 'power3.out', immediateRender: false }, t); });
+
+// S1 scrubber + stamp
+const sw = { v: 0 };
+tl.fromTo(sw, { v: 0 }, { v: 2, duration: 2.0, ease: 'none', immediateRender: false }, 1.0);
+tl.set('#stmp', { opacity: 0, scale: 2.2, rotation: -10 }, 0);
+tl.to('#stmp', { opacity: 1, scale: 1, rotation: -8, duration: .28, ease: 'power4.in' }, 2.95);
+tl.to('#skel', { y: 14, duration: .08, yoyo: true, repeat: 1 }, 3.23);
+
+// S2 tally chips fill when each tell gets circled
+[['#ta1', 4.5], ['#ta2', 6.5], ['#ta3', 8.35]].forEach(([id, t]) => {
+  tl.set(id + ' s', { scaleX: 0 }, 0); tl.set(id, { color: '#0b0b0c' }, 0);
+  tl.to(id + ' s', { scaleX: 1, duration: .4, ease: 'power3.inOut' }, t); tl.to(id, { color: '#ffffff', duration: .2 }, t + .15);
+  tl.fromTo(id, { rotationX: 0, transformPerspective: 900 }, { rotationX: 360, duration: .6, ease: 'power2.inOut', immediateRender: false }, t); });
+
+// S3 punch press
+tl.set('#pap', { rotationX: 52, transformPerspective: 1400, y: 40 }, 0);
+tl.set('#imp', { opacity: 0 }, 0);
+tl.set('#pch', { y: -1300 }, 0);
+tl.to('#pch', { y: -60, duration: .45, ease: 'power4.in' }, 10.55);
+tl.to('#pch', { y: -40, duration: .06 }, 11.0);
+tl.set('#imp', { opacity: 1 }, 11.04);
+tl.fromTo('#pap', { y: 40 }, { y: 58, duration: .07, yoyo: true, repeat: 1, immediateRender: false }, 11.02);
+tl.fromTo('#shk', { opacity: .8, width: 10, height: 10, margin: -5 }, { opacity: 0, width: 900, height: 900, margin: -450, duration: .7, ease: 'power2.out', immediateRender: false }, 11.04);
+tl.to('#pch', { y: -1400, duration: .4, ease: 'power3.in' }, 11.12);
+tl.to('#pap', { rotationX: 30, duration: 1.0, ease: 'sine.inOut' }, 11.3);
+
+// S4 cartridges drop into docks
+[['#ct1', '#dk1', 14.6], ['#ct2', '#dk2', 15.36], ['#ct3', '#dk3', 16.0]].forEach(([c, d, t]) => {
+  tl.set(c, { opacity: 0, y: -420, rotationX: 0, transformPerspective: 900 }, 0);
+  tl.to(c, { opacity: 1, y: -60, duration: .01 }, t - .32);
+  tl.fromTo(c, { y: -420 }, { y: 0, duration: .32, ease: 'power3.in', immediateRender: false }, t - .32);
+  tl.fromTo(d, { scale: 1 }, { scale: .97, duration: .07, yoyo: true, repeat: 1, immediateRender: false }, t);
+  tl.set(d + ' .lit', { opacity: 0 }, 0); tl.to(d + ' .lit', { opacity: 1, duration: .2 }, t);
+  tl.set(d + ' .nm', { className: 'nm' }, 0); tl.set(d + ' .nm', { className: 'nm on' }, t); });
+$$('.dock').forEach((d, i) => { tl.set(d, { opacity: 0, transformPerspective: 1200 }, 0);
+  tl.fromTo(d, { opacity: 0, rotationX: 60, y: 120 }, { opacity: 1, rotationX: 18, y: 0, duration: .8, ease: 'expo.out', immediateRender: false }, 13.2 + i * .12); });
+
+// S5 deck + deal
+const DK = $('#deck');
+for (let k = 0; k < 14; k++) { const l = document.createElement('div'); l.className = 'ly'; l.style.transform = `translateZ(${k * 3}px)`; if (k === 13) l.innerHTML = '<div class="cback"><span>/h</span></div>'; DK.appendChild(l); }
+tl.set(DK, { opacity: 0, rotationX: 58, rotationZ: -8, transformPerspective: 1500 }, 0);
+tl.fromTo(DK, { opacity: 0, y: 300 }, { opacity: 1, y: 0, duration: .7, ease: 'expo.out', immediateRender: false }, 16.75);
+tl.to(DK, { rotationZ: 6, duration: 3, ease: 'sine.inOut' }, 17.4);
+[['#dc1', 17.44, -14], ['#dc2', 17.64, 14], ['#dc3', 17.84, 0]].forEach(([id, t, rz]) => { const el = $(id);
+  const dx = 390 + 150 - (el.offsetLeft + 230), dy = 1340 + 94 - (el.offsetTop + 144);
+  tl.set(el, { opacity: 0, transformPerspective: 1600 }, 0);
+  tl.fromTo(el, { opacity: 1, x: dx, y: dy, scale: .65, rotationX: 58, rotationZ: -8, rotationY: 0 }, { x: 0, y: 0, scale: 1, rotationX: 8, rotationZ: rz * .3, duration: .55, ease: 'power3.out', immediateRender: false }, t);
+  tl.to(el, { rotationY: 180, rotationX: 0, rotationZ: 0, duration: .55, ease: 'back.inOut(1.3)' }, t + .5);
+  tl.to(el, { rotationY: 190, rotationX: 6, duration: 1.6, ease: 'sine.inOut' }, t + 1.05); });
+const dleft = { v: 48 };
+tl.fromTo(dleft, { v: 48 }, { v: 45, duration: .4, ease: 'steps(3)', immediateRender: false }, 17.5);
+
+// S6 action button + crosshair + real screenshot
+tl.set('#atl', { opacity: 0 }, 0);
+tl.to('#atl', { opacity: 1, duration: .5 }, 21.15);
+tl.set('#act', { opacity: 0, scale: 2 }, 0); tl.to('#act', { opacity: 1, scale: 1, duration: .35, ease: 'back.out(2)' }, 20.15);
+tl.to('#act', { opacity: 0, duration: .3 }, 21.4);
+tl.set('#xh', { opacity: 0, scale: .3 }, 0); tl.set('.job', { z: 80 }, 0);
+tl.to('#xh', { opacity: 1, scale: 1, duration: .45, ease: 'back.out(2)' }, 20.2);
+tl.to('#xh', { scale: 1.12, duration: .4, yoyo: true, repeat: 3, ease: 'sine.inOut' }, 20.7);
+
+// S7 browser widths + scan + gates
+const WD = [1440, 1280, 1024, 900, 768, 600, 480, 375], PX = [952, 860, 760, 680, 600, 520, 460, 420];
+const bw = { k: 0 };
+tl.fromTo(bw, { k: 0 }, { k: 7, duration: 2.4, ease: 'power1.inOut', immediateRender: false }, 23.1);
+tl.to(bw, { k: 0, duration: .7, ease: 'power3.inOut' }, 25.7);
+const bm = { y: -120 };
+tl.fromTo(bm, { y: -120 }, { y: 640, duration: 1.1, ease: 'none', repeat: 2, immediateRender: false }, 23.0);
+[['#g1', 24.6], ['#g2', 25.0], ['#g3', 25.5]].forEach(([id, t], i) => {
+  tl.set(id, { opacity: 0, transformPerspective: 1200 }, 0);
+  tl.fromTo(id, { opacity: 0, rotationX: -70, y: 60 }, { opacity: 1, rotationX: 0, y: 0, duration: .6, ease: 'expo.out', immediateRender: false }, 23.6 + i * .15);
+  tl.set(id + ' s', { scale: 0 }, 0); tl.to(id + ' s', { scale: 1, duration: .3, ease: 'back.out(2.5)' }, t);
+  tl.fromTo(id, { x: 0 }, { x: 10, duration: .06, yoyo: true, repeat: 1, immediateRender: false }, t); });
+
+// S8 printer
+const rc = { h: 0 };
+tl.fromTo(rc, { h: 0 }, { h: 740, duration: 1.5, ease: 'steps(30)', immediateRender: false }, 26.75);
+tl.to(rc, { h: 760, duration: .3, ease: 'power2.out' }, 28.25);
+
+// S9 comment typing
+const cm = { n: 0 };
+tl.fromTo(cm, { n: 0 }, { n: 7, duration: .6, ease: 'none', immediateRender: false, onUpdate: () => $('#ctx').textContent = 'GITMATE'.slice(0, Math.round(cm.n)) }, 29.2);
+
+// S10 end
+tl.set('#bigmk', { opacity: 0, scale: .2 }, 0);
+tl.to('#bigmk', { opacity: 1, scale: 1, duration: .9, ease: 'back.out(1.8)' }, 30.9);
+tl.fromTo('#er1', { attr: { 'stroke-dashoffset': 1420 } }, { attr: { 'stroke-dashoffset': 0 }, duration: 1.0, ease: 'power2.inOut', immediateRender: false }, 31.05);
+tl.fromTo('#er2', { attr: { 'stroke-dashoffset': 1546 } }, { attr: { 'stroke-dashoffset': 0 }, duration: 1.2, ease: 'power2.inOut', immediateRender: false }, 31.2);
+tl.to('#tapd', { opacity: 1, left: 560, top: 1440, duration: .5, ease: 'power2.out' }, 32.5);
+tl.to('#tapd', { scale: .7, duration: .1 }, 33.05); tl.to('#tapd', { scale: 1, duration: .15 }, 33.15);
+tl.to('#fol', { scale: .93, duration: .1 }, 33.05); tl.to('#fol', { scale: 1, duration: .2 }, 33.15);
+tl.set('#fol2', { opacity: 1 }, 33.15); tl.set('#fol', { opacity: 0 }, 33.15);
+tl.fromTo('#rip', { opacity: .7, width: 10, height: 10, margin: -5 }, { opacity: 0, width: 640, height: 640, margin: -320, duration: .8, ease: 'power2.out', immediateRender: false }, 33.1);
+tl.to('#tapd', { opacity: 0, duration: .3 }, 33.6);
+tl.to({}, { duration: .01 }, TOTAL);
+
+// camera: pure function of t
+const ease = x => x < .5 ? 16 * x ** 5 : 1 - Math.pow(-2 * x + 2, 5) / 2;
+const TD = .75, TPRE = .42;
+function camAt(t) {
+  let i = 0; for (let k = 0; k < S.length; k++) if (t >= S[k] - TPRE) i = k;
+  const ta = S[i] - TPRE; let p = poses[i].slice(), d = 0, rr = 0;
+  if (i > 0 && t < ta + TD) { const u = (t - ta) / TD, e = ease(u), a = poses[i - 1]; p = a.map((v, j) => v + (poses[i][j] - v) * e); d = Math.sin(u * Math.PI) * 700; rr = Math.sin(u * Math.PI) * (i % 2 ? 4 : -4); }
+  const st = Math.max(0, t - (S[i] - TPRE + TD)); const dz = Math.min(st, 6) * 8;
+  return { x: p[0], y: p[1], z: p[2] - dz, ry: p[3] + Math.sin(t * .6) * .6, rx: p[4] + Math.sin(t * .45) * .5, rz: p[5] + rr, d, i };
+}
+function camT(c) { return `translateZ(${-c.d + 60}px) rotateZ(${-c.rz}deg) rotateX(${-c.rx}deg) rotateY(${-c.ry}deg) translate3d(${-c.x}px,${-c.y}px,${-c.z}px)`; }
+const world = $('#world'), mbg = $('#mbg'), cam = $('#cam');
+function tick(t) {
+  const c = camAt(t), p = camAt(Math.max(0, t - 1 / 30));
+  world.style.transform = camT(c);
+  const hx = Math.abs(c.x - p.x) * .9 + Math.abs(c.ry - p.ry) * 32, vy = Math.abs(c.y - p.y) * .9 + Math.abs(c.rx - p.rx) * 32, zz = Math.abs(c.z - p.z + (p.d - c.d)) * .25;
+  const bx = Math.min(70, hx * .22 + zz * .05), by = Math.min(70, vy * .22 + zz * .05);
+  if (bx + by > .4) { mbg.setAttribute('stdDeviation', `${bx.toFixed(1)} ${by.toFixed(1)}`); cam.style.filter = 'url(#mb)'; } else cam.style.filter = 'none';
+  scenes.forEach((s, k) => { s.style.visibility = (k === c.i || (k === c.i - 1 && t < S[c.i] - TPRE + TD)) ? 'visible' : 'hidden'; });
+  $('#tag').innerHTML = `<b>${String(c.i + 1).padStart(2, '0')}</b> / 10`;
+  // S1 scrubber
+  $('#sw').textContent = sw.v.toFixed(2) + 's'; const f = sw.v / 2 * 100; $('#trki').style.width = f + '%'; $('#trkb').style.left = f + '%';
+  // S5 counter
+  $('#dleft').textContent = Math.round(dleft.v);
+  // S7 browser width
+  const k = bw.k, k0 = Math.floor(k), k1 = Math.min(7, k0 + 1), w = PX[k0] + (PX[k1] - PX[k0]) * (k - k0);
+  const B = $('#brw'); B.style.width = w + 'px'; B.style.left = (540 - w / 2) + 'px'; $('#wd').textContent = WD[Math.round(k)] + 'px';
+  $('#beam').style.top = bm.y + 'px';
+  // S8 receipt
+  $('#rcp').style.height = rc.h + 'px';
+}
+window.__seek = t => { tl.time(t, false); tick(t); };
+__seek(0);
+if (!navigator.webdriver) { const t0 = performance.now(); const loop = () => { window.__seek(((performance.now() - t0) / 1000) % TOTAL); requestAnimationFrame(loop); }; requestAnimationFrame(loop); }
+</script>
+</body></html>

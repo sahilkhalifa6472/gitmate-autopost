@@ -1,0 +1,7 @@
+[frustrated] Every GPS camera app... ads before the camera even opens, and a subscription just to stamp your location?
+[excited] Mate, this one's free. GeoTag Camera, for Android.
+It stamps the place, address, coordinates and time right onto every photo.
+[impressed] And it signs each photo on your phone, so anyone can check the photo and its location weren't changed.
+Works with no signal. No ads, no account, no paywall.
+[friendly] Just grab the APK from GitHub Releases.
+[warm] Want your repo featured too? DM us FEATURE. And comment GITMATE, I'll send you the link.

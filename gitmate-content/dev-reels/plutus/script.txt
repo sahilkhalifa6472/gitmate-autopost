@@ -1,0 +1,6 @@
+[frustrated] Expenses in one app, crypto in another, stocks in a messy spreadsheet?
+[excited] Mate, meet Plutus. One free, open-source tracker for all of it.
+Business expenses, income, crypto, stocks, even gold, with live prices.
+[warm] And it's private. No account, no sign-up. Your data never leaves your device.
+Built by Sebastian, nearly a thousand commits. Just open it in your browser.
+[friendly] Want your repo featured too? DM us FEATURE. And comment GITMATE, I'll send you the link.

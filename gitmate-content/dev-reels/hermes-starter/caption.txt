@@ -1,0 +1,18 @@
+Never coded? You can still run your own AI agent 🤖
+
+Hermes Starter, built by @sharkawyai, is a free step-by-step guide (English + Egyptian Arabic) that sets up Hermes Agent, the open-source agent from Nous Research, in about 15-20 minutes:
+→ Step 0: open a terminal (PowerShell or Terminal, no coding needed)
+→ Step 1: one install line for Windows, Mac or Linux
+→ Step 2: hermes doctor to check it works
+→ Step 3: pick a free brain: Nous Portal, OpenRouter :free models, or offline with Ollama (64K+ context)
+→ Step 4: say hi with hermes
+→ Step 5: build your first web page with a copy-paste prompt
+→ Step 6: memory + skills: it remembers you in MEMORY.md / USER.md and turns hard tasks into reusable /skills
+
+Unofficial beginner guide, MIT. Hermes Agent © Nous Research, MIT.
+
+Want your repo featured too? DM us FEATURE 📩
+Comment GITMATE and I'll send you the link 👇
+Follow @git.mate for 1 useful repo every day.
+
+#github #opensource #aiagents #hermesagent #nousresearch #ai #llm #ollama #openrouter #beginners #learntocode #developer #programming #coding #devtools

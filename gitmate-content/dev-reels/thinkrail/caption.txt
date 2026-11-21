@@ -1,0 +1,16 @@
+JetBrains open-sourced an IDE built for AI agents 🚆
+
+ThinkRail wraps the pi coding agent in a real IDE:
+→ Every task gets its own git worktree + branch, so agents work in parallel without touching your checkout
+→ Merge the good branch, delete the rest
+→ Living SPEC.md files sit beside your code, so decisions survive after the chat ends
+→ Editor, diffs, terminals, PRs + CI checks in one window
+→ MCP servers, Agent Skills, JetBrains AI or your own provider
+
+✅ Free + Apache 2.0
+✅ Desktop app (macOS, Windows, Linux) or one-line CLI install
+
+Comment GITMATE and I'll send you the link 👇
+Follow @git.mate for 1 useful repo every day.
+
+#github #opensource #jetbrains #aiagents #codingagent #ide #git #devtools #developer #programming #softwareengineering #ai

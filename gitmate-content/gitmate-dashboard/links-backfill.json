@@ -1,0 +1,28 @@
+{
+ "links": {
+  "php2shell": "https://github.com/php/php-src",
+  "thinkrail": "https://github.com/JetBrains/thinkrail",
+  "superpowers": "https://github.com/obra/superpowers",
+  "impeccable": "https://github.com/pbakaus/impeccable",
+  "claude-mem": "https://github.com/thedotmack/claude-mem",
+  "lightpanda": "https://github.com/lightpanda-io/browser",
+  "handy": "https://github.com/cjpais/Handy",
+  "agent-desktop": "https://github.com/vercel-labs/agent-desktop",
+  "worktrunk": "https://github.com/max-sixty/worktrunk",
+  "floci": "https://github.com/floci-io/floci",
+  "atlas": "https://github.com/neondeex/atlas-filemanager",
+  "anatomy": "https://github.com/wheresryan22/anatomy",
+  "auto-ontology": "https://github.com/NVIDIA/auto-ontology",
+  "mattpocock-skills": "https://github.com/mattpocock/skills",
+  "ruff": "https://github.com/astral-sh/ruff",
+  "sherlock": "https://github.com/sherlock-project/sherlock",
+  "astryx": "https://github.com/meta/astryx",
+  "mujoco": "https://github.com/google-deepmind/mujoco",
+  "improve": "https://github.com/shadcn/improve",
+  "security-audit-light": "https://github.com/cloudflare/security-audit-skill",
+  "rea": "https://github.com/morluto/rea",
+  "openshell": "https://github.com/NVIDIA/OpenShell",
+  "hallmark": "https://github.com/Nutlope/hallmark",
+  "microduck": "https://github.com/pollen-robotics/microduck"
+ }
+}

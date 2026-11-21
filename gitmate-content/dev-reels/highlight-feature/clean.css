@@ -1,0 +1,11 @@
+.card{top:720px;padding:60px 60px 58px}
+h1{font:900 104px/0.95 'Inter Tight';letter-spacing:-4.5px}
+h2{font:italic 400 108px/1 'Instrument Serif';margin:8px 0 36px;letter-spacing:-1px}
+p{font:500 37px/1.42 'Inter Tight';color:#d6d8dc;letter-spacing:-.3px}
+p+p{margin-top:24px}
+.pat{margin-top:44px;display:inline-flex;align-items:center;gap:14px;padding:20px 34px;border-radius:50px;background:#fff;color:#000;font:800 34px 'Inter Tight';letter-spacing:-.5px}
+.foot{position:absolute;bottom:280px;left:0;right:0;display:flex;justify-content:center;align-items:center;gap:22px}
+.foot img{width:84px;height:84px;border-radius:50%;border:1.5px solid #333}
+.foot span{font:700 38px 'JetBrains Mono'}
+.badge .ic{width:58px;height:58px;border-radius:50%;background:#fff;color:#000;display:grid;place-items:center;font:800 30px 'Inter Tight'}
+.badge{padding:18px 34px 18px 22px}

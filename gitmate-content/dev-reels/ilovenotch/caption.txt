@@ -1,0 +1,18 @@
+That black notch on your MacBook? It does… nothing. 🖤
+
+ILoveNotch, built by @niyamvora, turns it into a tiny control center:
+→ Hover it: now playing + a volume slider for every app
+→ Drop files on it to keep them handy (Quick Look, AirDrop)
+→ Calendar, Reminders, notes, timers, network speed
+→ See your Claude, Codex and Copilot usage limits at a glance
+→ Native SwiftUI, ~77 MB of RAM, 0.0% CPU at rest
+
+Install: download the DMG, drag it into Applications, done (or brew install --cask niyamvora/tap/ilovenotch). macOS 14.6+.
+
+Free and open-source (MIT) · built by @niyamvora 🙌
+
+Want your repo featured too? DM us FEATURE 📩
+Comment GITMATE and I'll send you the link 👇
+Follow @git.mate for 1 useful repo every day.
+
+#macbook #macos #mac #notch #productivity #opensource #github #swiftui #macapps #apple #developer #programming #coding #devtools #indiedev #setup

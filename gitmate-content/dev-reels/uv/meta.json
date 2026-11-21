@@ -1,0 +1,10 @@
+{
+ "video": "gitmate_uv.mp4",
+ "title": "uv: install Python packages 10-100x faster than pip (free, open-source)",
+ "description": "Still staring at pip install\u2026 waiting\u2026 and waiting? \ud83d\udc22\n\nuv is a free, open-source Python package and project manager, written in Rust:\n\u2192 10-100x faster than pip (official benchmark: 0.06s vs 4.63s for pip-sync)\n\u2192 Our own test: same 41 packages, cold cache: pip 48.6s, uv 2.1s\n\u2192 One tool for pip, virtualenv, pyenv, poetry, pipx and more\n\u2192 Installs Python itself: uv python install 3.13\n\u2192 Mac, Linux and Windows\n\nInstall in one line:\ncurl -LsSf https://astral.sh/uv/install.sh | sh\n(or: pip install uv)\n\nBuilt by Astral, the team behind Ruff. 92K+ \u2b50 on GitHub, MIT / Apache-2.0.\n\nComment GITMATE and I'll send you the link \ud83d\udc47\nFollow @git.mate for 1 useful repo every day.\n\n#python #uv #pip #rust #programming #coding #developer #opensource #github #devtools #pythonprogramming #datascience #machinelearning #softwareengineering #100daysofcode #webdev\n",
+ "repo": "https://github.com/astral-sh/uv",
+ "theme": "dark",
+ "duration": 35.45,
+ "cover_offset_ms": 3000,
+ "source": "github.com/trending (2026-11-19, 258 stars today, 92.3K total); speed test run by us in the build container"
+}

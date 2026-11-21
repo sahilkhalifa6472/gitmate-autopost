@@ -1,0 +1,21 @@
+{
+ "account": "git.mate",
+ "n": 5,
+ "slug": "opus-videos",
+ "title": "703 free prompts behind viral AI videos",
+ "video": {
+  "file": "5.mp4",
+  "duration_sec": 39.4,
+  "source": "/mnt/project-files/dev-reels/opus-videos/gitmate_opus_videos.mp4"
+ },
+ "instagram": {
+  "caption": "This one honestly blew my mind 🤯\n\nThose viral AI videos you keep seeing (games, 3D scenes, motion graphics)? Someone put them all in one free GitHub repo, with the exact prompt each creator used.\n\n✅ 703 prompts, all free\n✅ Copy one, paste into Claude Opus 5.5, it writes the animation as code\n✅ Watch each original next to a live remake\n\n💬 Comment GITMATE and I'll send you the link\n👉 Follow @git.mate for a new repo every day\n\n#opensource #github #ai #claude #aivideo #motiondesign #promptengineering #creativecoding #webdev #developer #coding #threejs #gsap #devtools #aitools",
+  "hashtags": [],
+  "cover_offset_ms": 11600,
+  "share_to_feed": true
+ },
+ "posting": {
+  "audience": "US",
+  "timezone": "America/New_York"
+ }
+}

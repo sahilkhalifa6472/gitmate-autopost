@@ -1,0 +1,16 @@
+Stop paying for your gym app 🏋️
+
+Open Gym is a free, self-hosted workout tracker that you actually own:
+→ Plan your week + guided sessions that track every set
+→ 1,300+ exercises with animated demos
+→ Estimated 1RM + a muscle map of everything you trained
+→ Body weight synced across phone and laptop
+→ Your data stays in a folder you control
+
+✅ One Docker command and it's running
+✅ No subscription. No ads.
+
+Comment GITMATE and I'll send you the link 👇
+Follow @git.mate for 1 useful repo every day.
+
+#github #opensource #selfhosted #fitness #gym #workout #docker #developer #programming #coding #homelab #devtools

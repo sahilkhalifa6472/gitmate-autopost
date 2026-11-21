@@ -1,0 +1,16 @@
+Your AI coding agent jumps straight into code. This repo stops that. ⚡
+
+Superpowers (308k ⭐ on GitHub) is a skills framework that gives your coding agent a real dev process:
+→ Brainstorming first: it asks what you're actually building, then writes a spec you sign off
+→ Writing plans: bite-sized tasks of 2-5 minutes, with exact file paths and verify steps
+→ A fresh subagent per task (subagent-driven development)
+→ Real TDD: write the test, watch it fail, then make it pass
+→ Two-stage code review (spec, then code quality) before moving on
+
+✅ Free + open source (MIT)
+✅ Works with Claude Code, Codex, Cursor, Gemini CLI, Copilot CLI and more
+
+Comment GITMATE and I'll send you the link 👇
+Follow @git.mate for 1 useful repo every day.
+
+#github #opensource #claudecode #aiagents #codingagent #tdd #softwareengineering #devtools #developer #programming #cursor #ai

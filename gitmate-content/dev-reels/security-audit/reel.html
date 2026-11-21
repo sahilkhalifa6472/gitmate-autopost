@@ -1,0 +1,392 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<title>git.mate security-audit</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter+Tight:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<style>
+:root{--ink:#f5f6f7;--mut:rgba(235,238,242,.58);--dim:rgba(235,238,242,.32)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#000}
+.f{position:relative;width:1080px;height:1920px;overflow:hidden;background:radial-gradient(ellipse 120% 80% at 50% 40%,#0d0e11 0%,#040405 60%,#000 100%);color:var(--ink);font-family:'Inter Tight',sans-serif}
+.vig{position:absolute;inset:0;z-index:5;pointer-events:none;background:radial-gradient(ellipse 90% 70% at 50% 50%,transparent 50%,rgba(0,0,0,.7) 100%)}
+.grain{position:absolute;inset:0;opacity:.08;mix-blend-mode:overlay;z-index:8;pointer-events:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
+
+/* 3D camera rig */
+#stage{position:absolute;inset:0;perspective:2200px;perspective-origin:50% 46%;z-index:2}
+#world{position:absolute;left:0;top:0;width:1080px;height:1920px;transform-style:preserve-3d}
+#floor{position:absolute;left:-3960px;top:-2540px;width:9000px;height:9000px;transform:translateY(1150px) rotateX(90deg);
+  background-image:linear-gradient(rgba(255,255,255,.09) 2px,transparent 2px),linear-gradient(90deg,rgba(255,255,255,.09) 2px,transparent 2px);background-size:150px 150px;
+  -webkit-mask:radial-gradient(circle at 50% 50%,#000 0%,rgba(0,0,0,.6) 28%,transparent 55%);mask:radial-gradient(circle at 50% 50%,#000 0%,rgba(0,0,0,.6) 28%,transparent 55%)}
+.sc{position:absolute;left:0;top:0;width:1080px;height:1920px;transform-style:preserve-3d;backface-visibility:hidden;visibility:hidden}
+#s1{visibility:visible}
+
+/* 3D slab card: thickness from stacked edge shadows */
+.c3{position:absolute;border-radius:34px;overflow:hidden;background:linear-gradient(160deg,#1d1e22 0%,#121316 45%,#0b0c0e 100%);
+  box-shadow:inset 0 1.5px 0 rgba(255,255,255,.2),inset 0 0 0 1.5px rgba(255,255,255,.07),0 3px 0 #1b1c1f,0 6px 0 #16171a,0 9px 0 #111214,0 12px 0 #0c0d0f,0 60px 90px rgba(0,0,0,.75)}
+.c3::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:linear-gradient(115deg,rgba(255,255,255,.1) 0%,rgba(255,255,255,0) 35%,rgba(255,255,255,0) 70%,rgba(255,255,255,.05) 100%)}
+.c3.lite{background:linear-gradient(160deg,#f7f8f9,#d9dce0);color:#08090a;box-shadow:inset 0 2px 0 #fff,0 3px 0 #c3c6cb,0 6px 0 #aeb2b8,0 9px 0 #9a9ea4,0 12px 0 #868a90,0 60px 90px rgba(0,0,0,.7)}
+.bead{width:62px;height:62px;border-radius:50%;display:grid;place-items:center;font-family:'JetBrains Mono';font-weight:800;font-size:24px;color:#050505;flex:none;
+  background:radial-gradient(circle at 35% 28%,#fff 0 18%,#e4e6ea 45%,#9da1a8 100%);box-shadow:inset 0 -5px 10px rgba(0,0,0,.25),inset 0 3px 4px #fff,0 10px 24px rgba(0,0,0,.6)}
+
+.top{position:absolute;left:64px;right:64px;top:88px;height:90px;z-index:6}
+.brand{position:absolute;left:0;top:0;display:flex;align-items:center;gap:18px;padding:14px 30px 14px 14px;font-family:'JetBrains Mono';font-weight:700;font-size:30px;border-radius:999px;background:#0e0f11;box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 0 0 1.5px rgba(255,255,255,.1)}
+.tag{position:absolute;right:0;top:12px;padding:18px 30px;font-family:'JetBrains Mono';font-size:24px;color:var(--mut);white-space:nowrap;border-radius:999px;background:#0e0f11;box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 0 0 1.5px rgba(255,255,255,.08)}
+.tag b{color:var(--ink)}
+.prog{position:absolute;left:64px;right:64px;bottom:96px;display:flex;gap:10px;z-index:6}
+.prog i{flex:1;height:8px;border-radius:4px;background:rgba(255,255,255,.14);position:relative;overflow:hidden}
+.prog i b{position:absolute;left:0;top:0;bottom:0;width:0;background:#f2f3f5;border-radius:4px}
+
+.L{position:absolute;left:64px;right:64px}
+.kick{font-family:'JetBrains Mono';font-size:28px;color:var(--mut);letter-spacing:1px;white-space:pre;height:40px}
+.h{font-weight:900;letter-spacing:-5px;line-height:.92;text-transform:uppercase}
+.h .ln{display:block;white-space:nowrap}
+.h .w{display:inline-block;padding-bottom:.05em;margin-right:.2em;background-image:linear-gradient(180deg,#ffffff 0%,#f1f2f4 50%,#b4b8be 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.h .w:last-child{margin-right:0}
+.h .soft .w{background-image:linear-gradient(180deg,rgba(255,255,255,.62),rgba(255,255,255,.24))}
+.lbl{font-family:'JetBrains Mono';font-size:22px;color:var(--mut)}
+.mono{font-family:'JetBrains Mono'}
+.chip{display:inline-block;font-family:'JetBrains Mono';font-size:22px;padding:10px 20px;border-radius:999px;color:rgba(255,255,255,.85);background:rgba(255,255,255,.06);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.12);white-space:nowrap}
+.chip.solid{background:#f2f3f5;color:#050505;font-weight:800;box-shadow:none}
+.chrome{display:flex;align-items:center;gap:14px;padding:24px 30px 16px}
+.chrome i{width:18px;height:18px;border-radius:50%;background:rgba(255,255,255,.3)}
+.url{margin-left:14px;flex:1;font-family:'JetBrains Mono';font-size:22px;color:var(--mut);padding:10px 22px;border-radius:999px;background:rgba(0,0,0,.3);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.08)}
+
+/* s1 trending rows */
+.tr{display:flex;align-items:center;gap:26px;padding:0 34px}
+.tr .n{font-family:'JetBrains Mono';font-weight:800;font-size:34px;width:60px;color:var(--mut)}
+.tr .nm{font-family:'JetBrains Mono';font-size:30px;font-weight:700;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tr .nm span{color:var(--mut);font-weight:500}
+.tr.one .n{color:#050505}
+.tr .st{font-family:'JetBrains Mono';font-size:22px;color:var(--mut);white-space:nowrap}
+/* s2 repo */
+.rp{padding:10px 44px 40px}
+.rname{font-family:'JetBrains Mono';font-size:46px;font-weight:800}
+.rname span{color:var(--mut);font-weight:500}
+.rdesc{margin-top:22px;font-size:36px;line-height:1.3;font-weight:500;color:rgba(255,255,255,.88)}
+.cmd{margin-top:26px;padding:20px 26px;border-radius:20px;background:rgba(0,0,0,.4);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.1);font-family:'JetBrains Mono';font-size:28px}
+/* s3 app */
+.app{display:flex;height:calc(100% - 66px)}
+.side{width:250px;padding:20px 22px;border-right:1.5px solid rgba(255,255,255,.08);display:flex;flex-direction:column;gap:16px}
+.side i{display:block;height:20px;border-radius:6px;background:rgba(255,255,255,.1)}
+.main{flex:1;padding:26px 30px;display:flex;flex-direction:column;gap:20px}
+.feat{position:relative;padding:22px 26px;border-radius:22px;background:#f2f3f5;color:#060607;font-size:32px;font-weight:800;display:flex;align-items:center;gap:16px}
+.ring{position:absolute;inset:-12px;border-radius:30px;border:4px solid rgba(255,255,255,.85)}
+.line{height:22px;border-radius:7px;background:rgba(255,255,255,.08)}
+.q{padding:26px 34px;font-size:36px;font-weight:800;border-radius:34px 34px 34px 10px}
+/* s4 */
+.shot{margin:0 18px;height:542px;border-radius:16px;background-size:cover;background-position:center;position:relative;overflow:hidden}
+.scan{position:absolute;left:0;right:0;height:5px;background:#fff;box-shadow:0 0 30px 10px rgba(255,255,255,.45)}
+.ev{display:flex;flex-direction:column;justify-content:center;padding:0 26px}
+.ev .t{font-size:32px;font-weight:800}
+.ev .s{font-family:'JetBrains Mono';font-size:19px;color:var(--mut);margin-top:6px}
+/* s5 tiles */
+.ag{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;text-align:center}
+.ag .gl{width:150px;height:150px;border-radius:40px;display:grid;place-items:center;font-size:74px;font-weight:900;background:linear-gradient(160deg,#f7f8f9,#bfc3c9);color:#060607;box-shadow:inset 0 -6px 12px rgba(0,0,0,.2),0 20px 40px rgba(0,0,0,.6)}
+.ag .t{font-size:40px;font-weight:900;letter-spacing:-1px}
+/* s6 layers */
+.lay{display:flex;align-items:center;gap:30px;padding:0 40px}
+.lay .k{font-family:'JetBrains Mono';font-size:24px;color:var(--mut);width:150px}
+.lay .body{flex:1;height:200px;border-radius:20px;background:rgba(0,0,0,.35);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.08);overflow:hidden;padding:18px 22px}
+.hex{font-family:'JetBrains Mono';font-size:21px;line-height:1.5;color:rgba(255,255,255,.75);white-space:pre}
+/* s7 flow */
+.node{padding:30px 32px}
+.node .n{font-family:'JetBrains Mono';font-size:22px;color:var(--mut)}
+.node .t{font-size:38px;font-weight:900;margin-top:8px;letter-spacing:-1px}
+.node .s{font-family:'JetBrains Mono';font-size:20px;color:var(--mut);margin-top:8px}
+.node.hl{background:linear-gradient(160deg,#f7f8f9,#d0d3d8);color:#060607}
+.node.hl .n,.node.hl .s{color:#4a4e55}
+.case{background-size:cover;background-position:center}
+.cap{position:absolute;left:14px;bottom:14px;padding:8px 14px;border-radius:999px;font-family:'JetBrains Mono';font-size:18px;font-weight:700;color:#fff;background:rgba(0,0,0,.75)}
+/* s8 terminal */
+.term{font-family:'JetBrains Mono';font-size:28px;line-height:1.8;padding:8px 40px 34px;white-space:pre}
+.term .p{color:var(--dim)}
+.term .ok{font-weight:800}
+.tc{display:inline-block;width:15px;height:30px;border-radius:3px;background:#e8eaed;vertical-align:-5px;margin-left:3px}
+/* s9 */
+.cm{padding:30px 34px}
+.rowc{display:flex;align-items:center;gap:20px}
+.av2{width:70px;height:70px;border-radius:50%;flex:none;background:radial-gradient(circle at 35% 28%,#5a5e64,#1b1d20);box-shadow:inset 0 0 0 2px rgba(255,255,255,.2)}
+.cin{flex:1;padding:20px 26px;border-radius:999px;font-size:32px;font-weight:700;background:rgba(255,255,255,.06);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.14)}
+.send{width:76px;height:76px;border-radius:50%;display:grid;place-items:center;background:#f2f3f5;color:#000;font-size:34px;font-weight:900;flex:none}
+.posted{display:flex;gap:20px;align-items:flex-start;margin-top:30px}
+.posted .u{font-weight:800;font-size:28px}
+.posted .c{font-size:34px;font-weight:800;margin-top:4px}
+.dm{padding:24px 30px;border-radius:32px 32px 32px 10px;font-size:32px;font-weight:700}
+.dm small{display:block;font-family:'JetBrains Mono';font-size:20px;color:#55595f;font-weight:500;margin-bottom:6px}
+/* s10 */
+.prof{padding:56px 54px 50px;text-align:center}
+.pfp{width:220px;height:220px;margin:0 auto;font-size:84px;letter-spacing:-4px}
+.pn{font-family:'JetBrains Mono';font-size:54px;font-weight:800;margin-top:30px}
+.pnm{font-size:30px;font-weight:600;color:var(--mut);margin-top:8px}
+.pbio{font-size:31px;line-height:1.45;margin-top:28px;color:rgba(255,255,255,.88)}
+.pst{display:flex;justify-content:center;gap:16px;margin-top:34px}
+.fbtn{position:relative;margin:44px auto 0;width:560px;height:110px;border-radius:999px;display:grid;place-items:center;font-size:44px;font-weight:900;background:#f2f3f5;color:#050505;box-shadow:0 6px 0 #a9adb3,0 18px 50px rgba(255,255,255,.18);overflow:hidden}
+.fbtn span{position:absolute}
+.ripple{position:absolute;width:160px;height:160px;border-radius:50%;background:rgba(0,0,0,.18);opacity:0}
+.hand{position:absolute;width:110px;height:110px;opacity:0}
+/* security-audit reel */
+.ph{display:flex;align-items:center;gap:22px;padding:0 34px;transition:none}
+.ph .n{font-family:'JetBrains Mono';font-weight:800;font-size:30px;width:60px;color:var(--mut)}
+.ph .t{font-size:46px;font-weight:900;letter-spacing:-1.5px;width:250px}
+.ph .s{font-family:'JetBrains Mono';font-size:21px;color:var(--mut);flex:1;text-align:right;white-space:nowrap}
+.ph.on{background:linear-gradient(160deg,#f7f8f9,#d0d3d8);color:#060607;box-shadow:inset 0 2px 0 #fff,0 3px 0 #c3c6cb,0 6px 0 #aeb2b8,0 9px 0 #9a9ea4,0 12px 0 #868a90,0 0 70px rgba(255,255,255,.22),0 60px 90px rgba(0,0,0,.7)}
+.ph.on .n,.ph.on .s{color:#4a4e55}
+#stk{position:absolute;left:0;top:0;width:1080px;height:1920px;transform-style:preserve-3d}
+.img{margin:0 18px;border-radius:16px;background-size:cover;background-position:center top}
+.agc{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;text-align:center;padding:0 26px}
+.agc .gl{width:150px;height:150px;border-radius:40px;display:grid;place-items:center;font-size:74px;font-weight:900;background:linear-gradient(160deg,#f7f8f9,#bfc3c9);color:#060607;box-shadow:inset 0 -6px 12px rgba(0,0,0,.2),0 20px 40px rgba(0,0,0,.6)}
+.agc .t{font-size:42px;font-weight:900;letter-spacing:-1px}
+.agc .s{font-family:'JetBrains Mono';font-size:21px;color:var(--mut);line-height:1.45}
+.neq{position:absolute;left:495px;top:895px;width:90px;height:90px;font-size:50px}
+.chat{padding:26px 34px}
+.bub{display:inline-block;margin-top:16px;padding:20px 28px;border-radius:28px 28px 8px 28px;background:#f2f3f5;color:#060607;font-size:34px;font-weight:800;min-height:82px}
+.chiprow{display:flex;align-items:center;justify-content:center;gap:14px}
+</style></head><body>
+<div class="f" id="F">
+  <div id="stage"><div id="world">
+    <div id="floor"></div>
+
+  <!-- S1 trending -->
+  <section class="sc" id="s1">
+    <div class="L kick" style="top:250px" data-k="// github trending · today"></div>
+    <div class="L h" style="top:304px;font-size:120px">
+      <span class="ln"><span class="w" data-t="0">Cloudflare's</span></span>
+      <span class="ln soft"><span class="w" data-t="2.64">bug</span><span class="w" data-t="2.84">hunter</span></span>
+      <span class="ln"><span class="w" data-t="4.08">#1</span><span class="w" data-t="5.6">today.</span></span>
+    </div>
+    <div class="c3 tr one in lite" style="left:64px;width:952px;top:690px;height:150px" data-t="0" data-z="90"><div class="n">01</div><div class="nm" style="font-size:29px"><span style="color:#55595f">cloudflare /</span> security-audit-skill</div><div class="st" style="color:#33363b;font-weight:800">★ +2.7k today</div></div>
+    <div class="c3 tr in" style="left:64px;width:952px;top:862px;height:110px" data-t=".1"><div class="n">02</div><div class="nm"><span>php /</span> php-src</div></div>
+    <div class="c3 tr in" style="left:64px;width:952px;top:994px;height:110px" data-t=".2"><div class="n">03</div><div class="nm"><span>anthropics /</span> knowledge-work-plugins</div></div>
+    <div class="c3 tr in" style="left:64px;width:952px;top:1126px;height:110px" data-t=".3"><div class="n">04</div><div class="nm"><span>NVIDIA /</span> OpenShell</div></div>
+    <div class="c3 tr in" style="left:64px;width:952px;top:1258px;height:110px" data-t=".4"><div class="n">05</div><div class="nm"><span>OpenBMB /</span> VoxCPM</div></div>
+  </section>
+
+  <!-- S2 meet -->
+  <section class="sc" id="s2">
+    <div class="L kick" style="top:250px" data-k="// it's called"></div>
+    <div class="L h" style="top:300px;font-size:170px;letter-spacing:-7px">
+      <span class="ln"><span class="w" data-t="6.56">security-</span></span>
+      <span class="ln soft"><span class="w" data-t="7.1">audit.</span></span>
+    </div>
+    <div class="c3 in" style="left:64px;width:952px;top:680px;height:640px" data-t="5.9" data-ry="-8" data-rx="6">
+      <div class="chrome"><i></i><i></i><i></i><div class="url">github.com / cloudflare / security-audit-skill</div></div>
+      <div class="img" style="height:540px;background-image:url(repo.jpg)"></div>
+    </div>
+    <div class="c3 in" style="left:64px;width:300px;top:1370px;height:130px;display:grid;place-items:center" data-t="6.7"><div style="font-size:40px;font-weight:900">★ 42.5k</div></div>
+    <div class="c3 in" style="left:390px;width:300px;top:1370px;height:130px;display:grid;place-items:center" data-t="6.9"><div style="font-size:40px;font-weight:900">⑂ 2.7k</div></div>
+    <div class="c3 in" style="left:716px;width:300px;top:1370px;height:130px;display:grid;place-items:center" data-t="7.1"><div style="font-size:40px;font-weight:900">MIT</div></div>
+  </section>
+
+  <!-- S3 what it does -->
+  <section class="sc" id="s3">
+    <div class="L kick" style="top:250px" data-k="// what it does"></div>
+    <div class="L h" style="top:300px;font-size:100px;letter-spacing:-4px">
+      <span class="ln"><span class="w" data-t="8.187">your</span><span class="w" data-t="8.64">agent</span></span>
+      <span class="ln soft"><span class="w" data-t="8.96">becomes</span><span class="w" data-t="9.44">a</span></span>
+      <span class="ln"><span class="w" data-t="9.76">security</span></span>
+      <span class="ln"><span class="w" data-t="10.32">auditor.</span></span>
+    </div>
+    <div class="c3 in" style="left:64px;width:952px;top:720px;height:600px" data-t="7.9" data-ry="12" data-rx="5">
+      <div class="chrome"><i></i><i></i><i></i><div class="url">blog.cloudflare.com · vulnerability harness</div></div>
+      <div class="img" style="height:500px;background-image:url(hero.jpg);background-position:center"></div>
+    </div>
+    <div class="c3 chiprow in" style="left:64px;width:952px;top:1370px;height:120px" data-t="10.4"><span class="chip">isolated agents</span><span class="chip">parallel sub-agents</span><span class="chip solid">verified output</span></div>
+  </section>
+
+  <!-- S4 six phases: exploded stack -->
+  <section class="sc" id="s4">
+    <div class="L kick" style="top:250px" data-k="// here's the clever bit"></div>
+    <div class="L h" style="top:300px;font-size:140px">
+      <span class="ln"><span class="w" data-t="13.12">six</span></span>
+      <span class="ln soft"><span class="w" data-t="13.44">phases.</span></span>
+    </div>
+    <div id="stk">
+      <div class="c3 ph" style="left:64px;width:952px;top:640px;height:140px" data-t="14.24"><div class="n">01</div><div class="t">Recon</div><div class="s">map the attack surface</div></div>
+      <div class="c3 ph" style="left:64px;width:952px;top:802px;height:140px" data-t="15.01"><div class="n">02</div><div class="t">Hunt</div><div class="s">isolated hunter agents</div></div>
+      <div class="c3 ph" style="left:64px;width:952px;top:964px;height:140px" data-t="16.19"><div class="n">03</div><div class="t">Validate</div><div class="s">try to disprove it</div></div>
+      <div class="c3 ph" style="left:64px;width:952px;top:1126px;height:140px" data-t="16.72"><div class="n">04</div><div class="t">Output</div><div class="s">findings.json + schema</div></div>
+      <div class="c3 ph" style="left:64px;width:952px;top:1288px;height:140px" data-t="17.08"><div class="n">05</div><div class="t">Verify</div><div class="s">fresh agent re-checks</div></div>
+      <div class="c3 ph" style="left:64px;width:952px;top:1450px;height:140px" data-t="17.6"><div class="n">06</div><div class="t">Report</div><div class="s">REPORT.md</div></div>
+    </div>
+  </section>
+
+  <!-- S5 checker != finder -->
+  <section class="sc" id="s5">
+    <div class="L kick" style="top:250px" data-k="// the trick"></div>
+    <div class="L h" style="top:300px;font-size:150px">
+      <span class="ln"><span class="w" data-t="19.24">checker</span></span>
+      <span class="ln soft"><span class="w" data-t="20.16">≠</span><span class="w" data-t="21.08">finder.</span></span>
+    </div>
+    <div class="c3 agc in" style="left:64px;width:420px;top:680px;height:520px" data-t="18.5" data-ry="18"><div class="lbl">agent A · hunter</div><div class="gl">A</div><div class="t">finds a bug</div><div class="s">SSRF? in /api/fetch</div></div>
+    <div class="c3 agc in" style="left:596px;width:420px;top:680px;height:520px" data-t="19.24" data-ry="-18"><div class="lbl">agent B · fresh</div><div class="gl">B</div><div class="t">checks it</div><div class="s">tries to disprove it</div></div>
+    <div class="bead neq in" data-t="20.16" data-z="60">≠</div>
+    <div class="c3 lite in" style="left:64px;width:952px;top:1260px;height:150px;display:flex;align-items:center;justify-content:center;gap:24px" data-t="20.75" data-z="40"><span class="mono" style="font-size:26px;color:#55595f">verdict →</span><span style="font-size:48px;font-weight:900">confirmed ✓</span></div>
+  </section>
+
+  <!-- S6 verified findings -->
+  <section class="sc" id="s6">
+    <div class="L kick" style="top:250px" data-k="// what you get"></div>
+    <div class="L h" style="top:300px;font-size:136px">
+      <span class="ln"><span class="w" data-t="22.08">verified</span></span>
+      <span class="ln"><span class="w" data-t="22.64">findings.</span></span>
+      <span class="ln soft"><span class="w" data-t="23.28">not</span><span class="w" data-t="23.52">noise.</span></span>
+    </div>
+    <div class="c3 lite in" style="left:64px;width:952px;top:760px;height:700px;padding-top:18px" data-t="21.7" data-ry="-10" data-rx="5">
+      <div class="img" style="height:655px;background-image:url(sankey.jpg);background-size:contain;background-repeat:no-repeat;background-position:center"></div>
+      <div class="cap">Cloudflare's harness · 20,799 leads → 41 critical</div>
+    </div>
+    <div class="c3 chiprow in" style="left:64px;width:952px;top:1510px;height:120px" data-t="23.6"><span class="chip solid">confirmed</span><span class="chip">needs_validation</span><span class="chip">rejected</span></div>
+  </section>
+
+  <!-- S7 setup -->
+  <section class="sc" id="s7">
+    <div class="L kick" style="top:250px" data-k="// set it up"></div>
+    <div class="L h" style="top:300px;font-size:118px">
+      <span class="ln"><span class="w" data-t="24.528">one</span><span class="w" data-t="24.72">command.</span></span>
+      <span class="ln soft"><span class="w" data-t="28.32">free.</span><span class="w" data-t="29.12">MIT.</span></span>
+    </div>
+    <div class="c3 in" style="left:64px;width:952px;top:600px;height:400px" data-t="24.45" data-ry="10" data-rx="6">
+      <div class="chrome"><i></i><i></i><i></i><div class="url">~ — zsh</div></div>
+      <div class="term" style="font-size:25px"><div><span class="p">$ </span><span id="t7"></span><span class="tc" id="tc7"></span></div><div id="o7a" style="color:var(--mut)">  --skill security-audit</div><div class="ok" id="o7b">✓ security-audit installed</div></div>
+    </div>
+    <div class="c3 chat in" style="left:64px;width:952px;top:1050px;height:330px" data-t="25.9" data-ry="-10" data-rx="5">
+      <div class="lbl">your coding agent</div>
+      <div style="text-align:right"><div class="bub"><span id="t7b"></span></div></div>
+      <div class="mono" id="o7c" style="font-size:24px;margin-top:22px;color:var(--mut)">▸ phase 1/6 · reconnaissance…</div>
+    </div>
+    <div class="c3 in" style="left:64px;width:300px;top:1430px;height:130px;display:grid;place-items:center" data-t="28.32"><div style="font-size:40px;font-weight:900">$0</div></div>
+    <div class="c3 in" style="left:390px;width:300px;top:1430px;height:130px;display:grid;place-items:center" data-t="29.12"><div style="font-size:36px;font-weight:900">MIT</div></div>
+    <div class="c3 in" style="left:716px;width:300px;top:1430px;height:130px;display:grid;place-items:center" data-t="29.35"><div class="mono" style="font-size:26px;font-weight:800">by Cloudflare</div></div>
+  </section>
+
+  <!-- S8 comment -->
+  <section class="sc" id="s8">
+    <div class="L kick" style="top:250px" data-k="// want the link?"></div>
+    <div class="L h" style="top:304px">
+      <span class="ln" style="font-size:132px"><span class="w" data-t="30.0">Comment</span></span>
+      <span class="ln soft" style="font-size:190px;letter-spacing:-8px"><span class="w" data-t="30.4">GITMATE</span></span>
+    </div>
+    <div class="c3 cm in" style="left:64px;width:952px;top:690px;height:390px" data-t="29.95" data-ry="-10" data-rx="8">
+      <div class="lbl" style="margin-bottom:22px">comments</div>
+      <div class="rowc"><div class="av2"></div><div class="cin"><span id="t8" style="color:rgba(255,255,255,.4)">Add a comment…</span></div><div class="send" id="snd8">↑</div></div>
+      <div class="posted" id="pst8"><div class="av2" style="width:56px;height:56px"></div><div><div class="u">you <span class="lbl">· now</span></div><div class="c">GITMATE</div></div></div>
+    </div>
+    <div class="c3 lite dm in" style="left:300px;top:1150px;width:560px;height:130px" data-t="31.5" data-z="80"><small>git.mate · message</small>Here's your link, mate 🔗</div>
+  </section>
+
+  <!-- S9 profile -->
+  <section class="sc" id="s9">
+    <div class="L kick" style="top:250px" data-k="// see you tomorrow, mate"></div>
+    <div class="L h" style="top:304px;font-size:132px">
+      <span class="ln"><span class="w" data-t="32.24">Follow</span></span>
+      <span class="ln soft" style="font-size:92px;letter-spacing:-3px"><span class="w" data-t="32.8">1 repo</span><span class="w" data-t="33.76">every</span><span class="w" data-t="34.12">day.</span></span>
+    </div>
+    <div class="c3 prof in" style="left:64px;width:952px;top:600px;height:1000px" data-t="32.0" data-rx="6">
+      <div class="bead pfp">&gt;_</div>
+      <div class="pn">@git.mate</div>
+      <div class="pnm">git.mate | GitHub Repos Daily</div>
+      <div class="pbio">Your daily open-source mate 🤝<br>1 useful GitHub repo, every day</div>
+      <div class="pst"><span class="chip">open-source</span><span class="chip">free tools</span><span class="chip">daily</span></div>
+      <div class="fbtn" id="fb"><div class="ripple" id="rp"></div><span id="f1">Follow</span><span id="f2" style="opacity:0">Following ✓</span></div>
+    </div>
+    <svg class="hand" id="hand" viewBox="0 0 100 100" style="left:560px;top:1460px"><circle cx="50" cy="50" r="34" fill="rgba(255,255,255,.25)" stroke="#fff" stroke-width="5"/><circle cx="50" cy="50" r="12" fill="#fff"/></svg>
+  </section>
+  </div></div>
+
+  <div class="top"><div class="brand"><div class="bead">&gt;_</div>git.mate</div><div class="tag" id="tag"><b>01</b> / trending</div></div>
+  <div class="prog" id="prog"><i><b></b></i><i><b></b></i><i><b></b></i><i><b></b></i><i><b></b></i><i><b></b></i><i><b></b></i><i><b></b></i><i><b></b></i></div>
+  <div class="vig"></div><div class="grain"></div>
+</div>
+
+<script>
+(function () {
+  const S = [0, 5.85, 7.75, 11.5, 18.35, 21.75, 24.4, 29.9, 31.95];
+  const TOTAL = 36.2; window.__TOTAL = TOTAL;
+  const LABEL = ['trending', 'meet it', 'what it does', '6 phases', 'the trick', 'results', 'setup', 'link', 'follow'];
+  const $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)];
+  const tl = gsap.timeline({ paused: true, defaults: { ease: 'power3.out' } });
+  const scenes = $$('.sc');
+  const R = 2400, STEP = 40;
+  // scenes sit on a ring; the camera orbits from one to the next
+  scenes.forEach((sc, i) => { sc.style.transform = `rotateY(${i * STEP}deg) translateZ(${R}px)`; });
+  const cam = { a: 0, d: 0, rx: 0, rz: 0 };
+  scenes.forEach((sc, i) => {
+    tl.set(sc, { visibility: 'visible' }, Math.max(0, S[i] - .62));
+    if (i < scenes.length - 1) tl.set(sc, { visibility: 'hidden' }, S[i + 1] + .45);
+    if (i) {
+      const t0 = S[i] - .58, dir = i % 2 ? 1 : -1;
+      // into the six phases the camera cranes down from above instead of a side tilt
+      const crane = i === 3, prx = crane ? 20 : 9 * dir, pd = crane ? 1200 : 900;
+      tl.to(cam, { a: i * STEP, duration: 1.0, ease: 'power3.inOut' }, t0);
+      tl.to(cam, { keyframes: [{ d: pd, rx: prx, rz: crane ? 0 : 3 * dir, duration: .5, ease: 'power2.out' }, { d: 0, rx: 0, rz: 0, duration: .5, ease: 'power2.in' }] }, t0);
+    }
+  });
+  tl.set(scenes[0], { visibility: 'visible' }, 0);
+
+  $$('.h .w').forEach((w) => { const t = +w.dataset.t; if (!t) return;
+    tl.fromTo(w, { opacity: 0, y: 70, scale: 1.12, filter: 'blur(18px)' }, { opacity: 1, y: 0, scale: 1, filter: 'blur(0px)', duration: .55, ease: 'expo.out' }, t); });
+  scenes.forEach((sc, i) => { const k = $('.kick', sc), txt = k.dataset.k, o = { n: 0 }; k.textContent = i ? '' : txt; if (!i) return;
+    tl.fromTo(o, { n: 0 }, { n: txt.length, duration: Math.min(.7, txt.length * .025), ease: 'none', immediateRender: false, onUpdate: () => { k.textContent = txt.slice(0, Math.round(o.n)); } }, S[i] + .05); });
+  // 3D slabs fly in from depth and settle at their tilt
+  $$('.in').forEach((c) => {
+    const t = +c.dataset.t, rx = +(c.dataset.rx || 0), ry = +(c.dataset.ry || 0), z = +(c.dataset.z || 0);
+    const end = { opacity: 1, z, rotationX: rx, rotationY: ry, y: 0, duration: .9, ease: 'expo.out' };
+    if (!t) { gsap.set(c, end); return; }
+    tl.fromTo(c, { opacity: 0, z: -900, rotationX: rx + 40, rotationY: ry * 2, y: 120 }, end, t);
+  });
+  // S4 exploded stack: all six phases start pressed into one block, then each one peels out to its own layer
+  const ph = $$('.ph');
+  ph.forEach((c, i) => {
+    gsap.set(c, { opacity: 0 });
+    tl.fromTo(c, { opacity: 0, y: -i * 162, z: -i * 40, rotationX: 55 }, { opacity: .9, y: -i * 162, z: -i * 40, rotationX: 55, duration: .35, immediateRender: false }, 13.3 + i * .05);
+    tl.to(c, { y: 0, z: 0, rotationX: 14, duration: .8, ease: 'expo.out' }, +c.dataset.t - .1);
+    tl.to(c, { opacity: 1, duration: .2 }, +c.dataset.t - .1);
+  });
+  const typer = (el, text, t, d) => { const o = { n: 0 }; tl.fromTo(o, { n: 0 }, { n: text.length, duration: d, ease: 'none', immediateRender: false, onUpdate: () => { el.textContent = text.slice(0, Math.round(o.n)); } }, t); };
+  const pop = (sel, t) => tl.fromTo(sel, { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: .3 }, t);
+
+  // S1: #1 row lifts toward camera
+  tl.fromTo('#s1 .one', { z: 90 }, { z: 170, duration: .6, yoyo: true, repeat: 1, ease: 'sine.inOut' }, 4.1);
+  // S7 terminal + agent prompt
+  typer($('#t7'), 'npx skills add cloudflare/security-audit-skill', 24.9, .75);
+  tl.set('#tc7', { opacity: 0 }, 25.7);
+  pop('#o7a', 25.7); pop('#o7b', 25.95);
+  typer($('#t7b'), 'security audit this codebase', 26.72, 1.1);
+  pop('#o7c', 27.95);
+  // S8 comment flow
+  tl.call(() => { $('#t8').textContent = 'Add a comment…'; $('#t8').style.color = 'rgba(255,255,255,.4)'; }, null, 30.44);
+  tl.call(() => { $('#t8').style.color = '#fff'; }, null, 30.45);
+  typer($('#t8'), 'GITMATE', 30.45, .4);
+  tl.fromTo('#snd8', { scale: 1 }, { scale: .8, duration: .1, yoyo: true, repeat: 1 }, 30.95);
+  tl.fromTo('#pst8', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: .4 }, 31.05);
+  // S9 follow tap
+  tl.fromTo('#hand', { opacity: 0, x: 200, y: 160 }, { opacity: 1, x: 0, y: 0, duration: .5, ease: 'power2.out' }, 32.3);
+  tl.to('#hand', { scale: .82, duration: .1, yoyo: true, repeat: 1 }, 32.85);
+  tl.fromTo('#rp', { opacity: .9, scale: .2 }, { opacity: 0, scale: 5, duration: .6, ease: 'power2.out' }, 32.9);
+  tl.to('#f1', { opacity: 0, y: -30, duration: .2 }, 32.95);
+  tl.fromTo('#f2', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: .3 }, 33.0);
+  tl.to('#fb', { backgroundColor: '#1a1b1e', color: '#f5f6f7', boxShadow: '0 6px 0 #0b0c0e,0 0 0 2px rgba(255,255,255,.4)', duration: .3 }, 32.98);
+  tl.to('#hand', { opacity: 0, duration: .4 }, 33.5);
+  tl.to({}, { duration: .01 }, TOTAL);
+
+  const world = $('#world'), tag = $('#tag'), segs = $$('#prog b');
+  const PT = ph.map((c) => +c.dataset.t);
+  const tick = (t) => {
+    // slow handheld drift keeps the 3D alive between moves
+    const a = cam.a + Math.sin(t * .5) * .35, rx = cam.rx + Math.sin(t * .37 + 1) * .7, rz = cam.rz + Math.sin(t * .29) * .25;
+    world.style.transform = `translateZ(${-cam.d}px) rotateX(${rx}deg) rotateZ(${rz}deg) translateZ(${-R}px) rotateY(${-a}deg)`;
+    $('#tc7').style.visibility = (Math.floor(t * 3) % 2) ? 'hidden' : 'visible';
+    // focus pull: the phase being spoken is lit and sharp, the others sit back softly
+    let on = -1; PT.forEach((p, i) => { if (t >= p - .1) on = i; });
+    ph.forEach((c, i) => { c.classList.toggle('on', i === on && t < 18.0); c.style.filter = on >= 0 && i !== on && t < 18.0 ? 'blur(1.6px) brightness(.75)' : 'none'; });
+    let si = 0; for (let i = 0; i < S.length; i++) if (t >= S[i] - .3) si = i;
+    tag.innerHTML = `<b>${String(si + 1).padStart(2, '0')}</b> / ${LABEL[si]}`;
+    segs.forEach((b, i) => { const e = i < S.length - 1 ? S[i + 1] : TOTAL - 2; b.style.width = Math.min(100, Math.max(0, (t - S[i]) / (e - S[i]) * 100)) + '%'; });
+  };
+  window.__tl = tl;
+  window.__seek = (t) => { tl.time(t, false); tick(t); };
+  window.__seek(0);
+  if (!navigator.webdriver) { const t0 = performance.now(); const loop = () => { window.__seek(((performance.now() - t0) / 1000) % TOTAL); requestAnimationFrame(loop); }; requestAnimationFrame(loop); }
+})();
+</script>
+</body></html>

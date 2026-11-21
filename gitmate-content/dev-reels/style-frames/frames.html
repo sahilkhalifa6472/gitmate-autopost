@@ -1,0 +1,136 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter+Tight:wght@500;600;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#07080a;--ink:#f4f4f2;--mut:#8b8f96;--dim:#3a3d42;--line:#1c1f24;--card:#0f1114;--card2:#15181c}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#000}
+.f{position:relative;width:1080px;height:1920px;overflow:hidden;background:var(--bg);color:var(--ink);font-family:'Inter Tight',sans-serif;margin-bottom:40px}
+/* backdrop: grid + vignette + glow */
+.f::before{content:"";position:absolute;inset:0;background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:72px 72px;mask-image:radial-gradient(ellipse 80% 65% at 50% 45%,#000 30%,transparent 85%);opacity:.75}
+.f::after{content:"";position:absolute;inset:0;background:radial-gradient(ellipse 60% 40% at 50% 58%,rgba(255,255,255,.07),transparent 70%);pointer-events:none}
+.mono{font-family:'JetBrains Mono',monospace}
+/* top bar */
+.top{position:absolute;left:72px;right:72px;top:96px;display:flex;justify-content:space-between;align-items:center;z-index:2}
+.brand{display:flex;align-items:center;gap:18px;font-family:'JetBrains Mono';font-weight:700;font-size:30px;letter-spacing:.5px}
+.logo{width:58px;height:58px;border-radius:16px;background:var(--ink);color:#000;display:grid;place-items:center;font-size:26px;font-weight:800;box-shadow:0 10px 30px rgba(255,255,255,.12),inset 0 -4px 0 rgba(0,0,0,.18)}
+.tag{font-family:'JetBrains Mono';font-size:24px;color:var(--mut);border:1px solid var(--dim);padding:12px 20px;border-radius:999px}
+.tag b{color:var(--ink);font-weight:700}
+/* progress */
+.prog{position:absolute;left:72px;right:72px;bottom:96px;display:flex;gap:12px;z-index:2}
+.prog i{flex:1;height:6px;border-radius:3px;background:var(--dim)}
+.prog i.on{background:var(--ink)}
+.layer{position:absolute;left:72px;right:72px;z-index:2}
+.kick{font-family:'JetBrains Mono';font-size:28px;color:var(--mut);letter-spacing:1px}
+.kick b{color:var(--ink)}
+.h{font-weight:900;letter-spacing:-4px;line-height:.92;text-transform:uppercase}
+.out{color:#53575e}
+.cur{display:inline-block;width:.42em;height:.82em;background:var(--ink);vertical-align:-.06em;margin-left:.08em}
+/* 3D repo card */
+.stage{perspective:2200px}
+.card{background:linear-gradient(180deg,var(--card2),var(--card));border:1px solid #2a2e34;border-radius:34px;box-shadow:0 60px 120px rgba(0,0,0,.8),0 0 0 1px rgba(255,255,255,.03),inset 0 1px 0 rgba(255,255,255,.08);transform-style:preserve-3d}
+.chrome{display:flex;align-items:center;gap:14px;padding:26px 32px;border-bottom:1px solid #23262b}
+.chrome i{width:18px;height:18px;border-radius:50%;background:#2c3036}
+.chrome .url{margin-left:18px;flex:1;font-family:'JetBrains Mono';font-size:22px;color:var(--mut);background:#0a0b0d;border:1px solid #23262b;border-radius:12px;padding:10px 18px}
+.repo{padding:44px 48px 48px}
+.rrow{display:flex;align-items:center;gap:22px}
+.av{width:84px;height:84px;border-radius:24px;background:#000;border:1px solid #33373d;display:grid;place-items:center}
+.rname{font-family:'JetBrains Mono';font-size:44px;font-weight:800}
+.rname span{color:var(--mut);font-weight:500}
+.rdesc{margin-top:26px;font-size:36px;line-height:1.3;color:#c9cbcf;font-weight:500}
+.chips{display:flex;flex-wrap:wrap;gap:14px;margin-top:34px}
+.chip{font-family:'JetBrains Mono';font-size:23px;padding:10px 18px;border-radius:999px;border:1px solid #33373d;color:#d6d7da}
+.chip.solid{background:var(--ink);color:#000;border-color:var(--ink);font-weight:700}
+.stats{display:flex;gap:16px;margin-top:38px}
+.stat{flex:1;background:#0a0b0d;border:1px solid #23262b;border-radius:20px;padding:22px 24px}
+.stat .k{font-family:'JetBrains Mono';font-size:20px;color:var(--mut)}
+.stat .v{margin-top:8px;font-size:38px;font-weight:800}
+/* terminal */
+.term{font-family:'JetBrains Mono';font-size:30px;line-height:1.75;padding:36px 44px 44px}
+.term .p{color:var(--mut)}
+.term .ok{color:var(--ink);font-weight:700}
+.term .c{color:#5d6168}
+/* feature rows */
+.feat{display:flex;flex-direction:column;gap:20px}
+.fr{display:flex;align-items:center;gap:26px;background:rgba(255,255,255,.025);border:1px solid #23262b;border-radius:24px;padding:26px 30px}
+.fi{flex:none;width:68px;height:68px;border-radius:18px;background:var(--ink);color:#000;display:grid;place-items:center;font-family:'JetBrains Mono';font-weight:800;font-size:28px}
+.ft{font-size:36px;font-weight:800}
+.fs{font-family:'JetBrains Mono';font-size:22px;color:var(--mut);margin-top:6px}
+.x{text-decoration:line-through;text-decoration-thickness:6px;color:var(--mut)}
+/* cta */
+.big{font-size:200px}
+.steps{display:flex;flex-direction:column;gap:22px}
+.st2{display:flex;align-items:center;gap:28px;padding:30px 34px;border-radius:26px;border:1px solid #2a2e34;background:linear-gradient(180deg,#121417,#0c0d10);box-shadow:0 30px 60px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.06)}
+.n{flex:none;font-family:'JetBrains Mono';font-weight:800;font-size:30px;width:64px;height:64px;border-radius:50%;border:2px solid var(--ink);display:grid;place-items:center}
+.st2 .t{font-size:38px;font-weight:800}
+.st2 .s{font-family:'JetBrains Mono';font-size:22px;color:var(--mut);margin-top:6px}
+.handle{display:inline-flex;align-items:center;gap:20px;background:var(--ink);color:#000;border-radius:999px;padding:22px 40px 22px 22px;font-family:'JetBrains Mono';font-weight:800;font-size:38px;box-shadow:0 20px 60px rgba(255,255,255,.15)}
+.handle .logo{background:#000;color:var(--ink);box-shadow:none}
+.ghost{position:absolute;font-family:'JetBrains Mono';font-weight:800;color:transparent;-webkit-text-stroke:2px #1d2025;z-index:1;white-space:nowrap}
+</style></head><body>
+
+<!-- FRAME 1: HOOK -->
+<section class="f" id="f1">
+  <div class="top"><div class="brand"><div class="logo">&gt;_</div>repo.daily</div><div class="tag"><b>#01</b> trending</div></div>
+    <div class="layer" style="top:270px">
+    <div class="kick">// <b>open-source</b> · free forever</div>
+    <div class="h" style="font-size:146px;margin-top:34px">Stop paying<br>for your<br><span class="out">gym app</span><span class="cur"></span></div>
+  </div>
+  <div class="layer stage" style="top:910px">
+    <div class="card" style="transform:rotateX(14deg) rotateY(-10deg) rotateZ(1.5deg)">
+      <div class="chrome"><i></i><i></i><i></i><div class="url">github.com / openGym</div></div>
+      <div class="repo">
+        <div class="rrow"><div class="av"><svg width="46" height="46" viewBox="0 0 24 24" fill="#f4f4f2"><rect x="1" y="9" width="3" height="6" rx="1"/><rect x="4.5" y="7" width="3" height="10" rx="1"/><rect x="7.5" y="11" width="9" height="2"/><rect x="16.5" y="7" width="3" height="10" rx="1"/><rect x="20" y="9" width="3" height="6" rx="1"/></svg></div>
+          <div class="rname">openGym</div></div>
+        <div class="rdesc">A self-hosted gym &amp; body-weight tracker you actually own.</div>
+        <div class="chips"><span class="chip solid">self-hosted</span><span class="chip">AGPL-3.0</span><span class="chip">docker</span><span class="chip">react</span></div>
+        <div class="stats"><div class="stat"><div class="k">price</div><div class="v">₹0</div></div><div class="stat"><div class="k">setup</div><div class="v">1 cmd</div></div><div class="stat"><div class="k">ads</div><div class="v">none</div></div></div>
+      </div>
+    </div>
+  </div>
+  <div class="prog"><i class="on"></i><i></i><i></i><i></i><i></i></div>
+</section>
+
+<!-- FRAME 2: FEATURE / HOW -->
+<section class="f" id="f2">
+  <div class="top"><div class="brand"><div class="logo">&gt;_</div>repo.daily</div><div class="tag"><b>02</b> / setup</div></div>
+  <div class="layer" style="top:250px">
+    <div class="h" style="font-size:150px">One<br><span class="out">command.</span></div>
+    <div style="font-size:40px;font-weight:600;color:#c9cbcf;margin-top:30px;line-height:1.3">Your data stays on <b style="color:#fff">your</b> box.</div>
+  </div>
+  <div class="layer stage" style="top:790px">
+    <div class="card" style="transform:rotateX(10deg) rotateY(8deg)">
+      <div class="chrome"><i></i><i></i><i></i><div class="url">~/opengym — zsh</div></div>
+      <div class="term">
+        <div><span class="p">$</span> git clone …/openGym</div>
+        <div><span class="p">$</span> docker compose up -d</div>
+        <div class="c"># pulling images…</div>
+        <div class="ok">✓ running → localhost:3000<span class="cur" style="height:30px;width:16px"></span></div>
+      </div>
+    </div>
+  </div>
+  <div class="layer feat" style="top:1290px">
+    <div class="fr"><div class="fi">01</div><div><div class="ft">Guided workouts</div><div class="fs">rest timer · sets · reps</div></div></div>
+    <div class="fr"><div class="fi">02</div><div><div class="ft"><span class="x">Subscription</span>&nbsp; ₹0</div><div class="fs">no signup · no ads · no cloud</div></div></div>
+  </div>
+  <div class="prog"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></div>
+</section>
+
+<!-- FRAME 3: CTA -->
+<section class="f" id="f3">
+  <div class="top"><div class="brand"><div class="logo">&gt;_</div>repo.daily</div><div class="tag"><b>05</b> / save it</div></div>
+  <div class="layer" style="top:250px">
+    <div class="kick">// don't lose this repo</div>
+    <div class="h big" style="margin-top:30px">Save<br><span class="out">this.</span></div>
+  </div>
+  <div class="layer steps" style="top:850px">
+    <div class="st2"><div class="n">1</div><div><div class="t">Save the reel</div><div class="s">repo link in caption</div></div></div>
+    <div class="st2"><div class="n">2</div><div><div class="t">Star it on GitHub</div><div class="s">search: openGym</div></div></div>
+    <div class="st2"><div class="n">3</div><div><div class="t">Follow for 1 repo / day</div><div class="s">new open-source, every morning</div></div></div>
+  </div>
+  <div class="layer" style="top:1560px;text-align:center">
+    <div class="handle"><div class="logo">&gt;_</div>@repo.daily</div>
+  </div>
+  <div class="prog"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></div>
+</section>
+</body></html>

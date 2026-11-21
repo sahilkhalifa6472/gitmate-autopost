@@ -1,0 +1,8 @@
+[frustrated] Still typing docker ps... docker logs... docker restart... fifty times a day?
+[excited] Mate, meet Arcane. A free, open-source dashboard for all your Docker stuff.
+Start, stop and restart containers in one click, and watch live logs and CPU right there.
+Edit and deploy your compose projects straight from the browser.
+[impressed] It even checks your images for updates and known vulnerabilities.
+[friendly] Setup? It's one container. Docker compose up, open port 3552, done.
+Always free. Almost nine thousand stars on GitHub.
+[warm] Comment GITMATE and I'll send you the link.

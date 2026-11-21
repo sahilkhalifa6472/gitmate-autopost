@@ -1,0 +1,26 @@
+{
+ "account": "git.mate",
+ "n": 30,
+ "slug": "heart",
+ "title": "4R022 Heart: a developer's 'I love you' in 30 languages, on every screen",
+ "video": {
+  "file": "30.mp4",
+  "duration_sec": 34.4,
+  "source": "/mnt/project-files/dev-reels/heart/gitmate_heart.mp4"
+ },
+ "instagram": {
+  "caption": "Forget flowers. This is how a developer says \"I love you\" \u2764\ufe0f\n\n4R022 Heart, built by @kosemen.00, is a tiny Python + Qt app that plays a cinematic love scene:\n\u2192 A heart is drawn in light, then filled with \"I love you\" in 30 languages\n\u2192 It glows and beats, full screen on every monitor you have, all at once\n\u2192 About 49 seconds, then it fades out and closes by itself\n\u2192 Fully offline: no network, no data collected\n\u2192 Made for birthdays, anniversaries, proposals and surprises\n\nRun it: clone the repo \u2192 pip install -r Build/requirements.txt \u2192 python Main/Main.py\n\nWant your repo featured too? DM us FEATURE \ud83d\udce9\nComment GITMATE and I'll send you the link \ud83d\udc47\nFollow @git.mate for 1 useful repo every day.\n\n#github #opensource #python #pyside6 #qt #developer #programming #coding #devlife #softwareengineer #creativecoding #iloveyou\n",
+  "hashtags": [],
+  "cover_offset_ms": 4100,
+  "share_to_feed": true
+ },
+ "posting": {
+  "audience": "US",
+  "timezone": "America/New_York"
+ },
+ "link": "https://github.com/Kaan-Kross/4R022-Heart",
+ "repo": "https://github.com/Kaan-Kross/4R022-Heart",
+ "theme": "dark",
+ "free_feature": true,
+ "creator": "@kosemen.00 (DM'd 2026-10-25, old free repo)"
+}

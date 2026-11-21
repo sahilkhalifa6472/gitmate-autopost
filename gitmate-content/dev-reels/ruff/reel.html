@@ -1,0 +1,427 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<title>git.mate ruff</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<style>
+:root{--ink:#0b0b0c;--mut:#8b8d91;--dim:#cfd0d2;--bg:#f7f7f5}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#fff}
+.f{position:relative;width:1080px;height:1920px;overflow:hidden;background:radial-gradient(ellipse 110% 70% at 50% 45%,#ffffff 0%,#f7f7f5 55%,#eeeeec 100%);color:var(--ink);font-family:'Inter',sans-serif}
+#cam{position:absolute;inset:0}
+#stage{position:absolute;inset:0;perspective:1800px;perspective-origin:50% 50%}
+#world{position:absolute;left:0;top:0;width:1080px;height:1920px;transform-style:preserve-3d;transform-origin:540px 960px}
+.sc{position:absolute;left:0;top:0;width:1080px;height:1920px;transform-style:preserve-3d;transform-origin:540px 960px;visibility:hidden}
+.ring{position:absolute;border-radius:50%;border:70px solid rgba(10,10,12,.045);filter:blur(26px)}
+.grain{position:absolute;inset:0;opacity:.05;mix-blend-mode:multiply;z-index:8;pointer-events:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
+.top{position:absolute;left:64px;right:64px;top:84px;height:80px;z-index:6}
+.brand{position:absolute;left:0;top:0;display:flex;align-items:center;gap:16px;font-family:'JetBrains Mono';font-weight:700;font-size:28px}
+.mk{width:58px;height:58px;border-radius:50%;display:grid;place-items:center;font-family:'JetBrains Mono';font-weight:800;font-size:22px;color:#fff;background:radial-gradient(circle at 34% 28%,#5a5c61 0 10%,#1a1b1e 45%,#000 100%);box-shadow:inset 0 2px 3px rgba(255,255,255,.35),0 8px 18px rgba(0,0,0,.25)}
+.tag{position:absolute;right:0;top:14px;font-family:'JetBrains Mono';font-size:24px;color:var(--mut);white-space:nowrap}
+.tag b{color:var(--ink);font-weight:700}
+.C{position:absolute;left:0;right:0;text-align:center;white-space:nowrap}
+.kick{font-family:'JetBrains Mono';font-size:26px;color:var(--mut);letter-spacing:1px}
+.sans{font-weight:600;letter-spacing:-.035em;line-height:1}
+.ser{font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;letter-spacing:-.01em;line-height:1}
+.g{color:var(--mut)}
+.ch{display:inline-block;white-space:pre}
+.mono{font-family:'JetBrains Mono'}
+.card{position:absolute;background:#fff;border-radius:26px;box-shadow:0 0 0 2px var(--ink),0 8px 0 var(--ink),0 40px 70px rgba(0,0,0,.14);overflow:hidden}
+
+
+/* S1 slow-linter terminal */
+.term{position:absolute;left:80px;top:560px;width:920px;height:560px;background:#fcfcfb;padding:0}
+.term .bar3{height:70px;background:var(--ink);display:flex;align-items:center;gap:14px;padding:0 28px}
+.term .bar3 i{width:20px;height:20px;border-radius:50%;background:#fff;opacity:.85}
+.term .bar3 span{margin-left:18px;font-family:'JetBrains Mono';font-size:22px;color:#9a9ca1;white-space:nowrap}
+.term .ln{position:absolute;left:40px;font-family:'JetBrains Mono';font-size:32px;white-space:nowrap}
+.term .ln.m{color:#6d6f74;font-size:26px}
+.elap{position:absolute;left:40px;top:300px;font-family:'JetBrains Mono';font-weight:800;font-size:150px;letter-spacing:-4px;white-space:nowrap}
+.pbar{position:absolute;left:40px;right:40px;top:480px;height:22px;border-radius:11px;background:#e4e4e2;overflow:hidden}
+.pbar i{position:absolute;left:0;top:0;bottom:0;width:0;background:var(--ink)}
+/* S2 camera iris */
+.lens{position:absolute;left:190px;top:600px;width:700px;height:700px;border-radius:50%;background:radial-gradient(circle,#fff 0 60%,#e6e6e4 61%,#d2d3d5 100%);box-shadow:0 0 0 6px var(--ink),0 14px 0 var(--ink),0 50px 80px rgba(0,0,0,.18)}
+.lens .tk{position:absolute;left:0;top:0;width:700px;height:700px}
+.iris{position:absolute;left:80px;top:80px;width:540px;height:540px;border-radius:50%;overflow:hidden;background:#fff;box-shadow:0 0 0 8px var(--ink)}
+.iris .big{position:absolute;inset:0;display:grid;place-items:center;font-family:'Instrument Serif';font-style:italic;font-size:200px;letter-spacing:-.02em}
+.blade{position:absolute;inset:0;background:linear-gradient(135deg,#2b2c30,#0b0b0c 70%)}
+/* S3 extruded logo + spec plate */
+.logo3{position:absolute;left:390px;top:560px;width:300px;height:366px;transform-style:preserve-3d}
+.logo3 img{position:absolute;left:0;top:0;width:300px;height:366px}
+.plate{position:absolute;left:150px;top:1090px;width:780px;height:330px;background:#fcfcfb;padding:26px 40px}
+.plate .row{position:relative;height:92px;display:flex;align-items:center;justify-content:space-between;border-bottom:3px solid #e4e4e2}
+.plate .row:last-child{border-bottom:0}
+.plate .row small{font-family:'JetBrains Mono';font-size:24px;color:var(--mut);letter-spacing:2px;white-space:nowrap}
+.plate .row b{font-size:50px;font-weight:600;letter-spacing:-.03em;white-space:nowrap}
+/* S4 race lanes */
+.race{position:absolute;left:80px;top:540px;width:920px;height:560px;background:#fcfcfb;padding:30px 36px}
+.race h6{font-family:'JetBrains Mono';font-size:22px;font-weight:800;letter-spacing:3px;white-space:nowrap}
+.race h6 span{color:var(--mut);font-weight:500;letter-spacing:0}
+.lane{position:absolute;left:36px;right:36px;height:130px}
+.lane .nm{position:absolute;left:0;top:44px;font-family:'JetBrains Mono';font-weight:800;font-size:30px;white-space:nowrap}
+.lane .trk{position:absolute;left:190px;top:40px;width:460px;height:50px;border-radius:12px;background:repeating-linear-gradient(90deg,#e4e4e2 0 30px,#ececea 30px 60px)}
+.lane .fin{position:absolute;left:640px;top:30px;width:20px;height:70px;background:repeating-conic-gradient(var(--ink) 0 25%,#fff 0 50%) 0 0/10px 10px;box-shadow:0 0 0 2px var(--ink)}
+.lane .pk{position:absolute;left:190px;top:34px;width:84px;height:62px;border-radius:14px;background:var(--ink);box-shadow:0 8px 0 #3a3b3e}
+.lane .tm{position:absolute;right:0;top:36px;font-family:'JetBrains Mono';font-weight:800;font-size:44px;white-space:nowrap;text-align:right}
+.lane.r .pk{background:#fff;box-shadow:inset 0 0 0 5px var(--ink),0 8px 0 var(--ink)}
+.chart{position:absolute;left:80px;top:1190px;width:920px;height:300px;background:#fff;padding:26px 30px}
+.chart img{display:block;width:860px;height:245px}
+/* S5 hydraulic press */
+.press{position:absolute;left:230px;top:560px;width:620px;height:100px;transform-style:preserve-3d}
+.press .rod{position:absolute;left:270px;top:-100px;width:80px;height:100px;background:linear-gradient(90deg,#9a9ca0,#f2f2f0 40%,#b9babc)}
+.press .hd2{position:absolute;left:0;top:0;width:620px;height:100px;border-radius:18px;background:linear-gradient(180deg,#3a3b3e,#0b0b0c);box-shadow:0 10px 0 #000;color:#fff;font-family:'JetBrains Mono';font-weight:800;font-size:26px;letter-spacing:6px;display:grid;place-items:center}
+.stack{position:absolute;left:250px;top:700px;width:580px;height:640px;transform-origin:50% 100%}
+.box{position:absolute;left:0;width:580px;height:150px}
+.box .tp3{position:absolute;left:20px;top:0;width:540px;height:26px;background:#dcdcda;box-shadow:inset 0 0 0 3px var(--ink);transform:skewX(-30deg);transform-origin:0 100%}
+.box .fr3{position:absolute;left:0;top:26px;width:560px;height:118px;background:#fff;box-shadow:inset 0 0 0 4px var(--ink),8px 8px 0 var(--ink);display:flex;align-items:center;justify-content:space-between;padding:0 36px}
+.box .fr3 b{font-size:54px;font-weight:600;letter-spacing:-.03em;white-space:nowrap}
+.box .fr3 small{font-family:'JetBrains Mono';font-size:22px;color:var(--mut);white-space:nowrap}
+.one{position:absolute;left:250px;top:1170px;width:580px;height:170px;border-radius:22px;background:var(--ink);color:#fff;display:flex;align-items:center;gap:30px;padding:0 44px;box-shadow:0 12px 0 #3a3b3e,0 40px 60px rgba(0,0,0,.2)}
+.one img{width:84px;height:102px;filter:invert(1)}
+.one b{font-family:'JetBrains Mono';font-size:64px;font-weight:800;white-space:nowrap}
+.one small{display:block;font-family:'JetBrains Mono';font-size:22px;color:#9a9ca1;font-weight:500}
+/* S6 rule drawer + fix editor */
+.drawer{position:absolute;left:110px;top:620px;width:860px;height:300px;transform-style:preserve-3d}
+.drawer .tray2{position:absolute;left:0;top:120px;width:860px;height:180px;background:linear-gradient(180deg,#ececea,#d9d9d7);box-shadow:inset 0 0 0 4px var(--ink),0 10px 0 var(--ink);border-radius:10px}
+.drawer .knob{position:absolute;left:380px;top:210px;width:100px;height:40px;border-radius:20px;background:var(--ink)}
+.idx{position:absolute;top:0;width:130px;height:170px;border-radius:14px 14px 4px 4px;background:#fff;box-shadow:inset 0 0 0 3px var(--ink);font-family:'JetBrains Mono';font-weight:800;font-size:28px;display:flex;justify-content:center;padding-top:20px;white-space:nowrap}
+.ed{position:absolute;left:80px;top:1010px;width:920px;height:420px;background:#fcfcfb;padding:22px 0}
+.ed .cl{position:relative;height:66px;overflow:hidden;font-family:'JetBrains Mono';font-size:36px;display:flex;align-items:center;white-space:pre}
+.ed .cl .no{width:90px;text-align:right;padding-right:26px;color:#a9aaad;font-size:28px;flex:none}
+.ed .cl .sq{position:absolute;left:116px;bottom:8px;height:8px;background:repeating-linear-gradient(135deg,var(--ink) 0 4px,transparent 4px 9px);transform-origin:0 50%}
+.ed .cl .rc{position:absolute;right:30px;top:13px;padding:4px 14px;border-radius:8px;background:var(--ink);color:#fff;font-size:22px;font-weight:800}
+.fixb{position:absolute;left:150px;top:1480px;width:780px;height:110px;border-radius:999px;background:var(--ink);color:#fff;display:grid;place-items:center;font-family:'JetBrains Mono';font-weight:700;font-size:32px;white-space:nowrap}
+/* S7 bookshelf */
+.shelf{position:absolute;left:70px;top:620px;width:940px;height:640px;transform-style:preserve-3d}
+.shelf .pl{position:absolute;left:0;top:600px;width:940px;height:40px;background:linear-gradient(180deg,#3a3b3e,#0b0b0c);border-radius:6px;box-shadow:0 16px 30px rgba(0,0,0,.2)}
+.spine{position:absolute;bottom:40px;width:140px;border-radius:10px 10px 4px 4px;background:#fff;box-shadow:inset 0 0 0 4px var(--ink);display:flex;align-items:center;justify-content:center}
+.spine.dk{background:var(--ink);color:#fff}
+.spine b{writing-mode:vertical-rl;transform:rotate(180deg);font-size:58px;font-weight:700;letter-spacing:-.02em;white-space:nowrap}
+.spine i{position:absolute;left:20px;right:20px;top:26px;height:8px;border-radius:4px;background:currentColor;opacity:.5}
+.spine i.b2{top:auto;bottom:26px}
+/* S8 laptop */
+.lap{position:absolute;left:90px;top:540px;width:900px;height:900px;transform-style:preserve-3d}
+.lid2{position:absolute;left:0;top:0;width:900px;height:590px;border-radius:30px 30px 6px 6px;background:var(--ink);padding:28px;transform-origin:50% 100%}
+.scr{width:844px;height:534px;border-radius:12px;background:#fcfcfb;padding:40px 40px;font-family:'JetBrains Mono';font-size:36px;line-height:1.55}
+.scr .p{white-space:pre}
+.scr .o{white-space:nowrap;font-size:30px;color:#4d4f54}
+.scr .o b{color:var(--ink)}
+.cur4{display:inline-block;width:18px;height:40px;background:var(--ink);vertical-align:-6px}
+.kb{position:absolute;left:-40px;top:590px;width:980px;height:300px;border-radius:6px 6px 30px 30px;background:linear-gradient(180deg,#e6e6e4,#cfd0d2);box-shadow:inset 0 0 0 4px var(--ink);transform-origin:50% 0;transform:rotateX(72deg)}
+.kb .keys2{position:absolute;left:70px;right:70px;top:30px;height:170px;background:repeating-linear-gradient(90deg,#fff 0 52px,transparent 52px 62px),#cfd0d2;-webkit-mask:repeating-linear-gradient(180deg,#000 0 34px,transparent 34px 44px)}
+.kb .pad{position:absolute;left:350px;top:215px;width:280px;height:60px;border-radius:10px;box-shadow:inset 0 0 0 3px #8b8d91}
+/* S8/S9 shell ending */
+.cin{display:flex;align-items:center;gap:26px;padding:0 26px 0 30px;background:#fff;box-shadow:0 0 0 2px var(--ink),0 6px 0 var(--ink),0 30px 50px rgba(0,0,0,.12)}
+.cbar{position:absolute}
+.av{width:76px;height:76px;border-radius:50%;background:linear-gradient(135deg,#d9d9d7,#a9aaad);flex:none}
+.cin .tx{flex:1;font-size:46px;font-weight:600;letter-spacing:.02em}
+.send{width:84px;height:84px;border-radius:50%;background:var(--ink);display:grid;place-items:center;color:#fff;font-size:40px;flex:none}
+.dm{position:absolute;padding:30px 44px;border-radius:44px 44px 44px 12px;background:var(--ink);color:#fff;font-size:42px;font-weight:500;white-space:nowrap}
+.dm small{display:block;font-family:'JetBrains Mono';font-size:20px;color:#9a9ca1;margin-bottom:8px}
+.bigmk{position:absolute;left:400px;top:600px;width:280px;height:280px;border-radius:50%;display:grid;place-items:center;font-family:'JetBrains Mono';font-weight:800;font-size:96px;color:#fff;background:radial-gradient(circle at 34% 26%,#6a6c71 0 8%,#1c1d20 42%,#000 100%);box-shadow:inset 0 6px 10px rgba(255,255,255,.3),inset 0 -14px 26px rgba(0,0,0,.6),0 40px 80px rgba(0,0,0,.28)}
+.erings{position:absolute;left:290px;top:490px;width:500px;height:500px}
+.fol{position:absolute;left:300px;top:1390px;width:480px;height:132px;border-radius:999px;display:grid;place-items:center;font-size:50px;font-weight:600;background:var(--ink);color:#fff;box-shadow:0 22px 44px rgba(0,0,0,.22)}
+.fol2{position:absolute;left:300px;top:1390px;width:480px;height:132px;border-radius:999px;display:grid;place-items:center;font-size:50px;font-weight:600;background:#fff;color:var(--ink);border:3px solid var(--ink);opacity:0}
+.tapd{position:absolute;width:90px;height:90px;border-radius:50%;background:rgba(11,11,12,.18);border:3px solid rgba(11,11,12,.55);opacity:0}
+.rip{position:absolute;left:540px;top:1456px;width:10px;height:10px;margin:-5px;border-radius:50%;border:4px solid var(--ink);opacity:0}
+.bpill{display:inline-block;padding:4px 26px 12px;border-radius:24px;background:var(--ink);color:#fff;font-family:'Inter';font-style:normal;font-weight:600;letter-spacing:-.035em;vertical-align:6px}
+</style></head>
+<body>
+<svg width="0" height="0" style="position:absolute"><defs>
+  <filter id="mb" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur id="mbg" stdDeviation="0 0"/></filter>
+</defs></svg>
+<div class="f" id="F">
+ <div id="cam"><div id="stage"><div id="world">
+
+  <!-- S1 hook: slow linter terminal, elapsed timer climbing -->
+  <div class="sc" id="s1" data-pose="0,0,0,0,0,0">
+    <div class="ring" style="left:-260px;top:-180px;width:720px;height:720px;transform:translateZ(-500px)"></div>
+    <div class="C sans ty" style="top:250px;font-size:104px;font-weight:700;letter-spacing:-.05em;transform:translateZ(120px)" data-t="0.75" data-cd=".035">your Python linter</div>
+    <div class="C ser rv" style="top:376px;font-size:110px;transform:translateZ(120px)" data-t="2.1"><span class="g">is</span> slow.</div>
+    <div class="card term c3d" data-t="0.3" data-rx="12" data-ry="-6">
+      <div class="bar3"><i></i><i></i><i></i><span>~/cpython · zsh</span></div>
+      <div class="ln" style="top:110px">$ pylint cpython/</div>
+      <div class="ln m" style="top:178px"><span id="spin">⠋</span> linting <span id="fcount">0</span> files…</div>
+      <div class="ln m" style="top:236px">elapsed</div>
+      <div class="elap" id="elap">00:00.0</div>
+      <div class="pbar"><i id="pbf"></i></div>
+    </div>
+    <div class="C ser" style="top:1260px;font-size:100px;transform:translateZ(120px)"><span class="rv g" data-t="3.4">over a</span> <span class="pp bpill" style="font-size:84px" data-t="4.0">minute.</span></div>
+  </div>
+
+  <!-- S2 camera iris snaps open on 0.3s -->
+  <div class="sc" id="s2" data-pose="2400,0,-600,-30,0,0">
+    <div class="ring" style="left:640px;top:-160px;width:700px;height:700px;transform:translateZ(-600px)"></div>
+    <div class="C sans ty" style="top:250px;font-size:120px;font-weight:700;letter-spacing:-.05em;transform:translateZ(120px)" data-t="5.2" data-cd=".05">this one?</div>
+    <div class="lens c3d" data-t="5.05" data-rx="10" data-ry="8">
+      <svg class="tk" viewBox="0 0 700 700" id="ticks"></svg>
+      <div class="iris" id="iris"><div class="big" id="big3">0.3s</div></div>
+    </div>
+    <div class="C ser" style="top:1420px;font-size:100px;transform:translateZ(120px)"><span class="rv g" data-t="6.5">a third of a</span> <span class="pp bpill" style="font-size:84px" data-t="6.9">second.</span></div>
+  </div>
+
+  <!-- S3 real Ruff logo extruded + spec plate -->
+  <div class="sc" id="s3" data-pose="300,2700,-900,0,26,0">
+    <div class="ring" style="left:-280px;top:1300px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="C ser rv" style="top:230px;font-size:96px;transform:translateZ(120px)" data-t="8.05"><span class="g">it's called</span></div>
+    <div class="C sans ty" style="top:330px;font-size:170px;font-weight:700;letter-spacing:-.06em;transform:translateZ(120px)" data-t="8.5" data-cd=".07">Ruff</div>
+    <div class="logo3" id="logo3"></div>
+    <div class="card plate c3d" data-t="9.15" data-rx="10" data-ry="-6">
+      <div class="row"><small>01 · LINTER</small><b class="rv" data-t="9.7">Python ✓</b></div>
+      <div class="row"><small>02 · FORMATTER</small><b class="rv" data-t="10.24">built in ✓</b></div>
+      <div class="row"><small>03 · WRITTEN IN</small><b class="rv" data-t="11.2">Rust</b></div>
+    </div>
+    <div class="C kick rv" style="top:1500px;font-size:28px;transform:translateZ(120px)" data-t="10.6">github.com/astral-sh/ruff · real logo</div>
+  </div>
+
+  <!-- S4 race lanes on CPython -->
+  <div class="sc" id="s4" data-pose="2700,2700,-1400,32,0,0">
+    <div class="ring" style="left:620px;top:-200px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="C sans ty" style="top:250px;font-size:100px;font-weight:700;letter-spacing:-.05em;transform:translateZ(140px)" data-t="12.06" data-cd=".035">all of CPython</div>
+    <div class="C ser rv" style="top:372px;font-size:92px;transform:translateZ(140px)" data-t="12.9"><span class="g">linted from</span> scratch.</div>
+    <div class="card race c3d" data-t="12.0" data-rx="24" data-ry="-6">
+      <h6>RACE · <span>lint the whole CPython codebase</span></h6>
+      <div class="lane" style="top:100px"><div class="nm">Pylint</div><div class="trk"></div><div class="fin"></div><div class="pk" id="pk1"></div><div class="tm pp" data-t="15.05">&gt;60s</div></div>
+      <div class="lane" style="top:240px"><div class="nm">Flake8</div><div class="trk"></div><div class="fin"></div><div class="pk" id="pk2"></div><div class="tm pp" data-t="17.0">12.26s</div></div>
+      <div class="lane r" style="top:380px"><div class="nm">Ruff</div><div class="trk"></div><div class="fin"></div><div class="pk" id="pk3"></div><div class="tm pp" data-t="18.94">0.29s</div></div>
+    </div>
+    <div class="card chart c3d" data-t="13.4" data-rx="8" data-ry="5"><img src="media/bench.svg"></div>
+    <div class="C kick rv" style="top:1560px;font-size:26px;transform:translateZ(140px)" data-t="14.2">real benchmark · from the Ruff README</div>
+  </div>
+
+  <!-- S5 hydraulic press squashes the tool stack into one -->
+  <div class="sc" id="s5" data-pose="5200,2700,-1400,-30,0,0">
+    <div class="ring" style="left:-260px;top:-160px;width:720px;height:720px;transform:translateZ(-600px)"></div>
+    <div class="C sans ty" style="top:220px;font-size:110px;font-weight:700;letter-spacing:-.05em;transform:translateZ(140px)" data-t="20.5" data-cd=".045">replaces</div>
+    <div class="C ser rv" style="top:340px;font-size:96px;transform:translateZ(140px)" data-t="21.2"><span class="g">a whole</span> stack.</div>
+    <div class="stack" id="stack">
+      <div class="box" id="bx4" style="top:0"><div class="tp3"></div><div class="fr3"><b>pyupgrade</b><small>04</small></div></div>
+      <div class="box" id="bx3" style="top:160px"><div class="tp3"></div><div class="fr3"><b>isort</b><small>03</small></div></div>
+      <div class="box" id="bx2" style="top:320px"><div class="tp3"></div><div class="fr3"><b>Black</b><small>02</small></div></div>
+      <div class="box" id="bx1" style="top:480px"><div class="tp3"></div><div class="fr3"><b>Flake8</b><small>01</small></div></div>
+    </div>
+    <div class="one" id="one"><img src="media/ruff_logo.svg"><div><small>all of that, in</small><b>ruff</b></div></div>
+    <div class="press" id="press"><div class="rod"></div><div class="hd2">PRESS</div></div>
+    <div class="C ser" style="top:1460px;font-size:100px;transform:translateZ(140px)"><span class="rv g" data-t="25.4">just</span> <span class="pp bpill" style="font-size:84px" data-t="25.45">one tool.</span></div>
+  </div>
+
+  <!-- S6 rule drawer + auto-fix editor -->
+  <div class="sc" id="s6" data-pose="7800,2700,-1400,30,0,0">
+    <div class="ring" style="left:620px;top:1300px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="C sans ty" style="top:220px;font-size:170px;font-weight:700;letter-spacing:-.06em;transform:translateZ(140px)" data-t="26.9" data-cd=".06">900+</div>
+    <div class="C ser rv" style="top:420px;font-size:90px;transform:translateZ(140px)" data-t="27.6"><span class="g">built-in</span> rules.</div>
+    <div class="drawer" id="drawer">
+      <div class="idx" id="ix1" style="left:30px">E501</div><div class="idx" id="ix2" style="left:170px">F401</div><div class="idx" id="ix3" style="left:310px">B006</div>
+      <div class="idx" id="ix4" style="left:450px">UP035</div><div class="idx" id="ix5" style="left:590px">I001</div><div class="idx" id="ix6" style="left:730px">SIM108</div>
+      <div class="tray2"></div><div class="knob"></div>
+    </div>
+    <div class="card ed c3d" data-t="28.4" data-rx="10" data-ry="-6">
+      <div class="cl" id="cl1"><span class="no">1</span>import os<div class="sq" id="sq1" style="width:170px"></div><div class="rc pp" data-t="29.0">F401</div></div>
+      <div class="cl" id="cl2"><span class="no">2</span>import sys<div class="sq" id="sq2" style="width:190px"></div><div class="rc pp" data-t="29.2">F401</div></div>
+      <div class="cl"><span class="no">3</span>import json</div>
+      <div class="cl"><span class="no">4</span> </div>
+      <div class="cl"><span class="no">5</span>def load(p):</div>
+      <div class="cl"><span class="no">6</span>    return json.load(open(p))</div>
+    </div>
+    <div class="fixb pp" data-t="29.95">Found 2 errors (2 fixed, 0 remaining).</div>
+  </div>
+
+  <!-- S7 bookshelf of projects using it -->
+  <div class="sc" id="s7" data-pose="10400,2700,-1400,-28,0,0">
+    <div class="ring" style="left:-280px;top:1300px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="C sans ty" style="top:250px;font-size:116px;font-weight:700;letter-spacing:-.05em;transform:translateZ(140px)" data-t="31.3" data-cd=".045">already in</div>
+    <div class="C ser rv" style="top:376px;font-size:96px;transform:translateZ(140px)" data-t="31.9"><span class="g">the big</span> projects.</div>
+    <div class="shelf" id="shelf">
+      <div class="spine dk" id="bk1" style="left:30px;height:520px"><i></i><b>FastAPI</b><i class="b2"></i></div>
+      <div class="spine" id="bk2" style="left:180px;height:470px"><i></i><b>pandas</b><i class="b2"></i></div>
+      <div class="spine dk" id="bk3" style="left:330px;height:550px"><i></i><b>Hugging Face</b><i class="b2"></i></div>
+      <div class="spine" id="bk4" style="left:480px;height:440px"><i></i><b>SciPy</b><i class="b2"></i></div>
+      <div class="spine dk" id="bk5" style="left:630px;height:500px"><i></i><b>Airflow</b><i class="b2"></i></div>
+      <div class="spine" id="bk6" style="left:780px;height:460px"><i></i><b>Superset</b><i class="b2"></i></div>
+      <div class="pl"></div>
+    </div>
+    <div class="C ser" style="top:1380px;font-size:100px;transform:translateZ(140px)"><span class="rv g" data-t="33.7">they already</span> <span class="pp bpill" style="font-size:84px" data-t="34.05">use it.</span></div>
+    <div class="C kick rv" style="top:1530px;font-size:28px;transform:translateZ(140px)" data-t="34.0">github.com/astral-sh/ruff · 51k ★ · MIT</div>
+  </div>
+
+  <!-- S8 laptop opens, two commands -->
+  <div class="sc" id="s8" data-pose="12900,2700,-1400,28,0,0">
+    <div class="ring" style="left:620px;top:-200px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="C sans ty" style="top:250px;font-size:116px;font-weight:700;letter-spacing:-.05em;transform:translateZ(140px)" data-t="35.1" data-cd=".045">just run</div>
+    <div class="lap" id="lap">
+      <div class="kb"><div class="keys2"></div><div class="pad"></div></div>
+      <div class="lid2" id="lid2"><div class="scr">
+        <div class="p"><span id="c1"></span><span class="cur4" id="k1c"></span></div>
+        <div class="o" id="o1">All checks passed!</div>
+        <div class="p"><span id="c2"></span><span class="cur4" id="k2c"></span></div>
+        <div class="o" id="o2"><b>3 files reformatted</b>, 41 left unchanged</div>
+      </div></div>
+    </div>
+    <div class="C ser" style="top:1440px;font-size:104px;transform:translateZ(140px)"><span class="rv g" data-t="38.25">that's</span> <span class="pp bpill" style="font-size:88px" data-t="38.45">it.</span></div>
+  </div>
+
+  <!-- S9 comment -->
+  <div class="sc" id="s9" data-pose="12000,5400,-6000,24,0,0">
+    <div class="ring" style="left:620px;top:1300px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="C sans rv" style="top:380px;font-size:120px;font-weight:500" data-t="39.06">Comment</div>
+    <div class="C sans ty" style="top:510px;font-size:196px;font-weight:700;letter-spacing:-.04em" data-t="39.42" data-cd=".05">GITMATE</div>
+    <div class="cbar cin c3d" style="left:64px;top:860px;width:952px;height:140px;border-radius:999px" data-t="38.95" data-rx="10"><div class="av"></div><div class="tx" id="ctx"></div><div class="send">↑</div></div>
+    <div class="dm pp" style="left:250px;top:1110px" data-t="40.1"><small>git.mate · message</small>Here's your link, mate →</div>
+  </div>
+
+  <!-- S10 end -->
+  <div class="sc" id="s10" data-pose="14400,5400,-6000,-24,0,0">
+    <div class="ring" style="left:-300px;top:-160px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="ring" style="left:640px;top:1400px;width:760px;height:760px;transform:translateZ(-800px)"></div>
+    <svg class="erings" viewBox="0 0 500 500"><circle id="er1" cx="250" cy="250" r="226" fill="none" stroke="#0b0b0c" stroke-width="3" stroke-dasharray="1420" stroke-dashoffset="1420" transform="rotate(-90 250 250)"/>
+      <circle id="er2" cx="250" cy="250" r="246" fill="none" stroke="#c9cacc" stroke-width="2" stroke-dasharray="1546" stroke-dashoffset="1546" transform="rotate(90 250 250)"/></svg>
+    <div class="bigmk" id="bigmk">&gt;_</div>
+    <div class="C sans ty" style="top:1050px;font-size:104px;font-weight:700" data-t="41.2" data-cd=".05">@git.mate</div>
+    <div class="C ser" style="top:1200px;font-size:96px"><span class="rv g" data-t="41.9">1 repo</span> <span class="rv" data-t="42.84">every</span> <span class="rv" data-t="43.1">day.</span></div>
+    <div class="fol pp" id="fol" data-t="41.3">Follow</div>
+    <div class="fol2" id="fol2">Following ✓</div>
+    <div class="rip" id="rip"></div>
+    <div class="tapd" id="tapd" style="left:640px;top:1560px"></div>
+  </div>
+
+ </div></div></div>
+ <div class="top"><div class="brand"><div class="mk">&gt;_</div>git.mate</div><div class="tag" id="tag"><b>01</b> / 10</div></div>
+ <div class="grain"></div>
+</div>
+<script>
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+// all times below are in voice_raw seconds; the voice is sped up SPD x, so video t = raw / SPD
+const SPD = 1.16, RAWTOTAL = 44.5, TOTAL = +(RAWTOTAL / SPD).toFixed(2); window.__TOTAL = TOTAL;
+const S = [0, 5.05, 7.95, 11.9, 20.3, 26.5, 31.35, 35.1, 38.9, 40.85];
+const NS = S.length;
+
+// S2 iris blades + lens ticks
+const NB = 8, blades = [];
+for (let k = 0; k < NB; k++) { const d = document.createElement('div'); d.className = 'blade';
+  const a0 = (k * 45 - 2) * Math.PI / 180, a1 = (k * 45 + 47) * Math.PI / 180, R = 130;
+  d.style.clipPath = `polygon(50% 50%, ${50 + R * Math.cos(a0)}% ${50 + R * Math.sin(a0)}%, ${50 + R * Math.cos(a1)}% ${50 + R * Math.sin(a1)}%)`;
+  d.style.filter = `brightness(${1 + (k % 2) * .5})`; $('#iris').appendChild(d); blades.push(d); }
+{ let s = ''; for (let k = 0; k < 60; k++) { const a = k * 6 * Math.PI / 180, r1 = 330, r2 = k % 5 ? 316 : 300;
+  s += `<line x1="${350 + r1 * Math.cos(a)}" y1="${350 + r1 * Math.sin(a)}" x2="${350 + r2 * Math.cos(a)}" y2="${350 + r2 * Math.sin(a)}" stroke="#0b0b0c" stroke-width="${k % 5 ? 2 : 4}"/>`; }
+  $('#ticks').innerHTML = s; }
+// S3 extruded logo layers (real Ruff mark)
+for (let k = 0; k < 16; k++) { const im = document.createElement('img'); im.src = 'media/ruff_logo.svg';
+  im.style.transform = `translateZ(${(k - 15) * 3}px)`; im.style.filter = k === 15 ? 'none' : `invert(${.35 + k * .02})`; $('#logo3').appendChild(im); }
+
+const scenes = $$('.sc');
+const poses = scenes.map(s => s.dataset.pose.split(',').map(Number));
+scenes.forEach((s, i) => { const [x, y, z, ry, rx, rz] = poses[i]; s.style.transform = `translate3d(${x}px,${y}px,${z}px) rotateY(${ry}deg) rotateX(${rx}deg) rotateZ(${rz}deg)`; });
+const tl = gsap.timeline({ paused: true });
+
+// shell: typing / reveals / pops / 3D cards
+$$('.ty').forEach(el => { const t = +el.dataset.t, cd = +(el.dataset.cd || .045); const txt = el.textContent; el.textContent = '';
+  const chs = [...txt].map(c => { const s = document.createElement('span'); s.className = 'ch'; s.textContent = c; el.appendChild(s); return s; });
+  tl.set(chs, { opacity: 0 }, 0);
+  chs.forEach((c, i) => tl.fromTo(c, { opacity: 0, y: 26, filter: 'blur(14px)' }, { opacity: 1, y: 0, filter: 'blur(0px)', duration: .42, ease: 'power3.out', immediateRender: false }, Math.max(0.001, t + i * cd))); });
+$$('.rv').forEach(el => { const t = +el.dataset.t; if (isNaN(t)) return;
+  tl.set(el, { opacity: 0 }, 0); tl.fromTo(el, { opacity: 0, y: 46, filter: 'blur(16px)' }, { opacity: 1, y: 0, filter: 'blur(0px)', duration: .55, ease: 'power3.out', immediateRender: false }, Math.max(0.001, t)); });
+$$('.pp').forEach(el => { const t = +el.dataset.t;
+  tl.set(el, { opacity: 0 }, 0); tl.fromTo(el, { opacity: 0, scale: .55, filter: 'blur(10px)' }, { opacity: 1, scale: 1, filter: 'blur(0px)', duration: .5, ease: 'back.out(2.2)', immediateRender: false }, t); });
+$$('.c3d').forEach(el => { const t = +el.dataset.t, rx = +(el.dataset.rx || 0), ry = +(el.dataset.ry || 0);
+  tl.set(el, { opacity: 0, transformPerspective: 1500 }, 0);
+  tl.fromTo(el, { opacity: 0, rotationX: rx + 50, rotationY: ry * 2.5, y: 260, z: -500, scale: .9 }, { opacity: 1, rotationX: rx, rotationY: ry, y: 0, z: 0, scale: 1, duration: 1.05, ease: 'expo.out', immediateRender: false }, Math.max(0.001, t));
+  tl.to(el, { rotationX: rx * .4, rotationY: -ry * .5, duration: 3.2, ease: 'sine.inOut' }, Math.max(0.001, t) + 1.05); });
+
+// S2 iris opens
+const iris = { o: 0 }; tl.fromTo(iris, { o: 0 }, { o: 1, duration: .5, ease: 'expo.out', immediateRender: false }, 6.6);
+tl.set('#big3', { scale: .6, opacity: 0 }, 0); tl.to('#big3', { scale: 1, opacity: 1, duration: .6, ease: 'back.out(2)' }, 6.65);
+
+// S3 logo swings in
+tl.set('#logo3', { opacity: 0, rotationY: -120, scale: .5, transformPerspective: 1600 }, 0);
+tl.to('#logo3', { opacity: 1, rotationY: -28, scale: 1, duration: 1.0, ease: 'expo.out' }, 8.3);
+tl.to('#logo3', { rotationY: 26, duration: 3.0, ease: 'sine.inOut' }, 9.3);
+
+// S5 boxes drop on each name, press squashes, one block
+[['#bx1', 22.25], ['#bx2', 23.0], ['#bx3', 23.62], ['#bx4', 24.25]].forEach(([b, t]) => { tl.set(b, { opacity: 0, y: -420 }, 0); tl.to(b, { opacity: 1, duration: .05 }, t); tl.to(b, { y: 0, duration: .32, ease: 'power3.in' }, t); tl.to(b, { y: -10, duration: .07, yoyo: true, repeat: 1 }, t + .32); });
+tl.set('#press', { y: -360 }, 0); tl.to('#press', { y: 0, duration: .5, ease: 'power2.out' }, 20.6);
+tl.to('#press', { y: 40, duration: .25, ease: 'power3.in' }, 24.85);
+tl.to('#press', { y: 510, duration: .3, ease: 'power4.in' }, 25.1);
+tl.to('#stack', { scaleY: .26, duration: .3, ease: 'power4.in' }, 25.1);
+tl.to('#stack', { opacity: 0, duration: .08 }, 25.4);
+tl.set('#one', { opacity: 0, scale: .8 }, 0); tl.to('#one', { opacity: 1, scale: 1, duration: .35, ease: 'back.out(2.5)' }, 25.4);
+tl.to('#press', { y: 200, duration: .5, ease: 'power2.out' }, 25.5);
+
+// S6 drawer slides out, tabs rise, squiggles, fix collapses lines
+tl.set('#drawer', { opacity: 0, z: -400, rotationX: 30, transformPerspective: 1500 }, 0);
+tl.to('#drawer', { opacity: 1, z: 0, rotationX: 18, duration: .7, ease: 'expo.out' }, 26.5);
+['#ix1', '#ix2', '#ix3', '#ix4', '#ix5', '#ix6'].forEach((x, k) => { tl.set(x, { y: 140 }, 0); tl.to(x, { y: 0, duration: .4, ease: 'back.out(2)' }, 27.0 + k * .09); });
+tl.to('#ix2', { y: -50, duration: .3, ease: 'back.out(2)' }, 28.9);
+[['#sq1', 28.95], ['#sq2', 29.15]].forEach(([s, t]) => { tl.set(s, { scaleX: 0 }, 0); tl.to(s, { scaleX: 1, duration: .3, ease: 'power2.out' }, t); });
+[['#cl1', 29.5], ['#cl2', 29.65]].forEach(([c, t]) => { tl.to(c, { x: 140, opacity: 0, duration: .25, ease: 'power2.in' }, t); tl.to(c, { height: 0, duration: .25, ease: 'power2.inOut' }, t + .22); });
+
+// S7 books slide onto the shelf on each name
+[['#bk1', 31.4], ['#bk2', 32.3], ['#bk3', 32.95], ['#bk4', 33.45], ['#bk5', 33.6], ['#bk6', 33.75]].forEach(([b, t]) => { tl.set(b, { opacity: 0, y: -300, rotation: -8 }, 0); tl.to(b, { opacity: 1, duration: .05 }, t); tl.to(b, { y: 0, rotation: 0, duration: .4, ease: 'back.out(1.4)' }, t); });
+tl.set('#shelf', { rotationY: 18, rotationX: 6, transformPerspective: 1700 }, 0); tl.to('#shelf', { rotationY: -10, duration: 3.6, ease: 'sine.inOut' }, 31.3);
+
+// S8 laptop lid opens
+tl.set('#lap', { rotationX: 14, transformPerspective: 1800, y: 60 }, 0); tl.to('#lap', { rotationX: 4, y: 0, duration: 3, ease: 'sine.inOut' }, 35.0);
+tl.set('#lid2', { rotationX: -92, transformPerspective: 1800 }, 0); tl.to('#lid2', { rotationX: -4, duration: .8, ease: 'back.out(1.2)' }, 35.0);
+tl.set(['#o1', '#o2'], { opacity: 0 }, 0); tl.to('#o1', { opacity: 1, duration: .15 }, 36.85); tl.to('#o2', { opacity: 1, duration: .15 }, 38.0);
+
+// S9 comment typing
+const cm = { n: 0 };
+tl.fromTo(cm, { n: 0 }, { n: 7, duration: .45, ease: 'none', immediateRender: false, onUpdate: () => $('#ctx').textContent = 'GITMATE'.slice(0, Math.round(cm.n)) }, 39.45);
+
+// S10 end
+tl.set('#bigmk', { opacity: 0, scale: .2 }, 0);
+tl.to('#bigmk', { opacity: 1, scale: 1, duration: .9, ease: 'back.out(1.8)' }, 40.9);
+tl.fromTo('#er1', { attr: { 'stroke-dashoffset': 1420 } }, { attr: { 'stroke-dashoffset': 0 }, duration: 1.0, ease: 'power2.inOut', immediateRender: false }, 41.05);
+tl.fromTo('#er2', { attr: { 'stroke-dashoffset': 1546 } }, { attr: { 'stroke-dashoffset': 0 }, duration: 1.2, ease: 'power2.inOut', immediateRender: false }, 41.2);
+tl.to('#tapd', { opacity: 1, left: 560, top: 1440, duration: .5, ease: 'power2.out' }, 43.0);
+tl.to('#tapd', { scale: .7, duration: .1 }, 43.5); tl.to('#tapd', { scale: 1, duration: .15 }, 43.6);
+tl.to('#fol', { scale: .93, duration: .1 }, 43.5); tl.to('#fol', { scale: 1, duration: .2 }, 43.6);
+tl.set('#fol2', { opacity: 1 }, 43.6); tl.set('#fol', { opacity: 0 }, 43.6);
+tl.fromTo('#rip', { opacity: .7, width: 10, height: 10, margin: -5 }, { opacity: 0, width: 640, height: 640, margin: -320, duration: .8, ease: 'power2.out', immediateRender: false }, 43.55);
+tl.to('#tapd', { opacity: 0, duration: .3 }, 43.95);
+tl.to({}, { duration: .01 }, RAWTOTAL);
+
+// camera: pure function of raw time
+const ease = x => x < .5 ? 16 * x ** 5 : 1 - Math.pow(-2 * x + 2, 5) / 2;
+const TD = .8, TPRE = .45;
+function camAt(t) {
+  let i = 0; for (let k = 0; k < S.length; k++) if (t >= S[k] - TPRE) i = k;
+  const ta = S[i] - TPRE; let p = poses[i].slice(), d = 0, rr = 0;
+  if (i > 0 && t < ta + TD) { const u = (t - ta) / TD, e = ease(u), a = poses[i - 1]; p = a.map((v, j) => v + (poses[i][j] - v) * e); d = Math.sin(u * Math.PI) * 700; rr = Math.sin(u * Math.PI) * (i % 2 ? 4 : -4); }
+  const st = Math.max(0, t - (S[i] - TPRE + TD)); const dz = Math.min(st, 6) * 8;
+  return { x: p[0], y: p[1], z: p[2] - dz, ry: p[3] + Math.sin(t * .6) * .6, rx: p[4] + Math.sin(t * .45) * .5, rz: p[5] + rr, d, i };
+}
+function camT(c) { return `translateZ(${-c.d + 60}px) rotateZ(${-c.rz}deg) rotateX(${-c.rx}deg) rotateY(${-c.ry}deg) translate3d(${-c.x}px,${-c.y}px,${-c.z}px)`; }
+const world = $('#world'), mbg = $('#mbg'), cam = $('#cam');
+const typeAt = (t, t0, dur, s) => s.slice(0, Math.max(0, Math.min(s.length, Math.round((t - t0) / dur * s.length))));
+const cl = (x, a, b) => Math.max(a, Math.min(b, x));
+const SP = '⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏';
+function tick(t) {
+  const c = camAt(t), p = camAt(Math.max(0, t - SPD / 30));
+  world.style.transform = camT(c);
+  const hx = Math.abs(c.x - p.x) * .9 + Math.abs(c.ry - p.ry) * 32, vy = Math.abs(c.y - p.y) * .9 + Math.abs(c.rx - p.rx) * 32, zz = Math.abs(c.z - p.z + (p.d - c.d)) * .25;
+  const bx = Math.min(70, hx * .22 + zz * .05), by = Math.min(70, vy * .22 + zz * .05);
+  if (bx + by > .4) { mbg.setAttribute('stdDeviation', `${bx.toFixed(1)} ${by.toFixed(1)}`); cam.style.filter = 'url(#mb)'; } else cam.style.filter = 'none';
+  scenes.forEach((s, k) => { s.style.visibility = (k === c.i || (k === c.i - 1 && t < S[c.i] - TPRE + TD)) ? 'visible' : 'hidden'; });
+  $('#tag').innerHTML = `<b>${String(c.i + 1).padStart(2, '0')}</b> / ${NS}`;
+  // S1 slow linter: elapsed climbs past a minute, progress crawls
+  const u1 = cl((t - .9) / 3.9, 0, 1), el = 62.4 * Math.pow(u1, 1.15);
+  $('#elap').textContent = `${String(Math.floor(el / 60)).padStart(2, '0')}:${(el % 60).toFixed(1).padStart(4, '0')}`;
+  $('#pbf').style.width = (u1 * 34) + '%'; $('#fcount').textContent = Math.round(u1 * 712).toLocaleString('en-US');
+  $('#spin').textContent = SP[Math.floor(t * 12) % SP.length];
+  // S2 iris
+  blades.forEach((b, k) => { const m = (k * 45 + 22.5) * Math.PI / 180, d = iris.o * 300; b.style.transform = `translate(${Math.cos(m) * d}px,${Math.sin(m) * d}px) rotate(${iris.o * 30}deg)`; });
+  // S4 race pucks (track 520px, puck 84px -> travel 436)
+  const L = 376;
+  $('#pk1').style.left = (190 + L * cl((t - 12.6) * .045, 0, .4)) + 'px';
+  $('#pk2').style.left = (190 + L * cl((t - 12.6) * .075, 0, .62)) + 'px';
+  const r = t < 17.92 ? 0 : cl((t - 17.92) / .22, 0, 1); $('#pk3').style.left = (190 + L * (1 - Math.pow(1 - r, 3))) + 'px';
+  { const py = +gsap.getProperty('#press', 'y') || 0, rod = $('#press .rod'); rod.style.height = (100 + Math.max(0, py)) + 'px'; rod.style.top = -(100 + Math.max(0, py)) + 'px'; }
+  // S8 commands typing
+  $('#c1').textContent = '$ ' + typeAt(t, 35.6, 1.1, 'uvx ruff check'); $('#c2').textContent = t > 37.2 ? '$ ' + typeAt(t, 37.3, .65, 'ruff format') : '';
+  const bl = Math.floor(t * 3) % 2; $('#k1c').style.opacity = t < 37.2 ? (t > 35.6 && t < 36.75 ? 1 : bl) : 0; $('#k2c').style.opacity = t >= 37.2 ? (t < 38.0 ? 1 : bl) : 0;
+}
+window.__seek = vt => { const t = vt * SPD; tl.time(t, false); tick(t); const ims = [...document.images].map(i => i.complete ? null : i.decode().catch(() => {})).filter(Boolean); return Promise.all(ims); };
+__seek(0);
+if (!navigator.webdriver) { const t0 = performance.now(); const loop = () => { window.__seek(((performance.now() - t0) / 1000) % TOTAL); requestAnimationFrame(loop); }; requestAnimationFrame(loop); }
+</script>
+</body></html>

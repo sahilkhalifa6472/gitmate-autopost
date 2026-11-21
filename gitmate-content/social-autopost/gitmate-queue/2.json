@@ -1,0 +1,22 @@
+{
+ "account": "git.mate",
+ "n": 2,
+ "slug": "anatomy",
+ "title": "Anatomy: a Claude skill that explains ideas by building machines",
+ "video": {
+  "file": "2.mp4",
+  "duration_sec": 35.2,
+  "source": "/mnt/project-files/dev-reels/anatomy/gitmate_anatomy.mp4"
+ },
+ "instagram": {
+  "caption": "Your AI can now explain an idea by building a machine. \ud83d\udd29\n\nAnatomy is a free, open-source Claude skill: ask how a cache works and it builds a pin-tumbler lock, with every pin, spring and screw. Rocket engines that come apart, ripple tanks, arcade cabinets. Every number in the figure comes from the same small model that moves its parts.\n\nOne command: npx skills add wheresryan22/anatomy -g\nNo API keys. Zero dependencies. MIT.\n\nComment GITMATE and I'll send you the link \ud83d\udd17\nFollow @git.mate for more repos like this.\n\n#claude #claudecode #aitools #github #opensource #developer #coding #webdev #svg #ai",
+  "hashtags": [],
+  "cover_offset_ms": 10400,
+  "share_to_feed": true
+ },
+ "posting": {
+  "audience": "US",
+  "timezone": "America/New_York"
+ },
+ "link": "https://github.com/wheresryan22/anatomy"
+}

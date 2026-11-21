@@ -1,0 +1,482 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<title>git.mate mujoco</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter+Tight:wght@400;500;600;700;800;900&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<style>
+:root{--ink:#f5f6f7;--mut:rgba(235,238,242,.58);--dim:rgba(235,238,242,.32)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#000}
+.f{position:relative;width:1080px;height:1920px;overflow:hidden;background:radial-gradient(ellipse 120% 80% at 50% 40%,#0d0e11 0%,#040405 60%,#000 100%);color:var(--ink);font-family:'Inter Tight',sans-serif}
+.vig{position:absolute;inset:0;z-index:5;pointer-events:none;background:radial-gradient(ellipse 90% 70% at 50% 50%,transparent 50%,rgba(0,0,0,.7) 100%)}
+.grain{position:absolute;inset:0;opacity:.08;mix-blend-mode:overlay;z-index:8;pointer-events:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
+#stage{position:absolute;inset:0;perspective:2200px;perspective-origin:50% 46%;z-index:2}
+#world{position:absolute;left:0;top:0;width:1080px;height:1920px;transform-style:preserve-3d}
+.sc{position:absolute;left:0;top:0;width:1080px;height:1920px;transform-style:preserve-3d;backface-visibility:hidden;visibility:hidden}
+#s1{visibility:visible}
+.c3{position:absolute;border-radius:34px;overflow:hidden;background:linear-gradient(160deg,#1d1e22 0%,#121316 45%,#0b0c0e 100%);
+  box-shadow:inset 0 1.5px 0 rgba(255,255,255,.2),inset 0 0 0 1.5px rgba(255,255,255,.07),0 3px 0 #1b1c1f,0 6px 0 #16171a,0 9px 0 #111214,0 12px 0 #0c0d0f,0 60px 90px rgba(0,0,0,.75)}
+.c3.lite{background:linear-gradient(160deg,#f7f8f9,#d9dce0);color:#08090a;box-shadow:inset 0 2px 0 #fff,0 3px 0 #c3c6cb,0 6px 0 #aeb2b8,0 9px 0 #9a9ea4,0 12px 0 #868a90,0 60px 90px rgba(0,0,0,.7)}
+.bead{width:62px;height:62px;border-radius:50%;display:grid;place-items:center;font-family:'JetBrains Mono';font-weight:800;font-size:24px;color:#050505;flex:none;
+  background:radial-gradient(circle at 35% 28%,#fff 0 18%,#e4e6ea 45%,#9da1a8 100%);box-shadow:inset 0 -5px 10px rgba(0,0,0,.25),inset 0 3px 4px #fff,0 10px 24px rgba(0,0,0,.6)}
+.top{position:absolute;left:64px;right:64px;top:88px;height:90px;z-index:6}
+.brand{position:absolute;left:0;top:0;display:flex;align-items:center;gap:18px;padding:14px 30px 14px 14px;font-family:'JetBrains Mono';font-weight:700;font-size:30px;border-radius:999px;background:#0e0f11;box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 0 0 1.5px rgba(255,255,255,.1)}
+.tag{position:absolute;right:0;top:12px;padding:18px 30px;font-family:'JetBrains Mono';font-size:24px;color:var(--mut);white-space:nowrap;border-radius:999px;background:#0e0f11;box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 0 0 1.5px rgba(255,255,255,.08)}
+.tag b{color:var(--ink)}
+.prog{position:absolute;left:64px;right:64px;bottom:96px;display:flex;gap:10px;z-index:6}
+.prog i{flex:1;height:8px;border-radius:4px;background:rgba(255,255,255,.14);position:relative;overflow:hidden}
+.prog i b{position:absolute;left:0;top:0;bottom:0;width:0;background:#f2f3f5;border-radius:4px}
+.L{position:absolute;left:64px;right:64px}
+.kick{font-family:'JetBrains Mono';font-size:28px;color:var(--mut);letter-spacing:1px;white-space:pre;height:40px}
+.h{font-weight:900;letter-spacing:-5px;line-height:.92;text-transform:uppercase}
+.h .ln{display:block;white-space:nowrap}
+.h .w{display:inline-block;padding-bottom:.05em;margin-right:.2em;background-image:linear-gradient(180deg,#ffffff 0%,#f1f2f4 50%,#b4b8be 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.h .w:last-child{margin-right:0}
+.h .soft .w{background-image:linear-gradient(180deg,rgba(255,255,255,.62),rgba(255,255,255,.24))}
+.h .ser{font-family:'Instrument Serif';font-style:italic;font-weight:400;text-transform:none;letter-spacing:-2px}
+.lbl{font-family:'JetBrains Mono';font-size:22px;color:var(--mut)}
+.g{filter:grayscale(1) contrast(1.12)}
+.real{position:absolute;right:20px;top:18px;z-index:3;padding:7px 16px;border-radius:999px;font-family:'JetBrains Mono';font-weight:800;font-size:17px;background:#f2f3f5;color:#08090a}
+
+/* S1 sim chamber + film strip */
+.cham{left:64px;top:640px;width:952px;height:800px;background:#000}
+.cham img{position:absolute;left:0;top:-76px;width:952px;height:952px;object-fit:cover}
+.br{position:absolute;width:70px;height:70px;border:0 solid #f2f3f5;z-index:2}
+.hud{position:absolute;left:28px;right:28px;bottom:24px;z-index:3;display:flex;justify-content:space-between;font-family:'JetBrains Mono';font-weight:700;font-size:23px;color:#f2f3f5}
+.hud span{padding:8px 16px;border-radius:10px;background:rgba(0,0,0,.72);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.25)}
+.rec{position:absolute;left:28px;top:22px;z-index:3;display:flex;align-items:center;gap:12px;font-family:'JetBrains Mono';font-weight:800;font-size:20px;padding:8px 16px;border-radius:10px;background:rgba(0,0,0,.72)}
+.rec i{width:14px;height:14px;border-radius:50%;background:#f2f3f5}
+.film{position:absolute;left:0;top:1500px;width:1080px;height:150px;overflow:hidden}
+.fstrip{position:absolute;left:0;top:0;height:150px;display:flex;gap:0;transform-style:preserve-3d}
+.fr{width:200px;height:150px;flex:none;padding:16px 8px;background:#0a0b0c;position:relative;
+  background-image:radial-gradient(circle,#2a2c30 4px,transparent 5px),radial-gradient(circle,#2a2c30 4px,transparent 5px);background-size:25px 12px,25px 12px;background-position:0 0,0 138px;background-repeat:repeat-x}
+.fr img{width:184px;height:118px;object-fit:cover;border-radius:4px}
+.fr b{position:absolute;right:14px;bottom:20px;font-family:'JetBrains Mono';font-size:15px;color:#f2f3f5;background:rgba(0,0,0,.7);padding:2px 6px;border-radius:4px}
+
+/* S2 banner slats + acronym tiles */
+.slats{position:absolute;left:64px;top:650px;width:952px;height:238px;perspective:1600px}
+.sl{position:absolute;top:0;height:238px;background-repeat:no-repeat;background-size:952px 238px;transform-origin:50% 50%;backface-visibility:hidden;box-shadow:0 30px 50px rgba(0,0,0,.6)}
+.acr{position:absolute;left:64px;top:960px;width:952px;height:260px}
+.at{position:absolute;top:0;width:290px;height:260px;border-radius:30px}
+.at .big{position:absolute;left:0;right:0;top:34px;text-align:center;font-weight:900;font-size:120px;letter-spacing:-4px}
+.at .sm{position:absolute;left:0;right:0;bottom:30px;text-align:center;font-family:'JetBrains Mono';font-weight:800;font-size:28px;color:#55595f}
+.fulln{position:absolute;left:64px;right:64px;top:1290px;text-align:center;font-family:'JetBrains Mono';font-weight:700;font-size:34px;white-space:pre;height:48px}
+.rchip{position:absolute;left:190px;top:1390px;width:700px;height:96px;border-radius:999px;display:flex;align-items:center;justify-content:center;gap:18px;font-family:'JetBrains Mono';font-weight:800;font-size:28px}
+
+/* S3 hanging license tag -> Apache plate + timeline */
+.hang{position:absolute;left:540px;top:600px;width:0;height:0;transform-style:preserve-3d}
+.str{position:absolute;left:-2px;top:0;width:4px;height:130px;background:#c9ccd1;transform-origin:50% 0}
+.str2{position:absolute;left:-2px;top:0;width:4px;height:60px;background:#c9ccd1}
+.ptag{position:absolute;left:-270px;top:124px;width:540px;height:330px;border-radius:30px 30px 30px 30px;transform-origin:50% 0}
+.ptag .hole{position:absolute;left:250px;top:18px;width:40px;height:40px;border-radius:50%;background:#050506;box-shadow:inset 0 3px 6px #000}
+.ptag .t1{position:absolute;left:0;right:0;top:86px;text-align:center;font-family:'JetBrains Mono';font-weight:800;font-size:28px;letter-spacing:4px;color:#55595f}
+.ptag .t2{position:absolute;left:0;right:0;top:132px;text-align:center;font-weight:900;font-size:110px;letter-spacing:-5px}
+.ptag .t3{position:absolute;left:0;right:0;top:262px;text-align:center;font-family:'JetBrains Mono';font-weight:700;font-size:24px;color:#55595f}
+.snip{position:absolute;left:470px;top:650px;width:140px;height:6px;background:#fff;border-radius:3px;box-shadow:0 0 30px #fff;opacity:0}
+.plate{left:150px;top:740px;width:780px;height:300px;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.plate .p1{font-family:'JetBrains Mono';font-weight:800;font-size:26px;letter-spacing:6px;color:var(--mut)}
+.plate .p2{font-weight:900;font-size:132px;letter-spacing:-6px;line-height:1.05;margin-top:8px}
+.rail{position:absolute;left:64px;top:1130px;width:952px;height:300px}
+.rail .ln0{position:absolute;left:60px;top:70px;height:4px;background:#f2f3f5;border-radius:2px}
+.knot{position:absolute;top:56px;width:32px;height:32px;margin-left:-16px;border-radius:50%;background:#f2f3f5;box-shadow:0 0 0 8px rgba(255,255,255,.12)}
+.kn{position:absolute;top:118px;width:400px;font-family:'JetBrains Mono';white-space:nowrap}
+.kn b{display:block;font-size:40px;font-weight:800;color:#f5f6f7}
+.kn span{display:block;font-size:24px;color:var(--mut);margin-top:6px}
+
+/* S4 specimen lab tiles */
+.lab{position:absolute;left:64px;top:610px;width:952px;height:952px;transform-style:preserve-3d}
+.sp{position:absolute;width:456px;height:456px;border-radius:28px;background:#000}
+.sp img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.sp .pl{position:absolute;left:18px;bottom:18px;z-index:2;display:flex;align-items:center;gap:12px;padding:10px 18px 10px 10px;border-radius:14px;background:#f2f3f5;color:#08090a;font-weight:900;font-size:30px;letter-spacing:-1px;box-shadow:0 6px 0 #9a9ea4}
+.sp .pl i{font-style:normal;font-family:'JetBrains Mono';font-size:18px;font-weight:800;padding:4px 8px;border-radius:8px;background:#08090a;color:#f2f3f5}
+.streaks{position:absolute;left:0;top:1580px;width:1080px;height:110px;overflow:hidden}
+.stk{position:absolute;height:5px;border-radius:3px;background:linear-gradient(90deg,transparent,#f2f3f5)}
+.fastt{position:absolute;left:0;right:0;top:1592px;text-align:center;font-weight:900;font-size:76px;letter-spacing:-3px;text-transform:uppercase;white-space:nowrap}
+
+/* S5 browser */
+.bro{left:64px;top:640px;width:952px;height:780px;background:#0b0c0e}
+.bbar{position:absolute;left:0;right:0;top:0;height:92px;display:flex;align-items:center;gap:14px;padding:0 26px;background:#16171a;box-shadow:inset 0 -1.5px 0 rgba(255,255,255,.1)}
+.bbar i{width:20px;height:20px;border-radius:50%;background:#3a3c41}
+.url{flex:1;margin-left:20px;height:56px;border-radius:999px;background:#08090a;display:flex;align-items:center;gap:12px;padding:0 24px;font-family:'JetBrains Mono';font-weight:700;font-size:28px;box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.14)}
+.url .lk{color:var(--mut);font-size:22px}
+.bvp{position:absolute;left:0;right:0;top:92px;bottom:0;overflow:hidden}
+.bvp img{position:absolute;left:0;top:-86px;width:952px;height:952px;object-fit:cover}
+.lbar{position:absolute;left:0;top:92px;height:5px;background:#f2f3f5;z-index:2}
+.inst{left:64px;top:1470px;width:952px;height:130px;display:flex;align-items:center;padding:0 34px;gap:26px}
+.inst .ib{font-family:'JetBrains Mono';font-weight:800;font-size:26px;color:var(--mut);letter-spacing:2px;white-space:nowrap}
+.inst .tr{flex:1;height:22px;border-radius:11px;background:rgba(255,255,255,.08);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.12);position:relative;overflow:hidden}
+.inst .tr b{position:absolute;left:0;top:0;bottom:0;border-radius:11px;background:#f2f3f5}
+.inst .zero{font-weight:900;font-size:64px;letter-spacing:-3px;white-space:nowrap;min-width:150px;text-align:right}
+
+/* S6 pip command + PyPI crate */
+.cmd{display:flex;align-items:center;gap:22px;padding:0 34px;font-family:'JetBrains Mono';font-size:44px;font-weight:800}
+.cmd .pr{color:var(--mut)}
+.cmd .q{flex:1;white-space:pre}
+.cmd .cu{display:inline-block;width:20px;height:48px;background:#f2f3f5;vertical-align:-8px;margin-left:4px}
+.ent{padding:12px 24px;border-radius:14px;font-size:24px;background:#f2f3f5;color:#08090a;box-shadow:0 7px 0 #9a9ea4;white-space:nowrap}
+.cwrap{position:absolute;left:350px;top:880px;width:380px;height:380px;perspective:1400px}
+.crate{position:absolute;inset:0;transform-style:preserve-3d}
+.cfc{position:absolute;inset:0;border-radius:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;backface-visibility:hidden;
+  background:linear-gradient(160deg,#fbfbfc,#c9ccd1);color:#08090a;box-shadow:inset 0 0 0 10px #e3e5e8,inset 0 0 0 13px #9a9ea4}
+.cfc b{font-family:'JetBrains Mono';font-weight:800;font-size:58px;letter-spacing:-2px}
+.cfc small{font-family:'JetBrains Mono';font-weight:800;font-size:22px;color:#55595f;letter-spacing:3px;margin-top:10px}
+.cfc.dk{background:linear-gradient(160deg,#2a2c31,#101114);color:#f2f3f5;box-shadow:inset 0 0 0 10px #1b1c20,inset 0 0 0 13px #44474d}
+.cfc.dk small{color:var(--mut)}
+.shelf{position:absolute;left:200px;top:1330px;width:680px;height:14px;border-radius:7px;background:linear-gradient(90deg,transparent,#f2f3f5,transparent)}
+.shad{position:absolute;left:330px;top:1290px;width:420px;height:50px;border-radius:50%;background:radial-gradient(ellipse,rgba(255,255,255,.18),transparent 70%)}
+.pyl{position:absolute;left:64px;right:64px;top:1400px;text-align:center;font-family:'JetBrains Mono';font-weight:700;font-size:28px;color:var(--mut);white-space:pre;height:40px}
+
+/* S7 GPU board + multiplying sim grid */
+.gpu{left:64px;top:600px;width:952px;height:250px;background:linear-gradient(160deg,#1a1b1f,#0d0e10)}
+.gpu .tr2{position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 46px,rgba(255,255,255,.05) 46px 48px)}
+.die{position:absolute;left:356px;top:40px;width:240px;height:170px;border-radius:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:linear-gradient(160deg,#f7f8f9,#c9ccd1);color:#08090a;box-shadow:0 0 0 8px #2a2c31,0 0 0 10px #55595f}
+.die b{font-weight:900;font-size:64px;letter-spacing:-3px}
+.die small{font-family:'JetBrains Mono';font-weight:800;font-size:20px;letter-spacing:3px;color:#55595f}
+.pin{position:absolute;width:10px;height:22px;border-radius:2px;background:#8a8e94}
+.gch{position:absolute;top:96px;padding:12px 22px;border-radius:14px;font-family:'JetBrains Mono';font-weight:800;font-size:28px;box-shadow:inset 0 0 0 2px rgba(255,255,255,.3);white-space:nowrap}
+.bus{position:absolute;left:530px;top:850px;width:20px;height:80px}
+.bus i{position:absolute;left:8px;width:4px;height:16px;border-radius:2px;background:#f2f3f5}
+.grid{left:64px;top:930px;width:952px;height:620px;background:#000}
+.gimg{position:absolute;inset:0;background-repeat:repeat;background-position:0 0}
+.gline{position:absolute;inset:0;pointer-events:none}
+.mult{position:absolute;right:22px;bottom:22px;z-index:3;padding:10px 22px;border-radius:16px;background:#f2f3f5;color:#08090a;font-weight:900;font-size:56px;letter-spacing:-2px;box-shadow:0 6px 0 #9a9ea4}
+
+/* comment */
+.cm{padding:30px 34px}
+.rowc{display:flex;align-items:center;gap:20px}
+.av2{width:70px;height:70px;border-radius:50%;flex:none;background:radial-gradient(circle at 35% 28%,#5a5e64,#1b1d20);box-shadow:inset 0 0 0 2px rgba(255,255,255,.2)}
+.cin{flex:1;padding:20px 26px;border-radius:999px;font-size:32px;font-weight:700;background:rgba(255,255,255,.06);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.14)}
+.send{width:76px;height:76px;border-radius:50%;display:grid;place-items:center;background:#f2f3f5;color:#000;font-size:34px;font-weight:900;flex:none}
+.posted{display:flex;gap:20px;align-items:flex-start;margin-top:30px}
+.posted .u{font-weight:800;font-size:28px}
+.posted .c{font-size:34px;font-weight:800;margin-top:4px}
+.dm{padding:24px 30px;border-radius:32px 32px 32px 10px;font-size:32px;font-weight:700}
+.dm small{display:block;font-family:'JetBrains Mono';font-size:20px;color:#55595f;font-weight:500;margin-bottom:6px}
+.tap{position:absolute;width:96px;height:96px;opacity:0;z-index:4}
+/* end */
+.erings{position:absolute;left:290px;top:420px;width:500px;height:500px}
+.bigmk{position:absolute;left:390px;top:520px;width:300px;height:300px;font-size:110px;letter-spacing:-6px}
+.hnd{position:absolute;left:0;right:0;top:1000px;text-align:center;font-family:'JetBrains Mono';font-weight:800;font-size:92px;white-space:pre;height:120px}
+.fol{position:absolute;left:280px;top:1390px;width:520px;height:132px;border-radius:999px;display:grid;place-items:center;font-size:52px;font-weight:900;background:linear-gradient(180deg,#fbfbfc,#d4d7db);color:#08090a;box-shadow:0 6px 0 #9a9ea4,0 20px 60px rgba(255,255,255,.16)}
+.fol2{position:absolute;left:280px;top:1390px;width:520px;height:132px;border-radius:999px;display:grid;place-items:center;font-size:52px;font-weight:900;background:#101114;color:#f5f6f7;box-shadow:inset 0 0 0 3px rgba(255,255,255,.7);opacity:0}
+.erip{position:absolute;left:540px;top:1456px;border-radius:50%;border:4px solid rgba(255,255,255,.8);opacity:0}
+</style></head><body>
+<div class="f" id="F">
+ <div id="stage"><div id="world">
+
+  <!-- S1 hook: real humanoid in a sim chamber + timestep film strip -->
+  <section class="sc" id="s1">
+    <div class="L kick" style="top:250px" data-k="// google-deepmind/mujoco"></div>
+    <div class="L h" style="top:304px">
+      <span class="ln" style="font-size:128px"><span class="w" data-t="0.3">Where</span><span class="w" data-t="0.55">robots</span></span>
+      <span class="ln soft" style="font-size:132px"><span class="w ser" data-t="2.6">learn to walk.</span></span>
+    </div>
+    <div class="c3 cham in" data-t="0.1" data-rx="10" data-ry="-6">
+      <img class="g seq" data-seq="humanoid" data-n="196" data-t0="0">
+      <div class="br" style="left:24px;top:76px;border-left-width:5px;border-top-width:5px"></div>
+      <div class="br" style="right:24px;top:76px;border-right-width:5px;border-top-width:5px"></div>
+      <div class="br" style="left:24px;bottom:84px;border-left-width:5px;border-bottom-width:5px"></div>
+      <div class="br" style="right:24px;bottom:84px;border-right-width:5px;border-bottom-width:5px"></div>
+      <div class="rec"><i id="recd"></i>SIMULATING</div>
+      <div class="real">REAL · REPO DOCS</div>
+      <div class="hud"><span id="hud0">sim t = 0.00 s</span><span id="hud1">frame 000</span></div>
+    </div>
+    <div class="film"><div class="fstrip" id="fstrip"></div></div>
+  </section>
+
+  <!-- S2 meet: real banner flips in as 3D slats + acronym tiles -->
+  <section class="sc" id="s2">
+    <div class="L kick" style="top:250px" data-k="// meet"></div>
+    <div class="L h" style="top:304px">
+      <span class="ln" style="font-size:176px;letter-spacing:-8px"><span class="w" data-t="5.36">MuJoCo.</span></span>
+      <span class="ln soft" style="font-size:96px"><span class="w ser" data-t="6.52">by Google DeepMind</span></span>
+    </div>
+    <div class="slats" id="slats"></div>
+    <div class="acr" id="acr">
+      <div class="c3 lite at" id="at0" style="left:0"><div class="big">Mu</div><div class="sm">multi</div></div>
+      <div class="c3 at" id="at1" style="left:331px"><div class="big">Jo</div><div class="sm" style="color:var(--mut)">joint</div></div>
+      <div class="c3 lite at" id="at2" style="left:662px"><div class="big">Co</div><div class="sm">contact</div></div>
+    </div>
+    <div class="fulln" id="fulln"></div>
+    <div class="c3 rchip in" data-t="6.4" data-rx="10"><span style="color:var(--mut)">github.com/</span>google-deepmind<span style="color:var(--mut)">·</span>17.4K ★</div>
+  </section>
+
+  <!-- S3 paid license tag cut down -> Apache 2.0 plate + timeline -->
+  <section class="sc" id="s3">
+    <div class="L kick" style="top:250px" data-k="// the license"></div>
+    <div class="L h" style="top:304px">
+      <span class="ln" style="font-size:150px;letter-spacing:-7px"><span class="w" data-t="8.44">Paid.</span></span>
+      <span class="ln soft" style="font-size:110px"><span class="w ser" data-t="10.16">now open source.</span></span>
+    </div>
+    <div class="hang" id="hang">
+      <div class="str2" id="str2"></div>
+      <div class="str" id="str"></div>
+      <div class="c3 lite ptag" id="ptag"><div class="hole"></div><div class="t1">LICENSE · 2012-2021</div><div class="t2">PAID</div><div class="t3">per seat · per year</div></div>
+    </div>
+    <div class="snip" id="snip"></div>
+    <div class="c3 plate in" data-t="10.15" data-rx="8" data-ry="-8"><div class="p1">SOURCE CODE · LICENSE</div><div class="p2">APACHE 2.0</div></div>
+    <div class="rail">
+      <div class="ln0" id="rl0"></div>
+      <div class="knot" id="kn0" style="left:120px"></div><div class="knot" id="kn1" style="left:620px"></div>
+      <div class="kn" id="kt0" style="left:70px"><b>OCT 2021</b><span>DeepMind makes it free</span></div>
+      <div class="kn" id="kt1" style="left:530px"><b>MAY 2022</b><span>full source on GitHub</span></div>
+    </div>
+  </section>
+
+  <!-- S4 specimen lab: 4 real sims lift out of a tilted rack -->
+  <section class="sc" id="s4">
+    <div class="L kick" style="top:250px" data-k="// what it simulates"></div>
+    <div class="L h" style="top:304px">
+      <span class="ln" style="font-size:112px"><span class="w" data-t="12.32">Joints.</span><span class="w" data-t="13.2">Contacts.</span></span>
+      <span class="ln soft" style="font-size:112px"><span class="w ser" data-t="13.88">cloth.</span><span class="w ser" data-t="15.28">soft bodies.</span></span>
+    </div>
+    <div class="lab" id="lab">
+      <div class="c3 sp" id="sp0" style="left:0;top:0"><img class="g seq" data-seq="humanoid100" data-n="162" data-t0="11.6"><div class="pl"><i>01</i>joints</div></div>
+      <div class="c3 sp" id="sp1" style="left:496px;top:0"><img class="g seq" data-seq="particle" data-n="168" data-t0="12.6"><div class="pl"><i>02</i>contacts</div></div>
+      <div class="c3 sp" id="sp2" style="left:0;top:496px"><img class="g seq" data-seq="flag" data-n="153" data-t0="13.3"><div class="pl"><i>03</i>cloth</div></div>
+      <div class="c3 sp" id="sp3" style="left:496px;top:496px"><img class="g seq" data-seq="softbox" data-n="162" data-t0="14.3"><div class="pl"><i>04</i>soft bodies</div></div>
+    </div>
+    <div class="streaks" id="streaks"></div>
+    <div class="fastt" id="fastt"><span class="h"><span class="w" style="font-size:76px">crazy fast</span></span></div>
+  </section>
+
+  <!-- S5 browser: url types, real sim plays, install meter stays at 0 -->
+  <section class="sc" id="s5">
+    <div class="L kick" style="top:250px" data-k="// no install"></div>
+    <div class="L h" style="top:304px">
+      <span class="ln" style="font-size:124px"><span class="w" data-t="18.12">Runs</span><span class="w" data-t="18.68">in your</span></span>
+      <span class="ln soft" style="font-size:132px"><span class="w ser" data-t="19.04">browser.</span></span>
+    </div>
+    <div class="c3 bro in" data-t="17.5" data-rx="8" data-ry="7">
+      <div class="bbar"><i></i><i></i><i></i><div class="url"><span class="lk">🔒</span><span id="urlt"></span></div></div>
+      <div class="bvp" id="bvp"><img class="g seq" data-seq="hammock" data-n="147" data-t0="18.4"></div>
+      <div class="lbar" id="lbar"></div>
+    </div>
+    <div class="c3 inst in" data-t="19.3" data-rx="10"><div class="ib">INSTALL STEPS</div><div class="tr"><b id="itr"></b></div><div class="zero" id="izero">3</div></div>
+  </section>
+
+  <!-- S6 pip install drops a PyPI crate onto the shelf -->
+  <section class="sc" id="s6">
+    <div class="L kick" style="top:250px" data-k="// python"></div>
+    <div class="L h" style="top:304px">
+      <span class="ln" style="font-size:150px;letter-spacing:-7px"><span class="w" data-t="20.96">Python?</span></span>
+      <span class="ln soft" style="font-size:110px"><span class="w ser" data-t="21.56">just one line.</span></span>
+    </div>
+    <div class="c3 cmd in" style="left:64px;top:610px;width:952px;height:140px" data-t="21.0" data-rx="6"><span class="pr">$</span><div class="q"><span id="cq"></span><span class="cu" id="ccu"></span></div><div class="ent" id="ent6">enter ↵</div></div>
+    <div class="shad" id="shad"></div>
+    <div class="cwrap" id="cwrap"><div class="crate" id="crate">
+      <div class="cfc"><b>mujoco</b><small>PYPI PACKAGE</small></div>
+      <div class="cfc dk"><b>C API</b><small>UNDER THE HOOD</small></div>
+      <div class="cfc"><b>py≥3.11</b><small>PYTHON</small></div>
+      <div class="cfc dk"><b>free</b><small>APACHE 2.0</small></div>
+      <div class="cfc dk" id="ctop"><b>pip</b></div>
+    </div></div>
+    <div class="shelf"></div>
+    <div class="pyl" id="pyl"></div>
+  </section>
+
+  <!-- S7 MJX: GPU die feeds a sim grid that multiplies -->
+  <section class="sc" id="s7">
+    <div class="L kick" style="top:250px" data-k="// mjx = mujoco in jax"></div>
+    <div class="L h" style="top:304px">
+      <span class="ln" style="font-size:150px;letter-spacing:-6px"><span class="w" data-t="23.6">MJX</span><span class="w ser" data-t="24.92" style="text-transform:none;font-size:130px">on GPUs.</span></span>
+      <span class="ln soft" style="font-size:96px"><span class="w ser" data-t="27.28">thousands at once.</span></span>
+    </div>
+    <div class="c3 gpu in" data-t="23.4" data-rx="14" data-ry="-6">
+      <div class="tr2"></div>
+      <div id="pins"></div>
+      <div class="die"><b>GPU</b><small>MJX KERNEL</small></div>
+      <div class="gch" style="left:60px">JAX</div>
+      <div class="gch" style="right:60px" id="tps">jit ✓</div>
+    </div>
+    <div class="bus" id="bus"><i></i><i></i><i></i></div>
+    <div class="c3 grid in" data-t="24.6" data-rx="10" data-ry="6">
+      <div class="gimg g" id="gimg"></div>
+      <div class="mult" id="mult">×1</div>
+    </div>
+  </section>
+
+  <!-- S8 comment -->
+  <section class="sc" id="s8">
+    <div class="L kick" style="top:250px" data-k="// want the link?"></div>
+    <div class="L h" style="top:304px">
+      <span class="ln" style="font-size:132px"><span class="w" data-t="29.6">Comment</span></span>
+      <span class="ln soft" style="font-size:190px;letter-spacing:-8px"><span class="w" data-t="29.84">GITMATE</span></span>
+    </div>
+    <div class="c3 cm in" style="left:64px;top:690px;width:952px;height:390px" data-t="29.4" data-ry="-10" data-rx="8">
+      <div class="lbl" style="margin-bottom:22px">comments</div>
+      <div class="rowc"><div class="av2"></div><div class="cin"><span id="t9" style="color:rgba(255,255,255,.4)">Add a comment…</span></div><div class="send" id="snd9">↑</div></div>
+      <div class="posted" id="pst9"><div class="av2" style="width:56px;height:56px"></div><div><div class="u">you <span class="lbl">· now</span></div><div class="c">GITMATE</div></div></div>
+    </div>
+    <div class="c3 lite dm in" style="left:300px;top:1150px;width:560px;height:130px" data-t="30.65" data-z="80"><small>git.mate · message</small>Here's your link, mate 🔗</div>
+  </section>
+
+  <!-- S9 end -->
+  <section class="sc" id="s9">
+    <svg class="erings" viewBox="0 0 500 500"><circle id="er1" cx="250" cy="250" r="226" fill="none" stroke="#f5f6f7" stroke-width="3" stroke-dasharray="1420" stroke-dashoffset="1420" transform="rotate(-90 250 250)"/>
+      <circle id="er2" cx="250" cy="250" r="246" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="2" stroke-dasharray="1546" stroke-dashoffset="1546" transform="rotate(90 250 250)"/></svg>
+    <div class="bead bigmk" id="bigmk">&gt;_</div>
+    <div class="hnd" id="hnd"></div>
+    <div class="L h" style="top:1160px;font-size:84px;letter-spacing:-3px;text-align:center"><span class="ln soft"><span class="w" data-t="32.55">1</span><span class="w" data-t="32.7">repo</span><span class="w" data-t="32.85">every</span><span class="w" data-t="33.0">day.</span></span></div>
+    <div class="fol" id="fol">Follow</div>
+    <div class="fol2" id="fol2">Following ✓</div>
+    <div class="erip" id="erip"></div>
+    <svg class="tap" id="tap10" viewBox="0 0 100 100" style="left:600px;top:1420px"><circle cx="50" cy="50" r="34" fill="rgba(255,255,255,.25)" stroke="#fff" stroke-width="5"/><circle cx="50" cy="50" r="12" fill="#fff"/></svg>
+  </section>
+ </div></div>
+
+ <div class="top"><div class="brand"><div class="bead">&gt;_</div>git.mate</div><div class="tag" id="tag"><b>01</b> / hook</div></div>
+ <div class="prog" id="prog"></div>
+ <div class="vig"></div><div class="grain"></div>
+</div>
+
+<script>
+(function () {
+  const SPD = 1.0;
+  const S = [0, 4.85, 7.62, 11.55, 17.86, 20.88, 23.3, 29.35, 31.75];
+  const TOTAL = 34.9; window.__TOTAL = TOTAL / SPD;
+  const LABEL = ['hook', 'meet', 'license', 'simulates', 'browser', 'python', 'mjx', 'link', 'follow'];
+  const $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)];
+  const tl = gsap.timeline({ paused: true, defaults: { ease: 'power3.out' } });
+  $('#prog').innerHTML = S.map(() => '<i><b></b></i>').join('');
+  const scenes = $$('.sc');
+  const R = 2400, STEP = 30;
+  scenes.forEach((sc, i) => { sc.style.transform = `rotateY(${i * STEP}deg) translateZ(${R}px)`; });
+  const cam = { a: 0, d: 0, rx: 0, rz: 0 };
+  const MOVE = { 2: 'crane', 3: 'roll', 5: 'crane', 6: 'roll', 8: 'crane' };
+  scenes.forEach((sc, i) => {
+    tl.set(sc, { visibility: 'visible' }, Math.max(0, S[i] - .62));
+    if (i < scenes.length - 1) tl.set(sc, { visibility: 'hidden' }, S[i + 1] + .45);
+    if (i) {
+      const t0 = S[i] - .58, dir = i % 2 ? 1 : -1, mv = MOVE[i];
+      const prx = mv === 'crane' ? 22 : 9 * dir, prz = mv === 'roll' ? 9 * dir : mv === 'crane' ? 0 : 3 * dir, pd = mv === 'crane' ? 1250 : 900;
+      tl.to(cam, { a: i * STEP, duration: 1.0, ease: 'power3.inOut' }, t0);
+      tl.to(cam, { keyframes: [{ d: pd, rx: prx, rz: prz, duration: .5, ease: 'power2.out' }, { d: 0, rx: 0, rz: 0, duration: .5, ease: 'power2.in' }] }, t0);
+    }
+  });
+  tl.set(scenes[0], { visibility: 'visible' }, 0);
+  $$('.h .w').forEach((w) => { const t = +w.dataset.t; if (!t || w.style.opacity === '0') return;
+    tl.fromTo(w, { opacity: 0, y: 70, scale: 1.12, filter: 'blur(18px)' }, { opacity: 1, y: 0, scale: 1, filter: 'blur(0px)', duration: .55, ease: 'expo.out' }, t); });
+  scenes.forEach((sc, i) => { const k = $('.kick', sc); if (!k || !k.dataset.k) return; const txt = k.dataset.k, o = { n: 0 }; k.textContent = i ? '' : txt; if (!i) return;
+    tl.fromTo(o, { n: 0 }, { n: txt.length, duration: Math.min(.7, txt.length * .025), ease: 'none', immediateRender: false, onUpdate: () => { k.textContent = txt.slice(0, Math.round(o.n)); } }, S[i] + .05); });
+  $$('.in').forEach((c) => {
+    const t = +c.dataset.t, rx = +(c.dataset.rx || 0), ry = +(c.dataset.ry || 0), z = +(c.dataset.z || 0);
+    const end = { autoAlpha: 1, z, rotationX: rx, rotationY: ry, y: 0, duration: .9, ease: 'expo.out' };
+    if (!t) { gsap.set(c, end); return; }
+    tl.fromTo(c, { autoAlpha: 0, z: -900, rotationX: rx + 40, rotationY: ry * 2, y: 120 }, end, t);
+  });
+  const typer = (el, text, t, d) => { const o = { n: 0 }; tl.fromTo(o, { n: 0 }, { n: text.length, duration: d, ease: 'none', immediateRender: false, onUpdate: () => { el.textContent = text.slice(0, Math.round(o.n)); } }, t); };
+  const sm = (a, b, x) => { const k = Math.min(1, Math.max(0, (x - a) / (b - a))); return k * k * (3 - 2 * k); };
+  const cl = (a, b, x) => Math.min(1, Math.max(0, (x - a) / (b - a)));
+  const twl = (t, a, b, s) => s.slice(0, Math.round(cl(a, b, t) * s.length));
+  const pad = (n) => String(n).padStart(3, '0');
+  const frameSrc = (seq, n, t, t0) => `media/${seq}/${pad((Math.floor(Math.max(0, t - t0) * 30) % n) + 1)}.jpg`;
+
+  // S1 film strip: real humanoid frames, every 12th
+  $('#fstrip').innerHTML = Array.from({ length: 14 }, (_, i) => `<div class="fr"><img class="g" src="media/humanoid/${pad(1 + i * 14)}.jpg"><b>${String(i * 14).padStart(3, '0')}</b></div>`).join('');
+  // S2 banner slats
+  const NS = 12, SW = 952 / NS;
+  $('#slats').innerHTML = Array.from({ length: NS }, (_, i) => `<div class="sl g" id="sl${i}" style="left:${i * SW}px;width:${SW + .6}px;background-image:url(media/banner.png);background-position:${-i * SW}px 0"></div>`).join('');
+  // S3 nothing to build
+  // S4 streaks
+  $('#streaks').innerHTML = Array.from({ length: 9 }, (_, i) => `<div class="stk" id="sk${i}" style="top:${8 + i * 11}px;width:${180 + (i * 137) % 260}px"></div>`).join('');
+  // S7 pins
+  $('#pins').innerHTML = Array.from({ length: 16 }, (_, i) => `<div class="pin" style="left:${364 + i * 14.5}px;top:${i % 2 ? 6 : 222}px"></div>`).join('');
+
+  // S8 comment flow
+  tl.call(() => { $('#t9').textContent = 'Add a comment…'; $('#t9').style.color = 'rgba(255,255,255,.4)'; }, null, 29.99);
+  tl.call(() => { $('#t9').style.color = '#fff'; }, null, 30.0);
+  typer($('#t9'), 'GITMATE', 30.0, .3);
+  tl.fromTo('#snd9', { scale: 1 }, { scale: .8, duration: .1, yoyo: true, repeat: 1 }, 30.32);
+  tl.fromTo('#pst9', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: .35 }, 30.38);
+  // S9 end
+  const E = 31.8;
+  tl.fromTo('#bigmk', { opacity: 0, scale: .2, rotation: -40 }, { opacity: 1, scale: 1, rotation: 0, duration: .9, ease: 'back.out(1.8)' }, E);
+  tl.fromTo('#er1', { attr: { 'stroke-dashoffset': 1420 } }, { attr: { 'stroke-dashoffset': 0 }, duration: 1.0, ease: 'power2.inOut', immediateRender: false }, E + .15);
+  tl.fromTo('#er2', { attr: { 'stroke-dashoffset': 1546 } }, { attr: { 'stroke-dashoffset': 0 }, duration: 1.2, ease: 'power2.inOut', immediateRender: false }, E + .3);
+  typer($('#hnd'), '@git.mate', E + .4, .5);
+  tl.fromTo('#fol', { opacity: 0, scale: .6 }, { opacity: 1, scale: 1, duration: .5, ease: 'back.out(2)' }, E + .9);
+  tl.fromTo('#tap10', { opacity: 0, x: 160, y: 140 }, { opacity: 1, x: 0, y: 0, duration: .5, ease: 'power2.out' }, E + 1.25);
+  tl.to('#tap10', { scale: .75, duration: .1, yoyo: true, repeat: 1 }, E + 1.8);
+  tl.to('#fol', { scale: .93, duration: .1 }, E + 1.8);
+  tl.set('#fol2', { opacity: 1 }, E + 1.9); tl.set('#fol', { opacity: 0 }, E + 1.9);
+  tl.fromTo('#erip', { opacity: .8, width: 10, height: 10, margin: -5 }, { opacity: 0, width: 640, height: 640, margin: -320, duration: .8, ease: 'power2.out', immediateRender: false }, E + 1.85);
+  tl.to('#tap10', { opacity: 0, duration: .3 }, E + 2.3);
+  tl.to({}, { duration: .01 }, TOTAL);
+
+  const SEQ = $$('img.seq');
+  const world = $('#world'), tag = $('#tag'), segs = $$('#prog b');
+  const tick = (t) => {
+    const a = cam.a + Math.sin(t * .5) * .35, rx = cam.rx + Math.sin(t * .37 + 1) * .7, rz = cam.rz + Math.sin(t * .29) * .25;
+    scenes.forEach((sc, i) => { sc.style.display = t >= S[i] - .7 && t <= (S[i + 1] || 99) + .5 ? '' : 'none'; });
+    world.style.transform = `translateZ(${-cam.d}px) rotateX(${rx}deg) rotateZ(${rz}deg) translateZ(${-R}px) rotateY(${-a}deg)`;
+    // frame sequences (only visible scenes)
+    SEQ.forEach(im => { const sc = im.closest('.sc'); if (sc.style.display === 'none') return; const s = frameSrc(im.dataset.seq, +im.dataset.n, t, +im.dataset.t0); if (im.getAttribute('src') !== s) im.setAttribute('src', s); });
+    // S1 HUD + film strip slides in
+    $('#hud0').textContent = `sim t = ${(t * 1).toFixed(2)} s`; $('#hud1').textContent = `frame ${pad(Math.floor(t * 30) % 196)}`;
+    $('#recd').style.opacity = Math.floor(t * 2) % 2 ? .25 : 1;
+    { const k = sm(0.9, 1.8, t); $('#fstrip').style.transform = `perspective(1200px) rotateX(18deg) translateX(${1080 - k * 1100 - t * 40}px)`; $('#fstrip').style.opacity = sm(0.9, 1.1, t); }
+    $$('.br').forEach((b, i) => { const k = sm(0.5, 1.0, t); b.style.opacity = k; b.style.transform = `scale(${1.6 - .6 * k})`; });
+    // S2 slats flip in (venetian), acronym tiles drop, full name types
+    for (let i = 0; i < NS; i++) { const t0 = 4.75 + i * .06, k = sm(t0, t0 + .45, t); const e = $('#sl' + i);
+      e.style.opacity = sm(t0, t0 + .1, t); e.style.transform = `rotateY(${(1 - k) * 92}deg) translateZ(${(1 - k) * 80}px)`; }
+    ['#at0', '#at1', '#at2'].forEach((id, i) => { const t0 = [5.36, 5.62, 5.88][i], k = sm(t0, t0 + .35, t);
+      const e = $(id); e.style.opacity = sm(t0, t0 + .08, t); e.style.transform = `perspective(1000px) rotateX(${(1 - k) * -90 + 10}deg) translateY(${(1 - k) * -60}px)`; e.style.transformOrigin = '50% 0'; });
+    $('#fulln').textContent = twl(t, 6.0, 6.9, 'Multi-Joint dynamics with Contact');
+    // S3 tag swings, string snips on "Now?", tag falls; rail draws
+    { const cut = 9.72, fall = cl(cut, cut + .55, t);
+      const sw = Math.sin((t - 7.2) * 2.6) * 7 * (1 - sm(8.8, 9.6, t) * .5);
+      $('#ptag').style.transform = `rotateZ(${sw + fall * 28}deg) rotateY(${Math.sin(t * 1.3) * 14}deg) translateY(${fall * fall * 1300}px)`;
+      $('#ptag').style.opacity = (sm(7.3, 7.6, t)) * (1 - sm(cut + .3, cut + .55, t));
+      $('#str').style.transform = `rotateZ(${sw}deg)`; $('#str').style.height = (t < cut ? 130 : 60) + 'px';
+      $('#str').style.opacity = sm(7.3, 7.5, t) * (t < cut ? 1 : 0); $('#str2').style.opacity = sm(7.3, 7.5, t) * (t < cut ? 0 : 1 - sm(cut + .3, cut + .6, t));
+      $('#hang').style.transform = `translateY(${(1 - sm(7.2, 7.8, t)) * -500}px)`;
+      $('#snip').style.opacity = Math.max(0, 1 - Math.abs(t - cut) / .12); $('#snip').style.transform = `scaleX(${.3 + cl(cut - .1, cut + .1, t)})`;
+      const r = sm(10.3, 10.85, t); $('#rl0').style.width = (r * 832) + 'px';
+      [0, 1].forEach(i => { const t0 = [10.35, 10.6][i], k = sm(t0, t0 + .25, t);
+        $('#kn' + i).style.opacity = k; $('#kn' + i).style.transform = `scale(${.3 + .7 * k})`;
+        $('#kt' + i).style.opacity = k; $('#kt' + i).style.transform = `perspective(800px) rotateX(${(1 - k) * 60}deg) translateY(${(1 - k) * 30}px)`; }); }
+    // S4 specimen tiles lift in on their word; "crazy fast" streaks
+    { $('#lab').style.transform = `perspective(2000px) rotateX(${12 - sm(16.4, 17.2, t) * 4}deg) rotateY(${Math.sin(t * .4) * 3}deg)`;
+      [12.2, 13.1, 13.8, 15.2].forEach((t0, i) => { const k = sm(t0, t0 + .5, t), pop = Math.max(0, 1 - Math.abs(t - t0 - .45) / .5);
+        const e = $('#sp' + i); e.style.opacity = sm(t0, t0 + .1, t);
+        e.style.transform = `translateZ(${(1 - k) * -700 + pop * 60}px) rotateX(${(1 - k) * 50}deg) rotateZ(${(1 - k) * (i % 2 ? 8 : -8)}deg)`; });
+      const f = sm(16.4, 16.7, t); $('#fastt').style.opacity = f; $('#fastt').style.transform = `translateX(${(1 - f) * -300}px) skewX(${-12 * f}deg)`;
+      for (let i = 0; i < 9; i++) { const p = ((t * (1.4 + i * .13) + i * .37) % 1); const e = $('#sk' + i); e.style.opacity = f * .8; e.style.left = (-300 + p * 1500) + 'px'; } }
+    // S5 url types, load bar, install meter empty
+    $('#urlt').textContent = twl(t, 17.95, 18.5, 'mujoco.org');
+    { const lb = cl(18.5, 18.9, t); $('#lbar').style.width = (lb * 952) + 'px'; $('#lbar').style.opacity = 1 - sm(18.9, 19.1, t);
+      $('#bvp').style.opacity = sm(18.6, 18.9, t);
+      const z = sm(19.7, 20.3, t); $('#itr').style.width = ((1 - z) * 70) + '%'; $('#izero').textContent = z < .34 ? '3' : z < .67 ? '2' : z < .99 ? '1' : '0'; }
+    // S6 command types, enter, crate drops onto shelf
+    $('#cq').textContent = twl(t, 21.6, 22.25, 'pip install mujoco'); $('#ccu').style.visibility = Math.floor(t * 3) % 2 ? 'hidden' : 'visible';
+    { const pr = Math.max(0, 1 - Math.abs(t - 22.33) / .1); $('#ent6').style.transform = `translateY(${pr * 7}px)`; $('#ent6').style.boxShadow = `0 ${7 - pr * 7}px 0 #9a9ea4`;
+      const d = cl(22.35, 22.7, t), dy = (1 - d * d) * -120 + Math.sin(cl(22.7, 22.95, t) * Math.PI) * -26;
+      const CD = 190; $$('#crate .cfc').forEach((f, i) => { f.style.transform = i < 4 ? `rotateY(${i * 90}deg) translateZ(${CD}px)` : `rotateX(90deg) translateZ(${CD}px)`; });
+      const spin = -28 + Math.sin(t * .9) * 10 - (1 - d) * 90;
+      $('#crate').style.transform = `translateY(${dy}px) translateZ(${-CD - (1 - d) * 1400}px) rotateX(-16deg) rotateY(${spin}deg)`;
+      $('#cwrap').style.opacity = sm(22.35, 22.45, t); $('#shad').style.opacity = sm(22.5, 22.72, t);
+      $('#pyl').textContent = twl(t, 22.75, 23.1, 'Linux · macOS · Windows wheels'); }
+    // S7 bus pulses, grid multiplies 1 -> 4096
+    { $$('#bus i').forEach((b, i) => { const p = ((t * 1.6 + i / 3) % 1); b.style.top = (p * 64) + 'px'; b.style.opacity = sm(24.4, 24.7, t) * (1 - p); });
+      const steps = [[24.9, 1], [25.6, 2], [26.1, 4], [26.6, 8], [27.1, 16], [27.5, 32], [27.9, 64]]; let n = 1, prev = 1, tt = 24.9;
+      steps.forEach(([s, v], i) => { if (t >= s) { prev = i ? steps[i - 1][1] : 1; n = v; tt = s; } });
+      const k = sm(tt, tt + .3, t), cols = prev + (n - prev) * k, tile = 952 / cols;
+      const g = $('#gimg'); g.style.backgroundImage = `url(${frameSrc('humanoid', 196, t, 24.6)})`; g.style.backgroundSize = `${tile}px ${tile}px`;
+      g.style.backgroundPosition = `${(952 - tile * Math.ceil(cols)) / 2}px ${(620 - tile * Math.ceil(620 / tile)) / 2}px`;
+      const count = n * Math.max(1, Math.floor(n * 620 / 952)); $('#mult').textContent = '×' + (n === 1 ? 1 : count).toLocaleString('en-US');
+      $('#tps').textContent = t > 25.2 ? 'vmap ×' + n : 'jit ✓'; }
+    let si = 0; for (let i = 0; i < S.length; i++) if (t >= S[i] - .3) si = i;
+    tag.innerHTML = `<b>${String(si + 1).padStart(2, '0')}</b> / ${LABEL[si]}`;
+    segs.forEach((b, i) => { const e = i < S.length - 1 ? S[i + 1] : TOTAL - 1.5; b.style.width = Math.min(100, Math.max(0, (t - S[i]) / (e - S[i]) * 100)) + '%'; });
+  };
+  window.__tl = tl;
+  window.__seek = (rt) => { const t = rt * SPD; tl.time(t, false); tick(t);
+    const ims = [...SEQ.filter(im => im.closest('.sc').style.display !== 'none' && im.getAttribute('src')), ...$$('.fr img')];
+    return Promise.all(ims.map(im => im.decode().catch(() => null))).then(() => null); };
+  window.__seek(0);
+  if (!navigator.webdriver) { const t0 = performance.now(); const loop = () => { window.__seek(((performance.now() - t0) / 1000) % (TOTAL / SPD)); requestAnimationFrame(loop); }; requestAnimationFrame(loop); }
+})();
+</script>
+</body></html>

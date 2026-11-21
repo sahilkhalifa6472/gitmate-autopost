@@ -1,0 +1,10 @@
+{
+ "title": "claude-mem: persistent memory for Claude Code across sessions",
+ "caption": "Every new Claude Code session forgets everything. This repo fixes that. \ud83e\udde0\n\nclaude-mem (100k+ \u2b50 on GitHub) gives your coding agent a memory that survives between sessions:\n\u2192 Hooks quietly capture every tool call and fix, then compress them into small \"observations\"\n\u2192 Next session, the right context is injected automatically at SessionStart\n\u2192 Need more? 3-step search (search \u2192 timeline \u2192 get_observations) for ~10x token savings\n\u2192 Local web viewer to browse your memory, plus <private> tags to keep things out\n\n\u2705 Open source (Apache-2.0)\n\u2705 Works with Claude Code, OpenCode, T3 Code and more\n\u2705 One command: npx claude-mem install\n\nComment GITMATE and I'll send you the link \ud83d\udc47\nFollow @git.mate for 1 useful repo every day.\n\n#github #opensource #claudecode #aiagents #codingagent #contextengineering #devtools #developer #programming #llm #ai #typescript\n",
+ "repo_url": "https://github.com/thedotmack/claude-mem",
+ "date": "2026-10-31",
+ "theme": "dark",
+ "video": "/mnt/project-files/dev-reels/claude-mem/gitmate_claude-mem.mp4",
+ "duration_sec": 37.0,
+ "cover_offset_ms": 4600
+}

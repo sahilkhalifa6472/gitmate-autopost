@@ -1,0 +1,8 @@
+[curious] Your MacBook has a big black notch... and it does absolutely nothing.
+[excited] Mate, meet ILoveNotch. A free, open-source app that turns that notch into a tiny control center.
+Hover it, and you get your music, plus a volume slider for every app.
+Drop files on it to keep them handy. Check your calendar, set timers, and even see how much of your Claude and Codex limits you've used.
+[impressed] It's native, and it sits at about seventy-seven megabytes of RAM.
+[friendly] Download the DMG, drag it into Applications, done.
+Built by Niyam, from our DMs. Want your repo featured too? DM us FEATURE.
+[warm] Comment GITMATE and I'll send you the link.

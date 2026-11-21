@@ -1,0 +1,76 @@
+/* ===== uv scene CSS ===== */
+.mono{font-family:'JetBrains Mono'}
+/* S1 terminal slab + extruded LCD timer */
+.trm{position:absolute;left:84px;top:690px;width:912px;height:560px;border-radius:30px;padding:0;transform-style:preserve-3d}
+.trm .bar{height:66px;display:flex;align-items:center;gap:14px;padding:0 28px;border-bottom:1.5px solid rgba(255,255,255,.08)}
+.trm .bar i{width:18px;height:18px;border-radius:50%;background:#3a3c41}
+.trm .bar span{margin-left:18px;font-family:'JetBrains Mono';font-size:22px;color:var(--dim)}
+.trm .body{padding:26px 34px;font-family:'JetBrains Mono';font-size:27px;line-height:1.55;color:#cfd2d6;white-space:pre}
+.trm .body .p{color:#fff;font-weight:700}
+.trm .body .d{color:#6d7177}
+.pbar{display:inline-block;width:420px;height:16px;border-radius:8px;background:rgba(255,255,255,.1);vertical-align:middle;position:relative;overflow:hidden;margin-right:16px}
+.pbar b{position:absolute;left:0;top:0;bottom:0;background:#e9eaec;border-radius:8px}
+.lcdw{position:absolute;left:190px;top:1330px;width:700px;height:230px;transform-style:preserve-3d}
+.lcd{position:absolute;inset:0;border-radius:28px;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono';font-weight:800;font-size:150px;letter-spacing:-4px}
+.lcd.back{color:#1c1d20;background:#0c0d0f}
+.lcd.face{background:linear-gradient(170deg,#202126,#0f1012);color:#f5f6f7;box-shadow:inset 0 2px 0 rgba(255,255,255,.18),inset 0 0 0 2px rgba(255,255,255,.07)}
+.lcd.face small{font-size:46px;color:var(--mut);margin-left:14px;letter-spacing:0}
+.lcdl{position:absolute;left:0;right:0;top:1585px;text-align:center}
+/* S2 race track */
+.trackw{position:absolute;left:40px;top:650px;width:1000px;height:820px;perspective:1900px;perspective-origin:50% 30%}
+.track{position:absolute;left:110px;top:20px;width:780px;height:700px;transform-origin:50% 0%;transform-style:preserve-3d;
+  background:linear-gradient(180deg,#141518,#0a0b0c);border-radius:26px;box-shadow:inset 0 0 0 2px rgba(255,255,255,.08)}
+.lane{position:absolute;left:26px;right:26px;height:150px;border-radius:18px;background:repeating-linear-gradient(90deg,rgba(255,255,255,.05) 0 2px,transparent 2px 88px);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.08)}
+.lane .nm{position:absolute;left:26px;top:20px;font-family:'JetBrains Mono';font-weight:800;font-size:40px;color:#e7e8ea}
+.lane .tm{position:absolute;right:26px;top:20px;font-family:'JetBrains Mono';font-weight:800;font-size:40px;color:var(--mut)}
+.lane .fill{position:absolute;left:26px;bottom:26px;height:56px;border-radius:12px;background:linear-gradient(180deg,#4a4d53,#2a2c30);box-shadow:inset 0 2px 0 rgba(255,255,255,.2)}
+.lane.uvl .fill{background:linear-gradient(180deg,#ffffff,#c9ccd1)}
+.lane.uvl{box-shadow:inset 0 0 0 3px rgba(255,255,255,.55)}
+.finish{position:absolute;right:30px;top:20px;bottom:20px;width:24px;background:repeating-linear-gradient(180deg,#f5f6f7 0 24px,#111 24px 48px);opacity:.75;border-radius:4px}
+.src2{position:absolute;left:150px;top:1490px;width:780px;height:205px;border-radius:24px;overflow:hidden}
+.src2 img{position:absolute;left:0;top:0;width:780px;height:205px}
+.src2l{position:absolute;left:150px;top:1716px;width:780px;text-align:center}
+/* S3 twin monoliths */
+.mono3{position:absolute;top:660px;width:440px;height:760px;border-radius:30px;padding:30px 30px}
+.mono3 .hd{font-family:'JetBrains Mono';font-weight:800;font-size:46px;display:flex;justify-content:space-between;align-items:center}
+.mono3 .hd span{font-size:20px;color:var(--mut);font-weight:500}
+.mono3 .gauge{position:absolute;left:30px;right:30px;top:120px;height:330px;border-radius:20px;background:rgba(255,255,255,.04);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.1);overflow:hidden}
+.mono3 .gauge b{position:absolute;left:0;right:0;bottom:0;background:linear-gradient(180deg,#d9dbde,#7d8187)}
+.mono3 .tm3{position:absolute;left:0;right:0;top:480px;text-align:center;font-family:'JetBrains Mono';font-weight:800;font-size:96px;letter-spacing:-3px}
+.mono3 .out{position:absolute;left:30px;right:30px;top:610px;font-family:'JetBrains Mono';font-size:21px;line-height:1.5;color:var(--mut);white-space:pre}
+.chip3{position:absolute;left:290px;top:1470px;width:500px;height:120px;border-radius:999px;display:grid;place-items:center;font-size:58px;font-weight:900;letter-spacing:-1px}
+.lbl3{position:absolute;left:0;right:0;top:1625px;text-align:center}
+/* S4 cubes merging */
+.cubes{position:absolute;left:0;top:760px;width:1080px;height:700px;perspective:1800px;transform-style:preserve-3d}
+.cb{position:absolute;transform-style:preserve-3d}
+.cb .fc{position:absolute;left:0;top:0;display:grid;place-items:center;font-family:'JetBrains Mono';font-weight:800;backface-visibility:hidden;border-radius:10px}
+.cb .fr{background:linear-gradient(160deg,#2a2c31,#141518);box-shadow:inset 0 0 0 2px rgba(255,255,255,.14);color:#e9eaec}
+.cb .sd{background:linear-gradient(160deg,#18191c,#0c0d0e);box-shadow:inset 0 0 0 2px rgba(255,255,255,.08)}
+.cb .tp{background:linear-gradient(160deg,#36383d,#202125);box-shadow:inset 0 0 0 2px rgba(255,255,255,.12)}
+.cb.big .fr{background:linear-gradient(160deg,#ffffff,#cfd2d6);color:#08090a}
+.cb.big .sd{background:linear-gradient(160deg,#b9bcc1,#8e9298)}
+.cb.big .tp{background:linear-gradient(160deg,#ffffff,#e2e4e7)}
+.cnt4{position:absolute;left:0;right:0;top:1420px;text-align:center;font-family:'JetBrains Mono';font-weight:800;font-size:44px;color:var(--mut)}
+.py4{position:absolute;left:110px;top:1510px;width:860px;height:150px;border-radius:26px;padding:28px 36px;font-family:'JetBrains Mono';font-size:30px;line-height:1.55;white-space:pre}
+/* S5 builder */
+.ghc{position:absolute;left:70px;top:700px;width:940px;height:560px;border-radius:28px;overflow:hidden}
+.ghc img{position:absolute;left:0;top:0;width:940px}
+.ghc .scan{position:absolute;left:0;right:0;height:120px;background:linear-gradient(180deg,transparent,rgba(255,255,255,.18),transparent)}
+.mk5{position:absolute;left:150px;top:1330px;width:780px;height:150px;border-radius:28px;display:flex;align-items:center;justify-content:center;gap:26px;font-size:46px;font-weight:900}
+.mk5 .ser{font-family:'Instrument Serif';font-style:italic;font-weight:400;font-size:64px}
+/* S6 command strip, keycaps, stars */
+.cmd6{position:absolute;left:60px;top:650px;width:960px;height:120px;border-radius:24px;padding:0 34px;display:flex;align-items:center;font-family:'JetBrains Mono';font-size:30px;white-space:pre}
+.cmd6 .cur{display:inline-block;width:16px;height:34px;background:#f5f6f7;margin-left:4px}
+.keys{position:absolute;left:90px;top:830px;width:900px;height:220px;perspective:1400px}
+.key{position:absolute;top:0;width:270px;height:190px;transform-style:preserve-3d}
+.key .cap{position:absolute;inset:0;border-radius:30px;display:grid;place-items:center;font-family:'JetBrains Mono';font-weight:800;font-size:44px;
+  background:linear-gradient(170deg,#2b2d32,#141518);color:#eceef0;box-shadow:inset 0 2px 0 rgba(255,255,255,.22),inset 0 0 0 2px rgba(255,255,255,.08),0 4px 0 #0f1012,0 8px 0 #0b0c0d,0 12px 0 #070708,0 40px 50px rgba(0,0,0,.7)}
+.key.on .cap{background:linear-gradient(170deg,#ffffff,#cfd2d6);color:#08090a}
+.stw{position:absolute;left:70px;top:1130px;width:940px;height:520px;perspective:1800px}
+.abt{position:absolute;left:0;top:0;width:420px;height:520px;border-radius:26px;overflow:hidden}
+.abt img{position:absolute;left:0;top:0;width:420px}
+.abt .hl{position:absolute;left:10px;right:10px;height:48px;top:330px;border-radius:10px;box-shadow:0 0 0 3px #f5f6f7}
+.bign{position:absolute;left:470px;top:70px;width:470px;text-align:center;font-weight:900;font-size:170px;letter-spacing:-8px;line-height:1}
+.bign small{display:block;font-family:'JetBrains Mono';font-size:30px;letter-spacing:0;color:var(--mut);font-weight:500;margin-top:18px}
+.starrow{position:absolute;left:470px;top:330px;width:470px;display:flex;justify-content:center;gap:16px}
+.starrow svg{width:64px;height:64px}

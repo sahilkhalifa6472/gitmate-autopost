@@ -1,0 +1,526 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<title>git.mate improve</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<style>
+:root{--ink:#0b0b0c;--mut:#8b8d91;--dim:#cfd0d2;--bg:#f7f7f5}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#fff}
+.f{position:relative;width:1080px;height:1920px;overflow:hidden;background:radial-gradient(ellipse 110% 70% at 50% 45%,#ffffff 0%,#f7f7f5 55%,#eeeeec 100%);color:var(--ink);font-family:'Inter',sans-serif}
+#cam{position:absolute;inset:0}
+#stage{position:absolute;inset:0;perspective:1800px;perspective-origin:50% 50%}
+#world{position:absolute;left:0;top:0;width:1080px;height:1920px;transform-style:preserve-3d;transform-origin:540px 960px}
+.sc{position:absolute;left:0;top:0;width:1080px;height:1920px;transform-style:preserve-3d;transform-origin:540px 960px;visibility:hidden}
+.ring{position:absolute;border-radius:50%;border:70px solid rgba(10,10,12,.045);filter:blur(26px)}
+.grain{position:absolute;inset:0;opacity:.05;mix-blend-mode:multiply;z-index:8;pointer-events:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
+.top{position:absolute;left:64px;right:64px;top:84px;height:80px;z-index:6}
+.brand{position:absolute;left:0;top:0;display:flex;align-items:center;gap:16px;font-family:'JetBrains Mono';font-weight:700;font-size:28px}
+.mk{width:58px;height:58px;border-radius:50%;display:grid;place-items:center;font-family:'JetBrains Mono';font-weight:800;font-size:22px;color:#fff;background:radial-gradient(circle at 34% 28%,#5a5c61 0 10%,#1a1b1e 45%,#000 100%);box-shadow:inset 0 2px 3px rgba(255,255,255,.35),0 8px 18px rgba(0,0,0,.25)}
+.tag{position:absolute;right:0;top:14px;font-family:'JetBrains Mono';font-size:24px;color:var(--mut);white-space:nowrap}
+.tag b{color:var(--ink);font-weight:700}
+.C{position:absolute;left:0;right:0;text-align:center;white-space:nowrap}
+.kick{font-family:'JetBrains Mono';font-size:26px;color:var(--mut);letter-spacing:1px}
+.sans{font-weight:600;letter-spacing:-.035em;line-height:1}
+.ser{font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;letter-spacing:-.01em;line-height:1}
+.ch{display:inline-block;white-space:pre}
+.mono{font-family:'JetBrains Mono'}
+.card{position:absolute;background:#fff;border-radius:26px;box-shadow:0 0 0 2px var(--ink),0 8px 0 var(--ink),0 40px 70px rgba(0,0,0,.14);overflow:hidden}
+.bpill{display:inline-block;padding:4px 26px 12px;border-radius:24px;background:var(--ink);color:#fff;font-family:'Inter';font-style:normal;font-weight:600;letter-spacing:-.035em;vertical-align:6px}
+/* S1 chip org chart */
+.chipB{position:absolute;left:250px;top:560px;width:580px;height:270px;background:var(--ink);color:#fff;border-radius:30px;box-shadow:0 0 0 3px var(--ink),0 12px 0 #3a3b3e,0 50px 80px rgba(0,0,0,.25);overflow:visible}
+.chipB .pins{position:absolute;left:40px;right:40px;height:16px;display:flex;justify-content:space-between}
+.chipB .pins i{width:18px;height:16px;background:#b9babd;border-radius:3px}
+.chipB .core{position:absolute;left:40px;top:40px;width:190px;height:190px;border-radius:22px;background:radial-gradient(circle at 35% 30%,#4a4c50,#121315 70%);box-shadow:inset 0 0 0 3px #55575b;display:grid;place-items:center;font-family:'JetBrains Mono';font-weight:800;font-size:64px;color:#fff}
+.chipB .nm{position:absolute;left:262px;top:52px;font-family:'JetBrains Mono';font-weight:800;font-size:34px;letter-spacing:2px;white-space:nowrap}
+.chipB .sb{position:absolute;left:262px;top:104px;font-family:'JetBrains Mono';font-size:24px;color:#9a9ca1;white-space:nowrap}
+.chipB .cost{position:absolute;left:262px;top:156px;font-family:'Instrument Serif';font-style:italic;font-size:64px;white-space:nowrap;line-height:1}
+.plate{position:absolute;left:390px;top:-70px;width:300px;height:76px;border-radius:14px;background:#fff;color:var(--ink);display:grid;place-items:center;font-family:'JetBrains Mono';font-weight:800;font-size:34px;letter-spacing:8px;box-shadow:0 0 0 3px var(--ink),0 7px 0 var(--ink)}
+.wires{position:absolute;left:0;top:830px;width:1080px;height:130px}
+.chipS{position:absolute;top:960px;width:260px;height:200px;background:#fff;border-radius:24px;box-shadow:0 0 0 3px var(--ink),0 8px 0 var(--ink),0 30px 50px rgba(0,0,0,.14);padding:22px 24px}
+.chipS .nm{font-family:'JetBrains Mono';font-weight:800;font-size:24px;letter-spacing:2px;white-space:nowrap}
+.chipS .sb{font-family:'JetBrains Mono';font-size:20px;color:var(--mut);margin-top:8px;white-space:nowrap}
+.chipS .cost{font-family:'Instrument Serif';font-style:italic;font-size:46px;margin-top:6px;line-height:1}
+.chipS .bar{position:absolute;left:24px;right:24px;bottom:22px;height:12px;border-radius:6px;background:#e4e4e2;overflow:hidden}
+.chipS .bar i{display:block;height:100%;width:0;background:var(--ink);border-radius:6px}
+/* S2 letterpress blocks */
+.who2{position:absolute;left:190px;top:470px;width:700px;height:200px;display:flex;align-items:center;gap:36px;padding:0 36px;background:#fff}
+.who2 img{width:132px;height:132px;border-radius:50%;box-shadow:0 0 0 3px var(--ink)}
+.who2 .t1{font-family:'JetBrains Mono';font-size:26px;color:var(--mut);white-space:nowrap}
+.who2 .t2{font-family:'JetBrains Mono';font-weight:800;font-size:52px;white-space:nowrap;margin-top:6px}
+.stick{position:absolute;left:70px;top:1010px;width:940px;height:60px;border-radius:12px;background:linear-gradient(180deg,#d9d9d7,#a9aaad);box-shadow:0 0 0 3px var(--ink),0 10px 0 var(--ink),0 40px 60px rgba(0,0,0,.18)}
+.blocks{position:absolute;left:75px;top:780px;width:930px;height:230px;transform-style:preserve-3d}
+.blk{position:absolute;top:0;width:124px;height:230px;transform-style:preserve-3d}
+.blk .fr{position:absolute;inset:0;background:linear-gradient(180deg,#ffffff,#ececea);border-radius:10px;box-shadow:inset 0 0 0 3px var(--ink);display:grid;place-items:center;font-family:'Instrument Serif';font-style:italic;font-size:170px;line-height:1;transform:translateZ(42px)}
+.blk .ly{position:absolute;inset:0;border-radius:10px;background:#55575b;box-shadow:inset 0 0 0 3px var(--ink)}
+.blk .nk{position:absolute;left:50px;bottom:24px;width:24px;height:8px;border-radius:4px;background:var(--ink);transform:translateZ(41px)}
+/* S3 conveyor scan */
+.term{position:absolute;left:110px;top:500px;width:860px;height:170px;background:var(--ink);color:#fff;border-radius:24px;padding:28px 36px;font-family:'JetBrains Mono';font-size:40px;white-space:pre;line-height:1.4;box-shadow:0 10px 0 #3a3b3e,0 40px 60px rgba(0,0,0,.2)}
+.term .o{color:#8b8d91;font-size:28px}
+.term .cur{display:inline-block;width:20px;height:40px;background:#fff;vertical-align:-6px}
+.belt{position:absolute;left:40px;top:820px;width:1000px;height:480px;transform-style:preserve-3d}
+.belt .bed{position:absolute;left:0;top:120px;width:1000px;height:300px;border-radius:30px;background:repeating-linear-gradient(90deg,#e4e4e2 0 4px,#f3f3f1 4px 60px);box-shadow:inset 0 0 0 4px var(--ink),0 12px 0 var(--ink)}
+.belt .tile{position:absolute;top:170px;width:230px;height:200px;border-radius:18px;background:#fff;box-shadow:0 0 0 3px var(--ink),0 8px 0 var(--ink);padding:22px 20px;font-family:'JetBrains Mono';white-space:nowrap}
+.belt .tile .ic{width:44px;height:54px;border-radius:6px;box-shadow:inset 0 0 0 3px var(--ink);position:relative}
+.belt .tile .ic:after{content:'';position:absolute;right:0;top:0;width:14px;height:14px;background:var(--ink)}
+.belt .tile b{display:block;font-size:19px;font-weight:700;margin-top:18px}
+.belt .tile small{display:block;font-size:18px;color:var(--mut);margin-top:8px}
+.belt .tile.sc2{background:var(--ink);color:#fff}.belt .tile.sc2 .ic{box-shadow:inset 0 0 0 3px #fff}.belt .tile.sc2 .ic:after{background:#fff}
+.gate{position:absolute;left:400px;top:20px;width:200px;height:440px;transform:translateZ(60px)}
+.gate .pl{position:absolute;top:0;width:34px;height:440px;border-radius:12px;background:var(--ink)}
+.gate .bm{position:absolute;left:0;top:0;width:200px;height:56px;border-radius:14px;background:var(--ink);color:#fff;font-family:'JetBrains Mono';font-weight:800;font-size:22px;letter-spacing:3px;display:grid;place-items:center}
+.gate .ray{position:absolute;left:34px;top:56px;width:132px;height:384px;background:linear-gradient(90deg,transparent,rgba(11,11,12,.12),transparent)}
+.gate .ln{position:absolute;left:97px;top:56px;width:6px;height:384px;background:var(--ink);opacity:.8}
+/* S4 cabinet drawers */
+.cab{position:absolute;left:190px;top:560px;width:700px;height:760px;transform-style:preserve-3d}
+.cab .body{position:absolute;inset:0;border-radius:24px;background:#e9e9e7;box-shadow:inset 0 0 0 4px var(--ink)}
+.drw{position:absolute;left:30px;width:640px;height:160px;transform-style:preserve-3d}
+.drw .fc{position:absolute;inset:0;border-radius:16px;background:#fff;box-shadow:inset 0 0 0 4px var(--ink);display:flex;align-items:center;padding:0 34px;gap:24px;font-family:'JetBrains Mono';font-weight:800;font-size:40px;letter-spacing:3px;white-space:nowrap;backface-visibility:hidden}
+.drw .fc .hd2{width:90px;height:22px;border-radius:11px;background:var(--ink);margin-left:auto}
+.drw .fc .n2{font-size:24px;color:var(--mut);font-weight:500;letter-spacing:0}
+.drw .tp{position:absolute;left:0;top:0;width:640px;height:220px;background:repeating-linear-gradient(90deg,#d9d9d7 0 3px,#f3f3f1 3px 64px);box-shadow:inset 0 0 0 4px var(--ink);transform-origin:50% 0;transform:rotateX(-90deg)}
+.drw .tp i{position:absolute;top:30px;height:150px;width:44px;border-radius:5px;background:#fff;box-shadow:inset 0 0 0 3px var(--ink)}
+.drw.on .fc{background:var(--ink);color:#fff}.drw.on .fc .hd2{background:#fff}
+.more{position:absolute;right:-60px;top:-36px;padding:14px 26px;border-radius:40px;background:var(--ink);color:#fff;font-family:'JetBrains Mono';font-weight:800;font-size:30px;white-space:nowrap;transform:translateZ(80px)}
+/* S5 code sheet + pins */
+.sheet{position:absolute;left:70px;top:540px;width:940px;height:600px;background:#fff;padding:0}
+.sheet .tb{height:70px;border-bottom:3px solid var(--ink);display:flex;align-items:center;padding:0 30px;font-family:'JetBrains Mono';font-weight:700;font-size:26px;white-space:nowrap;gap:16px}
+.sheet .tb span{color:var(--mut);font-weight:500}
+.sheet .ln5{position:relative;height:52px;display:flex;align-items:center;font-family:'JetBrains Mono';font-size:23px;white-space:pre}
+.sheet .ln5 .no{width:92px;text-align:right;padding-right:22px;color:#a9aaad;flex:none}
+.sheet .ln5 .bar5{height:14px;border-radius:7px;background:#e4e4e2}
+.sheet .ln5.hit{background:var(--ink);color:#fff}
+.sheet .ln5.hit .no{color:#fff;font-weight:800}
+.pin{position:absolute;width:70px;height:120px;transform-origin:35px 120px}
+.pin .hd{position:absolute;left:0;top:0;width:70px;height:70px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#6a6c71,#0b0b0c 70%);box-shadow:0 10px 18px rgba(0,0,0,.3)}
+.pin .nd{position:absolute;left:32px;top:62px;width:6px;height:58px;background:linear-gradient(90deg,#8b8d91,#e4e4e2,#8b8d91)}
+.ptag{position:absolute;padding:14px 26px;border-radius:14px;background:#fff;box-shadow:0 0 0 3px var(--ink),0 7px 0 var(--ink);font-family:'JetBrains Mono';font-weight:800;font-size:30px;white-space:nowrap}
+/* S6 vetting shelf */
+.shelf{position:absolute;left:60px;top:560px;width:960px;height:760px;transform-style:preserve-3d}
+.shelf .flr{position:absolute;left:0;top:520px;width:960px;height:60px;border-radius:14px;background:linear-gradient(180deg,#d9d9d7,#a9aaad);box-shadow:0 0 0 3px var(--ink),0 10px 0 var(--ink)}
+.shelf .trap{position:absolute;left:650px;top:520px;width:300px;height:60px;border-radius:0 14px 14px 0;background:var(--ink);transform-origin:0 0}
+.fd{position:absolute;top:120px;width:290px;height:400px;border-radius:22px;background:#fff;box-shadow:0 0 0 3px var(--ink),0 8px 0 var(--ink),0 30px 50px rgba(0,0,0,.14);padding:26px 24px;transform-origin:50% 100%}
+.fd .id{font-family:'JetBrains Mono';font-weight:800;font-size:24px;letter-spacing:2px}
+.fd .tt{font-weight:600;font-size:34px;letter-spacing:-.02em;line-height:1.12;margin-top:20px}
+.fd .ev{font-family:'JetBrains Mono';font-size:19px;color:var(--mut);margin-top:16px;line-height:1.4}
+.fd .ok{position:absolute;left:24px;bottom:24px;height:54px;padding:0 20px;border-radius:27px;background:var(--ink);color:#fff;font-family:'JetBrains Mono';font-weight:800;font-size:24px;display:flex;align-items:center;gap:6px;white-space:nowrap}
+.fd .no2{position:absolute;left:24px;bottom:24px;height:54px;padding:0 20px;border-radius:27px;box-shadow:inset 0 0 0 3px var(--ink);font-family:'JetBrains Mono';font-weight:800;font-size:22px;display:flex;align-items:center;white-space:nowrap}
+.vbar{position:absolute;left:0;top:90px;width:8px;height:440px;border-radius:4px;background:var(--ink);box-shadow:0 0 30px rgba(0,0,0,.3)}
+/* S7 table -> plans folder */
+.tbl{position:absolute;left:70px;top:520px;width:940px;height:340px;background:#fff}
+.tbl .hr{display:flex;height:64px;align-items:center;background:var(--ink);color:#fff;font-family:'JetBrains Mono';font-weight:800;font-size:20px;letter-spacing:2px;padding:0 24px;white-space:nowrap}
+.tbl .rw{position:relative;display:flex;height:136px;align-items:center;border-bottom:2px solid #e4e4e2;padding:0 24px;font-family:'JetBrains Mono';font-size:22px;white-space:nowrap}
+.tbl .c1{width:70px}.tbl .c2{width:430px;white-space:normal;line-height:1.35;font-family:'Inter';font-weight:600;font-size:27px;letter-spacing:-.01em}.tbl .c3{width:180px}.tbl .c4{width:90px}.tbl .c5{width:120px}
+.tbl .bx{position:absolute;left:20px;top:46px;width:44px;height:44px;border-radius:10px;box-shadow:inset 0 0 0 3px var(--ink);display:grid;place-items:center;font-weight:800;font-size:28px}
+.tbl .rw.pk{background:#efefed}
+.reply{position:absolute;right:50px;top:890px;padding:20px 32px;border-radius:30px 30px 8px 30px;background:var(--ink);color:#fff;font-size:34px;font-weight:500;white-space:nowrap}
+.folder{position:absolute;left:250px;top:1050px;width:580px;height:330px;transform-style:preserve-3d}
+.folder .bk{position:absolute;left:0;top:0;width:580px;height:330px;border-radius:20px;background:#cfd0d2;box-shadow:inset 0 0 0 3px var(--ink)}
+.folder .tab{position:absolute;left:0;top:-46px;width:220px;height:60px;border-radius:16px 16px 0 0;background:#cfd0d2;box-shadow:inset 0 0 0 3px var(--ink);font-family:'JetBrains Mono';font-weight:800;font-size:26px;display:grid;place-items:center}
+.folder .fr2{position:absolute;left:0;top:80px;width:580px;height:250px;border-radius:20px;background:#f3f3f1;box-shadow:inset 0 0 0 3px var(--ink),0 8px 0 var(--ink);transform-origin:50% 100%;transform:translateZ(30px) rotateX(-14deg);display:flex;align-items:flex-end;padding:0 0 30px 34px;font-family:'JetBrains Mono';font-weight:800;font-size:44px}
+.pf{position:absolute;left:150px;top:-60px;width:280px;height:250px;border-radius:12px;background:#fff;box-shadow:0 0 0 3px var(--ink);padding:20px;font-family:'JetBrains Mono';transform:translateZ(15px)}
+.pf b{font-size:19px;display:block;white-space:normal;line-height:1.35}
+.pf i{display:block;height:10px;border-radius:5px;background:#dcdcda;margin-top:14px}
+/* S8 staircase */
+.stairs{position:absolute;left:60px;top:560px;width:960px;height:760px;transform-style:preserve-3d}
+.stp{position:absolute;width:300px;transform-style:preserve-3d}
+.stp .fa{transform:translateZ(1px)}
+.stp .fa{position:absolute;left:0;bottom:0;width:300px;border-radius:0 0 14px 14px;background:#fff;box-shadow:inset 0 0 0 3px var(--ink);padding:22px 22px 0;font-family:'JetBrains Mono'}
+.stp .fa small{display:block;font-size:19px;color:var(--mut);letter-spacing:2px}
+.stp .fa b{display:block;font-size:27px;font-weight:800;margin-top:8px;white-space:nowrap}
+.stp .fa code{display:block;margin-top:14px;font-size:18px;color:#3a3b3e;white-space:nowrap}
+.stp .tp{position:absolute;left:0;width:300px;height:120px;background:#d9d9d7;box-shadow:inset 0 0 0 3px var(--ink);transform-origin:50% 100%;transform:rotateX(75deg)}
+.stp .gk{position:absolute;right:20px;top:20px;width:46px;height:46px;border-radius:50%;background:var(--ink);color:#fff;display:grid;place-items:center;font-weight:800;font-size:26px}
+.puck{position:absolute;width:150px;height:150px;transform-style:preserve-3d}
+.puck .bd{position:absolute;left:15px;top:20px;width:120px;height:120px;border-radius:28px;background:var(--ink);color:#fff;display:grid;place-items:center;font-family:'JetBrains Mono';font-weight:800;font-size:22px;text-align:center;line-height:1.2;box-shadow:inset 0 3px 4px rgba(255,255,255,.3),0 14px 22px rgba(0,0,0,.25)}
+.puck .sh{position:absolute;left:25px;top:136px;width:100px;height:18px;border-radius:50%;background:rgba(0,0,0,.18);filter:blur(4px)}
+/* S9 bell jar + pedestal */
+.jar{position:absolute;left:70px;top:560px;width:440px;height:560px}
+.jar .base{position:absolute;left:0;bottom:0;width:440px;height:56px;border-radius:14px;background:var(--ink)}
+.jar .code9{position:absolute;left:70px;top:190px;width:300px;height:300px;border-radius:18px;background:#fff;box-shadow:0 0 0 3px var(--ink),0 8px 0 var(--ink);padding:24px;font-family:'JetBrains Mono';font-size:20px;line-height:1.7;white-space:pre;color:#3a3b3e}
+.jar .glass{position:absolute;left:30px;top:40px;width:380px;height:476px;border-radius:190px 190px 16px 16px;background:linear-gradient(105deg,rgba(255,255,255,.55) 0%,rgba(255,255,255,.1) 30%,rgba(255,255,255,0) 55%,rgba(255,255,255,.35) 85%);box-shadow:inset 0 0 0 3px rgba(11,11,12,.75),inset 14px 0 30px rgba(255,255,255,.7),inset -10px 0 24px rgba(0,0,0,.08);backdrop-filter:blur(1.5px)}
+.jar .knob{position:absolute;left:190px;top:4px;width:60px;height:46px;border-radius:24px 24px 8px 8px;background:var(--ink)}
+.lock{position:absolute;left:150px;top:520px;width:140px;padding:10px 0;border-radius:12px;background:#fff;box-shadow:0 0 0 3px var(--ink);text-align:center;font-family:'JetBrains Mono';font-weight:800;font-size:20px;letter-spacing:2px;transform:translateZ(60px)}
+.ped{position:absolute;left:570px;top:560px;width:440px;height:560px;transform-style:preserve-3d}
+.ped .col{position:absolute;left:110px;top:340px;width:220px;height:220px;background:linear-gradient(90deg,#cfd0d2,#fff 40%,#cfd0d2);box-shadow:inset 0 0 0 3px var(--ink)}
+.ped .cap{position:absolute;left:60px;top:310px;width:320px;height:40px;border-radius:10px;background:var(--ink)}
+.ped .doc{position:absolute;left:100px;top:20px;width:240px;height:290px;border-radius:14px;background:#fff;box-shadow:0 0 0 3px var(--ink),0 8px 0 var(--ink),0 30px 40px rgba(0,0,0,.16);padding:20px;font-family:'JetBrains Mono'}
+.ped .doc b{display:block;font-size:20px;line-height:1.3}
+.ped .doc i{display:block;height:10px;border-radius:5px;background:#dcdcda;margin-top:13px}
+.ped .lb9{position:absolute;left:110px;top:430px;width:220px;text-align:center;font-family:'JetBrains Mono';font-weight:800;font-size:22px;letter-spacing:3px}
+/* S10 label maker */
+.lm{position:absolute;left:60px;top:780px;width:220px;height:300px;border-radius:40px;background:linear-gradient(160deg,#3a3b3e,#0b0b0c 60%);box-shadow:0 14px 0 #000,0 50px 70px rgba(0,0,0,.3);transform:translateZ(40px)}
+.lm .scr{position:absolute;left:30px;top:30px;width:160px;height:70px;border-radius:12px;background:#d9d9d7;box-shadow:inset 0 0 0 3px #55575b;font-family:'JetBrains Mono';font-weight:800;font-size:22px;display:grid;place-items:center;color:var(--ink)}
+.lm .keys{position:absolute;left:30px;top:124px;width:160px;display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.lm .keys i{height:30px;border-radius:7px;background:#55575b;box-shadow:inset 0 -3px 0 #2a2b2e}
+.lm .slot{position:absolute;right:-6px;top:150px;width:14px;height:110px;border-radius:7px;background:#000}
+.tape{position:absolute;left:272px;top:935px;height:110px;width:0;overflow:hidden;background:#fff;box-shadow:0 0 0 3px var(--ink),0 8px 0 var(--ink);border-radius:0 10px 10px 0}
+.tape .tx{position:absolute;left:30px;top:30px;font-family:'JetBrains Mono';font-weight:800;font-size:40px;white-space:pre}
+.copied{position:absolute;left:640px;top:1110px;padding:16px 30px;border-radius:40px;background:var(--ink);color:#fff;font-family:'JetBrains Mono';font-weight:800;font-size:28px;white-space:nowrap}
+/* ending */
+.cin{display:flex;align-items:center;gap:26px;padding:0 26px 0 30px;background:#fff;box-shadow:0 0 0 2px var(--ink),0 6px 0 var(--ink),0 30px 50px rgba(0,0,0,.12)}
+.cbar{position:absolute}
+.av{width:76px;height:76px;border-radius:50%;background:linear-gradient(135deg,#d9d9d7,#a9aaad);flex:none}
+.cin .tx{flex:1;font-size:46px;font-weight:600;letter-spacing:.02em}
+.send{width:84px;height:84px;border-radius:50%;background:var(--ink);display:grid;place-items:center;color:#fff;font-size:40px;flex:none}
+.dm{position:absolute;padding:30px 44px;border-radius:44px 44px 44px 12px;background:var(--ink);color:#fff;font-size:42px;font-weight:500;white-space:nowrap}
+.dm small{display:block;font-family:'JetBrains Mono';font-size:20px;color:#9a9ca1;margin-bottom:8px}
+.bigmk{position:absolute;left:400px;top:600px;width:280px;height:280px;border-radius:50%;display:grid;place-items:center;font-family:'JetBrains Mono';font-weight:800;font-size:96px;color:#fff;background:radial-gradient(circle at 34% 26%,#6a6c71 0 8%,#1c1d20 42%,#000 100%);box-shadow:inset 0 6px 10px rgba(255,255,255,.3),inset 0 -14px 26px rgba(0,0,0,.6),0 40px 80px rgba(0,0,0,.28)}
+.erings{position:absolute;left:290px;top:490px;width:500px;height:500px}
+.fol{position:absolute;left:300px;top:1390px;width:480px;height:132px;border-radius:999px;display:grid;place-items:center;font-size:50px;font-weight:600;background:var(--ink);color:#fff;box-shadow:0 22px 44px rgba(0,0,0,.22)}
+.fol2{position:absolute;left:300px;top:1390px;width:480px;height:132px;border-radius:999px;display:grid;place-items:center;font-size:50px;font-weight:600;background:#fff;color:var(--ink);border:3px solid var(--ink);opacity:0}
+.tapd{position:absolute;width:90px;height:90px;border-radius:50%;background:rgba(11,11,12,.18);border:3px solid rgba(11,11,12,.55);opacity:0}
+.rip{position:absolute;left:540px;top:1456px;width:10px;height:10px;margin:-5px;border-radius:50%;border:4px solid var(--ink);opacity:0}
+</style></head>
+<body>
+</style></head>
+<body>
+<svg width="0" height="0" style="position:absolute"><defs>
+  <filter id="mb" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur id="mbg" stdDeviation="0 0"/></filter>
+</defs></svg>
+<div class="f" id="F">
+ <div id="cam"><div id="stage"><div id="world">
+
+  <!-- S1 hook: chip org chart, big model advises, small models execute -->
+  <div class="sc" id="s1" data-pose="0,0,0,0,0,0">
+    <div class="ring" style="left:-260px;top:-180px;width:720px;height:720px;transform:translateZ(-500px)"></div>
+    <div class="C kick rv" style="top:1480px;font-size:28px;transform:translateZ(120px)" data-t="1.0">new from shadcn · github.com/shadcn/improve</div>
+    <div class="C sans ty" style="top:264px;font-size:104px;font-weight:700;letter-spacing:-.05em;transform:translateZ(120px)" data-t="0.3" data-cd=".035">Expensive model</div>
+    <div class="C ser rv" style="top:384px;font-size:108px;transform:translateZ(120px)" data-t="3.55"><span class="g">=</span> the boss.</div>
+    <div class="chipB c3d" id="chipB" data-t="0.15" data-rx="12" data-ry="-6">
+      <div class="pins" style="top:-16px"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <div class="pins" style="bottom:-16px"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <div class="core">AI</div>
+      <div class="nm">SMART MODEL</div>
+      <div class="sb">advises · plans</div>
+      <div class="cost">$$$ / token</div>
+      <div class="plate" id="plate">BOSS</div>
+    </div>
+    <svg class="wires" viewBox="0 0 1080 130"><path id="w1" d="M540 0 V60 H205 V130" fill="none" stroke="#0b0b0c" stroke-width="5" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1"/><path id="w2" d="M540 0 V130" fill="none" stroke="#0b0b0c" stroke-width="5" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1"/><path id="w3" d="M540 0 V60 H875 V130" fill="none" stroke="#0b0b0c" stroke-width="5" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1"/></svg>
+    <div class="chipS pp" style="left:75px" data-t="4.75"><div class="nm">SMALL MODEL</div><div class="sb">executes</div><div class="cost">¢ / token</div><div class="bar"><i id="pb1"></i></div></div>
+    <div class="chipS pp" style="left:410px" data-t="4.87"><div class="nm">SMALL MODEL</div><div class="sb">executes</div><div class="cost">¢ / token</div><div class="bar"><i id="pb2"></i></div></div>
+    <div class="chipS pp" style="left:745px" data-t="4.99"><div class="nm">SMALL MODEL</div><div class="sb">executes</div><div class="cost">¢ / token</div><div class="bar"><i id="pb3"></i></div></div>
+    <div class="C sans rv" style="top:1250px;font-size:86px;font-weight:700;letter-spacing:-.045em;transform:translateZ(120px)" data-t="4.6">Cheap model</div>
+    <div class="C ser rv" style="top:1352px;font-size:96px;transform:translateZ(120px)" data-t="5.05"><span class="g">does</span> the work.</div>
+  </div>
+
+  <!-- S2 letterpress blocks spell improve -->
+  <div class="sc" id="s2" data-pose="2600,0,-800,-28,0,0">
+    <div class="ring" style="left:640px;top:1300px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="C kick rv" style="top:300px;font-size:30px;transform:translateZ(140px)" data-t="6.1">it's called</div>
+    <div class="card who2 c3d" data-t="6.0" data-rx="10" data-ry="8"><img src="media/avatar_g.png"><div><div class="t1">github.com/</div><div class="t2">shadcn/improve</div></div></div>
+    <div class="blocks" id="blocks"></div>
+    <div class="stick" id="stick"></div>
+    <div class="C kick rv" style="top:1150px;font-size:30px;transform:translateZ(140px)" data-t="7.05">an agent skill · MIT license</div>
+  </div>
+
+  <!-- S3 /improve, files ride a conveyor through the audit gate -->
+  <div class="sc" id="s3" data-pose="2600,2600,-1400,0,24,0">
+    <div class="ring" style="left:-280px;top:1300px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="C sans rv" style="top:236px;font-size:104px;font-weight:700;letter-spacing:-.05em;transform:translateZ(140px)" data-t="10.15">Audits the</div>
+    <div class="C ser rv" style="top:350px;font-size:110px;transform:translateZ(140px)" data-t="10.85">whole repo.</div>
+    <div class="term c3d" id="term" data-t="7.7" data-rx="14" data-ry="-6"></div>
+    <div class="belt" id="belt">
+      <div class="bed"></div>
+      <div id="tiles"></div>
+      <div class="gate"><div class="ray"></div><div class="ln"></div><div class="pl" style="left:0"></div><div class="pl" style="right:0"></div><div class="bm">AUDIT</div></div>
+    </div>
+    <div class="C kick rv" style="top:1370px;font-size:28px;transform:translateZ(140px)" data-t="9.5">your smartest model · reads every file</div>
+  </div>
+
+  <!-- S4 cabinet drawers: audit categories -->
+  <div class="sc" id="s4" data-pose="0,2600,-900,30,0,0">
+    <div class="ring" style="left:620px;top:-200px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="C sans ty" style="top:236px;font-size:104px;font-weight:700;letter-spacing:-.05em;transform:translateZ(140px)" data-t="11.85" data-cd=".04">Every angle.</div>
+    <div class="C ser rv" style="top:350px;font-size:100px;transform:translateZ(140px)" data-t="12.4"><span class="g">in</span> parallel.</div>
+    <div class="cab" id="cab">
+      <div class="body"></div>
+      <div class="drw" id="dw0" style="top:30px"><div class="tp"><i style="left:40px"></i><i style="left:100px"></i><i style="left:160px"></i><i style="left:220px"></i></div><div class="fc">BUGS<span class="n2">correctness</span><div class="hd2"></div></div></div>
+      <div class="drw" id="dw1" style="top:210px"><div class="tp"><i style="left:40px"></i><i style="left:100px"></i><i style="left:160px"></i></div><div class="fc">SECURITY<div class="hd2"></div></div></div>
+      <div class="drw" id="dw2" style="top:390px"><div class="tp"><i style="left:40px"></i><i style="left:100px"></i><i style="left:160px"></i><i style="left:220px"></i><i style="left:280px"></i></div><div class="fc">PERFORMANCE<div class="hd2"></div></div></div>
+      <div class="drw" id="dw3" style="top:570px"><div class="tp"><i style="left:40px"></i><i style="left:100px"></i></div><div class="fc">TECH DEBT<div class="hd2"></div></div></div>
+      <div class="more" id="more">+5 more</div>
+    </div>
+    <div class="C kick rv" style="top:1400px;font-size:28px;transform:translateZ(140px)" data-t="14.5">9 categories · tests, deps, DX, docs, direction</div>
+  </div>
+
+  <!-- S5 exact file + line: pins on the real finding -->
+  <div class="sc" id="s5" data-pose="-2600,2600,-1300,0,-22,0">
+    <div class="ring" style="left:-300px;top:-160px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="C sans rv" style="top:236px;font-size:104px;font-weight:700;letter-spacing:-.05em;transform:translateZ(140px)" data-t="15.2">Exact file.</div>
+    <div class="C ser rv" style="top:350px;font-size:110px;transform:translateZ(140px)" data-t="16.95"><span class="g">exact</span> line.</div>
+    <div class="card sheet c3d" id="sheet" data-t="14.95" data-rx="14" data-ry="6">
+      <div class="tb">packages/shadcn/src/commands/<b>search.ts</b></div>
+      <div id="lines"></div>
+    </div>
+    <div class="pin" id="pin1" style="left:110px;top:1000px"><div class="nd"></div><div class="hd"></div></div>
+    <div class="ptag pp" style="left:150px;top:1200px;transform:translateZ(90px)" data-t="16.85">search.ts:31</div>
+    <div class="ptag pp" style="left:520px;top:1200px;transform:translateZ(90px)" data-t="17.15">migrate-icons.ts:168</div>
+    <div class="C kick rv" style="top:1340px;font-size:28px;transform:translateZ(140px)" data-t="17.2">real findings · /improve run on shadcn/ui</div>
+  </div>
+
+  <!-- S6 vetting shelf: double-check, false alarm drops through trapdoor -->
+  <div class="sc" id="s6" data-pose="-2600,5200,-800,-30,0,0">
+    <div class="ring" style="left:620px;top:1300px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="C sans rv" style="top:236px;font-size:104px;font-weight:700;letter-spacing:-.05em;transform:translateZ(140px)" data-t="18.3">Double-checks.</div>
+    <div class="C ser rv" style="top:350px;font-size:104px;transform:translateZ(140px)" data-t="20.3"><span class="g">drops</span> false alarms.</div>
+    <div class="shelf" id="shelf">
+      <div class="fd" id="fd1" style="left:10px"><div class="id">#1 · TECH-DEBT</div><div class="tt">shadow-config duplicated</div><div class="ev">search.ts / view.ts<br>copies already drifted</div><div class="ok" id="ok1">✓✓ HIGH</div></div>
+      <div class="fd" id="fd2" style="left:335px"><div class="id">#2 · PERF</div><div class="tt">O(n²) icon migration</div><div class="ev">migrate-icons.ts:168</div><div class="ok" id="ok2">✓✓ HIGH</div></div>
+      <div class="fd" id="fd3" style="left:660px"><div class="id">SEC-01</div><div class="tt">https_proxy env var "SSRF"</div><div class="ev">by-design: standard<br>proxy convention</div><div class="no2" id="no3">✕ NOT A FINDING</div></div>
+      <div class="flr"></div>
+      <div class="trap" id="trap"></div>
+      <div class="vbar" id="vbar"></div>
+    </div>
+    <div class="C kick rv" style="top:1400px;font-size:28px;transform:translateZ(140px)" data-t="20.9">rejections are recorded · they don't come back</div>
+  </div>
+
+  <!-- S7 pick findings, plan files drop into plans/ -->
+  <div class="sc" id="s7" data-pose="0,5200,-1400,0,24,0">
+    <div class="ring" style="left:-280px;top:-200px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="C sans rv" style="top:236px;font-size:104px;font-weight:700;letter-spacing:-.05em;transform:translateZ(140px)" data-t="21.55">You pick.</div>
+    <div class="C ser rv" style="top:350px;font-size:104px;transform:translateZ(140px)" data-t="22.85"><span class="g">it writes</span> the plan.</div>
+    <div class="card tbl c3d" data-t="21.3" data-rx="12" data-ry="-6">
+      <div class="hr"><span class="c1">#</span><span class="c2" style="font-family:'JetBrains Mono';font-size:20px;font-weight:800">FINDING</span><span class="c3">CATEGORY</span><span class="c4">EFFORT</span><span class="c5">CONF.</span></div>
+      <div class="rw" id="rw1"><span class="c1"></span><span class="c2">shadow-config duplicated in search.ts / view.ts</span><span class="c3">tech-debt</span><span class="c4">M</span><span class="c5">HIGH</span><div class="bx" id="bx1"></div></div>
+      <div class="rw"><span class="c1"></span><span class="c2">O(n²) icon migration (migrate-icons.ts:168)</span><span class="c3">perf</span><span class="c4">S</span><span class="c5">HIGH</span><div class="bx"></div></div>
+    </div>
+    <div class="reply pp" data-t="21.85">plan 1</div>
+    <div class="folder" id="folder">
+      <div class="bk"></div><div class="tab">plans/</div>
+      <div class="pf" id="pf1"><b>001-extract-shadow-config-resolution.md</b><i></i><i style="width:70%"></i><i></i><i style="width:55%"></i></div>
+      <div class="fr2">plans/</div>
+    </div>
+  </div>
+
+  <!-- S8 staircase: cheap model follows the plan step by step -->
+  <div class="sc" id="s8" data-pose="2600,5200,-900,28,0,0">
+    <div class="ring" style="left:620px;top:1300px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="C sans rv" style="top:236px;font-size:104px;font-weight:700;letter-spacing:-.05em;transform:translateZ(140px)" data-t="25.6">Cheap model</div>
+    <div class="C ser rv" style="top:350px;font-size:108px;transform:translateZ(140px)" data-t="26.6"><span class="g">just</span> follows it.</div>
+    <div class="stairs" id="stairs">
+      <div class="stp" id="st0" style="left:0;top:520px;height:240px"><div class="tp" style="bottom:240px"></div><div class="fa" style="height:240px"><small>STEP 1</small><b>drift check</b><code>git diff --stat</code><div class="gk" id="gk0">✓</div></div></div>
+      <div class="stp" id="st1" style="left:330px;top:340px;height:420px"><div class="tp" style="bottom:420px"></div><div class="fa" style="height:420px"><small>STEP 2</small><b>exact edits</b><code>file paths inlined</code><div class="gk" id="gk1">✓</div></div></div>
+      <div class="stp" id="st2" style="left:660px;top:160px;height:600px"><div class="tp" style="bottom:600px"></div><div class="fa" style="height:600px"><small>STEP 3</small><b>verify gate</b><code>run tests → expect</code><div class="gk" id="gk2">✓</div><div style="position:absolute;left:22px;right:22px;top:200px;padding:16px;border-radius:12px;box-shadow:inset 0 0 0 3px var(--ink);font-family:'JetBrains Mono';font-weight:800;font-size:20px;white-space:normal;line-height:1.4">STOP if reality doesn't match the plan</div></div></div>
+      <div class="puck" id="puck"><div class="sh"></div><div class="bd">small<br>model</div></div>
+    </div>
+    <div class="C kick rv" style="top:1400px;font-size:28px;transform:translateZ(140px)" data-t="27.4">self-contained · verification gates · STOP rules</div>
+  </div>
+
+  <!-- S9 glass bell jar over your code, plan on a pedestal -->
+  <div class="sc" id="s9" data-pose="2600,7800,-1300,0,-24,0">
+    <div class="ring" style="left:-300px;top:-160px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="C sans rv" style="top:236px;font-size:104px;font-weight:700;letter-spacing:-.05em;transform:translateZ(140px)" data-t="28.3">Never touches</div>
+    <div class="C ser rv" style="top:350px;font-size:110px;transform:translateZ(140px)" data-t="29.3">your code.</div>
+    <div class="jar" id="jar">
+      <div class="code9">src/
+ ├ app.ts
+ ├ search.ts
+ ├ view.ts
+ └ config.ts</div>
+      <div class="glass" id="glass"><div class="knob"></div></div>
+      <div class="base"></div>
+      <div class="lock pp" data-t="29.55">READ-ONLY</div>
+    </div>
+    <div class="ped" id="ped">
+      <div class="col"></div><div class="cap"></div>
+      <div class="doc" id="pdoc"><b>plans/<br>001-*.md</b><i></i><i style="width:70%"></i><i></i><i style="width:50%"></i><i></i></div>
+      <div class="lb9 pp" data-t="30.95">THE PRODUCT</div>
+    </div>
+    <div class="C ser" style="top:1200px;font-size:100px;transform:translateZ(140px)"><span class="rv g" data-t="30.15">The plan</span> <span class="pp bpill" style="font-size:84px" data-t="30.8">is the product.</span></div>
+  </div>
+
+  <!-- S10 label maker prints the install line -->
+  <div class="sc" id="s10" data-pose="0,7800,-800,-30,0,0">
+    <div class="ring" style="left:620px;top:-200px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="C sans rv" style="top:236px;font-size:104px;font-weight:700;letter-spacing:-.05em;transform:translateZ(140px)" data-t="32.15">One line</div>
+    <div class="C ser rv" style="top:350px;font-size:110px;transform:translateZ(140px)" data-t="32.75"><span class="g">to</span> install.</div>
+    <div id="lmw" style="position:absolute;left:0;top:0;width:1080px;height:1400px;transform-style:preserve-3d">
+      <div class="lm"><div class="scr" id="lmscr">READY</div><div class="keys"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="slot"></div></div>
+      <div class="tape" id="tape"><div class="tx" id="tapetx"></div></div>
+    </div>
+    <div class="C kick rv" style="top:1260px;font-size:28px;transform:translateZ(140px)" data-t="34.4">then just run: /improve</div>
+  </div>
+
+  <!-- S11 comment -->
+  <div class="sc" id="s11" data-pose="-2600,7800,-1400,24,0,0">
+    <div class="ring" style="left:620px;top:1300px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="C sans rv" style="top:380px;font-size:120px;font-weight:500" data-t="36.95">Comment</div>
+    <div class="C sans ty" style="top:510px;font-size:196px;font-weight:700;letter-spacing:-.04em" data-t="37.3" data-cd=".05">GITMATE</div>
+    <div class="cbar cin c3d" style="left:64px;top:860px;width:952px;height:140px;border-radius:999px" data-t="36.85" data-rx="10"><div class="av"></div><div class="tx" id="ctx"></div><div class="send">↑</div></div>
+    <div class="dm pp" style="left:250px;top:1110px" data-t="38.3"><small>git.mate · message</small>Here's your link, mate →</div>
+  </div>
+
+  <!-- S12 end -->
+  <div class="sc" id="s12" data-pose="-5200,7800,-1400,-24,0,0">
+    <div class="ring" style="left:-300px;top:-160px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="ring" style="left:640px;top:1400px;width:760px;height:760px;transform:translateZ(-800px)"></div>
+    <svg class="erings" viewBox="0 0 500 500"><circle id="er1" cx="250" cy="250" r="226" fill="none" stroke="#0b0b0c" stroke-width="3" stroke-dasharray="1420" stroke-dashoffset="1420" transform="rotate(-90 250 250)"/>
+      <circle id="er2" cx="250" cy="250" r="246" fill="none" stroke="#c9cacc" stroke-width="2" stroke-dasharray="1546" stroke-dashoffset="1546" transform="rotate(90 250 250)"/></svg>
+    <div class="bigmk" id="bigmk">&gt;_</div>
+    <div class="C sans ty" style="top:1050px;font-size:104px;font-weight:700" data-t="39.1" data-cd=".05">@git.mate</div>
+    <div class="C ser" style="top:1200px;font-size:96px"><span class="rv g" data-t="39.6">1 repo</span> <span class="rv" data-t="39.95">every</span> <span class="rv" data-t="40.2">day.</span></div>
+    <div class="fol pp" id="fol" data-t="39.25">Follow</div>
+    <div class="fol2" id="fol2">Following ✓</div>
+    <div class="rip" id="rip"></div>
+    <div class="tapd" id="tapd" style="left:640px;top:1560px"></div>
+  </div>
+
+ </div></div></div>
+ <div class="top"><div class="brand"><div class="mk">&gt;_</div>git.mate</div><div class="tag" id="tag"><b>01</b> / 12</div></div>
+ <div class="grain"></div>
+</div>
+<script>
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+// all times below are in voice_raw seconds; the voice is sped up SPD x, so video t = raw / SPD
+const SPD = 1.1, RAWTOTAL = 41.7, TOTAL = +(RAWTOTAL / SPD).toFixed(2); window.__TOTAL = TOTAL;
+const S = [0, 6.35, 7.75, 11.9, 15.0, 18.25, 21.45, 24.35, 28.05, 32.1, 36.85, 38.85];
+const NS = S.length;
+
+// S2 letter blocks
+'improve'.split('').forEach((ch, k) => { const b = document.createElement('div'); b.className = 'blk'; b.id = 'bk' + k; b.style.left = (k * 124 + 34) + 'px';
+  b.innerHTML = [0,6,12,18,24,30,36].map(z=>`<div class="ly" style="transform:translateZ(${z}px)"></div>`).join('') + `<div class="fr">${ch}</div><div class="nk"></div>`; $('#blocks').appendChild(b); });
+// S3 file tiles (real shadcn/ui paths from the README example)
+const FILES = [['search.ts', 'commands/'], ['view.ts', 'commands/'], ['config.ts', 'registry/'], ['migrate-icons.ts', 'migrations/'], ['components.json', 'root'], ['package.json', 'root']];
+FILES.forEach(([n, d], k) => { const el = document.createElement('div'); el.className = 'tile'; el.id = 'tl' + k; el.innerHTML = `<div class="ic"></div><b>${n}</b><small>${d}</small>`; $('#tiles').appendChild(el); });
+// S5 code lines 25-37, line 31 is the real TODO
+{ let h = ''; for (let n = 26; n <= 34; n++) { if (n === 31) h += `<div class="ln5 hit" id="l31"><span class="no">31</span>// TODO: We're duplicating logic for\n    shadowConfig here.</div>`;
+  else h += `<div class="ln5"><span class="no">${n}</span><span class="bar5" style="width:${[260, 420, 340, 520, 300, 0, 460, 380, 240][n - 26]}px;margin-left:${[0, 40, 40, 80, 40, 0, 40, 0, 0][n - 26]}px"></span></div>`; }
+  $('#lines').innerHTML = h; $('#l31').style.height = '80px'; }
+
+const scenes = $$('.sc');
+const poses = scenes.map(s => s.dataset.pose.split(',').map(Number));
+scenes.forEach((s, i) => { const [x, y, z, ry, rx, rz] = poses[i]; s.style.transform = `translate3d(${x}px,${y}px,${z}px) rotateY(${ry}deg) rotateX(${rx}deg) rotateZ(${rz}deg)`; });
+const tl = gsap.timeline({ paused: true });
+
+// shell: typing / reveals / pops / 3D cards
+$$('.ty').forEach(el => { const t = +el.dataset.t, cd = +(el.dataset.cd || .045); const txt = el.textContent; el.textContent = '';
+  const chs = [...txt].map(c => { const s = document.createElement('span'); s.className = 'ch'; s.textContent = c; el.appendChild(s); return s; });
+  tl.set(chs, { opacity: 0 }, 0);
+  chs.forEach((c, i) => tl.fromTo(c, { opacity: 0, y: 26, filter: 'blur(14px)' }, { opacity: 1, y: 0, filter: 'blur(0px)', duration: .42, ease: 'power3.out', immediateRender: false }, Math.max(0.001, t + i * cd))); });
+$$('.rv').forEach(el => { const t = +el.dataset.t; if (isNaN(t)) return;
+  tl.set(el, { opacity: 0 }, 0); tl.fromTo(el, { opacity: 0, y: 46, filter: 'blur(16px)' }, { opacity: 1, y: 0, filter: 'blur(0px)', duration: .55, ease: 'power3.out', immediateRender: false }, Math.max(0.001, t)); });
+$$('.pp').forEach(el => { const t = +el.dataset.t;
+  tl.set(el, { opacity: 0 }, 0); tl.fromTo(el, { opacity: 0, scale: .55, filter: 'blur(10px)' }, { opacity: 1, scale: 1, filter: 'blur(0px)', duration: .5, ease: 'back.out(2.2)', immediateRender: false }, t); });
+$$('.c3d').forEach(el => { const t = +el.dataset.t, rx = +(el.dataset.rx || 0), ry = +(el.dataset.ry || 0);
+  tl.set(el, { opacity: 0, transformPerspective: 1500 }, 0);
+  tl.fromTo(el, { opacity: 0, rotationX: rx + 50, rotationY: ry * 2.5, y: 260, z: -500, scale: .9 }, { opacity: 1, rotationX: rx, rotationY: ry, y: 0, z: 0, scale: 1, duration: 1.05, ease: 'expo.out', immediateRender: false }, Math.max(0.001, t));
+  tl.to(el, { rotationX: rx * .4, rotationY: -ry * .5, duration: 3.2, ease: 'sine.inOut' }, Math.max(0.001, t) + 1.05); });
+
+// S1 BOSS plate drops on the big chip, wires draw, small chips work
+tl.set('#plate', { opacity: 0, y: -260, rotation: -18 }, 0);
+tl.to('#plate', { opacity: 1, duration: .05 }, 3.75); tl.to('#plate', { y: 0, rotation: -4, duration: .38, ease: 'bounce.out' }, 3.75);
+['#w2', '#w1', '#w3'].forEach((w, k) => tl.fromTo(w, { attr: { 'stroke-dashoffset': 1 } }, { attr: { 'stroke-dashoffset': 0 }, duration: .4, ease: 'power2.out', immediateRender: false }, 4.45 + k * .04));
+['#pb1', '#pb2', '#pb3'].forEach((p, k) => tl.fromTo(p, { width: '0%' }, { width: ['78%', '100%', '64%'][k], duration: 1.1, ease: 'power1.inOut', immediateRender: false }, 5.2 + k * .08));
+
+// S2 blocks fly in and lock into the composing stick
+tl.set('#blocks', { rotationX: -16, rotationY: -10, scale: .9, transformPerspective: 1700 }, 0);
+tl.set('#stick', { rotationX: -16, rotationY: -10, scale: .9, transformPerspective: 1700 }, 0);
+for (let k = 0; k < 7; k++) { tl.set('#bk' + k, { opacity: 0, z: 700, y: -300, rotationX: -70 }, 0); tl.to('#bk' + k, { opacity: 1, duration: .05 }, 6.15 + k * .07);
+  tl.to('#bk' + k, { z: 0, y: 0, rotationX: 0, duration: .5, ease: 'back.out(1.4)' }, 6.15 + k * .07); }
+tl.to('#blocks', { rotationY: 6, duration: 1.6, ease: 'sine.inOut' }, 6.2); tl.to('#stick', { rotationY: 6, duration: 1.6, ease: 'sine.inOut' }, 6.2);
+
+// S3 belt tilt; tiles move by tick()
+tl.set('#belt', { rotationX: 38, transformPerspective: 1600 }, 0); tl.to('#belt', { rotationX: 28, duration: 4, ease: 'sine.inOut' }, 7.8);
+const belt = { v: 0 }; tl.fromTo(belt, { v: 0 }, { v: 1, duration: 3.8, ease: 'none', immediateRender: false }, 8.0);
+
+// S4 cabinet, drawers pull out on each word
+tl.set('#cab', { rotationX: -10, rotationY: -12, transformPerspective: 1700, scale: .86 }, 0); tl.to('#cab', { rotationY: -4, duration: 3.2, ease: 'sine.inOut' }, 11.9);
+[['#dw0', 12.12], ['#dw1', 12.64], ['#dw2', 13.6], ['#dw3', 14.2]].forEach(([d, t]) => { tl.to(d, { z: 110, duration: .45, ease: 'back.out(1.6)' }, t); tl.set(d, { attr: { class: 'drw on' } }, t + .05); });
+tl.set('#more', { opacity: 0, scale: .5 }, 0); tl.to('#more', { opacity: 1, scale: 1, duration: .4, ease: 'back.out(2.4)' }, 14.6);
+
+// S5 pin drops onto line 31
+tl.set('#pin1', { opacity: 0, y: -500, z: 300, rotation: -30 }, 0);
+tl.to('#pin1', { opacity: 1, duration: .05 }, 16.55); tl.to('#pin1', { y: -130, z: 90, rotation: -12, duration: .3, ease: 'power4.in' }, 16.55);
+
+// S6 vetting: bar sweeps, double ticks, false alarm falls through the trapdoor
+tl.set('#shelf', { rotationX: 14, rotationY: 6, scale: .93, transformPerspective: 1700 }, 0); tl.to('#shelf', { rotationY: -6, duration: 3.4, ease: 'sine.inOut' }, 18.0);
+tl.set('#vbar', { x: -20, opacity: 0 }, 0); tl.to('#vbar', { opacity: 1, duration: .1 }, 18.6); tl.to('#vbar', { x: 960, duration: 1.6, ease: 'power1.inOut' }, 18.6); tl.to('#vbar', { opacity: 0, duration: .15 }, 20.15);
+tl.set(['#ok1', '#ok2', '#no3'], { opacity: 0, scale: .5 }, 0);
+tl.to('#ok1', { opacity: 1, scale: 1, duration: .35, ease: 'back.out(2.4)' }, 18.95); tl.to('#ok2', { opacity: 1, scale: 1, duration: .35, ease: 'back.out(2.4)' }, 19.4);
+tl.to('#no3', { opacity: 1, scale: 1, duration: .35, ease: 'back.out(2.4)' }, 19.9);
+tl.set('#trap', { transformPerspective: 1200 }, 0); tl.to('#trap', { rotationX: -100, duration: .35, ease: 'power3.in' }, 20.35);
+tl.to('#fd3', { y: 700, rotationX: -40, rotation: 12, opacity: 0, duration: .65, ease: 'power3.in' }, 20.45);
+
+// S7 row checked, file rises out of the row and drops into plans/
+tl.set('#folder', { rotationX: 30, transformPerspective: 1600 }, 0);
+tl.set('#bx1', { textContent: '' }, 0); tl.set('#bx1', { textContent: '✓' }, 22.05); tl.set('#rw1', { attr: { class: 'rw pk' } }, 22.05);
+tl.set('#pf1', { opacity: 0, y: -520, rotation: -14 }, 0); tl.to('#pf1', { opacity: 1, duration: .1 }, 23.1);
+tl.to('#pf1', { y: 0, rotation: 0, duration: .55, ease: 'back.out(1.3)' }, 23.1);
+
+// S8 stairs; puck hops step by step (tick)
+tl.set('#stairs', { rotationX: 12, rotationY: -20, transformPerspective: 1800, scale: .92 }, 0); tl.to('#stairs', { rotationY: -8, duration: 3.6, ease: 'sine.inOut' }, 24.4);
+['#gk0', '#gk1', '#gk2'].forEach((g, k) => { tl.set(g, { scale: 0 }, 0); tl.to(g, { scale: 1, duration: .3, ease: 'back.out(2.6)' }, [27.15, 27.55, 27.95][k]); });
+
+// S9 jar lowers over the code, plan doc spins on the pedestal
+tl.set('#glass', { y: -460, opacity: 0 }, 0); tl.to('#glass', { opacity: 1, duration: .1 }, 28.6); tl.to('#glass', { y: 0, duration: .55, ease: 'bounce.out' }, 28.6);
+tl.set('#ped', { transformPerspective: 1500, rotationX: 8 }, 0);
+tl.set('#pdoc', { opacity: 0, y: -200, rotationY: -90 }, 0); tl.to('#pdoc', { opacity: 1, duration: .1 }, 30.3); tl.to('#pdoc', { y: 0, rotationY: 0, duration: .8, ease: 'back.out(1.4)' }, 30.3);
+tl.to('#pdoc', { rotationY: 20, duration: 1.2, ease: 'sine.inOut' }, 31.1);
+
+// S10 label maker prints
+tl.set('#lmw', { rotationX: 10, rotationY: 14, transformPerspective: 1800 }, 0); tl.to('#lmw', { rotationY: 6, duration: 4.6, ease: 'sine.inOut' }, 32.0);
+const prt = { v: 0 }; tl.fromTo(prt, { v: 0 }, { v: 1, duration: 2.5, ease: 'none', immediateRender: false }, 33.4);
+
+// S11 comment typing
+const cm = { n: 0 };
+tl.fromTo(cm, { n: 0 }, { n: 7, duration: .45, ease: 'none', immediateRender: false, onUpdate: () => $('#ctx').textContent = 'GITMATE'.slice(0, Math.round(cm.n)) }, 37.45);
+
+// S12 end
+tl.set('#bigmk', { opacity: 0, scale: .2 }, 0);
+tl.to('#bigmk', { opacity: 1, scale: 1, duration: .9, ease: 'back.out(1.8)' }, 38.9);
+tl.fromTo('#er1', { attr: { 'stroke-dashoffset': 1420 } }, { attr: { 'stroke-dashoffset': 0 }, duration: 1.0, ease: 'power2.inOut', immediateRender: false }, 39.05);
+tl.fromTo('#er2', { attr: { 'stroke-dashoffset': 1546 } }, { attr: { 'stroke-dashoffset': 0 }, duration: 1.2, ease: 'power2.inOut', immediateRender: false }, 39.2);
+tl.to('#tapd', { opacity: 1, left: 560, top: 1440, duration: .5, ease: 'power2.out' }, 40.3);
+tl.to('#tapd', { scale: .7, duration: .1 }, 40.8); tl.to('#tapd', { scale: 1, duration: .15 }, 40.9);
+tl.to('#fol', { scale: .93, duration: .1 }, 40.8); tl.to('#fol', { scale: 1, duration: .2 }, 40.9);
+tl.set('#fol2', { opacity: 1 }, 40.9); tl.set('#fol', { opacity: 0 }, 40.9);
+tl.fromTo('#rip', { opacity: .7, width: 10, height: 10, margin: -5 }, { opacity: 0, width: 640, height: 640, margin: -320, duration: .8, ease: 'power2.out', immediateRender: false }, 40.85);
+tl.to('#tapd', { opacity: 0, duration: .3 }, 41.25);
+tl.to({}, { duration: .01 }, RAWTOTAL);
+
+// camera: pure function of raw time
+const ease = x => x < .5 ? 16 * x ** 5 : 1 - Math.pow(-2 * x + 2, 5) / 2;
+const TD = .8, TPRE = .45;
+function camAt(t) {
+  let i = 0; for (let k = 0; k < S.length; k++) if (t >= S[k] - TPRE) i = k;
+  const ta = S[i] - TPRE; let p = poses[i].slice(), d = 0, rr = 0;
+  if (i > 0 && t < ta + TD) { const u = (t - ta) / TD, e = ease(u), a = poses[i - 1]; p = a.map((v, j) => v + (poses[i][j] - v) * e); d = Math.sin(u * Math.PI) * 700; rr = Math.sin(u * Math.PI) * (i % 2 ? 4 : -4); }
+  const st = Math.max(0, t - (S[i] - TPRE + TD)); const dz = Math.min(st, 6) * 8;
+  return { x: p[0], y: p[1], z: p[2] - dz, ry: p[3] + Math.sin(t * .6) * .6, rx: p[4] + Math.sin(t * .45) * .5, rz: p[5] + rr, d, i };
+}
+function camT(c) { return `translateZ(${-c.d + 60}px) rotateZ(${-c.rz}deg) rotateX(${-c.rx}deg) rotateY(${-c.ry}deg) translate3d(${-c.x}px,${-c.y}px,${-c.z}px)`; }
+const world = $('#world'), mbg = $('#mbg'), cam = $('#cam');
+const typeAt = (t, t0, dur, s) => s.slice(0, Math.max(0, Math.min(s.length, Math.round((t - t0) / dur * s.length))));
+const cl = (x, a, b) => Math.max(a, Math.min(b, x));
+const CMD = 'npx skills add shadcn/improve';
+// stair landing points (stairs-local): puck sits on each step top
+const LAND = [[0, 410], [330, 230], [660, 50]];
+const HOP = [27.2, 27.6];
+function tick(t) {
+  const c = camAt(t), p = camAt(Math.max(0, t - SPD / 30));
+  world.style.transform = camT(c);
+  const hx = Math.abs(c.x - p.x) * .9 + Math.abs(c.ry - p.ry) * 32, vy = Math.abs(c.y - p.y) * .9 + Math.abs(c.rx - p.rx) * 32, zz = Math.abs(c.z - p.z + (p.d - c.d)) * .25;
+  const bx = Math.min(70, hx * .22 + zz * .05), by = Math.min(70, vy * .22 + zz * .05);
+  if (bx + by > .4) { mbg.setAttribute('stdDeviation', `${bx.toFixed(1)} ${by.toFixed(1)}`); cam.style.filter = 'url(#mb)'; } else cam.style.filter = 'none';
+  scenes.forEach((s, k) => { s.style.visibility = (k === c.i || (k === c.i - 1 && t < S[c.i] - TPRE + TD)) ? 'visible' : 'hidden'; });
+  $('#tag').innerHTML = `<b>${String(c.i + 1).padStart(2, '0')}</b> / ${NS}`;
+  // S3 terminal + belt
+  { const cmd = typeAt(t, 8.15, .55, '/improve'); const st = t < 9.0 ? '' : t < 9.9 ? '\n<span class="o">→ mapping repo: stack, conventions, commands</span>' : '\n<span class="o">→ auditing… parallel subagents</span>';
+    $('#term').innerHTML = '<span style="color:#8b8d91">&gt; </span>' + cmd + (t < 9.0 ? '<span class="cur"></span>' : '') + st; }
+  FILES.forEach((_, k) => { const x = -260 + (belt.v * 2.4 - k * .36) * 760; const el = $('#tl' + k); el.style.left = x.toFixed(1) + 'px'; el.style.opacity = (x > -220 && x < 1000) ? 1 : 0; el.className = 'tile' + (x > 400 ? ' sc2' : ''); });
+  // S8 puck hops along the steps
+  { let i = 0; HOP.forEach((h, k) => { if (t >= h) i = k + 1; });
+    let [x, y] = LAND[i]; if (i < 3 && t > HOP[i] - .3 && t < HOP[i]) {}
+    const k = HOP.findIndex(h => t >= h && t < h + .32);
+    if (k >= 0) { const u = (t - HOP[k]) / .32, a = LAND[k], b = LAND[k + 1]; x = a[0] + (b[0] - a[0]) * u; y = a[1] + (b[1] - a[1]) * u - Math.sin(u * Math.PI) * 130; }
+    const pk = $('#puck'); pk.style.left = (x + 75) + 'px'; pk.style.top = (y - 150 + 120) + 'px'; pk.style.opacity = t > 25.0 ? 1 : 0; }
+  // S10 tape
+  { const n = Math.round(prt.v * CMD.length); $('#tapetx').textContent = CMD.slice(0, n); $('#tape').style.width = (n ? 60 + n * 20.6 : 0).toFixed(0) + 'px';
+    $('#lmscr').textContent = prt.v <= 0 ? 'READY' : prt.v < 1 ? 'PRINT…' : 'DONE ✓'; }
+}
+window.__seek = vt => { const t = vt * SPD; tl.time(t, false); tick(t); const ims = [...document.images].map(i => i.complete ? null : i.decode().catch(() => {})).filter(Boolean); return Promise.all(ims); };
+__seek(0);
+if (!navigator.webdriver) { const t0 = performance.now(); const loop = () => { window.__seek(((performance.now() - t0) / 1000) % TOTAL); requestAnimationFrame(loop); }; requestAnimationFrame(loop); }
+</script>
+</body></html>

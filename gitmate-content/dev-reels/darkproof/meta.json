@@ -1,0 +1,32 @@
+{
+ "title": "DarkProof: messaging for when the internet and mobile network are gone",
+ "slug": "darkproof",
+ "link": "https://github.com/DEV-ENT/DarkProof",
+ "repo": "https://github.com/DEV-ENT/DarkProof",
+ "post_on": "2026-11-16",
+ "paid": true,
+ "customer": "is4wiz (USDC $9)",
+ "instagram": {
+  "caption": "The network is down. No internet, no signal. How do you text your family? 📵\n\nDarkProof by @is4wiz is a messaging app for when there's no internet and no mobile network:\n→ Phones talk to each other directly over Bluetooth, Wi-Fi or a LoRa radio\n→ Every phone passes messages along (up to 16 hops), so they reach people way out of range\n→ End-to-end encrypted (AES-256-GCM) and signed: the phones in between can't read a word\n→ \"I need help\" in one tap, check-ins with battery + position, offline street maps\n→ An AI that runs right on your phone, no internet needed\n→ No servers, no accounts. Android and iPhone, same format\n\nBuilt something too? DM us your repo 📩\nComment GITMATE and I'll send you the link 👇\nFollow @git.mate for 1 useful repo every day.",
+  "hashtags": [
+   "github",
+   "offline",
+   "meshnetwork",
+   "privacy",
+   "encryption",
+   "android",
+   "ios",
+   "bluetooth",
+   "lora",
+   "emergency",
+   "developer",
+   "tech"
+  ],
+  "cover_offset_ms": 4300
+ },
+ "video": {
+  "duration_sec": 36.67,
+  "source": "gitmate_darkproof.mp4"
+ },
+ "theme": "light"
+}

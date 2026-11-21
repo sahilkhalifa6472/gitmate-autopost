@@ -1,0 +1,366 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<title>git.mate playnck</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<style>
+:root{--ink:#0b0b0c;--mut:#8b8d91;--dim:#cfd0d2;--bg:#f7f7f5}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#fff}
+.f{position:relative;width:1080px;height:1920px;overflow:hidden;background:radial-gradient(ellipse 110% 70% at 50% 45%,#ffffff 0%,#f7f7f5 55%,#eeeeec 100%);color:var(--ink);font-family:'Inter',sans-serif}
+#cam{position:absolute;inset:0}
+#stage{position:absolute;inset:0;perspective:1800px;perspective-origin:50% 50%}
+#world{position:absolute;left:0;top:0;width:1080px;height:1920px;transform-style:preserve-3d;transform-origin:540px 960px}
+.sc{position:absolute;left:0;top:0;width:1080px;height:1920px;transform-style:preserve-3d;transform-origin:540px 960px;visibility:hidden}
+.ring{position:absolute;border-radius:50%;border:70px solid rgba(10,10,12,.045);filter:blur(26px)}
+.grain{position:absolute;inset:0;opacity:.05;mix-blend-mode:multiply;z-index:8;pointer-events:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
+.top{position:absolute;left:64px;right:64px;top:84px;height:80px;z-index:6}
+.brand{position:absolute;left:0;top:0;display:flex;align-items:center;gap:16px;font-family:'JetBrains Mono';font-weight:700;font-size:28px}
+.mk{width:58px;height:58px;border-radius:50%;display:grid;place-items:center;font-family:'JetBrains Mono';font-weight:800;font-size:22px;color:#fff;background:radial-gradient(circle at 34% 28%,#5a5c61 0 10%,#1a1b1e 45%,#000 100%);box-shadow:inset 0 2px 3px rgba(255,255,255,.35),0 8px 18px rgba(0,0,0,.25)}
+.tag{position:absolute;right:0;top:14px;font-family:'JetBrains Mono';font-size:24px;color:var(--mut);white-space:nowrap}
+.tag b{color:var(--ink);font-weight:700}
+.C{position:absolute;left:0;right:0;text-align:center;white-space:nowrap}
+.kick{font-family:'JetBrains Mono';font-size:26px;color:var(--mut);letter-spacing:1px}
+.sans{font-weight:600;letter-spacing:-.035em;line-height:1}
+.ser{font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;letter-spacing:-.01em;line-height:1}
+.ch{display:inline-block;white-space:pre}
+.mono{font-family:'JetBrains Mono'}
+.card{position:absolute;background:#fff;border-radius:26px;box-shadow:0 0 0 2px var(--ink),0 8px 0 var(--ink),0 40px 70px rgba(0,0,0,.14);overflow:hidden}
+.bpill{display:inline-block;padding:4px 26px 12px;border-radius:24px;background:var(--ink);color:#fff;font-family:'Inter';font-style:normal;font-weight:600;letter-spacing:-.035em;vertical-align:6px}
+.g{}
+
+
+/* ===== Playnck scene CSS ===== */
+/* S1 local files vs paywall */
+.ftile{position:absolute;left:70px;width:250px;height:150px;border-radius:22px;background:#fff;box-shadow:0 0 0 2.5px var(--ink),0 7px 0 var(--ink),0 26px 40px rgba(0,0,0,.12);padding:22px 22px;font-family:'JetBrains Mono';font-weight:700;font-size:22px}
+.ftile .nt{font-family:'Instrument Serif';font-style:italic;font-size:58px;line-height:1;margin-bottom:8px}
+.wall{left:370px;top:660px;width:640px;height:760px;padding:120px 46px 0}
+.wall .lk{position:absolute;left:270px;top:-6px;width:100px;height:130px}
+.wall h4{font-weight:700;font-size:46px;letter-spacing:-.03em}
+.wall p{font-family:'JetBrains Mono';font-size:22px;color:var(--mut);margin-top:10px}
+.wall .inp{height:84px;border-radius:18px;margin-top:30px;box-shadow:inset 0 0 0 2.5px var(--dim);font-family:'JetBrains Mono';font-size:24px;color:var(--mut);display:flex;align-items:center;padding:0 26px}
+.wall .sub{height:96px;border-radius:999px;margin-top:40px;background:var(--ink);color:#fff;display:grid;place-items:center;font-weight:700;font-size:34px}
+.stamp1{position:absolute;left:420px;top:1500px;padding:12px 28px;border:6px solid var(--ink);border-radius:16px;font-family:'JetBrains Mono';font-weight:800;font-size:40px;background:#fff;white-space:nowrap}
+/* S2 window + vinyl */
+.win2{left:70px;top:620px;width:940px;height:588px;padding:0}
+.win2 img,.cf img,.cvt img{position:absolute;left:0;top:0;width:100%;height:100%;display:block}
+.vinyl{position:absolute;left:600px;top:1290px;width:400px;height:400px;border-radius:50%;
+  background:repeating-radial-gradient(circle at 50% 50%,#111 0 3px,#1e1f22 3px 6px);box-shadow:0 0 0 3px var(--ink),0 30px 60px rgba(0,0,0,.25)}
+.vinyl .lab{position:absolute;left:130px;top:130px;width:140px;height:140px;border-radius:50%;background:#fff;display:grid;place-items:center;font-family:'JetBrains Mono';font-weight:800;font-size:20px;box-shadow:inset 0 0 0 3px var(--ink)}
+.vinyl .lab:after{content:'';position:absolute;left:62px;top:62px;width:16px;height:16px;border-radius:50%;background:var(--ink)}
+.vinyl .sh{position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 20deg,transparent 0 10%,rgba(255,255,255,.22) 14%,transparent 20% 60%,rgba(255,255,255,.14) 64%,transparent 70%)}
+.list2{position:absolute;left:90px;top:1350px;width:470px;font-family:'JetBrains Mono';font-weight:800;font-size:34px;line-height:1.9;white-space:pre}
+/* S3 cover-flow + spectrum city */
+.cfw{position:absolute;left:0;top:600px;width:1080px;height:520px;perspective:1500px;transform-style:preserve-3d}
+.cf{position:absolute;left:220px;top:40px;width:640px;height:400px;border-radius:20px;overflow:hidden;background:#fff;box-shadow:0 0 0 2.5px var(--ink),0 30px 50px rgba(0,0,0,.18)}
+.cfl{position:absolute;left:0;right:0;top:1150px;text-align:center;font-family:'JetBrains Mono';font-weight:800;font-size:30px}
+.eqw{position:absolute;left:90px;top:1240px;width:900px;height:460px;perspective:1600px}
+.eqp{position:absolute;inset:0;border-radius:30px;background:#fff;box-shadow:0 0 0 2.5px var(--ink),0 10px 0 var(--ink),0 40px 70px rgba(0,0,0,.14);transform-origin:50% 100%}
+.eqc{position:absolute;bottom:70px;width:62px}
+.eqc i{position:absolute;left:0;width:62px;height:24px;border-radius:7px;background:var(--ink)}
+.eqc i.off{background:#e9e9e7}
+.eqc b{position:absolute;left:-10px;width:82px;bottom:-52px;text-align:center;font-family:'JetBrains Mono';font-size:18px;color:var(--mut)}
+/* S4 tag card + split-flap */
+.tagc{left:90px;top:640px;width:900px;height:520px;padding:40px}
+.tagc .cov{position:absolute;left:40px;top:40px;width:250px;height:250px;border-radius:22px;overflow:hidden;background:#ececea;box-shadow:inset 0 0 0 2.5px var(--dim)}
+.tagc .cov .q{position:absolute;inset:0;display:grid;place-items:center;font-family:'Instrument Serif';font-style:italic;font-size:150px;color:#b9babd}
+.tagc .cov img{position:absolute;inset:0;width:100%;height:100%;transform-origin:50% 0%}
+.fld{position:absolute;left:330px;width:530px}
+.fld small{display:block;font-family:'JetBrains Mono';font-weight:700;font-size:20px;color:var(--mut);margin-bottom:10px}
+.flap{position:relative;height:86px;perspective:600px}
+.flap div{position:absolute;inset:0;border-radius:14px;display:flex;align-items:center;padding:0 22px;font-weight:700;font-size:40px;letter-spacing:-.02em;white-space:nowrap;overflow:hidden;backface-visibility:hidden;transform-origin:50% 50%}
+.flap .o{background:#f1f1ef;color:#9a9ca1;box-shadow:inset 0 0 0 2px var(--dim)}
+.flap .n{background:var(--ink);color:#fff}
+.tagc .fn{position:absolute;left:40px;right:40px;bottom:34px;font-family:'JetBrains Mono';font-size:22px;color:var(--mut)}
+.fp{position:absolute;left:90px;top:1250px;width:900px;height:300px;border-radius:30px;background:#0b0b0c;overflow:hidden}
+.fp i{position:absolute;bottom:150px;width:8px;border-radius:4px;background:#5b5d62;transform-origin:50% 100%}
+.fp i.lo{bottom:auto;top:150px;transform-origin:50% 0%}
+.fp .ph{position:absolute;top:20px;bottom:20px;width:4px;background:#fff;box-shadow:0 0 20px #fff}
+.fpl{position:absolute;left:0;right:0;top:1590px;text-align:center;font-family:'JetBrains Mono';font-weight:700;font-size:26px;color:var(--mut);white-space:pre}
+/* S5 convert + cartridges */
+.cvt{left:110px;top:600px;width:860px;height:538px;padding:0}
+.slot{position:absolute;left:150px;top:1230px;width:780px;height:70px;border-radius:999px;background:var(--ink);box-shadow:0 10px 0 #3a3b3e,0 30px 50px rgba(0,0,0,.2)}
+.slot:after{content:'';position:absolute;left:60px;right:60px;top:30px;height:10px;border-radius:5px;background:#000;box-shadow:inset 0 2px 4px rgba(255,255,255,.2)}
+.cart{position:absolute;top:1330px;width:220px;height:280px;border-radius:24px;background:#fff;box-shadow:0 0 0 2.5px var(--ink),0 8px 0 var(--ink),0 30px 50px rgba(0,0,0,.14);display:flex;flex-direction:column;align-items:center;justify-content:center;transform-origin:50% 0%}
+.cart b{font-weight:800;font-size:66px;letter-spacing:-.04em}
+.cart small{font-family:'JetBrains Mono';font-size:20px;color:var(--mut);margin-top:10px}
+.cart .bar{width:150px;height:8px;border-radius:4px;background:var(--ink);margin-top:22px}
+/* S6 builder + installer */
+.dev6{left:140px;top:620px;width:800px;height:330px;padding:44px;display:flex;gap:40px;align-items:center}
+.dev6 .av{width:170px;height:170px;border-radius:50%;flex:none;display:grid;place-items:center;background:var(--ink);color:#fff;font-family:'Instrument Serif';font-style:italic;font-size:90px}
+.dev6 .nm{font-weight:700;font-size:46px;letter-spacing:-.03em}
+.dev6 .hd{font-family:'JetBrains Mono';font-size:24px;color:var(--mut);margin-top:12px;line-height:1.6}
+.inst{left:190px;top:1060px;width:700px;height:230px;padding:36px 40px}
+.inst .row{display:flex;align-items:center;gap:26px}
+.inst .ic{width:84px;height:84px;border-radius:18px;background:var(--ink);color:#fff;display:grid;place-items:center;font-size:44px;font-weight:800}
+.inst .fn{font-family:'JetBrains Mono';font-weight:800;font-size:32px}
+.inst .fn small{display:block;font-size:20px;color:var(--mut);font-weight:500;margin-top:6px}
+.inst .pb{position:relative;height:22px;border-radius:11px;background:#ececea;margin-top:34px;overflow:hidden;box-shadow:inset 0 0 0 2px var(--dim)}
+.inst .pb b{position:absolute;left:0;top:0;bottom:0;background:var(--ink);border-radius:11px}
+.done6{position:absolute;left:0;right:0;top:1380px;text-align:center}
+.done6 span{display:inline-block;padding:22px 46px;border-radius:999px;background:var(--ink);color:#fff;font-family:'JetBrains Mono';font-weight:800;font-size:40px}
+/* S7 letter tiles FEATURE */
+.tiles{position:absolute;left:0;top:820px;width:1080px;height:300px;perspective:1400px}
+.lt{position:absolute;top:40px;width:128px;height:150px;border-radius:20px;background:linear-gradient(180deg,#fff,#e9e9e7);box-shadow:0 0 0 2.5px var(--ink),0 9px 0 var(--ink),0 30px 40px rgba(0,0,0,.16);display:grid;place-items:center;font-weight:800;font-size:92px;letter-spacing:-.04em}
+.lt small{position:absolute;right:12px;bottom:8px;font-family:'JetBrains Mono';font-size:18px;font-weight:700}
+.dm7{position:absolute;left:0;right:0;top:1250px;text-align:center}
+.dm7 span{display:inline-block;padding:24px 48px;border-radius:999px;background:var(--ink);color:#fff;font-family:'JetBrains Mono';font-weight:800;font-size:40px}
+.dm7l{position:absolute;left:0;right:0;top:1400px;text-align:center;font-family:'JetBrains Mono';font-size:26px;color:var(--mut);white-space:pre}
+
+/* ending */
+.cin{display:flex;align-items:center;gap:26px;padding:0 26px 0 30px;background:#fff;box-shadow:0 0 0 2px var(--ink),0 6px 0 var(--ink),0 30px 50px rgba(0,0,0,.12)}
+.cbar{position:absolute}
+.av{width:76px;height:76px;border-radius:50%;background:linear-gradient(135deg,#d9d9d7,#a9aaad);flex:none}
+.cin .tx{flex:1;font-size:46px;font-weight:600;letter-spacing:.02em}
+.send{width:84px;height:84px;border-radius:50%;background:var(--ink);display:grid;place-items:center;color:#fff;font-size:40px;flex:none}
+.dm{position:absolute;padding:30px 44px;border-radius:44px 44px 44px 12px;background:var(--ink);color:#fff;font-size:42px;font-weight:500;white-space:nowrap}
+.dm small{display:block;font-family:'JetBrains Mono';font-size:20px;color:#9a9ca1;margin-bottom:8px}
+.bigmk{position:absolute;left:400px;top:600px;width:280px;height:280px;border-radius:50%;display:grid;place-items:center;font-family:'JetBrains Mono';font-weight:800;font-size:96px;color:#fff;background:radial-gradient(circle at 34% 26%,#6a6c71 0 8%,#1c1d20 42%,#000 100%);box-shadow:inset 0 6px 10px rgba(255,255,255,.3),inset 0 -14px 26px rgba(0,0,0,.6),0 40px 80px rgba(0,0,0,.28)}
+.erings{position:absolute;left:290px;top:490px;width:500px;height:500px}
+.fol{position:absolute;left:300px;top:1390px;width:480px;height:132px;border-radius:999px;display:grid;place-items:center;font-size:50px;font-weight:600;background:var(--ink);color:#fff;box-shadow:0 22px 44px rgba(0,0,0,.22)}
+.fol2{position:absolute;left:300px;top:1390px;width:480px;height:132px;border-radius:999px;display:grid;place-items:center;font-size:50px;font-weight:600;background:#fff;color:var(--ink);border:3px solid var(--ink);opacity:0}
+.tapd{position:absolute;width:90px;height:90px;border-radius:50%;background:rgba(11,11,12,.18);border:3px solid rgba(11,11,12,.55);opacity:0}
+.rip{position:absolute;left:540px;top:1456px;width:10px;height:10px;margin:-5px;border-radius:50%;border:4px solid var(--ink);opacity:0}
+</style></head>
+<body>
+<svg width="0" height="0" style="position:absolute"><defs>
+  <filter id="mb" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur id="mbg" stdDeviation="0 0"/></filter>
+</defs></svg>
+<div class="f" id="F">
+ <div id="cam"><div id="stage"><div id="world">
+  <!-- S1 hook: your files vs paywall -->
+  <div class="sc" id="s1" data-pose="0,0,0,0,0,0">
+    <div class="ring" style="left:-260px;top:-180px;width:720px;height:720px;transform:translateZ(-500px)"></div>
+    <div class="C sans ty" style="top:250px;font-size:116px;font-weight:700;letter-spacing:-.055em;transform:translateZ(120px)" data-t="0.08" data-cd=".04">Your own songs?</div>
+    <div class="C ser rv" style="top:400px;font-size:108px;transform:translateZ(120px)" data-t="2.5">behind a <span class="bpill">paywall.</span></div>
+    <div id="files1"></div>
+    <div class="card wall c3d" data-t="0.3" data-ry="0" data-rx="4">
+      <svg class="lk" viewBox="0 0 100 130"><path id="shk" d="M26 62 V38 a24 24 0 0 1 48 0 V62" fill="none" stroke="#0b0b0c" stroke-width="10" stroke-linecap="round"/><rect x="10" y="58" width="80" height="66" rx="14" fill="#0b0b0c"/><circle cx="50" cy="86" r="8" fill="#fff"/><rect x="47" y="88" width="6" height="16" rx="3" fill="#fff"/></svg>
+      <h4>Sign in to listen</h4><p>create an account to continue</p>
+      <div class="inp">email</div><div class="inp">password</div>
+      <div class="sub">Subscribe · $10.99/mo</div>
+    </div>
+    <div class="stamp1" id="stamp1">ACCOUNT REQUIRED</div>
+  </div>
+
+  <!-- S2 meet Playnck -->
+  <div class="sc" id="s2" data-pose="2600,0,-1200,30,0,0">
+    <div class="ring" style="left:640px;top:-160px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="C sans ty" style="top:250px;font-size:130px;font-weight:700;letter-spacing:-.055em;transform:translateZ(120px)" data-t="6.64" data-cd=".045">meet Playnck.</div>
+    <div class="C ser rv" style="top:410px;font-size:86px;transform:translateZ(120px)" data-t="8.16">free · <span class="bpill">Windows + Linux</span></div>
+    <div class="card win2 c3d" data-t="6.2" data-rx="10" data-ry="8"><img src="media/Home.png"><span class="realb">REAL APP</span></div>
+    <div class="vinyl" id="vin"><div class="sh"></div><div class="lab">.mp3</div></div>
+    <div class="list2" id="list2"></div>
+  </div>
+
+  <!-- S3 library cover-flow + spectrum -->
+  <div class="sc" id="s3" data-pose="2600,2600,-900,0,-24,0">
+    <div class="ring" style="left:-300px;top:1300px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="C sans" style="top:250px;font-size:96px;font-weight:700;letter-spacing:-.05em;transform:translateZ(120px)"><span class="rv" data-t="12.08">Songs.</span> <span class="rv" data-t="12.48">Albums.</span> <span class="rv" data-t="13.28">Artists.</span></div>
+    <div class="C ser rv" style="top:390px;font-size:88px;transform:translateZ(120px)" data-t="13.8">synced lyrics + <span class="bpill">10-band EQ</span></div>
+    <div class="cfw" id="cfw"></div>
+    <div class="cfl" id="cfl"></div>
+    <div class="eqw" id="eqw"><div class="eqp" id="eqp"></div></div>
+  </div>
+
+  <!-- S4 Auto-Tag -->
+  <div class="sc" id="s4" data-pose="0,2600,-1400,-28,0,0">
+    <div class="ring" style="left:620px;top:-160px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="C sans ty" style="top:250px;font-size:130px;font-weight:700;letter-spacing:-.055em;transform:translateZ(120px)" data-t="16.4" data-cd=".045">Messy tags?</div>
+    <div class="C ser rv" style="top:410px;font-size:92px;transform:translateZ(120px)" data-t="17.48">fixed by <span class="bpill">Auto-Tag</span></div>
+    <div class="card tagc c3d" data-t="16.3" data-rx="8" data-ry="-8">
+      <div class="cov"><div class="q">?</div><img id="cov4" src="media/cover.png"></div>
+      <div class="fld" style="top:40px"><small>TITLE</small><div class="flap" id="fl0"><div class="o">track_07 (1)</div><div class="n">FRIENDS</div></div></div>
+      <div class="fld" style="top:180px"><small>ARTIST</small><div class="flap" id="fl1"><div class="o">Unknown Artist</div><div class="n">Marshmello</div></div></div>
+      <div class="fn" id="fn4">track_07 (1).mp3 · written back into the file</div>
+    </div>
+    <div class="fp" id="fp"></div>
+    <div class="fpl" id="fpl"></div>
+  </div>
+
+  <!-- S5 convert -->
+  <div class="sc" id="s5" data-pose="0,5200,-900,0,26,0">
+    <div class="ring" style="left:-280px;top:-160px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="C sans ty" style="top:250px;font-size:120px;font-weight:700;letter-spacing:-.055em;transform:translateZ(120px)" data-t="22.0" data-cd=".045">Convert it all.</div>
+    <div class="C ser rv" style="top:400px;font-size:92px;transform:translateZ(120px)" data-t="25.4">in <span class="bpill">one batch</span></div>
+    <div class="card cvt c3d" data-t="21.9" data-rx="10" data-ry="10"><img src="media/Convert.png"><span class="realb">REAL APP</span></div>
+    <div class="slot" id="slot"></div>
+    <div class="cart" id="ct0" style="left:150px"><b>MP3</b><small>lossy · small</small><div class="bar"></div></div>
+    <div class="cart" id="ct1" style="left:430px"><b>FLAC</b><small>lossless</small><div class="bar"></div></div>
+    <div class="cart" id="ct2" style="left:710px"><b>Opus</b><small>tiny · crisp</small><div class="bar"></div></div>
+  </div>
+
+  <!-- S6 builder + installer -->
+  <div class="sc" id="s6" data-pose="2600,5200,-1300,30,0,0">
+    <div class="ring" style="left:640px;top:1300px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="C sans ty" style="top:250px;font-size:130px;font-weight:700;letter-spacing:-.055em;transform:translateZ(120px)" data-t="26.48" data-cd=".05">Built by</div>
+    <div class="C ser rv" style="top:410px;font-size:92px;transform:translateZ(120px)" data-t="27.36"><span class="bpill">Fakhar Arrazi</span></div>
+    <div class="card dev6 c3d" data-t="26.4" data-rx="8" data-ry="-8"><div class="av">FA</div><div><div class="nm">Fakhar Arrazi</div><div class="hd">@fakhar_arrazi<br>github.com/FakharArrazi</div></div></div>
+    <div class="card inst c3d" data-t="28.4" data-rx="10" data-ry="8"><div class="row"><div class="ic">↓</div><div class="fn">Playnck-Setup.exe<small>Windows 10/11 · .deb · .rpm</small></div></div><div class="pb"><b id="pb6"></b></div></div>
+    <div class="done6 pp" data-t="30.0"><span>installed ✓ · free</span></div>
+  </div>
+
+  <!-- S7 DM FEATURE -->
+  <div class="sc" id="s7" data-pose="2600,7800,-900,0,-24,0">
+    <div class="ring" style="left:-300px;top:-160px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="C sans ty" style="top:250px;font-size:104px;font-weight:700;letter-spacing:-.055em;transform:translateZ(120px)" data-t="30.72" data-cd=".035">Built something too?</div>
+    <div class="C ser rv" style="top:400px;font-size:92px;transform:translateZ(120px)" data-t="31.28">get it <span class="bpill">featured</span></div>
+    <div class="tiles" id="tiles"></div>
+    <div class="dm7 pp" data-t="31.65"><span>DM us “FEATURE”</span></div>
+    <div class="dm7l" id="dm7l"></div>
+  </div>
+
+  <!-- S8 comment -->
+  <div class="sc" id="s8" data-pose="0,7800,-1300,-30,0,0">
+    <div class="ring" style="left:620px;top:1300px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="C sans rv" style="top:380px;font-size:120px;font-weight:500" data-t="33.36">Comment</div>
+    <div class="C sans ty" style="top:510px;font-size:196px;font-weight:700;letter-spacing:-.04em" data-t="33.62" data-cd=".05">GITMATE</div>
+    <div class="cbar cin c3d" style="left:64px;top:860px;width:952px;height:140px;border-radius:999px" data-t="33.0" data-rx="10"><div class="av"></div><div class="tx" id="ctx"></div><div class="send">↑</div></div>
+    <div class="dm pp" style="left:250px;top:1110px" data-t="34.5"><small>git.mate · message</small>Here's your link, mate →</div>
+  </div>
+  <!-- S9 end -->
+  <div class="sc" id="s9" data-pose="0,10400,-900,0,24,0">
+    <div class="ring" style="left:-300px;top:-160px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="ring" style="left:640px;top:1400px;width:760px;height:760px;transform:translateZ(-800px)"></div>
+    <svg class="erings" viewBox="0 0 500 500"><circle id="er1" cx="250" cy="250" r="226" fill="none" stroke="#0b0b0c" stroke-width="3" stroke-dasharray="1420" stroke-dashoffset="1420" transform="rotate(-90 250 250)"/>
+      <circle id="er2" cx="250" cy="250" r="246" fill="none" stroke="#c9cacc" stroke-width="2" stroke-dasharray="1546" stroke-dashoffset="1546" transform="rotate(90 250 250)"/></svg>
+    <div class="bigmk" id="bigmk">&gt;_</div>
+    <div class="C sans ty" style="top:1050px;font-size:104px;font-weight:700" data-t="35.5" data-cd=".05">@git.mate</div>
+    <div class="C ser" style="top:1200px;font-size:96px"><span class="rv g" data-t="36.0">1 repo</span> <span class="rv" data-t="36.3">every</span> <span class="rv" data-t="36.55">day.</span></div>
+    <div class="fol pp" id="fol" data-t="35.65">Follow</div>
+    <div class="fol2" id="fol2">Following ✓</div>
+    <div class="rip" id="rip"></div>
+    <div class="tapd" id="tapd" style="left:640px;top:1560px"></div>
+  </div>
+ </div></div></div>
+ <div class="top"><div class="brand"><div class="mk">&gt;_</div>git.mate</div><div class="tag" id="tag"><b>01</b> / 9</div></div>
+ <div class="grain"></div>
+</div>
+<script>
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+const SPD = 1.08, RAWTOTAL = 38.0, TOTAL = RAWTOTAL / SPD; window.__TOTAL = TOTAL;
+const S = [0, 5.75, 11.85, 16.2, 21.85, 26.25, 30.55, 33.25, 35.1];
+const NS = S.length;
+const sm = (a, b, x) => { const k = Math.min(1, Math.max(0, (x - a) / (b - a))); return k * k * (3 - 2 * k); };
+const cl = (a, b, x) => Math.min(1, Math.max(0, (x - a) / (b - a)));
+const bump = (t, c, w) => Math.max(0, 1 - Math.abs(t - c) / w);
+
+// S1 file tiles
+const FL = ['track_01.mp3', 'demo_v2.flac', 'mixtape.m4a', 'live_set.opus'];
+$('#files1').innerHTML = FL.map((f, i) => `<div class="ftile" id="ft${i}" style="top:${660 + i * 190}px"><div class="nt">♪</div>${f}</div>`).join('');
+// S3 cover-flow panels
+const CF = [['Library.png', 'songs'], ['Albums.png', 'albums'], ['Artists.png', 'artists'], ['Lyric_sync.png', 'synced lyrics']];
+$('#cfw').innerHTML = CF.map(([f], i) => `<div class="cf" id="cf${i}"><img src="media/${f}"></div>`).join('');
+const CFT = [11.9, 12.48, 13.28, 13.8];
+// S3 spectrum city: 10 bands x 9 segments
+const BANDS = ['32', '64', '125', '250', '500', '1k', '2k', '4k', '8k', '16k'];
+$('#eqp').innerHTML = BANDS.map((b, i) => `<div class="eqc" style="left:${46 + i * 82}px">${Array.from({ length: 9 }, (_, j) => `<i id="e${i}_${j}" style="bottom:${j * 32}px"></i>`).join('')}<b>${b}</b></div>`).join('');
+const BOOST = [8, 7, 6, 4, 3, 3, 4, 5, 6, 7];
+// S4 fingerprint
+$('#fp').innerHTML = Array.from({ length: 72 }, (_, i) => { const h = 20 + 100 * Math.abs(Math.sin(i * 1.7) * Math.cos(i * .37)); return `<i style="left:${30 + i * 11.8}px;height:${h}px" id="fu${i}"></i><i class="lo" style="left:${30 + i * 11.8}px;height:${h * .7}px" id="fd${i}"></i>`; }).join('') + '<div class="ph" id="ph"></div>';
+// S7 letter tiles
+const LET = 'FEATURE', PTS = [4, 1, 1, 1, 1, 1, 1];
+$('#tiles').innerHTML = [...LET].map((c, i) => `<div class="lt" id="lt${i}" style="left:${70 + i * 138}px">${c}<small>${PTS[i]}</small></div>`).join('');
+
+const scenes = $$('.sc');
+const poses = scenes.map(s => s.dataset.pose.split(',').map(Number));
+scenes.forEach((s, i) => { const [x, y, z, ry, rx, rz] = poses[i]; s.style.transform = `translate3d(${x}px,${y}px,${z}px) rotateY(${ry}deg) rotateX(${rx}deg) rotateZ(${rz}deg)`; });
+const tl = gsap.timeline({ paused: true });
+$$('.ty').forEach(el => { const t = +el.dataset.t, cd = +(el.dataset.cd || .045); const txt = el.textContent; el.textContent = '';
+  const chs = [...txt].map(c => { const s = document.createElement('span'); s.className = 'ch'; s.textContent = c; el.appendChild(s); return s; });
+  tl.set(chs, { opacity: 0 }, 0);
+  chs.forEach((c, i) => tl.fromTo(c, { opacity: 0, y: 26, filter: 'blur(14px)' }, { opacity: 1, y: 0, filter: 'blur(0px)', duration: .42, ease: 'power3.out', immediateRender: false }, Math.max(0.001, t + i * cd))); });
+$$('.rv').forEach(el => { const t = +el.dataset.t; if (isNaN(t)) return;
+  tl.set(el, { opacity: 0 }, 0); tl.fromTo(el, { opacity: 0, y: 46, filter: 'blur(16px)' }, { opacity: 1, y: 0, filter: 'blur(0px)', duration: .55, ease: 'power3.out', immediateRender: false }, Math.max(0.001, t)); });
+$$('.pp').forEach(el => { const t = +el.dataset.t;
+  tl.set(el, { opacity: 0 }, 0); tl.fromTo(el, { opacity: 0, scale: .55, filter: 'blur(10px)' }, { opacity: 1, scale: 1, filter: 'blur(0px)', duration: .5, ease: 'back.out(2.2)', immediateRender: false }, t); });
+$$('.c3d').forEach(el => { const t = +el.dataset.t, rx = +(el.dataset.rx || 0), ry = +(el.dataset.ry || 0);
+  tl.set(el, { opacity: 0, transformPerspective: 1500 }, 0);
+  tl.fromTo(el, { opacity: 0, rotationX: rx + 50, rotationY: ry * 2.5, y: 260, z: -500, scale: .9 }, { opacity: 1, rotationX: rx, rotationY: ry, y: 0, z: 0, scale: 1, duration: 1.05, ease: 'expo.out', immediateRender: false }, Math.max(0.001, t));
+  tl.to(el, { rotationX: rx * .4, rotationY: -ry * .5, duration: 3.2, ease: 'sine.inOut' }, Math.max(0.001, t) + 1.05); });
+// comment typing
+const cm = { n: 0 };
+tl.fromTo(cm, { n: 0 }, { n: 7, duration: .45, ease: 'none', immediateRender: false, onUpdate: () => $('#ctx').textContent = 'GITMATE'.slice(0, Math.round(cm.n)) }, 33.75);
+// end
+const E = 35.2;
+tl.set('#bigmk', { opacity: 0, scale: .2 }, 0);
+tl.to('#bigmk', { opacity: 1, scale: 1, duration: .9, ease: 'back.out(1.8)' }, E);
+tl.fromTo('#er1', { attr: { 'stroke-dashoffset': 1420 } }, { attr: { 'stroke-dashoffset': 0 }, duration: 1.0, ease: 'power2.inOut', immediateRender: false }, E + .15);
+tl.fromTo('#er2', { attr: { 'stroke-dashoffset': 1546 } }, { attr: { 'stroke-dashoffset': 0 }, duration: 1.2, ease: 'power2.inOut', immediateRender: false }, E + .3);
+tl.to('#tapd', { opacity: 1, left: 560, top: 1440, duration: .5, ease: 'power2.out' }, E + 1.4);
+tl.to('#tapd', { scale: .7, duration: .1 }, E + 1.9); tl.to('#tapd', { scale: 1, duration: .15 }, E + 2.0);
+tl.to('#fol', { scale: .93, duration: .1 }, E + 1.9); tl.to('#fol', { scale: 1, duration: .2 }, E + 2.0);
+tl.set('#fol2', { opacity: 1 }, E + 2.0); tl.set('#fol', { opacity: 0 }, E + 2.0);
+tl.fromTo('#rip', { opacity: .7, width: 10, height: 10, margin: -5 }, { opacity: 0, width: 640, height: 640, margin: -320, duration: .8, ease: 'power2.out', immediateRender: false }, E + 1.95);
+tl.to('#tapd', { opacity: 0, duration: .3 }, E + 2.35);
+tl.to({}, { duration: .01 }, RAWTOTAL);
+const ease = x => x < .5 ? 16 * x ** 5 : 1 - Math.pow(-2 * x + 2, 5) / 2;
+const TD = .8, TPRE = .45;
+function camAt(t) {
+  let i = 0; for (let k = 0; k < S.length; k++) if (t >= S[k] - TPRE) i = k;
+  const ta = S[i] - TPRE; let p = poses[i].slice(), d = 0, rr = 0;
+  if (i > 0 && t < ta + TD) { const u = (t - ta) / TD, e = ease(u), a = poses[i - 1]; p = a.map((v, j) => v + (poses[i][j] - v) * e); d = Math.sin(u * Math.PI) * 700; rr = Math.sin(u * Math.PI) * (i % 2 ? 4 : -4); }
+  const st = Math.max(0, t - (S[i] - TPRE + TD)); const dz = Math.min(st, 6) * 8;
+  return { x: p[0], y: p[1], z: p[2] - dz, ry: p[3] + Math.sin(t * .6) * .6, rx: p[4] + Math.sin(t * .45) * .5, rz: p[5] + rr, d, i };
+}
+function camT(c) { return `translateZ(${-c.d + 60}px) rotateZ(${-c.rz}deg) rotateX(${-c.rx}deg) rotateY(${-c.ry}deg) translate3d(${-c.x}px,${-c.y}px,${-c.z}px)`; }
+const world = $('#world'), mbg = $('#mbg'), cam = $('#cam');
+const typeAt = (t, t0, dur, s) => s.slice(0, Math.max(0, Math.min(s.length, Math.round((t - t0) / dur * s.length))));
+function tick(t) {
+  const c = camAt(t), p = camAt(Math.max(0, t - SPD / 30));
+  world.style.transform = camT(c);
+  const hx = Math.abs(c.x - p.x) * .9 + Math.abs(c.ry - p.ry) * 32, vy = Math.abs(c.y - p.y) * .9 + Math.abs(c.rx - p.rx) * 32, zz = Math.abs(c.z - p.z + (p.d - c.d)) * .25;
+  const bx = Math.min(70, hx * .22 + zz * .05), by = Math.min(70, vy * .22 + zz * .05);
+  if (bx + by > .4) { mbg.setAttribute('stdDeviation', `${bx.toFixed(1)} ${by.toFixed(1)}`); cam.style.filter = 'url(#mb)'; } else cam.style.filter = 'none';
+  scenes.forEach((s, k) => { s.style.visibility = (k === c.i || (k === c.i - 1 && t < S[c.i] - TPRE + TD)) ? 'visible' : 'hidden'; });
+  $('#tag').innerHTML = `<b>${String(c.i + 1).padStart(2, '0')}</b> / ${NS}`;
+  // S1 files float in, push at the wall, bounce; lock clicks shut; stamp
+  { FL.forEach((_, i) => { const t0 = .5 + i * .25, k = sm(t0, t0 + .6, t), push = sm(3.3 + i * .08, 3.7 + i * .08, t) - sm(3.75 + i * .08, 4.2 + i * .08, t), e = $('#ft' + i);
+      e.style.opacity = sm(t0 - .05, t0 + .1, t);
+      e.style.transform = `perspective(1400px) translate3d(${(1 - k) * -260 + push * 40}px,${Math.sin(t * 1.4 + i) * 6}px,${(1 - k) * -400 + 40}px) rotateY(${18 - push * 14}deg) rotateZ(${push * (i % 2 ? 3 : -3)}deg)`; });
+    $('#shk').setAttribute('transform', `translate(0 ${-22 * (1 - sm(3.5, 3.75, t))})`);
+    const st = sm(4.0, 4.2, t); $('#stamp1').style.opacity = st; $('#stamp1').style.transform = `rotate(-7deg) scale(${2 - st + bump(t, 4.22, .1) * .08})`; }
+  // S2 vinyl slides out spinning, list types
+  { const k = sm(9.0, 9.9, t), v = $('#vin'); v.style.opacity = sm(8.95, 9.1, t);
+    v.style.transform = `perspective(1400px) translate3d(${(1 - k) * 520}px,0,${(1 - k) * -300}px) rotateX(18deg) rotate(${t * 140}deg)`;
+    $('#list2').textContent = [typeAt(t, 10.3, .35, '♪ your files'), typeAt(t, 10.75, .35, '✗ no account'), typeAt(t, 11.15, .4, '✗ no subscription')].join('\n'); }
+  // S3 cover-flow
+  { let f = 0; CFT.forEach((t0, i) => { f += sm(t0, t0 + .45, t) * (i ? 1 : 0); });
+    const app = sm(11.75, 12.4, t);
+    CF.forEach((_, i) => { const d = i - f, e = $('#cf' + i), ad = Math.min(1.6, Math.abs(d));
+      e.style.opacity = app * Math.max(0, 1 - Math.max(0, ad - 1.2) * 2.5);
+      e.style.transform = `translate3d(${d * 340}px,${(1 - app) * 300}px,${-ad * 300 + (1 - app) * -600}px) rotateY(${-Math.sign(d) * Math.min(1, ad) * 55}deg)`;
+      e.style.zIndex = 10 - Math.round(ad * 3); });
+    const ci = Math.min(3, Math.round(f)); $('#cfl').textContent = t > 12.0 ? '← ' + CF[ci][1] + ' →' : '';
+    const pk = sm(14.3, 15.0, t); $('#eqp').style.opacity = sm(14.25, 14.4, t);
+    $('#eqp').style.transform = `rotateX(${30 + (1 - pk) * 50}deg) rotateY(${-8 + 4 * sm(14.3, 16.2, t)}deg) translateZ(${(1 - pk) * -400}px)`;
+    BANDS.forEach((_, i) => { const tgt = BOOST[i] * sm(15.0 + i * .05, 15.6 + i * .05, t) + (t > 15.7 ? Math.sin(t * 9 + i * 1.3) * 1.2 : 0);
+      for (let j = 0; j < 9; j++) $(`#e${i}_${j}`).className = j < Math.round(tgt) ? '' : 'off'; }); }
+  // S4 fingerprint scan + split-flap + cover drop
+  { const ph = cl(17.9, 19.6, t), x = 30 + ph * 840; $('#ph').style.left = x + 'px'; $('#ph').style.opacity = sm(17.85, 17.95, t) * (1 - sm(19.6, 19.75, t));
+    $('#fp').style.opacity = sm(17.3, 17.6, t); $('#fp').style.transform = `perspective(1400px) rotateX(${(1 - sm(17.3, 17.9, t)) * 60}deg)`;
+    for (let i = 0; i < 72; i++) { const lx = 30 + i * 11.8, on = lx < x && t > 17.9; const c = on ? '#ffffff' : '#5b5d62'; $('#fu' + i).style.background = c; $('#fd' + i).style.background = c;
+      const s = 1 + (on ? .15 * Math.sin(t * 20 + i) : 0); $('#fu' + i).style.transform = `scaleY(${s})`; }
+    $('#fpl').textContent = t < 19.7 ? typeAt(t, 17.9, .8, 'listening… fingerprint → AcoustID') : 'match found ✓ · MusicBrainz';
+    [[19.76, 0], [20.24, 1]].forEach(([t0, i]) => { const k = sm(t0, t0 + .35, t), fl = $('#fl' + i);
+      fl.children[0].style.transform = `rotateX(${k * 180}deg)`; fl.children[1].style.transform = `rotateX(${(k - 1) * 180}deg)`; });
+    const ck = sm(20.8, 21.25, t), cv = $('#cov4'); cv.style.opacity = sm(20.75, 20.85, t);
+    cv.style.transform = `rotateX(${(1 - ck) * -90}deg) scale(${1 + bump(t, 21.3, .1) * .05})`; }
+  // S5 cartridges eject from slot
+  { [23.44, 24.2, 24.8].forEach((t0, i) => { const k = sm(t0 - .15, t0 + .35, t), e = $('#ct' + i);
+      e.style.opacity = sm(t0 - .2, t0 - .05, t);
+      e.style.transform = `perspective(1400px) translateY(${(1 - k) * -120}px) rotateX(${(1 - k) * -80 + 8}deg) rotateY(${(i - 1) * -10}deg) scale(${1 + bump(t, t0 + .38, .1) * .05})`; });
+    $('#slot').style.transform = `scaleX(${.96 + .04 * sm(22.7, 23.1, t)})`; $('#slot').style.opacity = sm(22.6, 22.9, t); }
+  // S6 installer bar
+  { $('#pb6').style.width = (100 * sm(28.9, 29.9, t)) + '%'; }
+  // S7 letter tiles drop in sequence
+  { [...LET].forEach((_, i) => { const t0 = 30.95 + i * .08, k = sm(t0, t0 + .35, t), e = $('#lt' + i);
+      e.style.opacity = sm(t0 - .02, t0 + .08, t);
+      e.style.transform = `translate3d(0,${(1 - k) * -260 + bump(t, t0 + .37, .1) * 10}px,${(1 - k) * 300}px) rotateX(${(1 - k) * 70 + 14}deg) rotateZ(${(i % 2 ? 2 : -2) * (1 - k * .5)}deg)`; });
+    $('#dm7l').textContent = typeAt(t, 31.9, .5, 'send it to @git.mate'); }
+}
+window.__seek = vt => { const t = vt * SPD; tl.time(t, false); tick(t); const ims = [...document.images].map(i => i.complete ? null : i.decode().catch(() => {})).filter(Boolean); return Promise.all(ims); };
+__seek(0);
+if (!navigator.webdriver) { const t0 = performance.now(); const loop = () => { window.__seek(((performance.now() - t0) / 1000) % TOTAL); requestAnimationFrame(loop); }; requestAnimationFrame(loop); }
+</script>
+</body></html>

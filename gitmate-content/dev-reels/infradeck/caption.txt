@@ -1,0 +1,14 @@
+Your server's disk is at 95%... and you have no idea 😬
+
+Infradeck by @karlo.ks is self-hosted monitoring for your homelab:
+→ Every server, every container, every service in one dashboard
+→ A tiny collector on each machine reports back over your VPN
+→ Uptime checks run from your own machines, so you can tell a dead service from a broken network path
+→ An optional AI incident agent reads masked evidence, explains what's wrong and proposes a fix. It never runs commands on your servers
+→ Add a server with one command and one click
+
+Docker Compose · open source (AGPL-3.0)
+
+Built something too? DM us your repo 📩
+Comment GITMATE and I'll send you the link 👇
+Follow @git.mate for 1 useful repo every day.

@@ -1,0 +1,17 @@
+Meta's own design system... now open source. 🎨
+
+Astryx grew inside Meta for 8 years and powers 13,000+ apps there. Now it's on GitHub:
+→ 150+ accessible React components (React 19+, StyleX under the hood)
+→ Dark mode, brand-level theming + 7 ready-made themes (neutral, butter, chocolate, matcha, stone, gothic, y2k)
+→ Ready-to-ship page templates: dashboards, forms, login, AI chat, settings
+→ Built for people AND coding agents: same API, docs and CLI
+→ "swizzle" ejects a component's full source into your project to own
+→ No styling lock-in: override with Tailwind, CSS modules or plain CSS
+
+✅ Free + open source (MIT) · currently in beta
+Install: npm i @astryxdesign/core @astryxdesign/theme-neutral @stylexjs/stylex
+
+Comment GITMATE and I'll send you the link 👇
+Follow @git.mate for 1 useful repo every day.
+
+#react #designsystem #github #opensource #meta #frontend #webdev #uidesign #javascript #typescript #aiagents #developer #programming #coding

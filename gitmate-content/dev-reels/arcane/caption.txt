@@ -1,0 +1,17 @@
+Still typing docker ps, docker logs, docker restart… fifty times a day? 🐳
+
+Arcane is a free, open-source dashboard for all your Docker stuff:
+→ Start, stop and restart containers in one click
+→ Live logs + CPU / memory right there
+→ Edit and deploy Compose projects from the browser
+→ Checks your images for updates and known vulnerabilities
+→ Volumes, networks, remote hosts through agents
+
+Setup is one container: grab the compose.yaml, docker compose up -d, open port 3552. Done.
+
+✅ Always free · BSD-3-Clause · 8.9K+ ★ on GitHub
+
+Comment GITMATE and I'll send you the link 👇
+Follow @git.mate for 1 useful repo every day.
+
+#docker #dockercompose #selfhosted #homelab #devops #opensource #github #containers #sysadmin #linux #portainer #webdev #developer #programming #coding #devtools

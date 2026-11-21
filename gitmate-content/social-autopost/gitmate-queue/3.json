@@ -1,0 +1,22 @@
+{
+ "account": "git.mate",
+ "n": 3,
+ "slug": "security-audit-light",
+ "title": "Cloudflare open-sourced its security audit skill",
+ "video": {
+  "file": "3.mp4",
+  "duration_sec": 36.2,
+  "source": "/mnt/project-files/dev-reels/security-audit-light/gitmate_security_audit_light.mp4"
+ },
+ "instagram": {
+  "caption": "Cloudflare just open-sourced their bug hunting skill, and it's #1 on GitHub trending today \ud83d\udd0d\n\nsecurity-audit turns your coding agent into a full security auditor:\n\u2192 6 phases: recon, hunting, validation, structured output, verification, report\n\u2192 The agent that checks a bug is never the agent that found it\n\u2192 Verified findings.json, not noise\n\n\u2705 Install: npx skills add cloudflare/security-audit-skill --skill security-audit\n\u2705 Then just say: \"security audit this codebase\"\n\u2705 Free, MIT\n\nComment GITMATE for the link \ud83d\udc47\nFollow @git.mate for 1 useful repo every day.\n\n#github #opensource #cybersecurity #appsec #cloudflare #aiagents #claudecode #codingagent #developer #programming #devtools #securityaudit",
+  "hashtags": [],
+  "cover_offset_ms": 5200,
+  "share_to_feed": true
+ },
+ "posting": {
+  "audience": "US",
+  "timezone": "America/New_York"
+ },
+ "link": "https://github.com/cloudflare/security-audit-skill"
+}

@@ -1,0 +1,545 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<title>git.mate astryx</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<style>
+:root{--ink:#0b0b0c;--mut:#8b8d91;--dim:#cfd0d2;--bg:#f7f7f5}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#fff}
+.f{position:relative;width:1080px;height:1920px;overflow:hidden;background:radial-gradient(ellipse 110% 70% at 50% 45%,#ffffff 0%,#f7f7f5 55%,#eeeeec 100%);color:var(--ink);font-family:'Inter',sans-serif}
+#cam{position:absolute;inset:0}
+#stage{position:absolute;inset:0;perspective:1800px;perspective-origin:50% 50%}
+#world{position:absolute;left:0;top:0;width:1080px;height:1920px;transform-style:preserve-3d;transform-origin:540px 960px}
+.sc{position:absolute;left:0;top:0;width:1080px;height:1920px;transform-style:preserve-3d;transform-origin:540px 960px;visibility:hidden}
+.ring{position:absolute;border-radius:50%;border:70px solid rgba(10,10,12,.045);filter:blur(26px)}
+.grain{position:absolute;inset:0;opacity:.05;mix-blend-mode:multiply;z-index:8;pointer-events:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
+.top{position:absolute;left:64px;right:64px;top:84px;height:80px;z-index:6}
+.brand{position:absolute;left:0;top:0;display:flex;align-items:center;gap:16px;font-family:'JetBrains Mono';font-weight:700;font-size:28px}
+.mk{width:58px;height:58px;border-radius:50%;display:grid;place-items:center;font-family:'JetBrains Mono';font-weight:800;font-size:22px;color:#fff;background:radial-gradient(circle at 34% 28%,#5a5c61 0 10%,#1a1b1e 45%,#000 100%);box-shadow:inset 0 2px 3px rgba(255,255,255,.35),0 8px 18px rgba(0,0,0,.25)}
+.tag{position:absolute;right:0;top:14px;font-family:'JetBrains Mono';font-size:24px;color:var(--mut);white-space:nowrap}
+.tag b{color:var(--ink);font-weight:700}
+.C{position:absolute;left:0;right:0;text-align:center;white-space:nowrap}
+.kick{font-family:'JetBrains Mono';font-size:26px;color:var(--mut);letter-spacing:1px}
+.sans{font-weight:600;letter-spacing:-.035em;line-height:1}
+.ser{font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;letter-spacing:-.01em;line-height:1}
+.g{color:var(--mut)}
+.ch{display:inline-block;white-space:pre}
+.mono{font-family:'JetBrains Mono'}
+.card{position:absolute;background:#fff;border-radius:26px;box-shadow:0 0 0 2px var(--ink),0 8px 0 var(--ink),0 40px 70px rgba(0,0,0,.14);overflow:hidden}
+.bpill{display:inline-block;padding:4px 26px 12px;border-radius:24px;background:var(--ink);color:#fff;font-family:'Inter';font-style:normal;font-weight:600;letter-spacing:-.035em;vertical-align:6px}
+
+/* S1 vault doors */
+.vault{position:absolute;left:100px;top:600px;width:880px;height:700px;background:#f1f1ef}
+.vault .inner{position:absolute;inset:0}
+.vault .inner img{position:absolute;border-radius:18px;box-shadow:0 0 0 2px var(--ink),0 18px 30px rgba(0,0,0,.18)}
+.door{position:absolute;top:0;width:440px;height:700px;background:linear-gradient(180deg,#232427,#0b0b0c);color:#fff}
+.door.l{left:0;transform-origin:0 50%;border-right:2px solid #3a3b3e}
+.door.r{left:440px;transform-origin:100% 50%;border-left:2px solid #3a3b3e}
+.door .hd{position:absolute;top:310px;width:22px;height:110px;border-radius:11px;background:linear-gradient(90deg,#8b8d91,#f2f2f0,#8b8d91)}
+.door.l .hd{right:36px}.door.r .hd{left:36px}
+.door .lb{position:absolute;top:60px;font-family:'JetBrains Mono';font-weight:800;font-size:26px;letter-spacing:4px;white-space:nowrap;color:#d9d9d7}
+.door.l .lb{right:40px}.door.r .lb{left:40px}
+.door .lb2{position:absolute;bottom:60px;font-family:'JetBrains Mono';font-size:22px;color:#8b8d91;white-space:nowrap}
+.door.l .lb2{right:40px}.door.r .lb2{left:40px}
+.door .rv2{position:absolute;width:18px;height:18px;border-radius:50%;background:#55575b;box-shadow:inset 0 2px 2px rgba(255,255,255,.35)}
+.seal{position:absolute;left:340px;top:280px;width:200px;height:140px;border-radius:16px;background:#fff;color:var(--ink);display:grid;place-items:center;font-family:'JetBrains Mono';font-weight:800;font-size:26px;letter-spacing:3px;box-shadow:0 0 0 3px var(--ink),0 8px 0 var(--ink);text-align:center;line-height:1.3}
+/* S2 sliced logo cubes */
+.lg{position:absolute;left:90px;top:420px;width:900px;height:187px;transform-style:preserve-3d}
+.cube{position:absolute;top:0;width:150px;height:187px;transform-style:preserve-3d}
+.cube .fc{position:absolute;left:0;top:0;width:150px;height:187px;backface-visibility:hidden;overflow:hidden}
+.cube .fc.fr{transform:translateZ(40px)}
+.cube .fc.fr img{position:absolute;top:0;width:900px;height:187px}
+.cube .fc.bt{transform:rotateX(-90deg) translateZ(93.5px) translateY(0);height:80px;top:53.5px;background:var(--ink)}
+.cube .fc.tp2{transform:rotateX(90deg) translateZ(93.5px);height:80px;top:53.5px;background:#d9d9d7}
+.cube .fc.bk{transform:rotateY(180deg) translateZ(40px);background:var(--ink)}
+.cube .fc.bt i{position:absolute;left:0;right:0;top:24px;text-align:center;font-family:'JetBrains Mono';font-weight:800;font-size:26px;color:#fff;font-style:normal}
+.brw{position:absolute;left:80px;top:760px;width:920px;height:540px;background:#fff}
+.brw .bb{height:54px;background:#f1f1ef;border-bottom:2px solid var(--ink);display:flex;align-items:center;gap:12px;padding:0 22px}
+.brw .bb i{width:16px;height:16px;border-radius:50%;background:var(--ink);opacity:.8}
+.brw .bb span{margin-left:16px;flex:1;height:32px;border-radius:16px;background:#fff;box-shadow:inset 0 0 0 2px #cfd0d2;font-family:'JetBrains Mono';font-size:20px;color:#6d6f74;display:flex;align-items:center;padding-left:18px;white-space:nowrap}
+.brw img{display:block;width:920px;height:478px}
+/* S3 tree rings + app mosaic */
+.trunk{position:absolute;left:250px;top:540px;width:580px;height:580px;border-radius:50%;background:radial-gradient(circle,#fbfbfa 0 60%,#efefed 100%);box-shadow:0 0 0 6px var(--ink),0 16px 0 var(--ink),0 50px 80px rgba(0,0,0,.16)}
+.trunk svg{position:absolute;left:0;top:0;width:580px;height:580px}
+.trunk .yr{position:absolute;left:0;right:0;top:250px;text-align:center;font-family:'Instrument Serif';font-style:italic;font-size:110px;line-height:1}
+.mosaic{position:absolute;left:80px;top:1190px;width:920px;height:250px;background:#fcfcfb;padding:22px 26px}
+.mosaic .hdr{font-family:'JetBrains Mono';font-size:22px;font-weight:800;letter-spacing:3px;display:flex;justify-content:space-between;white-space:nowrap}
+.mosaic .hdr span{color:var(--mut);font-weight:500;letter-spacing:0}
+.mosaic .grid{position:absolute;left:26px;top:66px;width:868px;height:160px;display:grid;grid-template-columns:repeat(54,1fr);gap:4px}
+.mosaic .grid i{display:block;border-radius:3px;background:#e4e4e2;height:12px}
+.mosaic .grid i.on{background:var(--ink)}
+/* S4 visibility switch */
+.vis{position:absolute;left:120px;top:640px;width:840px;height:520px;background:#fcfcfb;padding:40px 50px}
+.vis .rn{font-family:'JetBrains Mono';font-weight:800;font-size:40px;white-space:nowrap}
+.vis .rn span{color:var(--mut);font-weight:500}
+.vis .sw{position:absolute;left:50px;top:170px;width:740px;height:170px;border-radius:85px;background:#e4e4e2;box-shadow:inset 0 0 0 4px var(--ink)}
+.vis .sw .fill{position:absolute;left:0;top:0;bottom:0;border-radius:85px;background:var(--ink);width:170px}
+.vis .sw .kn{position:absolute;left:14px;top:14px;width:142px;height:142px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#e1e1df 70%,#c9cacc);box-shadow:0 0 0 4px var(--ink),0 10px 16px rgba(0,0,0,.25)}
+.vis .sw .wl{position:absolute;top:58px;font-family:'JetBrains Mono';font-weight:800;font-size:46px;letter-spacing:2px;white-space:nowrap}
+.vis .meta2{position:absolute;left:50px;right:50px;top:390px;display:flex;gap:18px}
+.vis .meta2 b{padding:14px 26px;border-radius:14px;box-shadow:inset 0 0 0 3px var(--ink);font-family:'JetBrains Mono';font-size:28px;font-weight:700;white-space:nowrap}
+.vis .meta2 b.k{background:var(--ink);color:#fff}
+/* S5 card deal table */
+.table{position:absolute;left:40px;top:620px;width:1000px;height:820px;transform-style:preserve-3d}
+.table .felt{position:absolute;inset:0;border-radius:40px;background:repeating-linear-gradient(0deg,#ececea 0 2px,transparent 2px 60px),repeating-linear-gradient(90deg,#ececea 0 2px,transparent 2px 60px),#f8f8f6;box-shadow:inset 0 0 0 4px var(--ink)}
+.dl{position:absolute;border-radius:18px;overflow:hidden;box-shadow:0 0 0 3px var(--ink),0 10px 0 var(--ink),0 30px 40px rgba(0,0,0,.18);background:#fff}
+.dl img{display:block;width:100%;height:100%}
+.cnt{position:absolute;right:30px;top:24px;font-family:'JetBrains Mono';font-weight:800;font-size:26px;letter-spacing:2px;white-space:nowrap}
+/* S6 dark-mode wipe */
+.brw2{position:absolute;left:80px;top:620px;width:920px;height:443px;background:#fff}
+.brw2 .bb{height:56px;background:#f1f1ef;border-bottom:2px solid var(--ink);display:flex;align-items:center;gap:12px;padding:0 22px;position:relative}
+.brw2 .bb i{width:16px;height:16px;border-radius:50%;background:var(--ink);opacity:.8}
+.brw2 .bb span{margin-left:16px;font-family:'JetBrains Mono';font-size:20px;color:#6d6f74;white-space:nowrap}
+.brw2 .mt{position:absolute;right:20px;top:9px;width:84px;height:38px;border-radius:19px;background:#d9d9d7;box-shadow:inset 0 0 0 2px var(--ink)}
+.brw2 .mt i{position:absolute;left:4px;top:4px;width:30px;height:30px;border-radius:50%;background:#fff;box-shadow:0 0 0 2px var(--ink);opacity:1}
+.brw2 .pic{position:absolute;left:0;top:56px;width:920px;height:387px}
+.brw2 .pic img{position:absolute;left:0;top:0;width:920px;height:387px}
+.brw2 .pic .dk{filter:invert(1) hue-rotate(180deg) brightness(.92) contrast(1.05)}
+.tabs{position:absolute;left:80px;top:1130px;width:920px;height:120px;display:flex;gap:14px;justify-content:center;transform-style:preserve-3d}
+.tabs b{padding:18px 26px;border-radius:16px;background:#fff;box-shadow:0 0 0 3px var(--ink),0 7px 0 var(--ink);font-weight:600;font-size:32px;letter-spacing:-.02em;white-space:nowrap;height:72px}
+/* S7 swatch fan */
+.fan{position:absolute;left:470px;top:690px;width:140px;height:660px;transform-style:preserve-3d}
+.sw7{position:absolute;left:0;top:0;width:140px;height:660px;border-radius:20px;transform-origin:70px 590px;box-shadow:0 0 0 3px var(--ink),6px 8px 0 rgba(11,11,12,.85)}
+.sw7 b{position:absolute;left:0;right:0;top:40px;writing-mode:vertical-rl;transform:rotate(180deg);font-family:'Instrument Serif';font-style:italic;font-weight:400;font-size:60px;display:flex;align-items:center;justify-content:center;height:380px;white-space:nowrap}
+.sw7 small{position:absolute;left:0;right:0;top:470px;text-align:center;font-family:'JetBrains Mono';font-size:20px;font-weight:700}
+.sw7 .rvt{position:absolute;left:52px;top:572px;width:36px;height:36px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#a9aaad);box-shadow:0 0 0 3px var(--ink)}
+/* S8 agent chat */
+.chat{position:absolute;left:80px;top:540px;width:920px;height:560px;background:#fcfcfb}
+.chat .bb{height:70px;background:var(--ink);display:flex;align-items:center;gap:16px;padding:0 30px;color:#fff;font-family:'JetBrains Mono';font-weight:700;font-size:24px;white-space:nowrap}
+.chat .bb .sp{font-size:34px}
+.chat .bb .st{margin-left:auto;color:#9a9ca1;font-weight:500;font-size:20px}
+.msgU{position:absolute;right:36px;top:110px;padding:22px 32px;border-radius:30px 30px 8px 30px;background:#e8e8e6;font-size:36px;font-weight:500;white-space:nowrap;box-shadow:inset 0 0 0 2px #cfd0d2}
+.msgA{position:absolute;left:36px;top:230px;width:848px;padding:22px 28px;border-radius:20px;background:#fff;box-shadow:inset 0 0 0 3px var(--ink);font-family:'JetBrains Mono';font-size:28px;line-height:1.6;white-space:pre}
+.msgA .o{color:#6d6f74}
+.msgA .cur{display:inline-block;width:14px;height:30px;background:var(--ink);vertical-align:-5px}
+.out8{position:absolute;left:190px;top:1150px;width:700px;height:412px;border-radius:22px;overflow:hidden;box-shadow:0 0 0 3px var(--ink),0 10px 0 var(--ink),0 40px 60px rgba(0,0,0,.16)}
+.out8 img{width:700px;height:412px;display:block}
+/* S9 mirror build */
+.colm{position:absolute;top:620px;width:420px;height:800px;transform-style:preserve-3d}
+.colm .who{position:absolute;left:0;right:0;top:0;text-align:center;font-family:'JetBrains Mono';font-weight:800;font-size:30px;letter-spacing:6px}
+.colm .who span{display:inline-block;padding:10px 26px;border-radius:12px;box-shadow:inset 0 0 0 3px var(--ink)}
+.colm .who span.k{background:var(--ink);color:#fff}
+.lyr{position:absolute;left:0;width:420px;border-radius:18px;box-shadow:0 0 0 3px var(--ink),0 8px 0 var(--ink)}
+.lyr.docs{top:90px;height:190px;background:#fff;padding:22px 26px}
+.lyr.docs h5{font-family:'JetBrains Mono';font-size:22px;font-weight:800;letter-spacing:2px;margin-bottom:18px}
+.lyr.docs i{display:block;height:12px;border-radius:6px;background:#dcdcda;margin-bottom:14px}
+.lyr.cli{top:310px;height:110px;background:var(--ink);color:#fff;font-family:'JetBrains Mono';font-size:26px;display:flex;align-items:center;padding-left:26px;white-space:nowrap}
+.lyr.res{top:450px;height:332px;overflow:hidden;background:#fff}
+.lyr.res img{display:block;width:420px;height:332px}
+.mline{position:absolute;left:538px;top:700px;width:4px;height:700px;background:repeating-linear-gradient(180deg,var(--ink) 0 14px,transparent 14px 26px)}
+.eqb{position:absolute;left:500px;top:1000px;width:80px;height:80px;border-radius:50%;background:var(--ink);color:#fff;display:grid;place-items:center;font-family:'JetBrains Mono';font-weight:800;font-size:44px}
+/* S10 swizzle eject */
+.ej{position:absolute;left:250px;top:560px;width:580px;height:232px;transform-style:preserve-3d}
+.ej .ly{position:absolute;left:0;top:0;width:580px;height:232px;border-radius:20px;overflow:hidden;box-shadow:0 0 0 3px var(--ink)}
+.ej .ly.top3 img{width:580px;height:232px;display:block}
+.ej .ly.code3{background:#fff;padding:20px 26px;font-family:'JetBrains Mono';font-size:24px;line-height:1.5;white-space:pre;color:#3a3b3e}
+.ej .ly.code3 b{color:var(--ink)}
+.ej .ly.styl3{background:var(--ink);color:#d9d9d7;padding:20px 26px;font-family:'JetBrains Mono';font-size:24px;line-height:1.5;white-space:pre}
+.ej .lbl{position:absolute;right:-150px;width:130px;font-family:'JetBrains Mono';font-weight:800;font-size:20px;letter-spacing:2px;white-space:nowrap}
+.tree{position:absolute;left:120px;top:1000px;width:840px;height:430px;background:#fcfcfb;padding:26px 36px}
+.tree .tl{position:relative;height:62px;display:flex;align-items:center;font-family:'JetBrains Mono';font-size:32px;white-space:pre}
+.tree .tl .ic{width:34px;height:26px;border-radius:5px;box-shadow:inset 0 0 0 3px var(--ink);margin-right:18px;flex:none}
+.tree .tl .ic.fl{width:26px;height:32px;border-radius:3px}
+.tree .tl.nw{border-radius:12px}
+.tree .tl .nb{margin-left:auto;padding:4px 14px;border-radius:8px;background:var(--ink);color:#fff;font-size:20px;font-weight:800}
+/* S11 clipboard */
+.clip{position:absolute;left:150px;top:600px;width:780px;height:820px;transform-style:preserve-3d}
+.clip .board{position:absolute;left:0;top:40px;width:780px;height:780px;border-radius:30px;background:linear-gradient(180deg,#e2e2e0,#cfd0d2);box-shadow:0 0 0 4px var(--ink),0 14px 0 var(--ink)}
+.clip .paper{position:absolute;left:40px;top:110px;width:700px;height:670px;background:#fff;box-shadow:0 0 0 3px var(--ink);border-radius:6px;padding:70px 46px 0}
+.clip .cl2{position:absolute;left:240px;top:0;width:300px;height:110px;border-radius:20px 20px 30px 30px;background:linear-gradient(180deg,#5a5c61,#0b0b0c);box-shadow:0 8px 0 #000}
+.clip .cl2 i{position:absolute;left:110px;top:22px;width:80px;height:32px;border-radius:16px;background:#e2e2e0}
+.row11{position:relative;height:150px;display:flex;align-items:center;gap:28px;border-bottom:3px dashed #dcdcda}
+.row11 .bx{width:66px;height:66px;border-radius:14px;box-shadow:inset 0 0 0 4px var(--ink);flex:none;position:relative}
+.row11 .bx svg{position:absolute;left:6px;top:6px;width:54px;height:54px}
+.row11 .tt small{display:block;font-family:'JetBrains Mono';font-size:20px;color:var(--mut);letter-spacing:2px;margin-bottom:8px}
+.row11 .tt b{font-family:'JetBrains Mono';font-size:29px;font-weight:700;white-space:nowrap}
+.row11 .tt b.big{font-family:'Inter';font-size:56px;letter-spacing:-.03em}
+.stampD{position:absolute;left:450px;top:385px;width:190px;height:190px;border-radius:50%;box-shadow:inset 0 0 0 8px var(--ink);display:grid;place-items:center;font-family:'JetBrains Mono';font-weight:800;font-size:32px;letter-spacing:3px;transform:rotate(-14deg)}
+/* ending */
+.cin{display:flex;align-items:center;gap:26px;padding:0 26px 0 30px;background:#fff;box-shadow:0 0 0 2px var(--ink),0 6px 0 var(--ink),0 30px 50px rgba(0,0,0,.12)}
+.cbar{position:absolute}
+.av{width:76px;height:76px;border-radius:50%;background:linear-gradient(135deg,#d9d9d7,#a9aaad);flex:none}
+.cin .tx{flex:1;font-size:46px;font-weight:600;letter-spacing:.02em}
+.send{width:84px;height:84px;border-radius:50%;background:var(--ink);display:grid;place-items:center;color:#fff;font-size:40px;flex:none}
+.dm{position:absolute;padding:30px 44px;border-radius:44px 44px 44px 12px;background:var(--ink);color:#fff;font-size:42px;font-weight:500;white-space:nowrap}
+.dm small{display:block;font-family:'JetBrains Mono';font-size:20px;color:#9a9ca1;margin-bottom:8px}
+.bigmk{position:absolute;left:400px;top:600px;width:280px;height:280px;border-radius:50%;display:grid;place-items:center;font-family:'JetBrains Mono';font-weight:800;font-size:96px;color:#fff;background:radial-gradient(circle at 34% 26%,#6a6c71 0 8%,#1c1d20 42%,#000 100%);box-shadow:inset 0 6px 10px rgba(255,255,255,.3),inset 0 -14px 26px rgba(0,0,0,.6),0 40px 80px rgba(0,0,0,.28)}
+.erings{position:absolute;left:290px;top:490px;width:500px;height:500px}
+.fol{position:absolute;left:300px;top:1390px;width:480px;height:132px;border-radius:999px;display:grid;place-items:center;font-size:50px;font-weight:600;background:var(--ink);color:#fff;box-shadow:0 22px 44px rgba(0,0,0,.22)}
+.fol2{position:absolute;left:300px;top:1390px;width:480px;height:132px;border-radius:999px;display:grid;place-items:center;font-size:50px;font-weight:600;background:#fff;color:var(--ink);border:3px solid var(--ink);opacity:0}
+.tapd{position:absolute;width:90px;height:90px;border-radius:50%;background:rgba(11,11,12,.18);border:3px solid rgba(11,11,12,.55);opacity:0}
+.rip{position:absolute;left:540px;top:1456px;width:10px;height:10px;margin:-5px;border-radius:50%;border:4px solid var(--ink);opacity:0}
+</style></head>
+<body>
+<svg width="0" height="0" style="position:absolute"><defs>
+  <filter id="mb" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur id="mbg" stdDeviation="0 0"/></filter>
+</defs></svg>
+<div class="f" id="F">
+ <div id="cam"><div id="stage"><div id="world">
+
+  <!-- S1 hook: Meta's internal vault doors swing open -->
+  <div class="sc" id="s1" data-pose="0,0,0,0,0,0">
+    <div class="ring" style="left:-260px;top:-180px;width:720px;height:720px;transform:translateZ(-500px)"></div>
+    <div class="C sans ty" style="top:250px;font-size:100px;font-weight:700;letter-spacing:-.05em;transform:translateZ(120px)" data-t="0.75" data-cd=".03">Meta open-sourced</div>
+    <div class="C ser rv" style="top:372px;font-size:104px;transform:translateZ(120px)" data-t="1.9"><span class="g">its own</span> design system.</div>
+    <div class="card vault c3d" data-t="0.2" data-rx="10" data-ry="-8">
+      <div class="inner" id="vin">
+        <img id="v1" src="media/appearance.png" style="left:40px;top:50px;width:440px;height:259px">
+        <img id="v2" src="media/reward.png" style="left:520px;top:50px;width:320px;height:253px">
+        <img id="v3" src="media/inventory.png" style="left:40px;top:350px;width:440px;height:300px">
+        <img id="v4" src="media/quest.png" style="left:520px;top:350px;width:320px;height:128px">
+        <img id="v5" src="media/chat.png" style="left:520px;top:510px;width:320px;height:70px">
+      </div>
+      <div class="door l" id="dl"><div class="lb">META ·</div><div class="lb2">monorepo/ui</div><div class="hd"></div>
+        <i class="rv2" style="left:30px;top:30px"></i><i class="rv2" style="left:30px;bottom:30px"></i></div>
+      <div class="door r" id="dr"><div class="lb">INTERNAL</div><div class="lb2">since 2018</div><div class="hd"></div>
+        <i class="rv2" style="right:30px;top:30px"></i><i class="rv2" style="right:30px;bottom:30px"></i></div>
+      <div class="seal" id="seal">PRIVATE<br>▣▣▣</div>
+    </div>
+    <div class="C kick rv" style="top:1400px;font-size:28px;transform:translateZ(120px)" data-t="2.7">github.com/meta/astryx · real components</div>
+  </div>
+
+  <!-- S2 name: logo slices flip in as cubes, real homepage -->
+  <div class="sc" id="s2" data-pose="2400,0,-600,-30,0,0">
+    <div class="ring" style="left:640px;top:-160px;width:700px;height:700px;transform:translateZ(-600px)"></div>
+    <div class="C ser rv" style="top:250px;font-size:100px;transform:translateZ(120px)" data-t="3.56"><span class="g">it's called</span></div>
+    <div class="lg" id="lg"></div>
+    <div class="card brw c3d" data-t="4.0" data-rx="12" data-ry="6">
+      <div class="bb"><i></i><i></i><i></i><span>astryx.atmeta.com</span></div>
+      <img src="media/home_hero.png">
+    </div>
+    <div class="C kick rv" style="top:1380px;font-size:28px;transform:translateZ(120px)" data-t="4.5">the real site · real wordmark</div>
+  </div>
+
+  <!-- S3 tree rings: 8 years, app mosaic counts 13,000 -->
+  <div class="sc" id="s3" data-pose="300,2700,-900,0,26,0">
+    <div class="ring" style="left:-280px;top:1300px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="C sans ty" style="top:240px;font-size:120px;font-weight:700;letter-spacing:-.05em;transform:translateZ(140px)" data-t="5.18" data-cd=".05">8 years</div>
+    <div class="C ser rv" style="top:376px;font-size:96px;transform:translateZ(140px)" data-t="5.72"><span class="g">inside</span> Meta.</div>
+    <div class="trunk" id="trunk"><svg viewBox="0 0 580 580" id="rings"></svg><div class="yr" id="yr">2018</div></div>
+    <div class="card mosaic c3d" data-t="6.5" data-rx="12" data-ry="-6">
+      <div class="hdr">APPS BUILT ON IT <span id="appn">0</span></div>
+      <div class="grid" id="grid"></div>
+    </div>
+    <div class="C ser" style="top:1500px;font-size:96px;transform:translateZ(140px)"><span class="rv g" data-t="6.62">powering</span> <span class="pp bpill" style="font-size:80px" data-t="7.4">13,000+ apps.</span></div>
+  </div>
+
+  <!-- S4 visibility switch flips private -> public -->
+  <div class="sc" id="s4" data-pose="2700,2700,-1400,32,0,0">
+    <div class="ring" style="left:620px;top:-200px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="C sans ty" style="top:250px;font-size:110px;font-weight:700;letter-spacing:-.05em;transform:translateZ(140px)" data-t="9.32" data-cd=".04">now it's free</div>
+    <div class="C ser rv" style="top:380px;font-size:100px;transform:translateZ(140px)" data-t="10.4"><span class="g">on</span> GitHub.</div>
+    <div class="card vis c3d" data-t="9.1" data-rx="18" data-ry="-8">
+      <div class="rn"><span>meta /</span> astryx</div>
+      <div class="sw"><div class="fill" id="swf"></div><div class="wl" id="wl1" style="left:200px">PRIVATE</div><div class="wl" id="wl2" style="left:150px;color:#fff;opacity:0">PUBLIC</div><div class="kn" id="kn"></div></div>
+      <div class="meta2"><b class="k pp" data-t="10.5">MIT</b><b class="pp" data-t="10.65">React 19+</b><b class="pp" data-t="10.8">StyleX</b></div>
+    </div>
+  </div>
+
+  <!-- S5 150+ components: real cards dealt onto a table -->
+  <div class="sc" id="s5" data-pose="5200,2700,-1400,-30,0,0">
+    <div class="ring" style="left:-260px;top:-160px;width:720px;height:720px;transform:translateZ(-600px)"></div>
+    <div class="C sans ty" style="top:220px;font-size:170px;font-weight:700;letter-spacing:-.06em;transform:translateZ(160px)" data-t="11.7" data-cd=".06">150+</div>
+    <div class="C ser rv" style="top:410px;font-size:84px;transform:translateZ(160px)" data-t="12.74"><span class="g">accessible</span> React components.</div>
+    <div class="table" id="table">
+      <div class="felt"></div>
+      <div class="cnt" id="cnt">DEALT 0 / 150+</div>
+      <div class="dl" id="d1" style="left:40px;top:80px;width:450px;height:265px"><img src="media/appearance.png"></div>
+      <div class="dl" id="d2" style="left:530px;top:80px;width:430px;height:339px"><img src="media/reward.png"></div>
+      <div class="dl" id="d3" style="left:40px;top:385px;width:450px;height:307px"><img src="media/inventory.png"></div>
+      <div class="dl" id="d4" style="left:530px;top:460px;width:430px;height:172px"><img src="media/quest.png"></div>
+      <div class="dl" id="d5" style="left:530px;top:672px;width:430px;height:94px"><img src="media/chat.png"></div>
+    </div>
+  </div>
+
+  <!-- S6 dark mode wipe + templates -->
+  <div class="sc" id="s6" data-pose="7800,2700,-1400,30,0,0">
+    <div class="ring" style="left:620px;top:1300px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="C sans ty" style="top:250px;font-size:120px;font-weight:700;letter-spacing:-.05em;transform:translateZ(140px)" data-t="14.46" data-cd=".05">dark mode.</div>
+    <div class="C ser rv" style="top:390px;font-size:96px;transform:translateZ(140px)" data-t="15.24"><span class="g">ready-made</span> templates.</div>
+    <div class="card brw2 c3d" data-t="14.3" data-rx="12" data-ry="-6">
+      <div class="bb"><i></i><i></i><i></i><span>astryx.atmeta.com/templates</span><div class="mt"><i id="mtk"></i></div></div>
+      <div class="pic"><img src="media/templates_grid.png"><img class="dk" id="dkimg" src="media/templates_grid.png"></div>
+    </div>
+    <div class="tabs" id="tabs"><b class="pp" data-t="15.2">Dashboard</b><b class="pp" data-t="15.28">Form</b><b class="pp" data-t="15.36">Login</b><b class="pp" data-t="15.44">AI Chat</b><b class="pp" data-t="15.52">Settings</b></div>
+  </div>
+
+  <!-- S7 seven themes: swatch fan deck -->
+  <div class="sc" id="s7" data-pose="10400,2700,-1400,-28,0,0">
+    <div class="ring" style="left:-280px;top:1300px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="C sans ty" style="top:250px;font-size:130px;font-weight:700;letter-spacing:-.05em;transform:translateZ(160px)" data-t="16.4" data-cd=".05">7 themes</div>
+    <div class="fan" id="fan"></div>
+    <div class="C ser" style="top:1470px;font-size:100px;transform:translateZ(160px)"><span class="rv g" data-t="17.42">swap in</span> <span class="pp bpill" style="font-size:84px" data-t="18.0">seconds.</span></div>
+  </div>
+
+  <!-- S8 agent chat builds with Astryx -->
+  <div class="sc" id="s8" data-pose="12900,2700,-1400,28,0,0">
+    <div class="ring" style="left:620px;top:-200px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="C ser rv" style="top:220px;font-size:96px;transform:translateZ(140px)" data-t="19.1"><span class="g">the cool part?</span></div>
+    <div class="C sans ty" style="top:340px;font-size:100px;font-weight:700;letter-spacing:-.05em;transform:translateZ(140px)" data-t="20.4" data-cd=".035">built for AI agents</div>
+    <div class="card chat c3d" data-t="19.0" data-rx="10" data-ry="6">
+      <div class="bb"><span class="sp">✳</span>coding agent<span class="st" id="ast">idle</span></div>
+      <div class="msgU" id="mu"></div>
+      <div class="msgA" id="ma"></div>
+    </div>
+    <div class="out8" id="out8"><img src="media/appearance.png"></div>
+  </div>
+
+  <!-- S9 mirror: you and the agent build the same way -->
+  <div class="sc" id="s9" data-pose="12900,5400,-1400,-26,0,0">
+    <div class="ring" style="left:-280px;top:1300px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="C sans ty" style="top:220px;font-size:116px;font-weight:700;letter-spacing:-.05em;transform:translateZ(160px)" data-t="22.28" data-cd=".045">same docs.</div>
+    <div class="C ser rv" style="top:350px;font-size:104px;transform:translateZ(160px)" data-t="23.1"><span class="g">same</span> CLI.</div>
+    <div class="colm" id="cmL" style="left:70px">
+      <div class="who"><span>YOU</span></div>
+      <div class="lyr docs" id="dL"><h5>ASTRYX DOCS</h5><i style="width:90%"></i><i style="width:70%"></i><i style="width:80%"></i></div>
+      <div class="lyr cli" id="cL">$ astryx docs</div>
+      <div class="lyr res" id="rL"><img src="media/reward.png"></div>
+    </div>
+    <div class="colm" id="cmR" style="left:590px">
+      <div class="who"><span class="k">AGENT</span></div>
+      <div class="lyr docs" id="dR"><h5>ASTRYX DOCS</h5><i style="width:90%"></i><i style="width:70%"></i><i style="width:80%"></i></div>
+      <div class="lyr cli" id="cR">$ astryx docs</div>
+      <div class="lyr res" id="rR"><img src="media/reward.png"></div>
+    </div>
+    <div class="mline" id="mline"></div>
+    <div class="eqb" id="eqb">=</div>
+    <div class="C ser" style="top:1500px;font-size:96px;transform:translateZ(160px)"><span class="rv g" data-t="24.75">builds</span> <span class="pp bpill" style="font-size:80px" data-t="25.15">like you do.</span></div>
+  </div>
+
+  <!-- S10 swizzle: component ejects its source into your tree -->
+  <div class="sc" id="s10" data-pose="10400,5400,-1400,26,0,0">
+    <div class="ring" style="left:620px;top:-200px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="C ser rv" style="top:220px;font-size:92px;transform:translateZ(160px)" data-t="26.46"><span class="g">own a</span> component?</div>
+    <div class="C sans ty mono" style="top:330px;font-size:120px;font-weight:800;letter-spacing:-.04em;transform:translateZ(160px)" data-t="27.6" data-cd=".05">swizzle</div>
+    <div class="ej" id="ej">
+      <div class="ly styl3" id="ly3">.card {
+  padding: var(--space-4);
+  radius: var(--radius-lg);</div>
+      <div class="ly code3" id="ly2"><b>export function</b> Card(props) {
+  return &lt;Surface {...props}&gt;
+    &lt;CardMedia /&gt;</div>
+      <div class="ly top3" id="ly1"><img src="media/quest.png"></div>
+    </div>
+    <div class="card tree c3d" data-t="28.6" data-rx="10" data-ry="-6">
+      <div class="tl"><span class="ic"></span>your-project/</div>
+      <div class="tl">   <span class="ic"></span>src/</div>
+      <div class="tl">      <span class="ic"></span>components/</div>
+      <div class="tl nw" id="nw1">         <span class="ic fl"></span>Card.tsx<span class="nb">FULL SOURCE</span></div>
+      <div class="tl nw" id="nw2">         <span class="ic fl"></span>Card.styles.ts<span class="nb">YOURS</span></div>
+    </div>
+  </div>
+
+  <!-- S11 clipboard checklist -->
+  <div class="sc" id="s11" data-pose="7800,5400,-1400,-28,0,0">
+    <div class="ring" style="left:-280px;top:-160px;width:720px;height:720px;transform:translateZ(-600px)"></div>
+    <div class="C sans ty" style="top:250px;font-size:116px;font-weight:700;letter-spacing:-.05em;transform:translateZ(160px)" data-t="30.5" data-cd=".05">just install.</div>
+    <div class="clip" id="clip">
+      <div class="board"></div>
+      <div class="paper">
+        <div class="row11"><div class="bx"><svg viewBox="0 0 54 54"><path id="ck1" d="M10 28 L23 40 L45 14" fill="none" stroke="#0b0b0c" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="60" stroke-dashoffset="60"/></svg></div><div class="tt"><small>01 · INSTALL</small><b>npm i @astryxdesign/core</b></div></div>
+        <div class="row11"><div class="bx"><svg viewBox="0 0 54 54"><path id="ck2" d="M10 28 L23 40 L45 14" fill="none" stroke="#0b0b0c" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="60" stroke-dashoffset="60"/></svg></div><div class="tt"><small>02 · ADD A THEME</small><b>@astryxdesign/theme-neutral</b></div></div>
+        <div class="row11" style="border-bottom:0"><div class="bx"><svg viewBox="0 0 54 54"><path id="ck3" d="M10 28 L23 40 L45 14" fill="none" stroke="#0b0b0c" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="60" stroke-dashoffset="60"/></svg></div><div class="tt"><small>03</small><b class="big">done.</b></div></div>
+        <div class="stampD" id="stD">SHIP&nbsp;IT</div>
+      </div>
+      <div class="cl2"><i></i></div>
+    </div>
+  </div>
+
+  <!-- S12 comment -->
+  <div class="sc" id="s12" data-pose="12000,8100,-6000,24,0,0">
+    <div class="ring" style="left:620px;top:1300px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="C sans rv" style="top:380px;font-size:120px;font-weight:500" data-t="33.6">Comment</div>
+    <div class="C sans ty" style="top:510px;font-size:196px;font-weight:700;letter-spacing:-.04em" data-t="33.85" data-cd=".05">GITMATE</div>
+    <div class="cbar cin c3d" style="left:64px;top:860px;width:952px;height:140px;border-radius:999px" data-t="33.5" data-rx="10"><div class="av"></div><div class="tx" id="ctx"></div><div class="send">↑</div></div>
+    <div class="dm pp" style="left:250px;top:1110px" data-t="34.9"><small>git.mate · message</small>Here's your link, mate →</div>
+  </div>
+
+  <!-- S13 end -->
+  <div class="sc" id="s13" data-pose="14400,8100,-6000,-24,0,0">
+    <div class="ring" style="left:-300px;top:-160px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="ring" style="left:640px;top:1400px;width:760px;height:760px;transform:translateZ(-800px)"></div>
+    <svg class="erings" viewBox="0 0 500 500"><circle id="er1" cx="250" cy="250" r="226" fill="none" stroke="#0b0b0c" stroke-width="3" stroke-dasharray="1420" stroke-dashoffset="1420" transform="rotate(-90 250 250)"/>
+      <circle id="er2" cx="250" cy="250" r="246" fill="none" stroke="#c9cacc" stroke-width="2" stroke-dasharray="1546" stroke-dashoffset="1546" transform="rotate(90 250 250)"/></svg>
+    <div class="bigmk" id="bigmk">&gt;_</div>
+    <div class="C sans ty" style="top:1050px;font-size:104px;font-weight:700" data-t="35.6" data-cd=".05">@git.mate</div>
+    <div class="C ser" style="top:1200px;font-size:96px"><span class="rv g" data-t="36.18">1 repo</span> <span class="rv" data-t="36.82">every</span> <span class="rv" data-t="37.08">day.</span></div>
+    <div class="fol pp" id="fol" data-t="35.75">Follow</div>
+    <div class="fol2" id="fol2">Following ✓</div>
+    <div class="rip" id="rip"></div>
+    <div class="tapd" id="tapd" style="left:640px;top:1560px"></div>
+  </div>
+
+ </div></div></div>
+ <div class="top"><div class="brand"><div class="mk">&gt;_</div>git.mate</div><div class="tag" id="tag"><b>01</b> / 13</div></div>
+ <div class="grain"></div>
+</div>
+<script>
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+// all times below are in voice_raw seconds; the voice is sped up SPD x, so video t = raw / SPD
+const SPD = 1.1, RAWTOTAL = 39.4, TOTAL = +(RAWTOTAL / SPD).toFixed(2); window.__TOTAL = TOTAL;
+const S = [0, 3.45, 5.05, 9.05, 11.25, 14.35, 16.3, 18.9, 22.15, 26.4, 30.4, 33.55, 35.35];
+const NS = S.length;
+
+// S2 logo cubes (6 slices of the real wordmark)
+for (let k = 0; k < 6; k++) { const c = document.createElement('div'); c.className = 'cube'; c.id = 'cb' + k; c.style.left = (k * 150) + 'px';
+  c.innerHTML = `<div class="fc tp2"></div><div class="fc bk"></div><div class="fc bt"><i>${'ASTRYX'[k]}</i></div><div class="fc fr"><img src="media/logo_black.png" style="left:${-k * 150}px"></div>`; $('#lg').appendChild(c); }
+// S3 rings
+{ let s = ''; for (let k = 0; k < 8; k++) { const r = 44 + k * 32; let d = '';
+    for (let a = 0; a <= 360; a += 6) { const rr = r + Math.sin(a * Math.PI / 30 + k) * 3 + Math.sin(a * Math.PI / 90 + k * 2) * 4; const x = 290 + rr * Math.cos(a * Math.PI / 180), y = 290 + rr * Math.sin(a * Math.PI / 180); d += (a ? 'L' : 'M') + x.toFixed(1) + ' ' + y.toFixed(1); }
+    s += `<path id="rg${k}" d="${d}Z" fill="none" stroke="#0b0b0c" stroke-width="${k === 7 ? 5 : 3}" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1"/>`; }
+  s += '<line x1="290" y1="290" x2="560" y2="290" stroke="#0b0b0c" stroke-width="2" stroke-dasharray="6 8" opacity=".35"/>';
+  $('#rings').innerHTML = s; }
+// S3 mosaic tiles
+const tiles = []; for (let k = 0; k < 54 * 9; k++) { const i = document.createElement('i'); $('#grid').appendChild(i); tiles.push(i); }
+const order = tiles.map((_, k) => k).sort((a, b) => ((a * 7919) % 487) - ((b * 7919) % 487));
+// S7 swatches
+const TH = [['neutral', '#ffffff', '#0b0b0c'], ['butter', '#f0f0ee', '#0b0b0c'], ['chocolate', '#3a3b3e', '#fff'], ['matcha', '#d9d9d7', '#0b0b0c'], ['stone', '#a9aaad', '#0b0b0c'], ['gothic', '#0b0b0c', '#fff'], ['y2k', '#e6e6e4', '#0b0b0c']];
+TH.forEach(([n, bg, fg], k) => { const d = document.createElement('div'); d.className = 'sw7'; d.id = 'sw' + k; d.style.background = bg; d.style.color = fg; d.style.zIndex = k;
+  d.innerHTML = `<b>${n}</b><small>${String(k + 1).padStart(2, '0')}/07</small><div class="rvt"></div>`; $('#fan').appendChild(d); });
+
+const scenes = $$('.sc');
+const poses = scenes.map(s => s.dataset.pose.split(',').map(Number));
+scenes.forEach((s, i) => { const [x, y, z, ry, rx, rz] = poses[i]; s.style.transform = `translate3d(${x}px,${y}px,${z}px) rotateY(${ry}deg) rotateX(${rx}deg) rotateZ(${rz}deg)`; });
+const tl = gsap.timeline({ paused: true });
+
+// shell: typing / reveals / pops / 3D cards
+$$('.ty').forEach(el => { const t = +el.dataset.t, cd = +(el.dataset.cd || .045); const txt = el.textContent; el.textContent = '';
+  const chs = [...txt].map(c => { const s = document.createElement('span'); s.className = 'ch'; s.textContent = c; el.appendChild(s); return s; });
+  tl.set(chs, { opacity: 0 }, 0);
+  chs.forEach((c, i) => tl.fromTo(c, { opacity: 0, y: 26, filter: 'blur(14px)' }, { opacity: 1, y: 0, filter: 'blur(0px)', duration: .42, ease: 'power3.out', immediateRender: false }, Math.max(0.001, t + i * cd))); });
+$$('.rv').forEach(el => { const t = +el.dataset.t; if (isNaN(t)) return;
+  tl.set(el, { opacity: 0 }, 0); tl.fromTo(el, { opacity: 0, y: 46, filter: 'blur(16px)' }, { opacity: 1, y: 0, filter: 'blur(0px)', duration: .55, ease: 'power3.out', immediateRender: false }, Math.max(0.001, t)); });
+$$('.pp').forEach(el => { const t = +el.dataset.t;
+  tl.set(el, { opacity: 0 }, 0); tl.fromTo(el, { opacity: 0, scale: .55, filter: 'blur(10px)' }, { opacity: 1, scale: 1, filter: 'blur(0px)', duration: .5, ease: 'back.out(2.2)', immediateRender: false }, t); });
+$$('.c3d').forEach(el => { const t = +el.dataset.t, rx = +(el.dataset.rx || 0), ry = +(el.dataset.ry || 0);
+  tl.set(el, { opacity: 0, transformPerspective: 1500 }, 0);
+  tl.fromTo(el, { opacity: 0, rotationX: rx + 50, rotationY: ry * 2.5, y: 260, z: -500, scale: .9 }, { opacity: 1, rotationX: rx, rotationY: ry, y: 0, z: 0, scale: 1, duration: 1.05, ease: 'expo.out', immediateRender: false }, Math.max(0.001, t));
+  tl.to(el, { rotationX: rx * .4, rotationY: -ry * .5, duration: 3.2, ease: 'sine.inOut' }, Math.max(0.001, t) + 1.05); });
+
+// S1 seal drops, doors swing open, components push forward
+tl.set('#seal', { scale: 1 }, 0); tl.to('#seal', { scale: 1.12, duration: .12, yoyo: true, repeat: 1 }, 1.05);
+tl.to('#seal', { y: 520, rotation: 24, opacity: 0, duration: .45, ease: 'power3.in' }, 1.3);
+tl.set(['#dl', '#dr'], { transformPerspective: 1400 }, 0);
+tl.to('#dl', { rotationY: -100, duration: .9, ease: 'power3.inOut' }, 1.4); tl.to('#dr', { rotationY: 100, duration: .9, ease: 'power3.inOut' }, 1.4);
+tl.to(['#dl', '#dr'], { opacity: 0, duration: .2 }, 2.15);
+['#v1', '#v2', '#v3', '#v4', '#v5'].forEach((v, k) => { tl.set(v, { scale: .86, opacity: .4 }, 0); tl.to(v, { scale: 1, opacity: 1, duration: .6, ease: 'back.out(1.8)' }, 1.75 + k * .1); });
+
+// S2 cubes flip to reveal wordmark
+for (let k = 0; k < 6; k++) { tl.set('#cb' + k, { rotationX: 90 }, 0); tl.to('#cb' + k, { rotationX: 0, duration: .55, ease: 'back.out(1.6)' }, 4.1 + k * .07); }
+tl.set('#lg', { rotationY: -16, rotationX: 8, transformPerspective: 1600 }, 0); tl.to('#lg', { rotationY: 12, duration: 1.8, ease: 'sine.inOut' }, 4.1);
+
+// S3 rings draw year by year
+for (let k = 0; k < 8; k++) tl.fromTo('#rg' + k, { attr: { 'stroke-dashoffset': 1 } }, { attr: { 'stroke-dashoffset': 0 }, duration: .35, ease: 'power2.out', immediateRender: false }, 5.3 + k * .14);
+const yrs = { v: 0 }; tl.fromTo(yrs, { v: 0 }, { v: 8, duration: 1.12, ease: 'none', immediateRender: false }, 5.3);
+tl.set('#trunk', { rotationX: 30, transformPerspective: 1500, scale: .9 }, 0); tl.to('#trunk', { rotationX: 14, scale: 1, duration: 3, ease: 'sine.inOut' }, 5.1);
+const apps = { v: 0 }; tl.fromTo(apps, { v: 0 }, { v: 1, duration: 1.3, ease: 'power2.inOut', immediateRender: false }, 7.0);
+
+// S4 switch flips to public
+const swo = { o: 0 }; tl.fromTo(swo, { o: 0 }, { o: 1, duration: .45, ease: 'back.out(1.4)', immediateRender: false }, 9.7);
+
+// S5 dealing cards onto the table
+tl.set('#table', { rotationX: 40, transformPerspective: 1700, y: 40, scale: .88 }, 0); tl.to('#table', { rotationX: 28, duration: 3, ease: 'sine.inOut' }, 11.3);
+[['#d1', 12.0, -14], ['#d2', 12.25, 10], ['#d3', 12.5, -8], ['#d4', 12.75, 12], ['#d5', 13.0, -10]].forEach(([d, t, r]) => {
+  tl.set(d, { opacity: 0, y: -700, z: 400, rotation: r * 3 }, 0); tl.to(d, { opacity: 1, duration: .05 }, t);
+  tl.to(d, { y: 0, z: 0, rotation: r * .15, duration: .5, ease: 'power3.out' }, t); });
+const dealt = { v: 0 }; tl.fromTo(dealt, { v: 0 }, { v: 150, duration: 1.6, ease: 'power1.inOut', immediateRender: false }, 12.0);
+
+// S6 dark-mode circular wipe
+const dk = { r: 0 }; tl.fromTo(dk, { r: 0 }, { r: 1, duration: .7, ease: 'power2.inOut', immediateRender: false }, 14.75);
+tl.to('#mtk', { x: 46, duration: .25, ease: 'back.out(2)' }, 14.6);
+tl.to('#mtk', { backgroundColor: '#0b0b0c', duration: .2 }, 14.6);
+
+// S7 swatch fan opens, matcha lifts on swap
+const FA = [-48, -32, -16, 0, 16, 32, 48];
+FA.forEach((a, k) => { tl.set('#sw' + k, { rotation: 0, transformPerspective: 1600 }, 0); tl.to('#sw' + k, { rotation: a, duration: .8, ease: 'back.out(1.3)' }, 16.55 + k * .05); });
+tl.set('#fan', { rotationX: 16, transformPerspective: 1700 }, 0);
+tl.to('#sw3', { y: -60, duration: .3, ease: 'back.out(2)' }, 17.4); tl.to('#sw3', { y: 0, duration: .3 }, 17.75);
+tl.to('#sw5', { y: -60, duration: .3, ease: 'back.out(2)' }, 17.75);
+tl.to('#sw0', { y: -60, duration: .3, ease: 'back.out(2)' }, 18.05); tl.to('#sw5', { y: 0, duration: .3 }, 18.05);
+
+// S8 output card lands
+tl.set('#out8', { opacity: 0, rotationX: 60, z: -400, transformPerspective: 1500 }, 0);
+tl.to('#out8', { opacity: 1, rotationX: 8, z: 0, duration: .8, ease: 'expo.out' }, 21.1);
+
+// S9 mirrored layers drop in on both sides
+tl.set('#cmL', { rotationY: 16, transformPerspective: 1600 }, 0); tl.set('#cmR', { rotationY: -16, transformPerspective: 1600 }, 0);
+[['#dL', '#dR', 22.4], ['#cL', '#cR', 23.2], ['#rL', '#rR', 24.6]].forEach(([a, b, t]) => { [a, b].forEach((x, j) => { tl.set(x, { opacity: 0, y: -260, rotationX: -40 }, 0); tl.to(x, { opacity: 1, y: 0, rotationX: 0, duration: .5, ease: 'back.out(1.5)' }, t + j * .08); }); });
+tl.set('#mline', { scaleY: 0, transformOrigin: '50% 0' }, 0); tl.to('#mline', { scaleY: 1, duration: .8, ease: 'power2.out' }, 22.3);
+tl.set('#eqb', { scale: 0 }, 0); tl.to('#eqb', { scale: 1, duration: .45, ease: 'back.out(2.5)' }, 24.9);
+
+// S10 component explodes into layers, files appear
+tl.set('#ej', { rotationX: 38, rotationZ: -20, transformPerspective: 1800, scale: 1.12 }, 0);
+tl.set(['#ly1', '#ly2', '#ly3'], { z: 0 }, 0);
+tl.to('#ly1', { z: 120, duration: .6, ease: 'expo.out' }, 28.0); tl.to('#ly3', { z: -120, duration: .6, ease: 'expo.out' }, 28.0);
+tl.to('#ej', { rotationZ: -10, duration: 2, ease: 'sine.inOut' }, 28.0);
+tl.set(['#nw1', '#nw2'], { opacity: 0, x: -60 }, 0);
+tl.to('#nw1', { opacity: 1, x: 0, background: '#ececea', duration: .4, ease: 'back.out(2)' }, 29.3);
+tl.to('#nw2', { opacity: 1, x: 0, background: '#ececea', duration: .4, ease: 'back.out(2)' }, 29.5);
+
+// S11 clipboard: checks tick on each word, stamp lands
+tl.set('#clip', { rotationX: 22, rotationZ: -3, transformPerspective: 1700 }, 0); tl.to('#clip', { rotationX: 10, rotationZ: 2, duration: 3, ease: 'sine.inOut' }, 30.4);
+[['#ck1', 31.1], ['#ck2', 32.1], ['#ck3', 32.76]].forEach(([c, t]) => tl.fromTo(c, { attr: { 'stroke-dashoffset': 60 } }, { attr: { 'stroke-dashoffset': 0 }, duration: .25, ease: 'power2.out', immediateRender: false }, t));
+tl.set('#stD', { opacity: 0, scale: 2.4 }, 0); tl.to('#stD', { opacity: 1, scale: 1, duration: .16, ease: 'power4.in' }, 32.7);
+
+// S12 comment typing
+const cm = { n: 0 };
+tl.fromTo(cm, { n: 0 }, { n: 7, duration: .45, ease: 'none', immediateRender: false, onUpdate: () => $('#ctx').textContent = 'GITMATE'.slice(0, Math.round(cm.n)) }, 34.0);
+
+// S13 end
+tl.set('#bigmk', { opacity: 0, scale: .2 }, 0);
+tl.to('#bigmk', { opacity: 1, scale: 1, duration: .9, ease: 'back.out(1.8)' }, 35.4);
+tl.fromTo('#er1', { attr: { 'stroke-dashoffset': 1420 } }, { attr: { 'stroke-dashoffset': 0 }, duration: 1.0, ease: 'power2.inOut', immediateRender: false }, 35.55);
+tl.fromTo('#er2', { attr: { 'stroke-dashoffset': 1546 } }, { attr: { 'stroke-dashoffset': 0 }, duration: 1.2, ease: 'power2.inOut', immediateRender: false }, 35.7);
+tl.to('#tapd', { opacity: 1, left: 560, top: 1440, duration: .5, ease: 'power2.out' }, 37.5);
+tl.to('#tapd', { scale: .7, duration: .1 }, 38.0); tl.to('#tapd', { scale: 1, duration: .15 }, 38.1);
+tl.to('#fol', { scale: .93, duration: .1 }, 38.0); tl.to('#fol', { scale: 1, duration: .2 }, 38.1);
+tl.set('#fol2', { opacity: 1 }, 38.1); tl.set('#fol', { opacity: 0 }, 38.1);
+tl.fromTo('#rip', { opacity: .7, width: 10, height: 10, margin: -5 }, { opacity: 0, width: 640, height: 640, margin: -320, duration: .8, ease: 'power2.out', immediateRender: false }, 38.05);
+tl.to('#tapd', { opacity: 0, duration: .3 }, 38.45);
+tl.to({}, { duration: .01 }, RAWTOTAL);
+
+// camera: pure function of raw time
+const ease = x => x < .5 ? 16 * x ** 5 : 1 - Math.pow(-2 * x + 2, 5) / 2;
+const TD = .8, TPRE = .45;
+function camAt(t) {
+  let i = 0; for (let k = 0; k < S.length; k++) if (t >= S[k] - TPRE) i = k;
+  const ta = S[i] - TPRE; let p = poses[i].slice(), d = 0, rr = 0;
+  if (i > 0 && t < ta + TD) { const u = (t - ta) / TD, e = ease(u), a = poses[i - 1]; p = a.map((v, j) => v + (poses[i][j] - v) * e); d = Math.sin(u * Math.PI) * 700; rr = Math.sin(u * Math.PI) * (i % 2 ? 4 : -4); }
+  const st = Math.max(0, t - (S[i] - TPRE + TD)); const dz = Math.min(st, 6) * 8;
+  return { x: p[0], y: p[1], z: p[2] - dz, ry: p[3] + Math.sin(t * .6) * .6, rx: p[4] + Math.sin(t * .45) * .5, rz: p[5] + rr, d, i };
+}
+function camT(c) { return `translateZ(${-c.d + 60}px) rotateZ(${-c.rz}deg) rotateX(${-c.rx}deg) rotateY(${-c.ry}deg) translate3d(${-c.x}px,${-c.y}px,${-c.z}px)`; }
+const world = $('#world'), mbg = $('#mbg'), cam = $('#cam');
+const typeAt = (t, t0, dur, s) => s.slice(0, Math.max(0, Math.min(s.length, Math.round((t - t0) / dur * s.length))));
+const cl = (x, a, b) => Math.max(a, Math.min(b, x));
+function tick(t) {
+  const c = camAt(t), p = camAt(Math.max(0, t - SPD / 30));
+  world.style.transform = camT(c);
+  const hx = Math.abs(c.x - p.x) * .9 + Math.abs(c.ry - p.ry) * 32, vy = Math.abs(c.y - p.y) * .9 + Math.abs(c.rx - p.rx) * 32, zz = Math.abs(c.z - p.z + (p.d - c.d)) * .25;
+  const bx = Math.min(70, hx * .22 + zz * .05), by = Math.min(70, vy * .22 + zz * .05);
+  if (bx + by > .4) { mbg.setAttribute('stdDeviation', `${bx.toFixed(1)} ${by.toFixed(1)}`); cam.style.filter = 'url(#mb)'; } else cam.style.filter = 'none';
+  scenes.forEach((s, k) => { s.style.visibility = (k === c.i || (k === c.i - 1 && t < S[c.i] - TPRE + TD)) ? 'visible' : 'hidden'; });
+  $('#tag').innerHTML = `<b>${String(c.i + 1).padStart(2, '0')}</b> / ${NS}`;
+  // S3 year + mosaic
+  $('#yr').textContent = 2018 + Math.round(yrs.v);
+  const n = Math.round(apps.v * tiles.length); tiles.forEach((el, k) => {}); order.forEach((ix, k) => tiles[ix].className = k < n ? 'on' : '');
+  $('#appn').textContent = Math.round(apps.v * 13000).toLocaleString('en-US') + (apps.v >= 1 ? '+' : '');
+  // S4 switch
+  { const o = swo.o; $('#kn').style.left = (14 + o * 584) + 'px'; $('#swf').style.width = (170 + o * 570) + 'px';
+    $('#wl1').style.opacity = 1 - cl(o * 2, 0, 1); $('#wl2').style.opacity = cl(o * 2 - 1, 0, 1); }
+  $('#cnt').textContent = `DEALT ${Math.round(dealt.v)}${dealt.v >= 150 ? '+' : ''} / 150+`;
+  // S6 wipe from the moon toggle (top-right)
+  $('#dkimg').style.clipPath = `circle(${(dk.r * 1100).toFixed(0)}px at 860px -20px)`;
+  // S8 chat
+  $('#mu').textContent = typeAt(t, 19.3, .9, 'build me a settings page');
+  { const l1 = typeAt(t, 20.3, .9, '$ astryx component --list'), on = t > 21.2, l3 = t > 21.5 ? '✓ Appearance · 3 switches' : '';
+    $('#ma').innerHTML = (t < 20.3 ? '<span class="o">thinking…</span>' : l1 + (on ? '\n<span class="o">→ reading Astryx docs</span>' : '') + (l3 ? '\n' + l3 : '')) + (t < 21.5 ? '<span class="cur"></span>' : '');
+    $('#ast').textContent = t < 20.3 ? 'reading' : t < 21.5 ? 'building' : 'done ✓'; }
+}
+window.__seek = vt => { const t = vt * SPD; tl.time(t, false); tick(t); const ims = [...document.images].map(i => i.complete ? null : i.decode().catch(() => {})).filter(Boolean); return Promise.all(ims); };
+__seek(0);
+if (!navigator.webdriver) { const t0 = performance.now(); const loop = () => { window.__seek(((performance.now() - t0) / 1000) % TOTAL); requestAnimationFrame(loop); }; requestAnimationFrame(loop); }
+</script>
+</body></html>

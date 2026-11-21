@@ -1,0 +1,10 @@
+{
+ "title": "Worktrunk: git worktrees made easy for running AI agents in parallel",
+ "caption": "Running 5 AI agents at once? They're all fighting over the same folder. \ud83e\udd2f\n\nWorktrunk (10k+ \u2b50 on GitHub) is a CLI that makes git worktrees as easy as branches, built for running AI agents in parallel:\n\u2192 Every agent gets its own worktree, its own copy of the repo, so nobody steps on anyone's changes\n\u2192 wt switch -c -x claude feat: new branch + new worktree + Claude starts inside it, in one command\n\u2192 wt list: every branch with its status (add --full for CI status + AI summaries)\n\u2192 wt merge: squash, rebase, merge and clean up in one command\n\u2192 Hooks, LLM commit messages, shared build caches, wt switch pr:123\n\n\u2705 Free + open source (MIT or Apache-2.0)\n\u2705 brew install worktrunk / cargo install worktrunk (Windows: winget)\n\nComment GITMATE and I'll send you the link \ud83d\udc47\nFollow @git.mate for 1 useful repo every day.\n\n#github #opensource #git #gitworktree #aiagents #claudecode #rust #cli #devtools #developer #programming #productivity\n",
+ "repo_url": "https://github.com/max-sixty/worktrunk",
+ "date": "2026-11-04",
+ "theme": "dark",
+ "video": "/mnt/project-files/dev-reels/worktrunk/gitmate_worktrunk.mp4",
+ "duration_sec": 38.17,
+ "cover_offset_ms": 4100
+}

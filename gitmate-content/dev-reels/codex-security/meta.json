@@ -1,0 +1,9 @@
+{
+ "video": "gitmate_codex-security.mp4",
+ "title": "Codex Security: OpenAI's open-source AI bug hunter for your code",
+ "description": "OpenAI open-sourced its AI bug hunter \ud83d\udee1\ufe0f\n\nCodex Security is OpenAI's CLI + TypeScript SDK for finding and fixing security vulnerabilities in your code:\n\u2192 One command: cs scan . (or scan just a path, or only your git diff)\n\u2192 It validates each finding, so you're not drowning in false alarms\n\u2192 Generates the patch, then verifies the fix actually holds\n\u2192 Saves threat models and drafts your SECURITY.md\n\u2192 Runs weekly in GitHub Actions; exports SARIF, JSON, CSV; tracks findings in Linear, Jira or GitHub\n\nInstall: npm install --global @openai/codex-security\nThen: cs login \u2192 cs scan .\n(Beta: needs an OpenAI sign-in or API key, scans use your OpenAI usage.)\n\n\u2705 Open source (Apache 2.0) \u00b7 12K+ \u2605 on GitHub\n\nComment GITMATE and I'll send you the link \ud83d\udc47\nFollow @git.mate for 1 useful repo every day.\n\n#github #opensource #openai #codex #cybersecurity #appsec #devsecops #security #ai #typescript #nodejs #developer #programming #coding\n",
+ "repo": "https://github.com/openai/codex-security",
+ "theme": "dark",
+ "duration": 34.4,
+ "source": "github.com/trending (2026-11-13, 12,593 stars, +643 that day)"
+}

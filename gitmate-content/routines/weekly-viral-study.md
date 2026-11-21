@@ -1,0 +1,11 @@
+Weekly study for the Instagram page @git.mate (owner rule 2026-11-15: every Sunday pull the data of all reels posted that week, learn from any that went viral, and apply it to future reels). The owner writes Hinglish; write your final summary in simple Hinglish. This task already runs on a schedule; do not create or offer another one.
+
+Steps:
+1. Read /mnt/project-files/dev-reels/viral_playbook.md (current rules + past weekly log) and the top of /mnt/project-files/dev-reels/gitmate_handoff.md.
+2. Get data: GET https://gitmate-autopost.vercel.app/api/queue with header "x-upload-token: $GITMATE_QUEUE_KEY". Each item with status "posted" has posted_at, title, duration_sec, window, snapshot (views at 12h) and latest (views, reach, likes, comments, shares, saved, ig_reels_avg_watch_time in ms). Never use any Growaun/DigitalOcean server or token for this.
+3. Take the reels posted in the last 7 days. For each compute: views, avg watch seconds and % of duration, save rate, share rate, comment rate (per reach). Compare with the median of all posted reels. A reel is "viral" if views >= 5x the median, "strong" if >= 2x.
+4. For every viral or strong reel, and for the 2 weakest, open its folder in /mnt/project-files/dev-reels/<slug>/ (reel.html, caption.txt, script.txt if present; log.json lists slugs) and work out WHY: the hook line and what is on screen in the first 2 seconds, how wide the audience is, whether it showed real footage, "free replacement" framing, install ease, builder story, length, post time/window. Say plainly what is evidence and what is your guess.
+5. Update /mnt/project-files/dev-reels/viral_playbook.md: append a dated entry at the top of "Weekly log" (a small table of this week's reels with the numbers, winners, losers, 2-4 lessons), and edit the "Rules" section only when the data supports a change (keep rules short and numbered; do not delete a rule on one week's data). Re-read the file about 10 seconds after writing.
+6. Final summary to the owner in Hinglish, under 150 words: this week's best and worst reel with numbers, what was learned, and which rule changed (or "no rule change"). If no reels were posted or the API fails, say so and stop.
+
+Do not make or post any reel, and do not change the dashboard, in this task.

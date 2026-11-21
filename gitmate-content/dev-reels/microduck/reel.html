@@ -1,0 +1,510 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<title>git.mate microduck</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter+Tight:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<style>
+:root{--ink:#f5f6f7;--mut:rgba(235,238,242,.58);--dim:rgba(235,238,242,.32)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#000}
+.f{position:relative;width:1080px;height:1920px;overflow:hidden;background:radial-gradient(ellipse 120% 80% at 50% 40%,#0d0e11 0%,#040405 60%,#000 100%);color:var(--ink);font-family:'Inter Tight',sans-serif}
+.vig{position:absolute;inset:0;z-index:5;pointer-events:none;background:radial-gradient(ellipse 90% 70% at 50% 50%,transparent 50%,rgba(0,0,0,.7) 100%)}
+.grain{position:absolute;inset:0;opacity:.08;mix-blend-mode:overlay;z-index:8;pointer-events:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
+#stage{position:absolute;inset:0;perspective:2200px;perspective-origin:50% 46%;z-index:2}
+#world{position:absolute;left:0;top:0;width:1080px;height:1920px;transform-style:preserve-3d}
+.sc{position:absolute;left:0;top:0;width:1080px;height:1920px;transform-style:preserve-3d;backface-visibility:hidden;visibility:hidden}
+#s1{visibility:visible}
+.c3{position:absolute;border-radius:34px;overflow:hidden;background:linear-gradient(160deg,#1d1e22 0%,#121316 45%,#0b0c0e 100%);
+  box-shadow:inset 0 1.5px 0 rgba(255,255,255,.2),inset 0 0 0 1.5px rgba(255,255,255,.07),0 3px 0 #1b1c1f,0 6px 0 #16171a,0 9px 0 #111214,0 12px 0 #0c0d0f,0 60px 90px rgba(0,0,0,.75)}
+.c3.lite{background:linear-gradient(160deg,#f7f8f9,#d9dce0);color:#08090a;box-shadow:inset 0 2px 0 #fff,0 3px 0 #c3c6cb,0 6px 0 #aeb2b8,0 9px 0 #9a9ea4,0 12px 0 #868a90,0 60px 90px rgba(0,0,0,.7)}
+.bead{width:62px;height:62px;border-radius:50%;display:grid;place-items:center;font-family:'JetBrains Mono';font-weight:800;font-size:24px;color:#050505;flex:none;
+  background:radial-gradient(circle at 35% 28%,#fff 0 18%,#e4e6ea 45%,#9da1a8 100%);box-shadow:inset 0 -5px 10px rgba(0,0,0,.25),inset 0 3px 4px #fff,0 10px 24px rgba(0,0,0,.6)}
+.top{position:absolute;left:64px;right:64px;top:88px;height:90px;z-index:6}
+.brand{position:absolute;left:0;top:0;display:flex;align-items:center;gap:18px;padding:14px 30px 14px 14px;font-family:'JetBrains Mono';font-weight:700;font-size:30px;border-radius:999px;background:#0e0f11;box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 0 0 1.5px rgba(255,255,255,.1)}
+.tag{position:absolute;right:0;top:12px;padding:18px 30px;font-family:'JetBrains Mono';font-size:24px;color:var(--mut);white-space:nowrap;border-radius:999px;background:#0e0f11;box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 0 0 1.5px rgba(255,255,255,.08)}
+.tag b{color:var(--ink)}
+.prog{position:absolute;left:64px;right:64px;bottom:96px;display:flex;gap:10px;z-index:6}
+.prog i{flex:1;height:8px;border-radius:4px;background:rgba(255,255,255,.14);position:relative;overflow:hidden}
+.prog i b{position:absolute;left:0;top:0;bottom:0;width:0;background:#f2f3f5;border-radius:4px}
+.L{position:absolute;left:64px;right:64px}
+.kick{font-family:'JetBrains Mono';font-size:28px;color:var(--mut);letter-spacing:1px;white-space:pre;height:40px}
+.h{font-weight:900;letter-spacing:-5px;line-height:.92;text-transform:uppercase}
+.h .ln{display:block;white-space:nowrap}
+.h .w{display:inline-block;padding-bottom:.05em;margin-right:.2em;background-image:linear-gradient(180deg,#ffffff 0%,#f1f2f4 50%,#b4b8be 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.h .w:last-child{margin-right:0}
+.h .soft .w{background-image:linear-gradient(180deg,rgba(255,255,255,.62),rgba(255,255,255,.24))}
+.lbl{font-family:'JetBrains Mono';font-size:22px;color:var(--mut)}
+.mono{font-family:'JetBrains Mono'}
+.chrome{display:flex;align-items:center;gap:14px;padding:22px 26px 14px}
+.chrome i{width:16px;height:16px;border-radius:50%;background:rgba(255,255,255,.3)}
+.url{margin-left:10px;flex:1;font-family:'JetBrains Mono';font-size:20px;color:var(--mut);padding:9px 18px;border-radius:999px;background:rgba(0,0,0,.3);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.08);white-space:nowrap;overflow:hidden}
+/* duck cutouts (official alpha renders of the robot) */
+.dk{position:absolute}
+.dk img{position:absolute}
+.shd{position:absolute;border-radius:50%;background:radial-gradient(ellipse at center,rgba(255,255,255,.16),rgba(255,255,255,0) 70%)}
+
+/* S1 runway */
+.run{position:absolute;left:140px;top:1150px;width:800px;height:470px;transform-origin:50% 0;transform:rotateX(74deg);overflow:hidden;border-radius:30px;
+  background:linear-gradient(90deg,transparent 0 49.6%,rgba(255,255,255,.12) 49.6% 50.4%,transparent 50.4%),linear-gradient(180deg,rgba(255,255,255,.09),rgba(255,255,255,.01));box-shadow:inset 0 0 0 2px rgba(255,255,255,.1)}
+.fp{position:absolute;width:70px;height:96px;border-radius:30px 30px 24px 24px;border:5px solid rgba(255,255,255,.75)}
+.stepc{display:flex;flex-direction:column;justify-content:center;padding:0 36px}
+.stepc .n{font-family:'JetBrains Mono';font-weight:800;font-size:66px;letter-spacing:-2px}
+.osb{display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}
+.osb .t{font-size:52px;font-weight:900;letter-spacing:-2px}
+.osb .s{font-family:'JetBrains Mono';font-size:21px;color:#4a4e55;margin-top:6px}
+
+/* S2 jointed letters + film + nameplates */
+.jl{position:absolute;left:0;right:0;top:330px;text-align:center;font-weight:900;font-size:150px;letter-spacing:-4px;perspective:900px;white-space:nowrap}
+.jl span{display:inline-block;transform-origin:50% 100%;color:#f5f6f7;
+  text-shadow:0 2px 0 #c9ccd1,0 4px 0 #a9adb3,0 6px 0 #8c9096,0 8px 0 #70747a,0 10px 0 #575b61,0 12px 0 #3f4247,0 30px 40px rgba(0,0,0,.8)}
+.film{position:absolute;left:64px;top:560px;width:952px;height:615px;padding:40px 0;border-radius:22px;background:#0b0b0c;box-shadow:inset 0 0 0 2px rgba(255,255,255,.12),0 40px 80px rgba(0,0,0,.8)}
+.film .sp{position:absolute;left:24px;right:24px;height:18px;display:flex;justify-content:space-between}
+.film .sp i{width:26px;height:18px;border-radius:5px;background:#e9ebee;opacity:.85}
+.film img{display:block;width:952px;height:535px;object-fit:cover}
+.film .cap{position:absolute;right:20px;bottom:56px;padding:6px 14px;border-radius:999px;font-family:'JetBrains Mono';font-size:17px;font-weight:700;color:#fff;background:rgba(0,0,0,.7)}
+.plate{display:flex;flex-direction:column;justify-content:center;padding:0 40px}
+.plate .s{font-family:'JetBrains Mono';font-size:20px;color:#4a4e55;margin-bottom:6px}
+.plate .t{font-size:48px;font-weight:900;letter-spacing:-1.5px}
+.scr{position:absolute;width:20px;height:20px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#9da1a8);box-shadow:inset 0 0 0 1.5px rgba(0,0,0,.25)}
+.scr::after{content:"";position:absolute;left:4px;right:4px;top:9px;height:2px;background:rgba(0,0,0,.45);transform:rotate(35deg)}
+
+/* S3 tape + servo bank */
+.tape{position:absolute;left:280px;width:44px;border-radius:6px;overflow:hidden;background:linear-gradient(90deg,#e9ebee,#c2c5ca);box-shadow:0 0 0 2px rgba(255,255,255,.3),0 20px 40px rgba(0,0,0,.6)}
+.tape i{position:absolute;left:0;height:3px;background:#0a0b0c}
+.tread{position:absolute;left:120px;font-family:'JetBrains Mono';font-weight:800;font-size:34px;width:150px;text-align:right}
+.flr{position:absolute;left:200px;width:700px;height:3px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.6),transparent)}
+.srv{position:absolute;width:172px;height:86px;border-radius:18px;display:flex;align-items:center;gap:14px;padding:0 16px;font-family:'JetBrains Mono';font-weight:800;font-size:22px;
+  background:linear-gradient(160deg,#1f2024,#0d0e10);box-shadow:inset 0 0 0 2px rgba(255,255,255,.12),0 4px 0 #0a0a0b,0 8px 0 #060607;color:var(--mut)}
+.srv .hn{width:46px;height:46px;border-radius:50%;flex:none;border:4px solid rgba(255,255,255,.35);position:relative}
+.srv .hn::after{content:"";position:absolute;left:17px;top:-4px;width:4px;height:46px;background:rgba(255,255,255,.35);border-radius:2px}
+.srv.on{background:linear-gradient(160deg,#fbfbfc,#d4d7db);color:#08090a;box-shadow:0 4px 0 #a5a9af,0 8px 0 #8a8e94,0 0 40px rgba(255,255,255,.18)}
+.srv.on .hn{border-color:#08090a}.srv.on .hn::after{background:#08090a}
+.mcount{position:absolute;right:64px;font-family:'JetBrains Mono';font-size:24px;color:var(--mut)}
+
+/* S4 neural net + sim/real windows + rail */
+.nn{position:absolute;left:0;top:0;width:1080px;height:1920px;overflow:visible}
+.nn line{stroke:rgba(255,255,255,.16);stroke-width:2}
+.nn .nd{fill:#0d0e10;stroke:#f2f3f5;stroke-width:4}
+.nn .pl{fill:#fff}
+.win{width:456px;height:580px}
+.win .bd{position:absolute;left:18px;right:18px;top:70px;bottom:62px;border-radius:18px;overflow:hidden;background:#050506}
+.grid3{position:absolute;left:-200px;right:-200px;bottom:-40px;height:380px;transform-origin:50% 100%;transform:perspective(500px) rotateX(62deg);
+  background-image:linear-gradient(rgba(255,255,255,.22) 2px,transparent 2px),linear-gradient(90deg,rgba(255,255,255,.22) 2px,transparent 2px);background-size:60px 60px}
+.win .ft{position:absolute;left:26px;right:26px;bottom:18px;display:flex;justify-content:space-between;font-family:'JetBrains Mono';font-size:19px;color:var(--mut)}
+.win .ft b{color:#fff}
+.real img{position:absolute;left:50%;top:0;height:100%;transform:translateX(-50%)}
+.rail{position:absolute;left:120px;width:840px;height:6px;border-radius:3px;background:rgba(255,255,255,.14)}
+.rail b{position:absolute;left:0;top:0;bottom:0;width:0;border-radius:3px;background:#f2f3f5}
+.cart{position:absolute;width:250px;height:92px;border-radius:16px;display:flex;align-items:center;justify-content:center;gap:12px;font-family:'JetBrains Mono';font-weight:800;font-size:26px;color:#08090a;
+  background:linear-gradient(180deg,#fbfbfc,#cfd2d7);box-shadow:inset 0 2px 0 #fff,0 4px 0 #b0b4ba,0 8px 0 #92969c,0 12px 0 #777b81,0 30px 50px rgba(0,0,0,.6)}
+.cart i{display:block;width:30px;height:40px;border-radius:5px;background:repeating-linear-gradient(180deg,#08090a 0 4px,transparent 4px 8px)}
+.rl{position:absolute;font-family:'JetBrains Mono';font-weight:800;font-size:22px;color:var(--mut)}
+
+/* S5 display pods */
+.pod{width:464px;height:520px}
+.pod .spot{position:absolute;left:50%;top:-40px;width:560px;height:560px;margin-left:-280px;background:radial-gradient(ellipse 45% 60% at 50% 0%,rgba(255,255,255,.2),rgba(255,255,255,0) 70%);opacity:0}
+.pod .disc{position:absolute;left:92px;right:92px;bottom:100px;height:56px;border-radius:50%;background:radial-gradient(ellipse at center,rgba(255,255,255,.22),rgba(255,255,255,.02) 70%);box-shadow:0 0 0 2px rgba(255,255,255,.12)}
+.pod .pl2{position:absolute;left:22px;right:22px;bottom:20px;height:62px;border-radius:14px;display:flex;align-items:center;justify-content:space-between;padding:0 22px;
+  background:linear-gradient(180deg,#f3f4f6,#cfd2d7);color:#08090a;font-weight:900;font-size:30px;letter-spacing:-.5px}
+.pod .pl2 small{font-family:'JetBrains Mono';font-size:18px;font-weight:700;color:#4a4e55;letter-spacing:0}
+.pod .live{position:absolute;right:24px;top:22px;font-family:'JetBrains Mono';font-size:17px;color:var(--mut)}
+.pod .live b{display:inline-block;width:10px;height:10px;border-radius:50%;background:#fff;margin-right:6px}
+
+/* S6 spirit level */
+.lvl{position:absolute;left:64px;top:1330px;width:952px;height:150px}
+.tube{position:absolute;left:40px;right:40px;top:34px;height:60px;border-radius:30px;background:linear-gradient(180deg,rgba(255,255,255,.1),rgba(255,255,255,.02));box-shadow:inset 0 0 0 2.5px rgba(255,255,255,.4),inset 0 10px 18px rgba(255,255,255,.06)}
+.tube .mk{position:absolute;top:6px;bottom:6px;width:3px;background:rgba(255,255,255,.55)}
+.bub{position:absolute;top:10px;width:110px;height:40px;border-radius:20px;background:radial-gradient(ellipse at 40% 30%,#fff,#c9ccd1 60%,#8d9197);box-shadow:0 0 24px rgba(255,255,255,.4)}
+.lvl .rd{position:absolute;left:40px;right:40px;top:104px;display:flex;justify-content:space-between;font-family:'JetBrains Mono';font-size:22px;color:var(--mut)}
+.lvl .rd b{color:#fff}
+.upr{position:absolute;left:290px;top:1540px;width:500px;height:100px;border-radius:999px;display:grid;place-items:center;font-size:40px;font-weight:900;letter-spacing:-1px}
+
+/* S7 pcb */
+.pcbw{position:absolute;left:64px;top:560px;width:952px;height:720px;transform-style:preserve-3d}
+.pcb{position:absolute;inset:0;border-radius:30px;background:radial-gradient(circle at 50% 50%,#17181b,#0a0a0b);box-shadow:inset 0 0 0 2px rgba(255,255,255,.14),0 6px 0 #1a1b1e,0 12px 0 #111214,0 60px 90px rgba(0,0,0,.8);
+  background-image:radial-gradient(rgba(255,255,255,.08) 1.5px,transparent 1.5px);background-size:28px 28px}
+.pcb svg{position:absolute;inset:0;overflow:visible}
+.pcb svg path{fill:none;stroke:rgba(255,255,255,.28);stroke-width:4;stroke-linecap:round;stroke-linejoin:round}
+.ic{position:absolute;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'JetBrains Mono';font-weight:800;font-size:26px;
+  background:linear-gradient(160deg,#26272b,#111215);box-shadow:inset 0 1.5px 0 rgba(255,255,255,.2),0 4px 0 #050506,0 8px 14px rgba(0,0,0,.6)}
+.ic small{font-size:16px;font-weight:500;color:var(--mut);margin-top:6px}
+.ic::before,.ic::after{content:"";position:absolute;top:14px;bottom:14px;width:12px;background:repeating-linear-gradient(180deg,#c9ccd1 0 6px,transparent 6px 14px)}
+.ic::before{left:-12px}.ic::after{right:-12px}
+.ic.big{background:linear-gradient(160deg,#fbfbfc,#d0d3d8);color:#08090a;font-size:36px}
+.ic.big small{color:#4a4e55;font-size:19px}
+.ics{position:absolute;left:76px;width:928px;display:flex;gap:44px}
+.ics .ic{position:relative;flex:1;height:150px;font-family:'Inter Tight';font-weight:900;font-size:44px;letter-spacing:-1px}
+.ics .ic small{font-family:'JetBrains Mono';font-weight:500}
+
+/* S8 staircase */
+.stairs{position:absolute;left:0;top:0;width:1080px;height:1920px;transform-style:preserve-3d}
+.stp{position:absolute;width:226px;transform-style:preserve-3d}
+.stp .fr{position:absolute;left:0;right:0;bottom:0;border-radius:6px;background:linear-gradient(180deg,#1f2024,#0c0d0f);box-shadow:inset 0 0 0 2px rgba(255,255,255,.14);padding:22px 18px}
+.stp .tp{position:absolute;left:0;right:0;height:150px;transform-origin:50% 0;transform:rotateX(-90deg);border-radius:6px;background:linear-gradient(180deg,#d8dbe0,#f7f8f9);box-shadow:inset 0 0 0 2px rgba(255,255,255,.4)}
+.stp .n{font-family:'JetBrains Mono';font-size:20px;color:var(--mut)}
+.stp .t{font-size:38px;font-weight:900;letter-spacing:-1px;margin-top:4px}
+.stp .s{font-family:'JetBrains Mono';font-size:17px;color:var(--mut);margin-top:6px}
+.cmd{display:flex;align-items:center;justify-content:space-between;padding:0 36px;font-family:'JetBrains Mono';font-size:32px;font-weight:700}
+.cmd .p{color:var(--dim)}
+.tc{display:inline-block;width:15px;height:30px;border-radius:3px;background:#e8eaed;vertical-align:-5px;margin-left:3px}
+
+/* S9 comment */
+.cm{padding:30px 34px}
+.rowc{display:flex;align-items:center;gap:20px}
+.av2{width:70px;height:70px;border-radius:50%;flex:none;background:radial-gradient(circle at 35% 28%,#5a5e64,#1b1d20);box-shadow:inset 0 0 0 2px rgba(255,255,255,.2)}
+.cin{flex:1;padding:20px 26px;border-radius:999px;font-size:32px;font-weight:700;background:rgba(255,255,255,.06);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.14)}
+.send{width:76px;height:76px;border-radius:50%;display:grid;place-items:center;background:#f2f3f5;color:#000;font-size:34px;font-weight:900;flex:none}
+.posted{display:flex;gap:20px;align-items:flex-start;margin-top:30px}
+.posted .u{font-weight:800;font-size:28px}
+.posted .c{font-size:34px;font-weight:800;margin-top:4px}
+.dm{padding:24px 30px;border-radius:32px 32px 32px 10px;font-size:32px;font-weight:700}
+.dm small{display:block;font-family:'JetBrains Mono';font-size:20px;color:#55595f;font-weight:500;margin-bottom:6px}
+.tap{position:absolute;width:96px;height:96px;opacity:0;z-index:4}
+
+/* S10 end */
+.erings{position:absolute;left:290px;top:420px;width:500px;height:500px}
+.bigmk{position:absolute;left:390px;top:520px;width:300px;height:300px;font-size:110px;letter-spacing:-6px}
+.hnd{position:absolute;left:0;right:0;top:1000px;text-align:center;font-family:'JetBrains Mono';font-weight:800;font-size:92px;white-space:pre;height:120px}
+.fol{position:absolute;left:280px;top:1390px;width:520px;height:132px;border-radius:999px;display:grid;place-items:center;font-size:52px;font-weight:900;background:linear-gradient(180deg,#fbfbfc,#d4d7db);color:#08090a;box-shadow:0 6px 0 #9a9ea4,0 20px 60px rgba(255,255,255,.16)}
+.fol2{position:absolute;left:280px;top:1390px;width:520px;height:132px;border-radius:999px;display:grid;place-items:center;font-size:52px;font-weight:900;background:#101114;color:#f5f6f7;box-shadow:inset 0 0 0 3px rgba(255,255,255,.7);opacity:0}
+.rip{position:absolute;left:540px;top:1456px;border-radius:50%;border:4px solid rgba(255,255,255,.8);opacity:0}
+</style></head><body>
+<div class="f" id="F">
+ <div id="stage"><div id="world">
+
+  <!-- S1 hook: the duck walks a treadmill runway -->
+  <section class="sc" id="s1">
+    <div class="L kick" style="top:250px" data-k="// mate, look at this"></div>
+    <div class="L h" style="top:300px;font-size:104px">
+      <span class="ln"><span class="w" data-t="0">this</span><span class="w" data-t="0">tiny</span><span class="w" data-t="0.92">duck</span></span>
+      <span class="ln soft"><span class="w" data-t="1.62">learned</span><span class="w" data-t="1.82">to</span><span class="w" data-t="2.06">walk</span></span>
+      <span class="ln"><span class="w" data-t="2.32">on</span><span class="w" data-t="2.44">its</span><span class="w" data-t="2.7">own.</span></span>
+    </div>
+    <div class="run" id="run"></div>
+    <div class="shd" style="left:360px;top:1140px;width:360px;height:70px"></div>
+    <div class="dk in" style="left:384px;top:676px" data-t="0" data-z="40"><img data-seq="walk" data-n="240" data-t0="0" data-k="1.45"></div>
+    <div class="c3 stepc in" style="left:64px;top:1440px;width:440px;height:200px" data-t="0" data-ry="12"><div class="lbl">steps taken</div><div class="n" id="stepn">0000</div><div class="lbl" style="font-size:19px">policy: walk · 50 Hz</div></div>
+    <div class="c3 lite osb in" style="left:576px;top:1440px;width:440px;height:200px" data-t="4.82" data-ry="-12" data-z="40"><div class="t">open source</div><div class="s">the whole stack · Apache-2.0</div></div>
+  </section>
+
+  <!-- S2 it's called Microduck -->
+  <section class="sc" id="s2">
+    <div class="L kick" style="top:250px" data-k="// it's called"></div>
+    <div class="jl" id="jl"></div>
+    <div class="film in" style="top:560px" data-t="6.0" data-rx="8">
+      <div class="sp" style="top:11px" id="spt"></div><div class="sp" style="bottom:11px" id="spb"></div>
+      <img data-seq="microduck-hero" data-n="240" data-ext="jpg" data-t0="6.0">
+      <div class="cap">pollen-robotics.com · launch film</div>
+    </div>
+    <div class="c3 lite plate in" style="left:64px;top:1250px;width:456px;height:170px" data-t="7.56" data-ry="12"><i class="scr" style="left:16px;top:16px"></i><i class="scr" style="right:16px;top:16px"></i><i class="scr" style="left:16px;bottom:16px"></i><i class="scr" style="right:16px;bottom:16px"></i><div class="s">built by</div><div class="t">Pollen Robotics</div></div>
+    <div class="c3 lite plate in" style="left:560px;top:1250px;width:456px;height:170px" data-t="8.5" data-ry="-12"><i class="scr" style="left:16px;top:16px"></i><i class="scr" style="right:16px;top:16px"></i><i class="scr" style="left:16px;bottom:16px"></i><i class="scr" style="right:16px;bottom:16px"></i><div class="s">part of</div><div class="t">Hugging Face</div></div>
+    <div class="L lbl" style="top:1480px;text-align:center;font-size:24px">github.com/pollen-robotics/microduck</div>
+  </section>
+
+  <!-- S3 specs: tape measure + servo bank -->
+  <section class="sc" id="s3">
+    <div class="L kick" style="top:250px" data-k="// small, but serious"></div>
+    <div class="L h" style="top:300px;font-size:140px">
+      <span class="ln"><span class="w" data-t="9.66">25</span><span class="w" data-t="10.06">cm.</span></span>
+      <span class="ln soft"><span class="w" data-t="10.92">15</span><span class="w" data-t="11.52">motors.</span></span>
+    </div>
+    <div class="flr" style="top:1222px"></div>
+    <div class="shd" style="left:470px;top:1190px;width:380px;height:64px"></div>
+    <div class="dk in" style="left:470px;top:636px" data-t="9.5"><img data-seq="walk" data-n="240" data-t0="9.5" data-k="1.7"></div>
+    <div class="tape" id="tape" style="top:1222px;height:0"></div>
+    <div class="tread" id="tread" style="top:1196px">0 cm</div>
+    <div id="bank"></div>
+    <div class="mcount" id="mcount" style="top:1660px">servos online: 00 / 15</div>
+  </section>
+
+  <!-- S4 sim2real -->
+  <section class="sc" id="s4">
+    <div class="L kick" style="top:250px" data-k="// here's the clever bit"></div>
+    <div class="L h" style="top:300px;font-size:96px">
+      <span class="ln"><span class="w" data-t="13.76">every</span><span class="w" data-t="14.06">move</span></span>
+      <span class="ln soft"><span class="w" data-t="14.42">is</span><span class="w" data-t="14.54">a</span><span class="w" data-t="14.68">neural</span><span class="w" data-t="15.02">net.</span></span>
+    </div>
+    <svg class="nn" id="nn" viewBox="0 0 1080 1920"></svg>
+    <div class="rl" style="left:100px;top:842px">sensors</div><div class="rl" style="left:840px;top:842px;width:140px;text-align:right">15 servos</div>
+    <div class="c3 win in" style="left:64px;top:900px" data-t="15.64" data-ry="14">
+      <div class="chrome"><i></i><i></i><i></i><div class="url">sim · MuJoCo</div></div>
+      <div class="bd"><div class="grid3"></div><div class="dk" style="left:94px;top:30px"><img data-seq="wire" data-n="240" data-t0="15" data-k="1.22"></div></div>
+      <div class="ft"><span>env steps</span><b id="envs">0</b></div>
+    </div>
+    <div class="c3 win in" style="left:560px;top:900px" data-t="18.3" data-ry="-14">
+      <div class="chrome"><i></i><i></i><i></i><div class="url">real robot</div></div>
+      <div class="bd real"><img data-seq="gallery_balance-recovery" data-n="240" data-ext="jpg" data-t0="18.3"></div>
+      <div class="ft"><span>policy</span><b id="rstat">waiting…</b></div>
+    </div>
+    <div class="rail" style="top:1600px"><b id="railb"></b></div>
+    <div class="rl" style="left:120px;top:1620px">sim</div><div class="rl" style="left:880px;top:1620px;width:80px;text-align:right">real</div>
+    <div class="cart" id="cart" style="left:120px;top:1557px"><i></i>policy.onnx</div>
+    <div class="L lbl" style="top:1710px;text-align:center">trained with PPO · exported to ONNX</div>
+  </section>
+
+  <!-- S5 display pods: the moves -->
+  <section class="sc" id="s5">
+    <div class="L kick" style="top:250px" data-k="// what it can do"></div>
+    <div class="L h" style="top:300px;font-size:108px">
+      <span class="ln"><span class="w" data-t="19.84">walks.</span><span class="w" data-t="20.62">kicks.</span></span>
+      <span class="ln soft"><span class="w" data-t="21.28">grabs.</span><span class="w" data-t="22.3">skates.</span></span>
+    </div>
+    <div class="c3 pod in" style="left:64px;top:600px" data-t="19.7" data-ry="10"><div class="spot"></div><div class="disc"></div><div class="dk" style="left:113px;top:34px"><img data-seq="walk" data-n="240" data-t0="19.7" data-k="1.1"></div><div class="live"><b></b>policy 01</div><div class="pl2">WALK<small>gamepad drive</small></div></div>
+    <div class="c3 pod in" style="left:552px;top:600px" data-t="20.5" data-ry="-10"><div class="spot"></div><div class="disc"></div><div class="dk" style="left:113px;top:34px"><img data-seq="kickL" data-n="120" data-t0="20.5" data-k="1.1"></div><div class="live"><b></b>policy 02</div><div class="pl2">KICK<small>one-shot boot</small></div></div>
+    <div class="c3 pod in" style="left:64px;top:1150px" data-t="21.16" data-ry="10"><div class="spot"></div><div class="disc"></div><div class="dk" style="left:113px;top:34px"><img data-seq="grab" data-n="150" data-t0="21.16" data-k="1.1"></div><div class="live"><b></b>policy 03</div><div class="pl2">GRAB<small>beak to floor</small></div></div>
+    <div class="c3 pod in" style="left:552px;top:1150px" data-t="22.18" data-ry="-10"><div class="spot"></div><div class="disc"></div><div class="dk" style="left:101px;top:24px"><img data-seq="drive" data-n="270" data-t0="22.18" data-k="1.1"></div><div class="live"><b></b>policy 04</div><div class="pl2">SKATE<small>rollers on</small></div></div>
+  </section>
+
+  <!-- S6 knock it over: spirit level -->
+  <section class="sc" id="s6">
+    <div class="L kick" style="top:250px" data-k="// and if you knock it over?"></div>
+    <div class="L h" style="top:300px;font-size:104px">
+      <span class="ln"><span class="w" data-t="23.78">knock</span><span class="w" data-t="23.96">it</span><span class="w" data-t="24.08">over?</span></span>
+      <span class="ln soft"><span class="w" data-t="25.66">right</span><span class="w" data-t="25.88">back</span><span class="w" data-t="26.14">up.</span></span>
+    </div>
+    <div class="shd" style="left:300px;top:1160px;width:480px;height:80px"></div>
+    <div class="dk in" style="left:256px;top:626px" data-t="23.4"><img data-seq="standup" data-n="150" data-t0="23.9" data-loop="0" data-k="1.75" data-cx="88" data-cy="225"></div>
+    <div class="lvl c3 in" data-t="23.6" data-rx="14">
+      <div class="tube" id="tube"><i class="mk" style="left:calc(50% - 64px)"></i><i class="mk" style="left:calc(50% + 61px)"></i><div class="bub" id="bub"></div></div>
+      <div class="rd"><span>body tilt</span><b id="tilt">88°</b><span>imu · 2x</span></div>
+    </div>
+    <div class="c3 lite upr" id="upr">upright ✓ no help</div>
+  </section>
+
+  <!-- S7 the brain: PCB of daemons -->
+  <section class="sc" id="s7">
+    <div class="L kick" style="top:250px" data-k="// open the hood"></div>
+    <div class="L h" style="top:300px;font-size:100px">
+      <span class="ln"><span class="w" data-t="26.76">the</span><span class="w" data-t="26.94">whole</span><span class="w" data-t="27.22">brain</span></span>
+      <span class="ln soft"><span class="w" data-t="27.58">is</span><span class="w" data-t="27.7">on</span><span class="w" data-t="27.9">GitHub.</span></span>
+    </div>
+    <div class="pcbw in" id="pcbw" data-t="26.6" data-rx="34">
+      <div class="pcb" id="pcb"><svg id="tr" viewBox="0 0 952 720"></svg></div>
+    </div>
+    <div class="ics" style="top:1380px">
+      <div class="ic in" data-t="28.62">free<small>$0 software</small></div>
+      <div class="ic big in" data-t="29.06">Apache 2.0<small>license</small></div>
+      <div class="ic in" data-t="29.5">Rust<small>★ 12.5k</small></div>
+    </div>
+  </section>
+
+  <!-- S8 staircase: retrain -->
+  <section class="sc" id="s8">
+    <div class="L kick" style="top:250px" data-k="// your turn"></div>
+    <div class="L h" style="top:300px;font-size:92px">
+      <span class="ln"><span class="w" data-t="30.5">retrain</span><span class="w" data-t="31.04">any</span><span class="w" data-t="31.24">move</span></span>
+      <span class="ln soft"><span class="w" data-t="31.46">on</span><span class="w" data-t="31.58">your</span><span class="w" data-t="31.88">machine.</span></span>
+    </div>
+    <div class="stairs" id="stairs"></div>
+    <div class="c3 cmd in" style="left:64px;top:1560px;width:952px;height:120px" data-t="32.6" data-rx="8"><span><span class="p">$ </span><span id="t8"></span><span class="tc" id="tc8"></span></span><span class="lbl">no robot? no problem</span></div>
+  </section>
+
+  <!-- S9 comment -->
+  <section class="sc" id="s9">
+    <div class="L kick" style="top:250px" data-k="// want the link?"></div>
+    <div class="L h" style="top:304px">
+      <span class="ln" style="font-size:132px"><span class="w" data-t="34.14">Comment</span></span>
+      <span class="ln soft" style="font-size:190px;letter-spacing:-8px"><span class="w" data-t="34.54">GITMATE</span></span>
+    </div>
+    <div class="c3 cm in" style="left:64px;top:690px;width:952px;height:390px" data-t="34.0" data-ry="-10" data-rx="8">
+      <div class="lbl" style="margin-bottom:22px">comments</div>
+      <div class="rowc"><div class="av2"></div><div class="cin"><span id="t9" style="color:rgba(255,255,255,.4)">Add a comment…</span></div><div class="send" id="snd9">↑</div></div>
+      <div class="posted" id="pst9"><div class="av2" style="width:56px;height:56px"></div><div><div class="u">you <span class="lbl">· now</span></div><div class="c">GITMATE</div></div></div>
+    </div>
+    <div class="c3 lite dm in" style="left:300px;top:1150px;width:560px;height:130px" data-t="35.5" data-z="80"><small>git.mate · message</small>Here's your link, mate 🔗</div>
+  </section>
+
+  <!-- S10 end -->
+  <section class="sc" id="s10">
+    <svg class="erings" viewBox="0 0 500 500"><circle id="er1" cx="250" cy="250" r="226" fill="none" stroke="#f5f6f7" stroke-width="3" stroke-dasharray="1420" stroke-dashoffset="1420" transform="rotate(-90 250 250)"/>
+      <circle id="er2" cx="250" cy="250" r="246" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="2" stroke-dasharray="1546" stroke-dashoffset="1546" transform="rotate(90 250 250)"/></svg>
+    <div class="bead bigmk" id="bigmk">&gt;_</div>
+    <div class="hnd" id="hnd"></div>
+    <div class="L h" style="top:1160px;font-size:84px;letter-spacing:-3px;text-align:center"><span class="ln soft"><span class="w" data-t="37.2">1 repo</span><span class="w" data-t="37.4">every</span><span class="w" data-t="37.6">day.</span></span></div>
+    <div class="fol" id="fol">Follow</div>
+    <div class="fol2" id="fol2">Following ✓</div>
+    <div class="rip" id="rip"></div>
+    <svg class="tap" id="tap10" viewBox="0 0 100 100" style="left:600px;top:1420px"><circle cx="50" cy="50" r="34" fill="rgba(255,255,255,.25)" stroke="#fff" stroke-width="5"/><circle cx="50" cy="50" r="12" fill="#fff"/></svg>
+  </section>
+ </div></div>
+
+ <div class="top"><div class="brand"><div class="bead">&gt;_</div>git.mate</div><div class="tag" id="tag"><b>01</b> / hook</div></div>
+ <div class="prog" id="prog"></div>
+ <div class="vig"></div><div class="grain"></div>
+</div>
+
+<script>
+(function () {
+  // times are voice-take seconds; the voice is sped up 1.05x, so the page runs at SPD
+  const SPD = 1.05;
+  const S = [0, 6.0, 9.45, 12.3, 19.45, 23.35, 26.55, 30.3, 34.0, 36.4];
+  const TOTAL = 39.6; window.__TOTAL = TOTAL / SPD;
+  const LABEL = ['hook', 'meet it', 'specs', 'sim → real', 'moves', 'get up', 'the brain', 'your turn', 'link', 'follow'];
+  const $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)];
+  const tl = gsap.timeline({ paused: true, defaults: { ease: 'power3.out' } });
+  $('#prog').innerHTML = S.map(() => '<i><b></b></i>').join('');
+  const scenes = $$('.sc');
+  const R = 2400, STEP = 33;
+  scenes.forEach((sc, i) => { sc.style.transform = `rotateY(${i * STEP}deg) translateZ(${R}px)`; });
+  const cam = { a: 0, d: 0, rx: 0, rz: 0 };
+  const MOVE = { 2: 'crane', 4: 'crane', 6: 'roll', 9: 'crane' };
+  scenes.forEach((sc, i) => {
+    tl.set(sc, { visibility: 'visible' }, Math.max(0, S[i] - .62));
+    if (i < scenes.length - 1) tl.set(sc, { visibility: 'hidden' }, S[i + 1] + .45);
+    if (i) {
+      const t0 = S[i] - .58, dir = i % 2 ? 1 : -1, mv = MOVE[i];
+      const prx = mv === 'crane' ? 22 : 9 * dir, prz = mv === 'roll' ? 9 * dir : mv === 'crane' ? 0 : 3 * dir, pd = mv === 'crane' ? 1250 : 900;
+      tl.to(cam, { a: i * STEP, duration: 1.0, ease: 'power3.inOut' }, t0);
+      tl.to(cam, { keyframes: [{ d: pd, rx: prx, rz: prz, duration: .5, ease: 'power2.out' }, { d: 0, rx: 0, rz: 0, duration: .5, ease: 'power2.in' }] }, t0);
+    }
+  });
+  tl.set(scenes[0], { visibility: 'visible' }, 0);
+
+  // duck cutouts: crop the 500x800 render around the robot
+  $$('img[data-seq]').forEach((im) => { const k = +(im.dataset.k || 0); if (!k) return;
+    const cx = +(im.dataset.cx || 160), cy = +(im.dataset.cy || 220);
+    im.style.width = 500 * k + 'px'; im.style.left = -cx * k + 'px'; im.style.top = -cy * k + 'px'; });
+
+  // S2 jointed letters + film sprockets
+  $('#jl').innerHTML = 'MICRODUCK'.split('').map(c => `<span>${c}</span>`).join('');
+  $$('#jl span').forEach((s, i) => tl.fromTo(s, { opacity: 0, rotationX: -110, y: 20 }, { opacity: 1, rotationX: 0, y: 0, duration: .7, ease: 'back.out(2.2)' }, 6.5 + i * .055));
+  ['#spt', '#spb'].forEach(id => { $(id).innerHTML = '<i></i>'.repeat(22); });
+
+  $$('.h .w').forEach((w) => { const t = +w.dataset.t; if (!t) return;
+    tl.fromTo(w, { opacity: 0, y: 70, scale: 1.12, filter: 'blur(18px)' }, { opacity: 1, y: 0, scale: 1, filter: 'blur(0px)', duration: .55, ease: 'expo.out' }, t); });
+  scenes.forEach((sc, i) => { const k = $('.kick', sc); if (!k) return; const txt = k.dataset.k, o = { n: 0 }; k.textContent = i ? '' : txt; if (!i) return;
+    tl.fromTo(o, { n: 0 }, { n: txt.length, duration: Math.min(.7, txt.length * .025), ease: 'none', immediateRender: false, onUpdate: () => { k.textContent = txt.slice(0, Math.round(o.n)); } }, S[i] + .05); });
+  $$('.in').forEach((c) => {
+    const t = +c.dataset.t, rx = +(c.dataset.rx || 0), ry = +(c.dataset.ry || 0), z = +(c.dataset.z || 0);
+    const end = { opacity: 1, z, rotationX: rx, rotationY: ry, y: 0, duration: .9, ease: 'expo.out' };
+    if (!t) { gsap.set(c, end); return; }
+    tl.fromTo(c, { opacity: 0, z: -900, rotationX: rx + 40, rotationY: ry * 2, y: 120 }, end, t);
+  });
+  const typer = (el, text, t, d) => { const o = { n: 0 }; tl.fromTo(o, { n: 0 }, { n: text.length, duration: d, ease: 'none', immediateRender: false, onUpdate: () => { el.textContent = text.slice(0, Math.round(o.n)); } }, t); };
+
+  // S1 footprints on the runway (left/right, scrolling toward the viewer)
+  const run = $('#run'); const FP = [];
+  for (let i = 0; i < 9; i++) { const d = document.createElement('div'); d.className = 'fp'; run.appendChild(d); FP.push(d); }
+
+  // S3 servo bank
+  const bank = $('#bank');
+  for (let i = 0; i < 15; i++) { const d = document.createElement('div'); d.className = 'srv'; d.style.left = (64 + (i % 5) * 195) + 'px'; d.style.top = (1330 + Math.floor(i / 5) * 110) + 'px';
+    d.innerHTML = `<div class="hn"></div>M${String(i + 1).padStart(2, '0')}`; bank.appendChild(d);
+    tl.fromTo(d, { opacity: 0, z: -400, rotationX: 50 }, { opacity: 1, z: 0, rotationX: 0, duration: .6, ease: 'expo.out' }, 9.6 + i * .03); }
+  const srvs = $$('.srv'); const tape = $('#tape');
+  tape.innerHTML = Array.from({ length: 26 }, (_, i) => `<i style="bottom:${i * 22.8}px;width:${i % 5 ? 16 : 32}px"></i>`).join('');
+
+  // S4 neural net
+  const nn = $('#nn'), LX = [170, 410, 670, 910], LN = [4, 6, 6, 3], NY = (n, k) => 700 + (k - (n - 1) / 2) * 44;
+  let svg = ''; const EDG = [];
+  for (let l = 0; l < 3; l++) for (let a = 0; a < LN[l]; a++) for (let b = 0; b < LN[l + 1]; b++) { EDG.push([LX[l], NY(LN[l], a), LX[l + 1], NY(LN[l + 1], b), l]); svg += `<line class="eg" x1="${LX[l]}" y1="${NY(LN[l], a)}" x2="${LX[l + 1]}" y2="${NY(LN[l + 1], b)}"/>`; }
+  LX.forEach((x, l) => { for (let k = 0; k < LN[l]; k++) svg += `<circle class="nd" cx="${x}" cy="${NY(LN[l], k)}" r="15"/>`; });
+  for (let i = 0; i < 14; i++) svg += `<circle class="pl" r="6" opacity="0"/>`;
+  nn.innerHTML = svg;
+  $$('#nn .nd').forEach((c, i) => tl.fromTo(c, { opacity: 0, attr: { r: 2 } }, { opacity: 1, attr: { r: 15 }, duration: .4, ease: 'back.out(3)' }, 14.6 + i * .025));
+  tl.fromTo('#nn .eg', { opacity: 0 }, { opacity: 1, duration: .6, stagger: .002 }, 14.8);
+  const pls = $$('#nn .pl');
+  tl.fromTo(['#s4 .rail', '#s4 .rl', '#cart', '#s4 .L.lbl'], { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: .5, stagger: .05 }, 15.9);
+  tl.fromTo('#cart', { x: 0 }, { x: 590, duration: 1.1, ease: 'power2.inOut' }, 17.24);
+  tl.fromTo('#railb', { width: 0 }, { width: '100%', duration: 1.1, ease: 'power2.inOut' }, 17.24);
+  tl.to('#cart', { z: 80, duration: .25, yoyo: true, repeat: 1 }, 18.3);
+
+  // S5 pod spotlights
+  $$('.pod').forEach(p => tl.fromTo($('.spot', p), { opacity: 0 }, { opacity: 1, duration: .35 }, +p.dataset.t + .15));
+
+  // S6 upright badge
+  tl.fromTo('#upr', { opacity: 0, scale: .6, z: -300 }, { opacity: 1, scale: 1, z: 0, duration: .5, ease: 'back.out(2)' }, 25.7);
+
+  // S7 pcb chips + traces
+  const pcb = $('#pcb');
+  const CH = [['robotd', '50 Hz control loop', 326, 250, 300, 190, 1], ['updaterd', 'signed updates', 60, 70, 230, 110], ['configd', 'wifi · identity', 662, 70, 230, 110], ['padd', 'gamepad', 60, 300, 230, 110], ['mediad', 'camera · WebRTC', 662, 300, 230, 110], ['btd', 'bluetooth', 60, 530, 230, 110], ['tofd', 'depth sensor', 662, 530, 230, 110]];
+  let tp = '';
+  CH.forEach(([n, s, x, y, w, h, big], i) => { const d = document.createElement('div'); d.className = 'ic' + (big ? ' big' : ''); Object.assign(d.style, { left: x + 'px', top: y + 'px', width: w + 'px', height: h + 'px' }); d.innerHTML = `${n}<small>${s}</small>`; pcb.appendChild(d);
+    tl.fromTo(d, { opacity: 0, z: 160 }, { opacity: 1, z: big ? 30 : 14, duration: .5, ease: 'back.out(2)' }, 26.9 + i * .1);
+    if (!big) { const sx = x < 400 ? x + w + 12 : x - 12, sy = y + h / 2, ex = x < 400 ? 326 : 626, ey = 345 + (y - 300) * .25, mx = (sx + ex) / 2; tp += `<path d="M${sx} ${sy} H${mx} V${ey} H${ex}"/>`; } });
+  $('#tr').innerHTML = tp + '<text x="476" y="478" text-anchor="middle" font-family="JetBrains Mono" font-size="18" fill="rgba(255,255,255,.5)">RK3566 · JSON-RPC bus</text>' + Array.from({ length: 6 }, () => '<circle class="tpl" r="7" fill="#fff" opacity="0"/>').join('');
+  const trs = $$('#tr path'), tpls = $$('#tr .tpl');
+  trs.forEach((p, i) => { const L = p.getTotalLength(); p.style.strokeDasharray = L; p.style.strokeDashoffset = L; tl.to(p, { strokeDashoffset: 0, duration: .5, ease: 'power2.out' }, 27.1 + i * .1); });
+
+  // S8 staircase (4 steps from the Microduck site: train, deploy, refine, publish)
+  const ST = [['01', 'TRAIN', 'in simulation'], ['02', 'DEPLOY', 'on the robot'], ['03', 'REFINE', 'tune · retrain'], ['04', 'PUBLISH', 'share the policy']];
+  const stairs = $('#stairs'), BASE = 1460, SW = 226, SG = 16;
+  ST.forEach(([n, t, s], i) => { const h = 170 + i * 120, x = 64 + i * (SW + SG); const d = document.createElement('div'); d.className = 'stp';
+    Object.assign(d.style, { left: x + 'px', top: (BASE - h) + 'px', height: h + 'px' });
+    d.innerHTML = `<div class="tp" style="top:0"></div><div class="fr" style="height:${h}px"><div class="n">${n}</div><div class="t">${t}</div><div class="s">${s}</div></div>`; stairs.appendChild(d);
+    tl.fromTo(d, { opacity: 0, y: 200, z: -300 }, { opacity: 1, y: 0, z: 0, duration: .7, ease: 'expo.out' }, 30.4 + i * .12); });
+  stairs.style.transform = 'rotateX(-16deg)';
+  stairs.style.transformOrigin = '540px 1400px';
+  const sdk = document.createElement('div'); sdk.className = 'dk'; sdk.id = 'sdk'; sdk.innerHTML = '<img data-seq="walk" data-n="240" data-t0="30.3" data-k=".62">'; stairs.appendChild(sdk);
+  { const im = $('img', sdk); im.style.width = 310 + 'px'; im.style.left = -99 + 'px'; im.style.top = -136 + 'px'; }
+  tl.fromTo('#sdk', { opacity: 0 }, { opacity: 1, duration: .3 }, 30.7);
+  typer($('#t8'), 'scripts/duck-sim', 32.8, .6);
+
+  // S9 comment flow
+  tl.call(() => { $('#t9').textContent = 'Add a comment…'; $('#t9').style.color = 'rgba(255,255,255,.4)'; }, null, 34.59);
+  tl.call(() => { $('#t9').style.color = '#fff'; }, null, 34.6);
+  typer($('#t9'), 'GITMATE', 34.6, .4);
+  tl.fromTo('#snd9', { scale: 1 }, { scale: .8, duration: .1, yoyo: true, repeat: 1 }, 35.1);
+  tl.fromTo('#pst9', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: .4 }, 35.2);
+
+  // S10 end
+  tl.fromTo('#bigmk', { opacity: 0, scale: .2, rotation: -40 }, { opacity: 1, scale: 1, rotation: 0, duration: .9, ease: 'back.out(1.8)' }, 36.4);
+  tl.fromTo('#er1', { attr: { 'stroke-dashoffset': 1420 } }, { attr: { 'stroke-dashoffset': 0 }, duration: 1.0, ease: 'power2.inOut', immediateRender: false }, 36.55);
+  tl.fromTo('#er2', { attr: { 'stroke-dashoffset': 1546 } }, { attr: { 'stroke-dashoffset': 0 }, duration: 1.2, ease: 'power2.inOut', immediateRender: false }, 36.7);
+  typer($('#hnd'), '@git.mate', 36.8, .5);
+  tl.fromTo('#fol', { opacity: 0, scale: .6 }, { opacity: 1, scale: 1, duration: .5, ease: 'back.out(2)' }, 37.2);
+  tl.fromTo('#tap10', { opacity: 0, x: 160, y: 140 }, { opacity: 1, x: 0, y: 0, duration: .5, ease: 'power2.out' }, 38.0);
+  tl.to('#tap10', { scale: .75, duration: .1, yoyo: true, repeat: 1 }, 38.55);
+  tl.to('#fol', { scale: .93, duration: .1 }, 38.55);
+  tl.set('#fol2', { opacity: 1 }, 38.65); tl.set('#fol', { opacity: 0 }, 38.65);
+  tl.fromTo('#rip', { opacity: .8, width: 10, height: 10, margin: -5 }, { opacity: 0, width: 640, height: 640, margin: -320, duration: .8, ease: 'power2.out', immediateRender: false }, 38.6);
+  tl.to('#tap10', { opacity: 0, duration: .3 }, 39.1);
+  tl.to({}, { duration: .01 }, TOTAL);
+
+  // frame sequences, only for scenes near the playhead
+  const SQ = $$('img[data-seq]').map(el => { const sc = el.closest('.sc'); return { el, seq: el.dataset.seq, n: +el.dataset.n, ext: el.dataset.ext || 'png', t0: +el.dataset.t0, loop: el.dataset.loop !== '0', si: scenes.indexOf(sc), cur: '' }; });
+  const sm = (a, b, x) => { const k = Math.min(1, Math.max(0, (x - a) / (b - a))); return k * k * (3 - 2 * k); };
+  const world = $('#world'), tag = $('#tag'), segs = $$('#prog b');
+  const tick = (t) => {
+    const pend = [];
+    SQ.forEach(s => { const a = S[s.si] - .7, b = (S[s.si + 1] || TOTAL) + .5; if (t < a || t > b) return;
+      let i = Math.floor(Math.max(0, t - s.t0) * 30); i = s.loop ? i % s.n : Math.min(i, s.n - 1);
+      const src = `fr/${s.seq}/${String(i + 1).padStart(4, '0')}.${s.ext}`;
+      if (src !== s.cur) { s.cur = src; s.el.src = src; pend.push(s.el.decode().catch(() => {})); } });
+    const a = cam.a + Math.sin(t * .5) * .35, rx = cam.rx + Math.sin(t * .37 + 1) * .7, rz = cam.rz + Math.sin(t * .29) * .25;
+    world.style.transform = `translateZ(${-cam.d}px) rotateX(${rx}deg) rotateZ(${rz}deg) translateZ(${-R}px) rotateY(${-a}deg)`;
+    // S1 runway footprints + step counter
+    FP.forEach((d, i) => { const per = 9 * .42, p = ((t / per + i / 9) % 1); d.style.top = (-100 + p * 720) + 'px'; d.style.left = (i % 2 ? 420 : 310) + 'px'; d.style.opacity = Math.min(1, p * 4) * .8; });
+    $('#stepn').textContent = String(Math.floor(t * 2.4) + 1).padStart(4, '0');
+    // S3 tape + servos
+    const tp = sm(9.66, 10.45, t); tape.style.height = (tp * 572) + 'px'; tape.style.top = (1222 - tp * 572) + 'px';
+    $('#tread').style.top = (1196 - tp * 572) + 'px'; $('#tread').textContent = Math.round(tp * 25) + ' cm';
+    let on = 0; srvs.forEach((d, i) => { const o = t >= 10.92 + i * .055; d.classList.toggle('on', o); on += o; $('.hn', d).style.transform = `rotate(${o ? (t - 10.92) * 160 + i * 24 : i * 24}deg)`; });
+    $('#mcount').textContent = `servos online: ${String(on).padStart(2, '0')} / 15`;
+    // S4 pulses through the net, env step counter, policy status
+    pls.forEach((c, i) => { if (t < 15.1) { c.setAttribute('opacity', 0); return; } const ph = (t * 1.3 + i * .37) % 1, e = EDG[(i * 37 + Math.floor(t * 1.3 + i * .37) * 11) % EDG.length];
+      c.setAttribute('cx', e[0] + (e[2] - e[0]) * ph); c.setAttribute('cy', e[1] + (e[3] - e[1]) * ph); c.setAttribute('opacity', Math.sin(ph * Math.PI)); });
+    $('#envs').textContent = t < 15.64 ? '0' : (Math.floor((t - 15.64) * 3.1e6)).toLocaleString('en-US');
+    $('#rstat').textContent = t < 18.35 ? 'waiting…' : 'loaded ✓';
+    // S6 spirit level follows the stand-up render
+    const fr = Math.max(0, (t - 23.9) * 30), ang = 88 * (1 - sm(36, 58, fr));
+    $('#bub').style.left = (366 + (ang / 88) * 360) + 'px'; $('#tilt').textContent = Math.round(ang) + '°';
+    // S7 data pulses on traces
+    tpls.forEach((c, i) => { const p = trs[i]; if (!p || t < 27.8) { c.setAttribute('opacity', 0); return; } const L = p.getTotalLength(), ph = (t * .9 + i * .23) % 1, pt = p.getPointAtLength((i % 2 ? ph : 1 - ph) * L); c.setAttribute('cx', pt.x); c.setAttribute('cy', pt.y); c.setAttribute('opacity', Math.sin(ph * Math.PI)); });
+    // S8 duck hops up the stairs
+    { const HT = [30.7, 31.25, 31.8, 32.35]; let k = 0; for (let i = 0; i < 4; i++) if (t >= HT[i]) k = i; const nx = Math.min(3, k + 1), hp = k < 3 ? sm(HT[k] + .3, HT[k] + .55, t) : 0;
+      const pos = i => [64 + i * (SW + SG) + SW / 2 - 70, BASE - (170 + i * 120) - 200]; const [x0, y0] = pos(k), [x1, y1] = pos(nx);
+      $('#sdk').style.left = (x0 + (x1 - x0) * hp) + 'px'; $('#sdk').style.top = (y0 + (y1 - y0) * hp - Math.sin(hp * Math.PI) * 70) + 'px'; $('#sdk').style.transform = 'translateZ(40px)'; }
+    $('#tc8').style.visibility = (Math.floor(t * 3) % 2) ? 'hidden' : 'visible';
+    let si = 0; for (let i = 0; i < S.length; i++) if (t >= S[i] - .3) si = i;
+    tag.innerHTML = `<b>${String(si + 1).padStart(2, '0')}</b> / ${LABEL[si]}`;
+    segs.forEach((b, i) => { const e = i < S.length - 1 ? S[i + 1] : TOTAL - 2; b.style.width = Math.min(100, Math.max(0, (t - S[i]) / (e - S[i]) * 100)) + '%'; });
+    return Promise.all(pend);
+  };
+  window.__tl = tl;
+  window.__seek = (rt) => { const t = rt * SPD; tl.time(t, false); return tick(t); };
+  window.__seek(0);
+  if (!navigator.webdriver) { const t0 = performance.now(); const loop = () => { window.__seek(((performance.now() - t0) / 1000) % (TOTAL / SPD)); requestAnimationFrame(loop); }; requestAnimationFrame(loop); }
+})();
+</script>
+</body></html>

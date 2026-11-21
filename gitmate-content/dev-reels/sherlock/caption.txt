@@ -1,0 +1,18 @@
+One username... every account it's tied to. 🔍
+
+Sherlock is a free, open-source Python CLI that hunts down social media accounts by username across 400+ social networks:
+→ sherlock user123 checks every site in its list in one go
+→ Prints every profile it finds ([+] GitHub, Reddit, YouTube, Spotify...)
+→ Save the hits with --txt, --csv or --xlsx
+→ Check several usernames at once, or route requests through a proxy
+
+Best first use: run it on your OWN handle and see how much of you is out there.
+
+✅ Free + open source (MIT) · 100K+ ★ on GitHub
+Install: pipx install sherlock-project
+Run: sherlock yourname
+
+Comment GITMATE and I'll send you the link 👇
+Follow @git.mate for 1 useful repo every day.
+
+#github #opensource #python #osint #cybersecurity #privacy #infosec #devtools #developer #programming #coding #cli #terminal

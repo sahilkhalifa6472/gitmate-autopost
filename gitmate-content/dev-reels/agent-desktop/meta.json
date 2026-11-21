@@ -1,0 +1,8 @@
+{
+ "video": "gitmate_agent-desktop.mp4",
+ "title": "agent-desktop: computer use for any AI agent, via the accessibility tree",
+ "description": "Your AI agent can write code... but it can't click a single button on your desktop. \ud83d\uddb1\ufe0f\n\nagent-desktop by Vercel Labs (10k+ \u2b50 on GitHub) gives any AI agent computer use:\n\u2192 No screenshots, no pixel guessing: it reads the app's accessibility tree (the same one screen readers use)\n\u2192 Every element gets a ref. Your agent clicks the ref, then snapshots again to check it worked\n\u2192 Headless by default: actions go through the accessibility API without moving your pointer or stealing focus\n\u2192 56 commands: click, type, scroll, drag, windows, clipboard, notifications and more\n\u2192 Works with any agent harness (the CLI prints JSON, plus a C library for in-process calls)\n\n\u2705 Free + open source (Apache-2.0)\n\u2705 macOS, Windows and Linux: npm install -g agent-desktop\n\nComment GITMATE and I'll send you the link \ud83d\udc47\nFollow @git.mate for 1 useful repo every day.\n\n#github #opensource #aiagents #computeruse #vercel #automation #accessibility #rust #devtools #developer #programming #ai\n",
+ "repo": "https://github.com/vercel-labs/agent-desktop",
+ "theme": "light",
+ "duration": 35.27
+}

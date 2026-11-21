@@ -1,0 +1,10 @@
+{
+ "video": "gitmate_plutus.mp4",
+ "title": "Plutus: free open-source expense + portfolio tracker (by @sebaptcd)",
+ "description": "Expenses in one app, crypto in another, stocks in a messy spreadsheet? \ud83d\ude35\u200d\ud83d\udcab\n\nPlutus, built by @sebaptcd, is a free, open-source tracker that puts all your money in one place:\n\u2192 Business expenses, income and ledgers\n\u2192 Crypto, stocks, gold and cash, with live prices\n\u2192 Exchange rates locked on the day you traded, average-cost or FIFO profit\n\u2192 Private: no account, no sign-up, your data stays in your browser (optional encrypted sync)\n\u2192 Nearly 1,000 commits from a tiny team\n\nTry it: just open plutus.inoculens.com in your browser.\n\nFree & open source \u00b7 built by @sebaptcd \ud83d\ude4c\n\nWant your repo featured too? DM us FEATURE \ud83d\udce9\nComment GITMATE and I'll send you the link \ud83d\udc47\nFollow @git.mate for 1 useful repo every day.\n\n#personalfinance #budgeting #expensetracker #portfoliotracker #crypto #stocks #investing #opensource #github #freeapps #privacy #localfirst #indiedev #developer #programming #coding\n",
+ "repo": "https://github.com/inoculens/plutus",
+ "theme": "light",
+ "duration": 31.7,
+ "cover_offset_ms": 4500,
+ "source": "old free DM repo from @sebaptcd (2026-11-11); footage = live site plutus.inoculens.com (Playwright, landing + New account dialog, no data entered) + github.com repo page + icons/plutus-logo.png; 995 commits, 3 contributors"
+}

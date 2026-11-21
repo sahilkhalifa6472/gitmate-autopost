@@ -1,0 +1,22 @@
+{
+ "account": "git.mate",
+ "n": 14,
+ "slug": "lightpanda",
+ "title": "Lightpanda: a headless browser built from scratch for AI and automation",
+ "video": {
+  "file": "14.mp4",
+  "duration_sec": 35.19,
+  "source": "/mnt/project-files/dev-reels/lightpanda/gitmate_lightpanda.mp4"
+ },
+ "instagram": {
+  "caption": "Your scraper spins up a whole Chrome just to read some HTML. There's a lighter way. \ud83d\udc3c\n\nLightpanda (39k+ \u2b50 on GitHub) is a headless browser built from scratch for AI agents and automation:\n\u2192 Written in Zig. Not a Chromium fork, not a WebKit patch\n\u2192 No graphical rendering: just the DOM, JavaScript and the network\n\u2192 Their crawl benchmark (100 pages): 5s vs 46s for headless Chrome, 123 MB vs 2 GB peak memory\n\u2192 Runs a CDP server, so your Puppeteer and Playwright scripts connect with one line (ws://127.0.0.1:9222)\n\u2192 Also has a native MCP server and an agent mode\n\n\u2705 Free + open source (AGPL-3.0)\n\u2705 Linux + macOS builds, Docker image, WSL on Windows\n\nComment GITMATE and I'll send you the link \ud83d\udc47\nFollow @git.mate for 1 useful repo every day.\n\n#github #opensource #webscraping #puppeteer #playwright #automation #aiagents #zig #devtools #developer #programming #ai\n",
+  "hashtags": [],
+  "cover_offset_ms": 4200,
+  "share_to_feed": true
+ },
+ "posting": {
+  "audience": "US",
+  "timezone": "America/New_York"
+ },
+ "link": "https://github.com/lightpanda-io/browser"
+}

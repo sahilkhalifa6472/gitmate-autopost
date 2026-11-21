@@ -1,0 +1,16 @@
+Running 5 AI agents at once? They're all fighting over the same folder. 🤯
+
+Worktrunk (10k+ ⭐ on GitHub) is a CLI that makes git worktrees as easy as branches, built for running AI agents in parallel:
+→ Every agent gets its own worktree, its own copy of the repo, so nobody steps on anyone's changes
+→ wt switch -c -x claude feat: new branch + new worktree + Claude starts inside it, in one command
+→ wt list: every branch with its status (add --full for CI status + AI summaries)
+→ wt merge: squash, rebase, merge and clean up in one command
+→ Hooks, LLM commit messages, shared build caches, wt switch pr:123
+
+✅ Free + open source (MIT or Apache-2.0)
+✅ brew install worktrunk / cargo install worktrunk (Windows: winget)
+
+Comment GITMATE and I'll send you the link 👇
+Follow @git.mate for 1 useful repo every day.
+
+#github #opensource #git #gitworktree #aiagents #claudecode #rust #cli #devtools #developer #programming #productivity

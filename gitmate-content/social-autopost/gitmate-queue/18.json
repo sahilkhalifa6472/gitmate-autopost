@@ -1,0 +1,22 @@
+{
+ "account": "git.mate",
+ "n": 18,
+ "slug": "floci",
+ "title": "Floci: a free local AWS emulator, drop-in swap for LocalStack",
+ "video": {
+  "file": "18.mp4",
+  "duration_sec": 36.17,
+  "source": "/mnt/project-files/dev-reels/floci/gitmate_floci.mp4"
+ },
+ "instagram": {
+  "caption": "You shouldn't need a real AWS account just to test your code. \u2601\ufe0f\n\nFloci (29k+ \u2b50 on GitHub) is a free, open-source AWS emulator that runs on your laptop:\n\u2192 No account, no auth token, no paywall\n\u2192 Point your SDK, CLI or Terraform at localhost:4566 and S3, DynamoDB, SQS just work\n\u2192 Lambda, RDS, ElastiCache, ECS, EKS run in real Docker containers\n\u2192 ~24 ms startup, ~13 MiB idle memory (per the README)\n\u2192 Drop-in swap for LocalStack: change one image line\n\n\u2705 Free + open source (MIT)\n\u2705 docker compose up (or the floci CLI)\n\nComment GITMATE and I'll send you the link \ud83d\udc47\nFollow @git.mate for 1 useful repo every day.\n\n#github #opensource #aws #localstack #docker #devops #cloud #terraform #serverless #devtools #developer #programming\n",
+  "hashtags": [],
+  "cover_offset_ms": 3500,
+  "share_to_feed": true
+ },
+ "posting": {
+  "audience": "US",
+  "timezone": "America/New_York"
+ },
+ "link": "https://github.com/floci-io/floci"
+}

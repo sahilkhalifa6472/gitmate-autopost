@@ -1,0 +1,22 @@
+{
+ "account": "git.mate",
+ "n": 4,
+ "slug": "rea",
+ "title": "REA: reverse engineer anything with your AI agent",
+ "video": {
+  "file": "4.mp4",
+  "duration_sec": 35.9,
+  "source": "/mnt/project-files/dev-reels/rea/gitmate_rea.mp4"
+ },
+ "instagram": {
+  "caption": "This is #1 on GitHub trending right now, mate \ud83d\udd0d\n\nREA = Reverse Engineer Anything.\nYou see a cool feature in an app and wonder \"how did they build that?\"\nREA plugs into your AI agent (Claude Code, Cursor, Codex & more) and lets it inspect apps, websites and binaries. No source code needed.\n\n\u2705 One command: npx rea-agents setup\n\u2705 Free, MIT, runs locally\n\nComment GITMATE and I'll send you the link \ud83d\udc47\nFollow @git.mate for 1 useful repo every day.\n\n#github #opensource #reverseengineering #aiagents #claudecode #cursor #developer #programming #coding #devtools #mcp #softwareengineering",
+  "hashtags": [],
+  "cover_offset_ms": 6600,
+  "share_to_feed": true
+ },
+ "posting": {
+  "audience": "US",
+  "timezone": "America/New_York"
+ },
+ "link": "https://github.com/morluto/rea"
+}

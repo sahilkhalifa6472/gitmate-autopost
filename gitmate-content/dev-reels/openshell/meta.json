@@ -1,0 +1,10 @@
+{
+ "title": "NVIDIA OpenShell: a safe sandbox for your AI agents",
+ "caption": "Your AI agent has your files, your terminal and your API keys. So who's watching it? 🛡️\n\nNVIDIA open-sourced OpenShell, a safe runtime for autonomous AI agents:\n→ Every agent runs in its own isolated sandbox\n→ One policy decides which files, hosts and APIs it can touch\n→ Kernel-level enforcement on every file, syscall and connection\n→ Agents never see your real credentials\n→ Risky new access gets flagged for you to approve\n\n✅ One command to install (Linux, macOS on Apple Silicon, WSL 2)\n✅ Free + open source (Apache 2.0)\n\nComment GITMATE and I'll send you the link 👇\nFollow @git.mate for 1 useful repo every day.\n\n#github #opensource #nvidia #aiagents #aisecurity #cybersecurity #claudecode #codingagent #devtools #developer #programming #sandbox\n",
+ "repo_url": "https://github.com/NVIDIA/OpenShell",
+ "date": "2026-10-25",
+ "theme": "dark",
+ "video": "/mnt/project-files/dev-reels/openshell/gitmate_openshell.mp4",
+ "duration_sec": 38.58,
+ "cover_offset_ms": 8200
+}

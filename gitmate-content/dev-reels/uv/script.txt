@@ -1,0 +1,6 @@
+[frustrated] Still staring at pip install... waiting... and waiting?
+[excited] Mate, meet uv. A free tool that installs Python packages ten to a hundred times faster than pip.
+[impressed] We tested it. Same forty-one packages. pip took forty-eight seconds. uv? Two.
+One tool replaces pip, virtualenv, pyenv and poetry. It even installs Python for you.
+[friendly] Built by Astral, the team behind Ruff. Setup is one line, on Mac, Linux or Windows. Over ninety-two thousand stars.
+[warm] Comment GITMATE and I'll send you the link.

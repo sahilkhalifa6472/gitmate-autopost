@@ -1,0 +1,22 @@
+{
+ "account": "git.mate",
+ "n": 8,
+ "slug": "hallmark",
+ "title": "Hallmark: the design skill that ends AI slop",
+ "video": {
+  "file": "8.mp4",
+  "duration_sec": 34.4,
+  "source": "/mnt/project-files/dev-reels/hallmark/gitmate_hallmark.mp4"
+ },
+ "instagram": {
+  "caption": "You can spot an AI-made website in two seconds. Hallmark fixes that. \u270d\ufe0f\n\nHallmark is a free, open-source design skill for Claude Code, Codex and Cursor, made by Together AI:\n\u2192 Deals you 3 themes from a catalog of 48 real materials\n\u2192 Builds the page around what the visitor came to do\n\u2192 Lints it in a real browser against the \"AI slop\" tells (eyebrow labels, one colored word, a sign-up box on every page)\n\u2192 A fresh-context reviewer gets the last word\n\u2192 Redesign or audit any existing page by name\n\n\u2705 One command: npx skills add nutlope/hallmark -g\n\u2705 Free + MIT licensed\n\nComment GITMATE and I'll send you the link \ud83d\udc47\nFollow @git.mate for 1 useful repo every day.\n\n#github #opensource #claudecode #cursor #codex #webdesign #uidesign #frontend #aitools #devtools #developer #programming\n",
+  "hashtags": [],
+  "cover_offset_ms": 3400,
+  "share_to_feed": true
+ },
+ "posting": {
+  "audience": "US",
+  "timezone": "America/New_York"
+ },
+ "link": "https://github.com/Nutlope/hallmark"
+}

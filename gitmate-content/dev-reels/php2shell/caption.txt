@@ -1,0 +1,14 @@
+AI just found a bug that hid in PHP for over 10 years 🐛
+
+PHP2Shell: two critical PHP bugs (CVE-2026-109618, CVE-2026-109619, CVSS 9.2) that let an attacker run code on a server with a single request. Affects PHP 5.4 up to the latest. AI found them before attackers did, and they're already being exploited.
+
+PHP runs WordPress, and WordPress runs ~40% of the web.
+
+✅ Update now: PHP 8.5.12 / 8.4.27 / 8.3.36 / 8.2.35
+✅ On shared hosting? Ask your host to patch today
+✅ Send this to a friend with a website
+
+Comment GITMATE and I'll send you the advisory link 👇
+Follow @git.mate so you hear it first.
+
+#php #wordpress #cybersecurity #infosec #webdev #php2shell #ai #opensource #github #developer #programming #devops #security

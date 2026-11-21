@@ -1,0 +1,407 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<title>git.mate affine</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter+Tight:wght@400;500;600;700;800;900&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<style>
+:root{--ink:#f5f6f7;--mut:rgba(235,238,242,.58);--dim:rgba(235,238,242,.32)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#000}
+.f{position:relative;width:1080px;height:1920px;overflow:hidden;background:radial-gradient(ellipse 120% 80% at 50% 40%,#0d0e11 0%,#040405 60%,#000 100%);color:var(--ink);font-family:'Inter Tight',sans-serif}
+.vig{position:absolute;inset:0;z-index:5;pointer-events:none;background:radial-gradient(ellipse 90% 70% at 50% 50%,transparent 50%,rgba(0,0,0,.7) 100%)}
+.grain{position:absolute;inset:0;opacity:.08;mix-blend-mode:overlay;z-index:8;pointer-events:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
+#stage{position:absolute;inset:0;perspective:2200px;perspective-origin:50% 46%;z-index:2}
+#world{position:absolute;left:0;top:0;width:1080px;height:1920px;transform-style:preserve-3d}
+.sc{position:absolute;left:0;top:0;width:1080px;height:1920px;transform-style:preserve-3d;backface-visibility:hidden;visibility:hidden}
+#s1{visibility:visible}
+.c3{position:absolute;border-radius:34px;overflow:hidden;background:linear-gradient(160deg,#1d1e22 0%,#121316 45%,#0b0c0e 100%);
+  box-shadow:inset 0 1.5px 0 rgba(255,255,255,.2),inset 0 0 0 1.5px rgba(255,255,255,.07),0 3px 0 #1b1c1f,0 6px 0 #16171a,0 9px 0 #111214,0 12px 0 #0c0d0f,0 60px 90px rgba(0,0,0,.75)}
+.c3.lite{background:linear-gradient(160deg,#f7f8f9,#d9dce0);color:#08090a;box-shadow:inset 0 2px 0 #fff,0 3px 0 #c3c6cb,0 6px 0 #aeb2b8,0 9px 0 #9a9ea4,0 12px 0 #868a90,0 60px 90px rgba(0,0,0,.7)}
+.bead{width:62px;height:62px;border-radius:50%;display:grid;place-items:center;font-family:'JetBrains Mono';font-weight:800;font-size:24px;color:#050505;flex:none;
+  background:radial-gradient(circle at 35% 28%,#fff 0 18%,#e4e6ea 45%,#9da1a8 100%);box-shadow:inset 0 -5px 10px rgba(0,0,0,.25),inset 0 3px 4px #fff,0 10px 24px rgba(0,0,0,.6)}
+.top{position:absolute;left:64px;right:64px;top:88px;height:90px;z-index:6}
+.brand{position:absolute;left:0;top:0;display:flex;align-items:center;gap:18px;padding:14px 30px 14px 14px;font-family:'JetBrains Mono';font-weight:700;font-size:30px;border-radius:999px;background:#0e0f11;box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 0 0 1.5px rgba(255,255,255,.1)}
+.tag{position:absolute;right:0;top:12px;padding:18px 30px;font-family:'JetBrains Mono';font-size:24px;color:var(--mut);white-space:nowrap;border-radius:999px;background:#0e0f11;box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 0 0 1.5px rgba(255,255,255,.08)}
+.tag b{color:var(--ink)}
+.prog{position:absolute;left:64px;right:64px;bottom:96px;display:flex;gap:10px;z-index:6}
+.prog i{flex:1;height:8px;border-radius:4px;background:rgba(255,255,255,.14);position:relative;overflow:hidden}
+.prog i b{position:absolute;left:0;top:0;bottom:0;width:0;background:#f2f3f5;border-radius:4px}
+.L{position:absolute;left:64px;right:64px}
+.kick{font-family:'JetBrains Mono';font-size:28px;color:var(--mut);letter-spacing:1px;white-space:pre;height:40px}
+.h{font-weight:900;letter-spacing:-5px;line-height:.92;text-transform:uppercase}
+.h .ln{display:block;white-space:nowrap}
+.h .w{display:inline-block;padding-bottom:.05em;margin-right:.2em;background-image:linear-gradient(180deg,#ffffff 0%,#f1f2f4 50%,#b4b8be 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.h .w:last-child{margin-right:0}
+.h .soft .w{background-image:linear-gradient(180deg,rgba(255,255,255,.62),rgba(255,255,255,.24))}
+.h .ser{font-family:'Instrument Serif';font-style:italic;font-weight:400;text-transform:none;letter-spacing:-2px}
+.lbl{font-family:'JetBrains Mono';font-size:22px;color:var(--mut)}
+.g{filter:grayscale(1) contrast(1.12)}
+.real{position:absolute;right:20px;top:18px;z-index:3;padding:7px 16px;border-radius:999px;font-family:'JetBrains Mono';font-weight:800;font-size:17px;background:#f2f3f5;color:#08090a}
+
+
+/* comment */
+.cm{padding:30px 34px}
+.rowc{display:flex;align-items:center;gap:20px}
+.av2{width:70px;height:70px;border-radius:50%;flex:none;background:radial-gradient(circle at 35% 28%,#5a5e64,#1b1d20);box-shadow:inset 0 0 0 2px rgba(255,255,255,.2)}
+.cin{flex:1;padding:20px 26px;border-radius:999px;font-size:32px;font-weight:700;background:rgba(255,255,255,.06);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.14)}
+.send{width:76px;height:76px;border-radius:50%;display:grid;place-items:center;background:#f2f3f5;color:#000;font-size:34px;font-weight:900;flex:none}
+.posted{display:flex;gap:20px;align-items:flex-start;margin-top:30px}
+.posted .u{font-weight:800;font-size:28px}
+.posted .c{font-size:34px;font-weight:800;margin-top:4px}
+.dm{padding:24px 30px;border-radius:32px 32px 32px 10px;font-size:32px;font-weight:700}
+.dm small{display:block;font-family:'JetBrains Mono';font-size:20px;color:#55595f;font-weight:500;margin-bottom:6px}
+.tap{position:absolute;width:96px;height:96px;opacity:0;z-index:4}
+/* end */
+.erings{position:absolute;left:290px;top:420px;width:500px;height:500px}
+.bigmk{position:absolute;left:390px;top:520px;width:300px;height:300px;font-size:110px;letter-spacing:-6px}
+.hnd{position:absolute;left:0;right:0;top:1000px;text-align:center;font-family:'JetBrains Mono';font-weight:800;font-size:92px;white-space:pre;height:120px}
+.fol{position:absolute;left:280px;top:1390px;width:520px;height:132px;border-radius:999px;display:grid;place-items:center;font-size:52px;font-weight:900;background:linear-gradient(180deg,#fbfbfc,#d4d7db);color:#08090a;box-shadow:0 6px 0 #9a9ea4,0 20px 60px rgba(255,255,255,.16)}
+.fol2{position:absolute;left:280px;top:1390px;width:520px;height:132px;border-radius:999px;display:grid;place-items:center;font-size:52px;font-weight:900;background:#101114;color:#f5f6f7;box-shadow:inset 0 0 0 3px rgba(255,255,255,.7);opacity:0}
+.erip{position:absolute;left:540px;top:1456px;border-radius:50%;border:4px solid rgba(255,255,255,.8);opacity:0}
+/* S1 receipt printer */
+.slot{position:absolute;left:70px;top:740px;width:940px;height:96px;border-radius:30px;z-index:3}
+.slot i{position:absolute;left:70px;right:70px;top:40px;height:14px;border-radius:7px;background:#000;box-shadow:inset 0 3px 6px rgba(0,0,0,.9),0 1px 0 rgba(255,255,255,.12)}
+.slot .led{position:absolute;right:34px;top:36px;width:22px;height:22px;border-radius:50%;background:#f2f3f5;box-shadow:0 0 18px rgba(255,255,255,.7)}
+.rcpt{position:absolute;left:130px;top:788px;width:820px;height:0;overflow:hidden;transform-origin:50% 0;border-radius:0 0 6px 6px;
+  background:linear-gradient(180deg,#e9ebee 0,#fafafa 30px,#f4f5f6 100%);color:#0b0c0e;font-family:'JetBrains Mono';box-shadow:0 40px 80px rgba(0,0,0,.7)}
+.rcpt .in2{padding:56px 54px 40px;position:relative}
+.rl{display:flex;align-items:baseline;font-size:40px;font-weight:800;height:80px;opacity:0}
+.rl .dl{flex:1;border-bottom:4px dotted rgba(0,0,0,.35);margin:0 14px;transform:translateY(-8px)}
+.rl.sm{font-size:26px;font-weight:500;color:#55595f;height:52px}
+.rl.tot{font-size:52px;height:100px;border-top:3px dashed rgba(0,0,0,.35);padding-top:18px;margin-top:8px}
+.rh{font-size:28px;font-weight:700;letter-spacing:6px;text-align:center;color:#55595f;margin-bottom:26px}
+.stamp{position:relative;display:inline-block;margin:26px 0 0 330px;padding:8px 34px;border:5px solid #0b0c0e;border-radius:16px;font-family:'Instrument Serif';font-style:italic;font-size:76px;color:#0b0c0e;transform:rotate(-7deg);opacity:0}
+.zig{position:absolute;left:0;right:0;bottom:-1px;height:22px;background:linear-gradient(-45deg,#000 11px,transparent 0) 0 0/22px 22px repeat-x,linear-gradient(45deg,#000 11px,transparent 0) 0 0/22px 22px repeat-x}
+/* S2 hero + fusion */
+.hero{position:absolute;left:64px;top:640px;width:952px;height:318px;padding:0}
+.hero img{width:100%;height:100%;object-fit:cover;display:block}
+.sub2{position:absolute;left:64px;top:560px;font-family:'JetBrains Mono';font-size:30px;color:var(--mut);white-space:pre;height:44px}
+.slab{position:absolute;top:1110px;width:300px;height:380px;border-radius:30px;padding:26px}
+.slab .nm{position:absolute;left:26px;bottom:24px;font-weight:900;font-size:40px;letter-spacing:-1px}
+.slab .ic{position:absolute;left:26px;right:26px;top:26px;height:220px;border-radius:18px;background:rgba(255,255,255,.04);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.1);overflow:hidden}
+.ic .ln2{position:absolute;left:22px;height:12px;border-radius:6px;background:rgba(255,255,255,.55)}
+.ic .dots{position:absolute;inset:0;background:radial-gradient(rgba(255,255,255,.28) 2px,transparent 2.5px) 0 0/22px 22px}
+.ic .cbx{position:absolute;left:22px;width:30px;height:30px;border-radius:8px;box-shadow:inset 0 0 0 3px rgba(255,255,255,.7)}
+.ic .cbx.on{background:#f2f3f5}
+.seam{position:absolute;left:64px;top:1530px;width:952px;text-align:center;font-family:'JetBrains Mono';font-weight:800;font-size:34px;letter-spacing:4px;white-space:pre;height:50px;transform:translateZ(120px)}
+/* S3 flip card */
+.flipw{position:absolute;left:64px;top:700px;width:952px;height:821px;transform-style:preserve-3d}
+.face{position:absolute;inset:0;border-radius:34px;overflow:hidden;backface-visibility:hidden;background:#fff;box-shadow:inset 0 0 0 2px rgba(255,255,255,.4),0 3px 0 #c3c6cb,0 6px 0 #aeb2b8,0 9px 0 #9a9ea4,0 60px 90px rgba(0,0,0,.75)}
+.face img{position:absolute;left:0;top:0;width:100%;height:100%;object-fit:cover;object-position:50% 0}
+.face.bk{transform:rotateY(180deg)}
+.face.bk img{object-position:50% 38%}
+.tgl{position:absolute;left:290px;top:1590px;width:500px;height:120px;border-radius:60px;padding:0}
+.tgl .kn{position:absolute;left:10px;top:10px;width:240px;height:100px;border-radius:50px;background:linear-gradient(180deg,#fbfbfc,#cfd2d6);box-shadow:0 5px 0 #8f939a,0 14px 30px rgba(0,0,0,.6)}
+.tgl .o{position:absolute;top:0;width:250px;height:120px;display:grid;place-items:center;font-family:'JetBrains Mono';font-weight:800;font-size:30px;z-index:2}
+/* S4 tabletop tiles */
+.board{position:absolute;left:54px;top:620px;width:972px;height:960px;transform-style:preserve-3d}
+.tile{position:absolute;width:470px;height:450px;border-radius:28px;overflow:hidden;background:#fff;box-shadow:inset 0 0 0 2px rgba(255,255,255,.5),0 3px 0 #c3c6cb,0 6px 0 #aeb2b8,0 9px 0 #9a9ea4,0 40px 70px rgba(0,0,0,.7)}
+.tile img{position:absolute;left:0;top:0;width:100%;height:370px;object-fit:cover}
+.tile .tb{position:absolute;left:0;right:0;bottom:0;height:80px;background:#0e0f11;color:#f5f6f7;font-family:'JetBrains Mono';font-weight:800;font-size:30px;display:flex;align-items:center;padding:0 26px;gap:14px}
+.tile .tb i{font-style:normal;color:var(--mut);font-weight:500}
+.frame4{position:absolute;left:30px;top:600px;width:1020px;height:1000px;border-radius:44px;border:4px solid rgba(255,255,255,.85);opacity:0}
+.f4lbl{position:absolute;left:0;right:0;top:1640px;text-align:center;font-family:'JetBrains Mono';font-weight:800;font-size:34px;letter-spacing:3px;white-space:pre;height:50px;transform:translateZ(120px)}
+/* S5 local-first */
+.cloud{position:absolute;left:640px;top:600px;width:340px;height:220px}
+.lap{position:absolute;left:150px;top:640px;width:560px;height:620px;transform-style:preserve-3d}
+.scr{position:absolute;left:0;top:0;width:560px;height:360px;border-radius:24px;padding:16px;background:linear-gradient(160deg,#2a2b30,#111214);box-shadow:inset 0 0 0 2px rgba(255,255,255,.18),0 40px 60px rgba(0,0,0,.6)}
+.scr .sv{width:100%;height:100%;border-radius:12px;overflow:hidden;background:#fff}
+.scr .sv img{width:100%;display:block}
+.kb{position:absolute;left:-40px;top:352px;width:640px;height:300px;border-radius:20px;transform-origin:50% 0;transform:rotateX(74deg);
+  background:linear-gradient(180deg,#26272b,#141518);box-shadow:inset 0 0 0 2px rgba(255,255,255,.14)}
+.kb .keys{position:absolute;left:44px;right:44px;top:30px;height:160px;background:repeating-linear-gradient(90deg,rgba(255,255,255,.16) 0 38px,transparent 38px 46px),repeating-linear-gradient(0deg,transparent 0 6px,#1d1e22 6px 12px);opacity:.8;border-radius:8px}
+.sheet{position:absolute;width:150px;height:190px;border-radius:14px;background:linear-gradient(170deg,#fff,#d7dade);box-shadow:0 20px 40px rgba(0,0,0,.6);padding:26px 20px}
+.sheet i{display:block;height:10px;border-radius:5px;background:#9da1a8;margin-bottom:16px}
+.dev{position:absolute;left:150px;top:1080px;width:560px;text-align:center;font-family:'JetBrains Mono';font-weight:800;font-size:30px;white-space:pre;height:44px;transform:translateZ(120px)}
+.starbox{position:absolute;left:64px;top:1300px;width:952px;height:380px;padding:40px 50px}
+.bigst{font-weight:900;font-size:230px;letter-spacing:-12px;line-height:1;color:#f5f6f7;
+  text-shadow:0 2px 0 #c9ccd1,0 4px 0 #a9adb3,0 6px 0 #8c9097,0 8px 0 #70747b,0 10px 0 #55595f,0 12px 0 #3c3f44,0 30px 40px rgba(0,0,0,.8)}
+.stl{font-family:'JetBrains Mono';font-size:30px;color:var(--mut);margin-top:22px;white-space:pre;height:44px}
+.stsvg{position:absolute;right:56px;top:70px;width:170px;height:170px}
+/* S6 OS windows + browser */
+.osw{position:absolute;top:620px;width:296px;height:330px;border-radius:26px;padding:0}
+.osw .bar{height:52px;display:flex;align-items:center;gap:10px;padding:0 20px;background:rgba(255,255,255,.05);box-shadow:inset 0 -1.5px 0 rgba(255,255,255,.1)}
+.osw .bar i{width:16px;height:16px;border-radius:50%;background:rgba(255,255,255,.35)}
+.osw .on{position:absolute;left:0;right:0;top:120px;text-align:center;font-weight:900;font-size:56px;letter-spacing:-2px}
+.osw .dn{position:absolute;left:40px;right:40px;bottom:36px;height:60px;border-radius:16px;display:grid;place-items:center;font-family:'JetBrains Mono';font-weight:800;font-size:24px;background:#f2f3f5;color:#08090a}
+.brw{position:absolute;left:64px;top:1030px;width:952px;height:600px;padding:0}
+.brw .ub{display:flex;align-items:center;gap:14px;height:86px;padding:0 26px;background:rgba(255,255,255,.04);box-shadow:inset 0 -1.5px 0 rgba(255,255,255,.1)}
+.brw .ub i{width:18px;height:18px;border-radius:50%;background:rgba(255,255,255,.3)}
+.brw .url{flex:1;margin-left:16px;height:54px;border-radius:27px;background:rgba(255,255,255,.07);display:flex;align-items:center;padding:0 24px;font-family:'JetBrains Mono';font-size:28px;white-space:pre}
+.brw .pv{position:absolute;left:26px;right:26px;top:110px;bottom:26px;border-radius:18px;overflow:hidden;background:#fff}
+.brw .pv img{width:100%;display:block}
+.nolog{position:absolute;left:64px;top:1680px;width:952px;text-align:center;font-family:'JetBrains Mono';font-size:28px;color:var(--mut);white-space:pre;height:40px;transform:translateZ(120px)}
+
+</style></head><body>
+<div class="f" id="F">
+ <div id="stage"><div id="world">
+  <!-- S1 hook: monthly bill printing -->
+  <section class="sc" id="s1">
+    <div class="L kick" style="top:250px" data-k="// your monthly bill"></div>
+    <div class="L h" style="top:304px">
+      <span class="ln" style="font-size:118px"><span class="w" data-t="0.08">Paying</span><span class="w" data-t="0.4">for</span></span>
+      <span class="ln" style="font-size:150px;letter-spacing:-7px"><span class="w" data-t="0.64">Notion</span></span>
+      <span class="ln soft" style="font-size:150px;letter-spacing:-7px"><span class="w ser" data-t="1.56">and</span><span class="w" data-t="1.76">Miro?</span></span>
+    </div>
+    <div class="c3 slot" id="slot"><i></i><b class="led"></b></div>
+    <div class="rcpt" id="rcpt"><div class="in2">
+      <div class="rh">RECEIPT · MONTHLY</div>
+      <div class="rl" id="rl0">NOTION PLUS<span class="dl"></span>$10</div>
+      <div class="rl" id="rl1">MIRO STARTER<span class="dl"></span>$8</div>
+      <div class="rl sm" id="rl2">per member / month · billed yearly</div>
+      <div class="rl tot" id="rl3">EVERY MONTH<span class="dl"></span>$18</div>
+      <div class="rl sm" id="rl4">↻ renews automatically</div>
+      <div class="stamp" id="stamp">again.</div>
+    </div><div class="zig"></div></div>
+  </section>
+
+  <!-- S2 meet AFFiNE: hero + three slabs fuse -->
+  <section class="sc" id="s2">
+    <div class="L kick" style="top:250px" data-k="// mate, meet"></div>
+    <div class="L h" style="top:304px">
+      <span class="ln" style="font-size:200px;letter-spacing:-9px"><span class="w" data-t="4.75" style="text-transform:none">AFFiNE</span></span>
+    </div>
+    <div class="sub2" id="sub2"></div>
+    <div class="c3 lite hero in" data-t="4.6" data-rx="10" data-ry="-6"><img src="media/hero.png"><span class="real">REAL</span></div>
+    <div class="c3 slab" id="sl0"><div class="ic"><b class="ln2" style="top:30px;width:70%"></b><b class="ln2" style="top:62px;width:85%;opacity:.6"></b><b class="ln2" style="top:94px;width:60%;opacity:.6"></b><b class="ln2" style="top:126px;width:78%;opacity:.6"></b><b class="ln2" style="top:158px;width:50%;opacity:.6"></b></div><div class="nm">Docs</div></div>
+    <div class="c3 slab" id="sl1"><div class="ic"><div class="dots"></div><svg viewBox="0 0 248 220" style="position:absolute;inset:0"><path d="M30 170 C 80 40, 150 200, 220 60" fill="none" stroke="#f2f3f5" stroke-width="6" stroke-linecap="round"/><rect x="150" y="120" width="70" height="60" rx="10" fill="#f2f3f5"/></svg></div><div class="nm">Whiteboard</div></div>
+    <div class="c3 slab" id="sl2"><div class="ic"><b class="cbx on" style="top:30px"></b><b class="ln2" style="top:39px;left:70px;width:55%"></b><b class="cbx on" style="top:90px"></b><b class="ln2" style="top:99px;left:70px;width:45%"></b><b class="cbx" style="top:150px"></b><b class="ln2" style="top:159px;left:70px;width:60%;opacity:.6"></b></div><div class="nm">Tasks</div></div>
+    <div class="seam" id="seam"></div>
+  </section>
+
+  <!-- S3 write a doc, flip the switch, whiteboard -->
+  <section class="sc" id="s3">
+    <div class="L kick" style="top:250px" data-k="// same page, two modes"></div>
+    <div class="L h" style="top:304px">
+      <span class="ln" style="font-size:132px"><span class="w" data-t="10.32">Write.</span><span class="w" data-t="11.68">Flip.</span></span>
+      <span class="ln soft" style="font-size:132px"><span class="w ser" data-t="14.28">endless</span><span class="w" data-t="14.64">board.</span></span>
+    </div>
+    <div class="flipw" id="flip">
+      <div class="face fr"><img id="ty" src="media/ty000.jpg"><span class="real" style="z-index:3">REAL APP</span></div>
+      <div class="face bk"><img id="wbimg" src="media/wb.jpg"><span class="real" style="z-index:3">EDGELESS MODE</span></div>
+    </div>
+    <div class="c3 tgl" id="tgl"><div class="kn" id="kn"></div><div class="o" style="left:0;color:#08090a" id="o0">Page</div><div class="o" style="left:250px" id="o1">Edgeless</div></div>
+  </section>
+
+  <!-- S4 four real blocks on a tabletop -->
+  <section class="sc" id="s4">
+    <div class="L kick" style="top:250px" data-k="// all built in"></div>
+    <div class="L h" style="top:304px">
+      <span class="ln" style="font-size:132px"><span class="w" data-t="18.96">All</span><span class="w" data-t="19.12">in</span><span class="w ser" data-t="19.28">one</span></span>
+      <span class="ln soft" style="font-size:132px"><span class="w" data-t="19.44">place.</span></span>
+    </div>
+    <div class="frame4" id="frame4"></div>
+    <div class="board" id="board">
+      <div class="tile" id="ti0"><img src="media/kanban.jpg" style="object-position:0 0"><div class="tb">Kanban <i>board</i></div></div>
+      <div class="tile" id="ti1"><img src="media/table.jpg" style="object-position:0 50%"><div class="tb">Tables <i>database</i></div></div>
+      <div class="tile" id="ti2"><img src="media/sticky.jpg" style="object-position:50% 20%"><div class="tb">Sticky <i>notes</i></div></div>
+      <div class="tile" id="ti3"><img src="media/mind.jpg" style="object-position:30% 50%"><div class="tb">Mind <i>maps</i></div></div>
+    </div>
+    <div class="f4lbl" id="f4lbl"></div>
+  </section>
+
+  <!-- S5 local-first + stars -->
+  <section class="sc" id="s5">
+    <div class="L kick" style="top:250px" data-k="// local-first"></div>
+    <div class="L h" style="top:304px">
+      <span class="ln" style="font-size:124px"><span class="w" data-t="21.84">Your</span><span class="w" data-t="22.04">notes.</span></span>
+      <span class="ln soft" style="font-size:124px"><span class="w ser" data-t="22.56">your own</span><span class="w" data-t="23.12">device.</span></span>
+    </div>
+    <svg class="cloud" id="cloud" viewBox="0 0 340 220"><path d="M80 180 h190 a55 55 0 0 0 0-110 a75 75 0 0 0-140-20 a60 60 0 0 0-50 130z" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="6" stroke-linejoin="round"/>
+      <line id="cstrike" x1="40" y1="200" x2="300" y2="20" stroke="#f5f6f7" stroke-width="9" stroke-linecap="round" stroke-dasharray="320" stroke-dashoffset="320"/></svg>
+    <div class="lap" id="lap"><div class="scr"><div class="sv"><img src="media/doc.jpg"></div></div><div class="kb"><div class="keys"></div></div></div>
+    <div class="sheet" id="sheet"><i style="width:80%"></i><i></i><i style="width:60%"></i><i style="width:90%"></i></div>
+    <div class="dev" id="dev"></div>
+    <div class="c3 starbox" id="starbox"><div class="bigst" id="bigst">0</div><div class="stl" id="stl"></div>
+      <svg class="stsvg" viewBox="0 0 24 24"><path d="M12 2l2.9 6.6 7.1.6-5.4 4.7 1.6 7L12 17.3 5.8 20.9l1.6-7L2 9.2l7.1-.6z" fill="#f5f6f7"/></svg></div>
+  </section>
+
+  <!-- S6 free app on 3 OSes + browser -->
+  <section class="sc" id="s6">
+    <div class="L kick" style="top:250px" data-k="// get it"></div>
+    <div class="L h" style="top:304px">
+      <span class="ln" style="font-size:150px;letter-spacing:-7px"><span class="w" data-t="26.64">Free</span><span class="w ser" data-t="26.84">app.</span></span>
+    </div>
+    <div class="c3 osw" id="os0" style="left:64px"><div class="bar"><i></i><i></i><i></i></div><div class="on">Mac</div><div class="dn">↓ .dmg</div></div>
+    <div class="c3 osw" id="os1" style="left:392px"><div class="bar"><i></i><i></i><i></i></div><div class="on">Windows</div><div class="dn">↓ .exe</div></div>
+    <div class="c3 osw" id="os2" style="left:720px"><div class="bar"><i></i><i></i><i></i></div><div class="on">Linux</div><div class="dn">↓ AppImage</div></div>
+    <div class="c3 brw" id="brw"><div class="ub"><i></i><i></i><i></i><div class="url" id="url"></div></div><div class="pv"><img src="media/doc.jpg"></div></div>
+    <div class="nolog" id="nolog"></div>
+  </section>
+
+  <!-- S8 comment -->
+  <section class="sc" id="s7">
+    <div class="L kick" style="top:250px" data-k="// want the link?"></div>
+    <div class="L h" style="top:304px">
+      <span class="ln" style="font-size:132px"><span class="w" data-t="30.24">Comment</span></span>
+      <span class="ln soft" style="font-size:190px;letter-spacing:-8px"><span class="w" data-t="30.64">GITMATE</span></span>
+    </div>
+    <div class="c3 cm in" style="left:64px;top:690px;width:952px;height:390px" data-t="29.85" data-ry="-10" data-rx="8">
+      <div class="lbl" style="margin-bottom:22px">comments</div>
+      <div class="rowc"><div class="av2"></div><div class="cin"><span id="t9" style="color:rgba(255,255,255,.4)">Add a comment…</span></div><div class="send" id="snd9">↑</div></div>
+      <div class="posted" id="pst9"><div class="av2" style="width:56px;height:56px"></div><div><div class="u">you <span class="lbl">· now</span></div><div class="c">GITMATE</div></div></div>
+    </div>
+    <div class="c3 lite dm in" style="left:300px;top:1150px;width:560px;height:130px" data-t="31.25" data-z="80"><small>git.mate · message</small>Here's your link, mate 🔗</div>
+  </section>
+
+  <!-- S9 end -->
+  <section class="sc" id="s8">
+    <svg class="erings" viewBox="0 0 500 500"><circle id="er1" cx="250" cy="250" r="226" fill="none" stroke="#f5f6f7" stroke-width="3" stroke-dasharray="1420" stroke-dashoffset="1420" transform="rotate(-90 250 250)"/>
+      <circle id="er2" cx="250" cy="250" r="246" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="2" stroke-dasharray="1546" stroke-dashoffset="1546" transform="rotate(90 250 250)"/></svg>
+    <div class="bead bigmk" id="bigmk">&gt;_</div>
+    <div class="hnd" id="hnd"></div>
+    <div class="L h" style="top:1160px;font-size:84px;letter-spacing:-3px;text-align:center"><span class="ln soft"><span class="w" data-t="33.0">1</span><span class="w" data-t="33.15">repo</span><span class="w" data-t="33.3">every</span><span class="w" data-t="33.45">day.</span></span></div>
+    <div class="fol" id="fol">Follow</div>
+    <div class="fol2" id="fol2">Following ✓</div>
+    <div class="erip" id="erip"></div>
+    <svg class="tap" id="tap10" viewBox="0 0 100 100" style="left:600px;top:1420px"><circle cx="50" cy="50" r="34" fill="rgba(255,255,255,.25)" stroke="#fff" stroke-width="5"/><circle cx="50" cy="50" r="12" fill="#fff"/></svg>
+  </section>
+ </div></div>
+
+ <div class="top"><div class="brand"><div class="bead">&gt;_</div>git.mate</div><div class="tag" id="tag"><b>01</b> / hook</div></div>
+ <div class="prog" id="prog"></div>
+ <div class="vig"></div><div class="grain"></div>
+</div>
+<script>
+(function () {
+  const SPD = 1.0;
+  const S = [0, 4.45, 10.05, 15.25, 20.05, 25.95, 29.75, 32.25];
+  const TOTAL = 34.95; window.__TOTAL = TOTAL / SPD;
+  const LABEL = ['hook', 'meet affine', 'flip', 'blocks', 'local-first', 'get it', 'link', 'follow'];
+  const $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)];
+  const tl = gsap.timeline({ paused: true, defaults: { ease: 'power3.out' } });
+  $('#prog').innerHTML = S.map(() => '<i><b></b></i>').join('');
+  const scenes = $$('.sc');
+  const R = 2400, STEP = 28;
+  scenes.forEach((sc, i) => { sc.style.transform = `rotateY(${i * STEP}deg) translateZ(${R}px)`; });
+  const cam = { a: 0, d: 0, rx: 0, rz: 0 };
+  const MOVE = { 1: 'crane', 2: 'roll', 3: 'crane', 4: 'roll', 5: 'crane', 6: 'roll', 7: 'crane' };
+  scenes.forEach((sc, i) => {
+    if (i < scenes.length - 1) tl.set(sc, { visibility: 'hidden' }, S[i + 1] + .45);
+    if (i) {
+      tl.set(sc, { visibility: 'visible' }, Math.max(0, S[i] - .62));
+      const t0 = S[i] - .58, dir = i % 2 ? 1 : -1, mv = MOVE[i];
+      const prx = mv === 'crane' ? -20 : 9 * dir, prz = mv === 'roll' ? -10 * dir : mv === 'crane' ? 0 : 3 * dir, pd = mv === 'crane' ? 1300 : 950;
+      tl.to(cam, { a: i * STEP, duration: 1.0, ease: 'power3.inOut' }, t0);
+      tl.to(cam, { keyframes: [{ d: pd, rx: prx, rz: prz, duration: .5, ease: 'power2.out' }, { d: 0, rx: 0, rz: 0, duration: .5, ease: 'power2.in' }] }, t0);
+    }
+  });
+  $$('.h .w').forEach((w) => { const t = +w.dataset.t; if (!t) return;
+    tl.fromTo(w, { opacity: 0, y: 70, scale: 1.12, filter: 'blur(18px)' }, { opacity: 1, y: 0, scale: 1, filter: 'blur(0px)', duration: .55, ease: 'expo.out' }, t); });
+  scenes.forEach((sc, i) => { const k = $('.kick', sc); if (!k || !k.dataset.k) return; const txt = k.dataset.k, o = { n: 0 }; k.textContent = i ? '' : txt; if (!i) return;
+    tl.fromTo(o, { n: 0 }, { n: txt.length, duration: Math.min(.7, txt.length * .025), ease: 'none', immediateRender: false, onUpdate: () => { k.textContent = txt.slice(0, Math.round(o.n)); } }, S[i] + .05); });
+  $$('.in').forEach((c) => {
+    const t = +c.dataset.t, rx = +(c.dataset.rx || 0), ry = +(c.dataset.ry || 0), z = +(c.dataset.z || 0);
+    const end = { autoAlpha: 1, z, rotationX: rx, rotationY: ry, y: 0, duration: .9, ease: 'expo.out' };
+    if (!t) { gsap.set(c, end); return; }
+    tl.fromTo(c, { autoAlpha: 0, z: -900, rotationX: rx + 40, rotationY: ry * 2, y: 120 }, end, t);
+  });
+  const typer = (el, text, t, d) => { const o = { n: 0 }; tl.fromTo(o, { n: 0 }, { n: text.length, duration: d, ease: 'none', immediateRender: false, onUpdate: () => { el.textContent = text.slice(0, Math.round(o.n)); } }, t); };
+  const sm = (a, b, x) => { const k = Math.min(1, Math.max(0, (x - a) / (b - a))); return k * k * (3 - 2 * k); };
+  const cl = (a, b, x) => Math.min(1, Math.max(0, (x - a) / (b - a)));
+  const twl = (t, a, b, s) => s.slice(0, Math.round(cl(a, b, t) * s.length));
+  const bump = (t, c, w) => Math.max(0, 1 - Math.abs(t - c) / w);
+
+  const TY = Array.from({ length: 22 }, (_, i) => 'media/ty' + String(i).padStart(3, '0') + '.jpg');
+  TY.forEach(s => { const im = new Image(); im.src = s; });
+  // S7 comment flow (ending shell)
+  const C = 30.75;
+  tl.call(() => { $('#t9').textContent = 'Add a comment…'; $('#t9').style.color = 'rgba(255,255,255,.4)'; }, null, C - .01);
+  tl.call(() => { $('#t9').style.color = '#fff'; }, null, C);
+  typer($('#t9'), 'GITMATE', C, .3);
+  tl.fromTo('#snd9', { scale: 1 }, { scale: .8, duration: .1, yoyo: true, repeat: 1 }, C + .35);
+  tl.fromTo('#pst9', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: .35 }, C + .4);
+  // S8 end
+  const E = 32.3;
+  tl.fromTo('#bigmk', { opacity: 0, scale: .2, rotation: -40 }, { opacity: 1, scale: 1, rotation: 0, duration: .9, ease: 'back.out(1.8)' }, E);
+  tl.fromTo('#er1', { attr: { 'stroke-dashoffset': 1420 } }, { attr: { 'stroke-dashoffset': 0 }, duration: 1.0, ease: 'power2.inOut', immediateRender: false }, E + .15);
+  tl.fromTo('#er2', { attr: { 'stroke-dashoffset': 1546 } }, { attr: { 'stroke-dashoffset': 0 }, duration: 1.2, ease: 'power2.inOut', immediateRender: false }, E + .3);
+  typer($('#hnd'), '@git.mate', E + .4, .5);
+  tl.fromTo('#fol', { opacity: 0, scale: .6 }, { opacity: 1, scale: 1, duration: .5, ease: 'back.out(2)' }, E + .9);
+  tl.fromTo('#tap10', { opacity: 0, x: 160, y: 140 }, { opacity: 1, x: 0, y: 0, duration: .5, ease: 'power2.out' }, E + 1.25);
+  tl.to('#tap10', { scale: .75, duration: .1, yoyo: true, repeat: 1 }, E + 1.8);
+  tl.to('#fol', { scale: .93, duration: .1 }, E + 1.8);
+  tl.set('#fol2', { opacity: 1 }, E + 1.9); tl.set('#fol', { opacity: 0 }, E + 1.9);
+  tl.fromTo('#erip', { opacity: .8, width: 10, height: 10, margin: -5 }, { opacity: 0, width: 640, height: 640, margin: -320, duration: .8, ease: 'power2.out', immediateRender: false }, E + 1.85);
+  tl.to('#tap10', { opacity: 0, duration: .3 }, E + 2.3);
+  tl.to({}, { duration: .01 }, TOTAL);
+
+  const world = $('#world'), tag = $('#tag'), segs = $$('#prog b');
+  const tick = (t) => {
+    const a = cam.a + Math.sin(t * .5) * .35, rx = cam.rx + Math.sin(t * .37 + 1) * .7, rz = cam.rz + Math.sin(t * .29) * .25;
+    scenes.forEach((sc, i) => { sc.style.display = t >= S[i] - .7 && t <= (S[i + 1] || 99) + .5 ? '' : 'none'; });
+    world.style.transform = `translateZ(${-cam.d}px) rotateX(${rx}deg) rotateZ(${rz}deg) translateZ(${-R}px) rotateY(${-a}deg)`;
+    // S1 receipt prints out of the slot, line by line on the voice
+    { const sk = sm(0, .5, t); $('#slot').style.opacity = sm(0, .15, t);
+      $('#slot').style.transform = `perspective(1600px) translate3d(0,${(1 - sk) * 120}px,${(1 - sk) * -500}px) rotateX(${24 + (1 - sk) * 30}deg)`;
+      const LT = [0.64, 1.76, 2.1, 2.64, 2.95];
+      const bot = (id) => { const e = $(id); return e.offsetTop + e.offsetHeight + 40; };
+      let h = 150 * sm(0, .5, t), prev = 150; LT.forEach((t0, i) => { const k = sm(t0 - .1, t0 + .2, t), b = bot('#rl' + i); h += (b - prev) * k; prev = b;
+        const e = $('#rl' + i); e.style.opacity = sm(t0, t0 + .12, t); e.style.transform = `translateX(${(1 - sm(t0, t0 + .25, t)) * -30}px)`; });
+      h += (bot('#stamp') + 10 - prev) * sm(2.95, 3.1, t);
+      const r = $('#rcpt'); r.style.height = h + 'px';
+      r.style.transform = `perspective(1800px) translateZ(40px) rotateX(${16 - 4 * sm(0, 4, t)}deg) rotateY(${-5 + 3 * Math.sin(t * .8)}deg)`;
+      const st = $('#stamp'), sk2 = sm(3.0, 3.18, t); st.style.opacity = sk2; st.style.transform = `rotate(-7deg) scale(${1 + (1 - sk2) * 1.6})`; }
+    // S2 sub line, slabs arrive then fuse into one
+    { $('#sub2').textContent = twl(t, 6.6, 7.5, 'free · open-source · 75K★');
+      const SL = [8.24, 8.84, 9.44], X = [64, 390, 716], fz = sm(9.75, 10.2, t);
+      SL.forEach((t0, i) => { const e = $('#sl' + i), k = sm(t0 - .15, t0 + .35, t); e.style.opacity = sm(t0 - .15, t0, t);
+        const x = X[i] + (390 - X[i]) * fz * .0 + (i - 1) * -26 * fz;
+        e.style.left = x + 'px';
+        e.style.transform = `perspective(1500px) translate3d(0,${(1 - k) * 220}px,${(1 - k) * -800}px) rotateX(${14 + (1 - k) * 50}deg) rotateY(${(i - 1) * -14 * (1 - fz)}deg)`;
+        e.style.borderRadius = fz > 0 ? `${i === 0 ? 30 : 30 * (1 - fz)}px ${i === 2 ? 30 : 30 * (1 - fz)}px ${i === 2 ? 30 : 30 * (1 - fz)}px ${i === 0 ? 30 : 30 * (1 - fz)}px` : '30px'; });
+      $('#seam').textContent = twl(t, 9.8, 10.2, 'docs + board + tasks = 1 app'); }
+    // S3 typing frames, toggle, 3D flip, slow push into the board
+    { const tk = sm(10.0, 10.5, t), f = $('#flip');
+      $('#ty').src = TY[Math.min(21, Math.max(0, Math.floor(cl(10.4, 11.3, t) * 21.99)))];
+      const fl = sm(12.3, 13.15, t);
+      f.style.opacity = sm(9.95, 10.1, t);
+      f.style.transform = `perspective(2200px) translate3d(0,${(1 - tk) * 160}px,${(1 - tk) * -600}px) rotateX(${8 + (1 - tk) * 40}deg) rotateY(${fl * 180 - 6 + 3 * Math.sin(t * .7)}deg) scale(${1 - bump(t, 12.72, .45) * .12})`;
+      $('#wbimg').style.transform = `scale(${1 + .16 * cl(13.1, 15.4, t)})`;
+      const gk = sm(10.6, 11.0, t), g = $('#tgl'); g.style.opacity = sm(10.55, 10.7, t);
+      g.style.transform = `perspective(1400px) translate3d(0,${(1 - gk) * 140}px,${(1 - gk) * -500 + 80}px) rotateX(${18 + (1 - gk) * 40}deg) scale(${1 + bump(t, 12.3, .15) * .06})`;
+      const kk = sm(12.05, 12.3, t); $('#kn').style.left = (10 + 240 * kk) + 'px';
+      $('#o0').style.color = kk < .5 ? '#08090a' : ''; $('#o1').style.color = kk >= .5 ? '#08090a' : ''; }
+    // S4 tiles drop onto a tilted tabletop, then slide together
+    { const TT = [15.52, 16.56, 17.2, 18.12], j = sm(18.96, 19.4, t), b = $('#board');
+      b.style.transform = `perspective(2000px) translateZ(20px) rotateX(${22 - 8 * cl(15.3, 20, t)}deg) rotateZ(${-3 + 2 * cl(15.3, 20, t)}deg)`;
+      TT.forEach((t0, i) => { const e = $('#ti' + i), k = sm(t0 - .2, t0 + .3, t), cx = i % 2, cy = i >> 1, gap = 32 - 22 * j;
+        e.style.opacity = sm(t0 - .2, t0 - .05, t);
+        e.style.left = (cx ? 486 + (32 - gap) * -.5 + gap - 32 + 16 : 16 + (32 - gap) * .5) + 'px';
+        e.style.top = (cy ? 470 + gap - 32 + (32 - gap) * -.5 + 16 : 20 + (32 - gap) * .5) + 'px';
+        e.style.transform = `translate3d(0,0,${(1 - k) * 1400 + bump(t, t0 + .32, .15) * 30}px) rotateX(${(1 - k) * -30}deg) rotateZ(${(1 - k) * (i % 2 ? 12 : -12)}deg)`; });
+      const fk = sm(19.0, 19.5, t); $('#frame4').style.opacity = fk; $('#frame4').style.transform = `perspective(2000px) translateZ(30px) rotateX(${22 - 8 * cl(15.3, 20, t)}deg) rotateZ(${-3 + 2 * cl(15.3, 20, t)}deg) scale(${1.06 - .06 * fk})`;
+      $('#f4lbl').textContent = twl(t, 19.4, 19.9, '4 blocks · 1 workspace'); }
+    // S5 cloud crossed out, doc sheet drops into the laptop, extruded star counter
+    { const lk = sm(20.0, 20.5, t), l = $('#lap'); l.style.opacity = sm(19.95, 20.1, t);
+      l.style.transform = `perspective(1800px) translate3d(0,${(1 - lk) * 200}px,${(1 - lk) * -700}px) rotateX(${10 + (1 - lk) * 30}deg) rotateY(${18 - 4 * cl(20, 23.6, t)}deg)`;
+      const ck = sm(20.2, 20.6, t), c = $('#cloud'); c.style.opacity = ck * (1 - .55 * sm(20.9, 21.3, t));
+      c.style.transform = `perspective(1400px) translateZ(${(1 - ck) * -500 + 60}px) rotateY(-18deg) translateY(${Math.sin(t * 1.4) * 8}px)`;
+      $('#cstrike').setAttribute('stroke-dashoffset', 320 * (1 - sm(20.72, 21.1, t)));
+      const dk = sm(21.3, 22.2, t), sh = $('#sheet'); sh.style.opacity = sm(21.2, 21.35, t) * (1 - sm(22.15, 22.3, t));
+      sh.style.left = (735 + (330 - 735) * dk) + 'px'; sh.style.top = (720 + (820 - 720) * dk - Math.sin(dk * Math.PI) * 160) + 'px';
+      sh.style.transform = `translateZ(160px) rotate(${(1 - dk) * 24}deg) scale(${1 - .45 * dk})`;
+      $('#dev').textContent = twl(t, 22.3, 22.9, '✓ saved on this device');
+      const bk = sm(23.6, 24.0, t), sb = $('#starbox'); sb.style.opacity = sm(23.55, 23.7, t);
+      sb.style.transform = `perspective(1600px) translate3d(0,${(1 - bk) * 160}px,${(1 - bk) * -600}px) rotateX(${10 + (1 - bk) * 50}deg) rotateY(${-8 + 3 * Math.sin(t * .6)}deg) scale(${1 + bump(t, 25.1, .15) * .04})`;
+      const n = 75.3 * Math.pow(cl(23.84, 25.0, t), .6); $('#bigst').textContent = (t >= 25.0 ? '75.3' : n.toFixed(1)) + 'K';
+      $('#stl').textContent = twl(t, 24.9, 25.5, 'stars on GitHub · toeverything/AFFiNE'); }
+    // S6 OS windows pop in on the voice, browser URL types
+    { [27.24, 27.68, 28.08].forEach((t0, i) => { const e = $('#os' + i), k = sm(t0 - .15, t0 + .3, t);
+        e.style.opacity = sm(t0 - .15, t0, t);
+        e.style.transform = `perspective(1400px) translate3d(0,${(1 - k) * 180}px,${(1 - k) * -700}px) rotateX(${12 + (1 - k) * 50}deg) rotateY(${(i - 1) * -16}deg) scale(${1 + bump(t, t0 + .3, .12) * .05})`; });
+      const bk = sm(28.4, 28.9, t), b = $('#brw'); b.style.opacity = sm(28.35, 28.5, t);
+      b.style.transform = `perspective(1800px) translate3d(0,${(1 - bk) * 200}px,${(1 - bk) * -700}px) rotateX(${12 + (1 - bk) * 40}deg) rotateY(${6 - 2 * Math.sin(t * .7)}deg)`;
+      $('#url').textContent = twl(t, 28.95, 29.45, 'app.affine.pro') + (Math.sin(t * 14) > 0 ? '|' : ' ');
+      $('#nolog').textContent = twl(t, 29.2, 29.6, 'runs in the browser · no sign-up'); }
+    let si = 0; for (let i = 0; i < S.length; i++) if (t >= S[i] - .3) si = i;
+    tag.innerHTML = `<b>${String(si + 1).padStart(2, '0')}</b> / ${LABEL[si]}`;
+    segs.forEach((b, i) => { const e = i < S.length - 1 ? S[i + 1] : TOTAL - 1.5; b.style.width = Math.min(100, Math.max(0, (t - S[i]) / (e - S[i]) * 100)) + '%'; });
+  };
+  window.__tl = tl;
+  window.__seek = (rt) => { const t = rt * SPD; tl.time(t, false); tick(t); return Promise.all($$('img').map(im => im.decode().catch(() => null))).then(() => null); };
+  window.__seek(0);
+  if (!navigator.webdriver) { const t0 = performance.now(); const loop = () => { window.__seek(((performance.now() - t0) / 1000) % (TOTAL / SPD)); requestAnimationFrame(loop); }; requestAnimationFrame(loop); }
+})();
+</script>
+</body></html>

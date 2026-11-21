@@ -1,0 +1,51 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="fonts.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:1080px;height:1920px;background:#000;overflow:hidden;font-family:'Inter Tight',sans-serif;color:#fff}
+.stage{position:absolute;inset:0;perspective:1600px;perspective-origin:50% 30%}
+.inbox{position:absolute;left:50%;top:120px;width:820px;margin-left:-410px;transform:rotateX(36deg) rotateZ(-6deg) translateZ(-260px);transform-origin:50% 0}
+.row{display:flex;align-items:center;gap:22px;padding:15px 26px;margin-bottom:10px;border-radius:26px;background:#0d0d0f;border:1px solid #1d1e22}
+.av{width:64px;height:64px;border-radius:50%;flex:none;filter:blur(3px)}
+.tx{flex:1;min-width:0}
+.nm{height:16px;border-radius:8px;background:#3a3c42;filter:blur(4px);margin-bottom:10px}
+.pv{font:500 23px 'JetBrains Mono';color:#9a9da5;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pv b{color:#fff;font-weight:700}
+.tm{font:500 22px 'JetBrains Mono';color:#5c5f66;flex:none}
+.dot{width:16px;height:16px;border-radius:50%;background:#fff;flex:none;box-shadow:0 0 14px #fff8}
+.fade{position:absolute;inset:0;background:linear-gradient(180deg,#000 0%,#000c 8%,#0000 15%,#0000 52%,#000c 68%,#000 76%)}
+.badge{position:absolute;top:130px;z-index:3;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:18px;padding:18px 34px 18px 22px;border-radius:60px;background:rgba(255,255,255,.1);border:1.5px solid rgba(255,255,255,.28);backdrop-filter:blur(18px);box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 20px 60px #0009}
+.badge .ic{width:58px;height:58px;border-radius:50%;background:#fff;color:#000;display:grid;place-items:center;font:800 30px 'Inter Tight'}
+.badge span{white-space:nowrap;font:600 34px 'Inter Tight';letter-spacing:-.5px}
+.badge span b{font-weight:900}
+.card{position:absolute;left:70px;right:70px;top:720px;padding:60px 60px 58px;border-radius:56px;background:linear-gradient(160deg,rgba(255,255,255,.16),rgba(255,255,255,.05));border:1.5px solid rgba(255,255,255,.3);backdrop-filter:blur(30px) saturate(140%);box-shadow:inset 0 2px 0 rgba(255,255,255,.55),inset 0 -1px 0 rgba(255,255,255,.12),0 40px 120px #000}
+.card:before{content:"";position:absolute;left:40px;right:40px;top:0;height:2px;background:linear-gradient(90deg,transparent,#fff,transparent);opacity:.8}
+.k{font:600 26px 'JetBrains Mono';letter-spacing:3px;color:#a3a6ad;margin-bottom:34px}
+h1{font:900 104px/0.95 'Inter Tight';letter-spacing:-4.5px}
+h1 .g{color:#80848c}
+h2{font:italic 400 108px/1 'Instrument Serif';margin:8px 0 36px;letter-spacing:-1px}
+p{font:500 37px/1.42 'Inter Tight';color:#d6d8dc;letter-spacing:-.3px}
+p+p{margin-top:24px}
+.pat{margin-top:44px;display:inline-flex;align-items:center;gap:14px;padding:20px 34px;border-radius:50px;background:#fff;color:#000;font:800 34px 'Inter Tight';letter-spacing:-.5px}
+.foot{position:absolute;bottom:280px;left:0;right:0;display:flex;justify-content:center;align-items:center;gap:22px}
+.foot img{width:84px;height:84px;border-radius:50%;border:1.5px solid #333}
+.foot span{font:700 38px 'JetBrains Mono'}
+</style></head><body>
+<div class="stage"><div class="inbox" id="ib"></div></div>
+<div class="fade"></div>
+<div class="badge"><div class="ic">✉</div><span><b>100+</b> new message requests</span></div>
+<div class="card">
+  <div class="k">// A QUICK NOTE</div>
+  <h1>You sent me<br><span class="g">100+ repos.</span></h1>
+  <h2>Thank you.</h2>
+  <p>I'm testing &amp; reviewing every single one myself.</p>
+  <p>I'll share the ones I love, one by one.</p>
+  <div class="pat">Please be patient 🫶</div>
+</div>
+<div class="foot"><img src="pfp.png"><span>@git.mate</span></div>
+<script>
+const msgs=["sent you my repo 🚀","<b>github.com/</b>••••/•••","pls feature my project 🙏","built this last weekend 👀","<b>github.com/</b>•••••/••••","can you make a reel on this?","my first open source repo ❤️","<b>github.com/</b>•••/•••••••","would love your review mate","check this out 🔥","<b>github.com/</b>••••••/•••","made a CLI tool, link 👇","<b>github.com/</b>•••/••••","sent you a repo","hey! here's my repo 🙌","<b>github.com/</b>•••••/•••••","open source, MIT licensed","feature this pls 🙏🙏"];
+const t=["now","1m","2m","4m","7m","9m","12m","15m","21m","26m","33m","41m","48m","1h","1h","2h","2h","3h"];
+let h="";msgs.forEach((m,i)=>{const a=`hsl(0 0% ${18+(i*37)%40}%)`,b=`hsl(0 0% ${45+(i*23)%40}%)`;
+h+=`<div class="row"><div class="av" style="background:radial-gradient(circle at 35% 30%,${b},${a})"></div><div class="tx"><div class="nm" style="width:${170+(i*53)%190}px"></div><div class="pv">${m}</div></div><div class="tm">${t[i]}</div>${i<12?'<div class="dot"></div>':''}</div>`});
+document.getElementById('ib').innerHTML=h;
+</script></body></html>

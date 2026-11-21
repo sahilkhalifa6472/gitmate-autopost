@@ -1,0 +1,10 @@
+{
+ "video": "gitmate_ghost-downloader.mp4",
+ "title": "Ghost Downloader: free open-source download manager (video clips, torrents, live streams, FTP)",
+ "description": "Five different apps\u2026 just to download stuff? \ud83d\ude29\n\nGhost Downloader is a free, open-source download manager that does it all in one app:\n\u2192 Paste a video link, drag the timeline and save only the part you need\n\u2192 Torrents (magnet), live streams (M3U8), FTP, eD2k and Hugging Face models in one queue\n\u2192 Link expired mid-download? Change it, your progress is kept\n\u2192 Browser extension sends downloads straight to the app\n\u2192 Windows, macOS, Linux and Android\n\u2192 ~13.9K \u2b50 on GitHub, GPL-3.0\n\nGet it: free installers on the GitHub Releases page (XiaoYouChR/Ghost-Downloader-3).\nPlease only download content you have the right to download \ud83d\ude4f\n\nComment GITMATE and I'll send you the link \ud83d\udc47\nFollow @git.mate for 1 useful repo every day.\n\n#downloadmanager #idm #freeapps #opensource #github #windows #macos #linux #android #torrent #productivity #techtips #developer #programming #coding #softwaretools\n",
+ "repo": "https://github.com/XiaoYouChR/Ghost-Downloader-3",
+ "theme": "dark",
+ "duration": 32.0,
+ "cover_offset_ms": 2600,
+ "source": "github.com/trending 2026-11-21 (~1,082 stars today, 13,871 total via GitHub API); footage = official README demo video + gd.xychr.com screenshots + .github/assets"
+}

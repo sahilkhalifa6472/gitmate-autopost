@@ -1,0 +1,17 @@
+Mint shut down… and now every budget app wants a monthly subscription. 💸
+
+Sure is a free, open-source personal finance app you run yourself:
+→ Net worth, cash flow, spending and outflows on one clean dashboard
+→ Connect bank accounts, set budgets, track investments
+→ Import your old Mint (or Monarch) data
+→ Built-in AI assistant you can ask about your money
+→ Self-host with one Docker compose file: your money data stays with you
+
+The backstory: the Maybe Finance team spent nearly $1M building it, then open-sourced it. Sure is the community fork that kept it alive.
+
+✅ Free · AGPL-3.0 · 16K+ ★ on GitHub
+
+Comment GITMATE and I'll send you the link 👇
+Follow @git.mate for 1 useful repo every day.
+
+#personalfinance #budgeting #mint #budgetapp #selfhosted #opensource #github #docker #homelab #money #networth #fintech #developer #programming #coding #devtools

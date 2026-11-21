@@ -1,0 +1,22 @@
+{
+ "account": "git.mate",
+ "n": 19,
+ "slug": "atlas",
+ "title": "Atlas: a free, open-source, GPU-accelerated file manager for Windows",
+ "video": {
+  "file": "19.mp4",
+  "duration_sec": 34.58,
+  "source": "/mnt/project-files/dev-reels/atlas/gitmate_atlas.mp4"
+ },
+ "instagram": {
+  "caption": "Why is Windows Explorer STILL searching for a file you saved yesterday? \ud83d\ude29\n\nAtlas is a free, open-source file manager for Windows, built by a solo dev in Rust:\n\u2192 Native + GPU-accelerated: every pixel drawn on the GPU\n\u2192 Instant indexed search that finds files as you type (Ctrl+K jumps to any folder)\n\u2192 Press Space to preview images, video, audio, docs, code and archives\n\u2192 Tabs, split panes and 5 views (grid, list, details, Miller columns, tree)\n\u2192 Converts images, video, audio and docs locally: your files never leave your PC\n\n\u2705 Free on the Microsoft Store (alpha, Windows 10/11) \u00b7 AGPL-3.0\n\u2705 Or build it yourself: cargo run --release\n\nBuilt something cool yourself? DM us your repo \ud83d\udce9 If we love it, we'll share it.\n\nComment GITMATE and I'll send you the link \ud83d\udc47\nFollow @git.mate for 1 useful repo every day.\n\n#github #opensource #windows #filemanager #rust #productivity #devtools #developer #programming #windows11 #indiedev #buildinpublic\n",
+  "hashtags": [],
+  "cover_offset_ms": 4580,
+  "share_to_feed": true
+ },
+ "posting": {
+  "audience": "US",
+  "timezone": "America/New_York"
+ },
+ "link": "https://github.com/neondeex/atlas-filemanager"
+}

@@ -1,0 +1,22 @@
+{
+ "account": "git.mate",
+ "n": 1,
+ "slug": "php2shell",
+ "title": "PHP2Shell: AI found a 10-year-old PHP bug",
+ "video": {
+  "file": "1.mp4",
+  "duration_sec": 38.2,
+  "source": "/mnt/project-files/dev-reels/php2shell/gitmate_php2shell.mp4"
+ },
+ "instagram": {
+  "caption": "AI just found a bug that hid in PHP for over 10 years \ud83d\udc1b\n\nPHP2Shell: two critical PHP bugs (CVE-2026-109618, CVE-2026-109619, CVSS 9.2) that let an attacker run code on a server with a single request. Affects PHP 5.4 up to the latest. AI found them before attackers did, and they're already being exploited.\n\nPHP runs WordPress, and WordPress runs ~40% of the web.\n\n\u2705 Update now: PHP 8.5.12 / 8.4.27 / 8.3.36 / 8.2.35\n\u2705 On shared hosting? Ask your host to patch today\n\u2705 Send this to a friend with a website\n\nComment GITMATE and I'll send you the advisory link \ud83d\udc47\nFollow @git.mate so you hear it first.\n\n#php #wordpress #cybersecurity #infosec #webdev #php2shell #ai #opensource #github #developer #programming #devops #security",
+  "hashtags": [],
+  "cover_offset_ms": 5200,
+  "share_to_feed": true
+ },
+ "posting": {
+  "audience": "US",
+  "timezone": "America/New_York"
+ },
+ "link": "https://github.com/php/php-src"
+}

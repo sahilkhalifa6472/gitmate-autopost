@@ -1,0 +1,22 @@
+{
+ "account": "git.mate",
+ "n": 26,
+ "slug": "improve",
+ "title": "improve: shadcn's agent skill where your best AI model audits the repo and cheaper models execute the plans",
+ "video": {
+  "file": "26.mp4",
+  "duration_sec": 37.8,
+  "source": "/mnt/project-files/dev-reels/improve/gitmate_improve.mp4"
+ },
+ "instagram": {
+  "caption": "Your expensive AI model should be the boss, not the intern \ud83e\udde0\n\n/improve is a new agent skill from shadcn (creator of shadcn/ui):\n\u2192 Your smartest model audits the whole repo: bugs, security, performance, tests, tech debt, deps, DX, docs + feature ideas\n\u2192 Every finding comes with exact file:line evidence, impact, effort and confidence\n\u2192 It re-checks every finding itself and drops the false alarms\n\u2192 You pick what matters, it writes one self-contained plan per finding in plans/\n\u2192 Plans have verification gates + STOP conditions, so a much cheaper model can execute them step by step\n\u2192 It never touches your source code. The plan is the product.\n\nInstall: npx skills add shadcn/improve\nThen run: /improve (or /improve quick, /improve security, /improve branch)\n\n\u2705 Free + open source (MIT) \u00b7 11K+ \u2605 on GitHub\n\nComment GITMATE and I'll send you the link \ud83d\udc47\nFollow @git.mate for 1 useful repo every day.\n\n#github #opensource #shadcn #aiagents #claudecode #codex #ai #llm #codereview #developer #programming #coding #webdev #devtools\n",
+  "hashtags": [],
+  "cover_offset_ms": 5200,
+  "share_to_feed": true
+ },
+ "posting": {
+  "audience": "US",
+  "timezone": "America/New_York"
+ },
+ "link": "https://github.com/shadcn/improve"
+}

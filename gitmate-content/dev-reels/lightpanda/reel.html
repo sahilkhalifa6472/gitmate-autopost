@@ -1,0 +1,479 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<title>git.mate lightpanda</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<style>
+:root{--ink:#0b0b0c;--mut:#8b8d91;--dim:#cfd0d2;--bg:#f7f7f5}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#fff}
+.f{position:relative;width:1080px;height:1920px;overflow:hidden;background:radial-gradient(ellipse 110% 70% at 50% 45%,#ffffff 0%,#f7f7f5 55%,#eeeeec 100%);color:var(--ink);font-family:'Inter',sans-serif}
+#cam{position:absolute;inset:0}
+#stage{position:absolute;inset:0;perspective:1800px;perspective-origin:50% 50%}
+#world{position:absolute;left:0;top:0;width:1080px;height:1920px;transform-style:preserve-3d;transform-origin:540px 960px}
+.sc{position:absolute;left:0;top:0;width:1080px;height:1920px;transform-style:preserve-3d;transform-origin:540px 960px;visibility:hidden}
+.ring{position:absolute;border-radius:50%;border:70px solid rgba(10,10,12,.045);filter:blur(26px)}
+.grain{position:absolute;inset:0;opacity:.05;mix-blend-mode:multiply;z-index:8;pointer-events:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
+.top{position:absolute;left:64px;right:64px;top:84px;height:80px;z-index:6}
+.brand{position:absolute;left:0;top:0;display:flex;align-items:center;gap:16px;font-family:'JetBrains Mono';font-weight:700;font-size:28px}
+.mk{width:58px;height:58px;border-radius:50%;display:grid;place-items:center;font-family:'JetBrains Mono';font-weight:800;font-size:22px;color:#fff;background:radial-gradient(circle at 34% 28%,#5a5c61 0 10%,#1a1b1e 45%,#000 100%);box-shadow:inset 0 2px 3px rgba(255,255,255,.35),0 8px 18px rgba(0,0,0,.25)}
+.tag{position:absolute;right:0;top:14px;font-family:'JetBrains Mono';font-size:24px;color:var(--mut);white-space:nowrap}
+.tag b{color:var(--ink);font-weight:700}
+.C{position:absolute;left:0;right:0;text-align:center;white-space:nowrap}
+.kick{font-family:'JetBrains Mono';font-size:26px;color:var(--mut);letter-spacing:1px}
+.sans{font-weight:600;letter-spacing:-.035em;line-height:1}
+.ser{font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;letter-spacing:-.01em;line-height:1}
+.g{color:var(--mut)}
+.ch{display:inline-block;white-space:pre}
+.mono{font-family:'JetBrains Mono'}
+.card{position:absolute;background:#fff;border-radius:26px;box-shadow:0 0 0 2px var(--ink),0 8px 0 var(--ink),0 40px 70px rgba(0,0,0,.14);overflow:hidden}
+
+/* S1 balance scale: whole browser vs a little HTML */
+.scl{position:absolute;left:64px;top:700px;width:952px;height:800px;background:#fcfcfb}
+.scl .hd{position:absolute;left:34px;right:34px;top:28px;display:flex;justify-content:space-between;font-family:'JetBrains Mono';font-size:21px;font-weight:800;letter-spacing:2px}
+.scl .hd span{color:var(--mut);font-weight:500;letter-spacing:0}
+.post{position:absolute;left:466px;top:210px;width:20px;height:470px;border-radius:10px;background:var(--ink)}
+.base{position:absolute;left:316px;top:676px;width:320px;height:46px;border-radius:14px;background:var(--ink);box-shadow:0 10px 0 #3a3b3e}
+.piv{position:absolute;left:446px;top:186px;width:60px;height:60px;border-radius:50%;background:#fff;box-shadow:0 0 0 6px var(--ink);z-index:3}
+.beam{position:absolute;left:96px;top:206px;width:760px;height:20px;border-radius:10px;background:var(--ink);transform-origin:380px 10px;z-index:2}
+.hang{position:absolute;width:260px;height:300px;z-index:1}
+.hang svg{position:absolute;left:0;top:0}
+.pan{position:absolute;left:0;top:230px;width:260px;height:30px;border-radius:0 0 130px 130px;background:var(--ink)}
+.blk{position:absolute;left:20px;top:28px;width:220px;height:200px;border-radius:22px;background:linear-gradient(160deg,#3b3c40,#0b0b0c 70%);box-shadow:inset 0 2px 0 rgba(255,255,255,.25),0 10px 0 #000;color:#fff;padding:18px}
+.blk .dots{display:flex;gap:8px}.blk .dots i{width:14px;height:14px;border-radius:50%;background:#6d6f74}
+.blk b{position:absolute;left:18px;top:62px;font-size:44px;font-weight:700;letter-spacing:-.04em}
+.blk small{position:absolute;left:18px;top:122px;font-family:'JetBrains Mono';font-size:18px;color:#a6a8ad;line-height:1.35}
+.htm{position:absolute;left:62px;top:166px;padding:12px 18px;border-radius:12px;background:#fff;box-shadow:0 0 0 3px var(--ink);font-family:'JetBrains Mono';font-size:28px;font-weight:800}
+.wt{position:absolute;top:740px;font-family:'JetBrains Mono';font-size:24px;font-weight:800;padding:8px 16px;border-radius:10px;white-space:nowrap}
+.wt.a{left:60px;background:var(--ink);color:#fff}.wt.b{right:60px;box-shadow:inset 0 0 0 3px var(--ink)}
+.hpill{display:inline-block;padding:4px 26px 10px;border-radius:24px;background:var(--ink);color:#fff;font-family:'JetBrains Mono';font-style:normal;font-weight:800;font-size:84px;vertical-align:8px;letter-spacing:-.02em}
+
+/* S2 extruded coin medallion with the real logo */
+.coin{position:absolute;left:330px;top:610px;width:420px;height:420px;transform-style:preserve-3d}
+.coin .ly{position:absolute;inset:0;border-radius:50%;background:#1a1b1e}
+.coin .fc{position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle at 36% 30%,#ffffff 0,#f3f3f1 55%,#dededc 100%);box-shadow:inset 0 0 0 10px var(--ink),inset 0 0 0 16px #fff,inset 0 0 0 19px var(--ink);display:grid;place-items:center;overflow:hidden}
+.coin .fc img{width:330px;height:330px;filter:grayscale(1) contrast(1.15)}
+.coin .bk{position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle at 36% 30%,#55575c,#111214 70%);color:#fff;display:grid;place-items:center;font-family:'JetBrains Mono';font-weight:800;font-size:40px;transform:rotateY(180deg) translateZ(1px);backface-visibility:hidden}
+.zz{position:absolute;left:0;top:0}
+.zigb{display:inline-block;font-family:'JetBrains Mono';font-weight:800;font-style:normal;padding:0 22px 8px;border-radius:18px;box-shadow:inset 0 0 0 4px var(--ink);font-size:84px;letter-spacing:-.02em}
+
+/* S3 engine layer stack */
+.fork{position:absolute;left:0;right:0;top:500px;display:flex;justify-content:center}
+.fork div{position:relative;display:flex;align-items:center;gap:16px;padding:14px 28px;border-radius:16px;background:#fff;box-shadow:0 0 0 2px var(--ink),0 5px 0 var(--ink);font-family:'JetBrains Mono';font-size:28px;font-weight:700;white-space:nowrap}
+.fork .x{position:absolute;left:-12px;right:-12px;top:50%;height:5px;margin-top:-2px;background:var(--ink);transform-origin:0 50%}
+.eng{position:absolute;left:150px;top:640px;width:780px;height:840px;transform-style:preserve-3d}
+.lay{position:absolute;left:0;width:780px;height:112px;border-radius:20px;background:#fff;box-shadow:0 0 0 2px var(--ink),0 9px 0 var(--ink),0 26px 36px rgba(0,0,0,.12);display:flex;align-items:center;gap:26px;padding:0 30px}
+.lay .ic{width:62px;height:62px;border-radius:16px;box-shadow:inset 0 0 0 3px var(--ink);display:grid;place-items:center;font-family:'JetBrains Mono';font-size:24px;font-weight:800;flex:none}
+.lay .nm{flex:1;font-size:46px;font-weight:600;letter-spacing:-.03em;white-space:nowrap}
+.lay .nm small{font-family:'JetBrains Mono';font-size:20px;color:var(--mut);font-weight:500;margin-left:14px;letter-spacing:0}
+.lay .st{font-family:'JetBrains Mono';font-size:22px;font-weight:800;padding:8px 14px;border-radius:10px;white-space:nowrap}
+.lay.cut{background:#f2f2f0}
+.lay.cut .nm{color:#9fa1a5}
+.lay .sk{position:absolute;left:110px;width:0;top:54px;height:5px;background:var(--ink)}
+.lay .ok{background:var(--ink);color:#fff}
+.lay .ok2{box-shadow:inset 0 0 0 3px var(--ink);color:var(--ink)}
+
+/* S4 race lanes */
+.race{position:absolute;left:64px;top:430px;width:952px;height:540px;background:#fcfcfb}
+.race .hd{position:absolute;left:34px;right:34px;top:28px;display:flex;justify-content:space-between;font-family:'JetBrains Mono';font-size:21px;font-weight:800;letter-spacing:2px}
+.race .hd span{color:var(--mut);font-weight:500;letter-spacing:0}
+.lane{position:absolute;left:34px;right:34px;height:180px}
+.lane .who{position:absolute;left:0;top:0;display:flex;align-items:center;gap:14px;font-size:34px;font-weight:700;letter-spacing:-.02em}
+.lane .who img{width:52px;height:52px;filter:grayscale(1)}
+.lane .who .cr{width:46px;height:46px;border-radius:50%;background:conic-gradient(#0b0b0c 0 33%,#6d6f74 0 66%,#b8b9bc 0);position:relative}
+.lane .who .cr::after{content:"";position:absolute;left:13px;top:13px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 0 0 4px #fff,0 0 0 7px #0b0b0c}
+.lane .tm{position:absolute;right:0;top:0;font-family:'JetBrains Mono';font-size:40px;font-weight:800}
+.cells{position:absolute;left:0;right:0;top:74px;height:86px;display:grid;grid-template-columns:repeat(25,1fr);grid-template-rows:repeat(4,1fr);gap:4px}
+.cells i{border-radius:3px;background:#e7e7e5}
+.cells i.on{background:var(--ink)}
+.cells i.on2{background:#77787c}
+.done{position:absolute;right:0;top:-6px;padding:6px 14px;border-radius:10px;background:var(--ink);color:#fff;font-family:'JetBrains Mono';font-size:22px;font-weight:800}
+.big5{position:absolute;left:0;right:0;top:1020px;text-align:center;white-space:nowrap}
+.big5 b{font-size:150px;font-weight:700;letter-spacing:-.06em;line-height:1}
+.big5 i{font-family:'Instrument Serif';font-size:110px;font-weight:400;margin-left:22px;color:var(--mut)}
+.real{position:absolute;border-radius:22px;overflow:hidden;box-shadow:0 0 0 3px var(--ink),0 9px 0 var(--ink),0 36px 60px rgba(0,0,0,.2)}
+.real img{display:block;width:100%;filter:grayscale(1)}
+.src{position:absolute;font-family:'JetBrains Mono';font-size:20px;color:var(--mut);white-space:nowrap}
+
+/* S5 memory chip towers */
+.chip{position:absolute;width:300px;height:44px;border-radius:9px;background:linear-gradient(180deg,#2c2d31,#0b0b0c);box-shadow:0 6px 0 #000,inset 0 2px 0 rgba(255,255,255,.18)}
+.chip::before{content:"";position:absolute;left:16px;right:16px;bottom:-12px;height:10px;background:repeating-linear-gradient(90deg,#9a9ca0 0 8px,transparent 8px 14px)}
+.chip::after{content:"";position:absolute;left:30px;top:12px;width:60px;height:20px;border-radius:4px;background:#4a4b50;box-shadow:80px 0 0 #4a4b50,160px 0 0 #4a4b50}
+.chip.lp{background:#fff;box-shadow:0 0 0 3px var(--ink),0 6px 0 var(--ink)}
+.chip.lp::after{background:#d6d6d4;box-shadow:80px 0 0 #d6d6d4,160px 0 0 #d6d6d4}
+.tw{position:absolute;top:0;width:300px;height:1000px;transform-style:preserve-3d}
+.twl{position:absolute;top:1420px;width:300px;text-align:center;white-space:nowrap}
+.twl b{display:block;font-size:50px;font-weight:700;letter-spacing:-.04em}
+.twl span{font-family:'JetBrains Mono';font-size:22px;color:var(--mut)}
+.x16{position:absolute;padding:14px 26px;border-radius:999px;background:var(--ink);color:#fff;font-family:'JetBrains Mono';font-size:40px;font-weight:800;white-space:nowrap;box-shadow:0 14px 30px rgba(0,0,0,.25)}
+
+/* S6 code card + plug and socket */
+.code{position:absolute;left:64px;top:500px;width:952px;height:520px;background:#fcfcfb}
+.code .tabs{position:absolute;left:0;right:0;top:0;height:76px;border-bottom:2px solid #e2e2e0;background:#f4f4f2;display:flex;align-items:flex-end;gap:8px;padding:0 24px}
+.code .tb{height:56px;padding:0 24px;border-radius:14px 14px 0 0;display:grid;place-items:center;font-family:'JetBrains Mono';font-size:22px;font-weight:700;color:var(--mut)}
+.code .tb.on{background:#fcfcfb;color:var(--ink);box-shadow:0 0 0 2px #e2e2e0}
+.code pre{position:absolute;left:36px;top:108px;font-family:'JetBrains Mono';font-size:27px;line-height:1.62;white-space:pre;color:var(--ink)}
+.code pre .c{color:#9fa1a5}
+.code pre .hl{background:var(--ink);color:#fff;border-radius:6px;padding:0 6px}
+.plugz{position:absolute;left:0;top:1120px;width:1080px;height:420px;transform-style:preserve-3d}
+.plug{position:absolute;top:120px;width:330px;height:170px;transform-style:preserve-3d}
+.plug .bd{position:absolute;left:0;top:0;width:260px;height:170px;border-radius:30px 18px 18px 30px;background:linear-gradient(180deg,#3a3b3f,#0b0b0c);box-shadow:0 10px 0 #000,inset 0 2px 0 rgba(255,255,255,.2);color:#fff;padding:22px 24px}
+.plug .bd small{display:block;font-family:'JetBrains Mono';font-size:18px;color:#a2a4a9}
+.plug .bd b{display:block;margin-top:8px;font-size:40px;font-weight:700;letter-spacing:-.03em;white-space:nowrap}
+.plug .pr{position:absolute;left:258px;width:76px;height:22px;border-radius:0 8px 8px 0;background:linear-gradient(180deg,#d9dadc,#8e9095);box-shadow:0 4px 0 #555}
+.sock{position:absolute;left:640px;top:90px;width:380px;height:230px;border-radius:30px;background:#fff;box-shadow:0 0 0 3px var(--ink),0 10px 0 var(--ink),0 30px 50px rgba(0,0,0,.14);padding:24px 28px}
+.sock .sl{position:absolute;left:0;width:26px;height:30px;border-radius:0 8px 8px 0;background:var(--ink)}
+.sock small{display:block;padding-left:20px;font-family:'JetBrains Mono';font-size:20px;color:var(--mut)}
+.sock b{display:block;padding-left:20px;margin-top:6px;font-size:46px;font-weight:700;letter-spacing:-.035em}
+.sock em{display:block;padding-left:20px;margin-top:10px;font-family:'JetBrains Mono';font-style:normal;font-size:28px;font-weight:800}
+.spark{position:absolute;left:640px;top:205px;width:10px;height:10px;margin:-5px;border-radius:50%;border:5px solid var(--ink);opacity:0}
+.conn{position:absolute;left:0;right:0;top:1600px;display:flex;justify-content:center}
+.conn div{padding:16px 32px;border-radius:999px;background:var(--ink);color:#fff;font-family:'JetBrains Mono';font-size:32px;font-weight:800;white-space:nowrap}
+
+/* S7 receipt printer */
+.prn{position:absolute;left:120px;top:440px;width:840px;height:120px;border-radius:30px;background:linear-gradient(180deg,#3a3b3f,#0b0b0c);box-shadow:0 12px 0 #000,0 40px 60px rgba(0,0,0,.22);z-index:3}
+.prn .slot{position:absolute;left:70px;right:70px;bottom:22px;height:16px;border-radius:8px;background:#000;box-shadow:inset 0 3px 4px rgba(255,255,255,.12)}
+.prn .led{position:absolute;right:40px;top:28px;width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:0 0 14px #fff}
+.prn .nm{position:absolute;left:40px;top:22px;font-family:'JetBrains Mono';font-size:20px;color:#a2a4a9;font-weight:700;letter-spacing:2px}
+.rcw{position:absolute;left:200px;top:540px;width:680px;height:1100px;overflow:hidden;z-index:2}
+.rc{position:absolute;left:0;top:0;width:680px;height:1060px;background:#fff;box-shadow:0 0 0 2px var(--ink),0 30px 50px rgba(0,0,0,.12);padding:56px 48px 0;font-family:'JetBrains Mono'}
+.rc::after{content:"";position:absolute;left:0;right:0;bottom:-18px;height:20px;background:linear-gradient(-45deg,transparent 12px,#fff 0) 0 0/24px 24px,linear-gradient(45deg,transparent 12px,#fff 0) 0 0/24px 24px}
+.rc h6{font-size:30px;font-weight:800;text-align:center;letter-spacing:2px}
+.rc .su{font-size:20px;color:var(--mut);text-align:center;margin-top:8px}
+.rc hr{border:0;border-top:3px dashed #b9babd;margin:28px 0}
+.rc .ln{display:flex;font-size:27px;font-weight:700;margin-bottom:22px;white-space:nowrap}
+.rc .ln span{color:var(--mut);font-weight:500}
+.rc .ln i{flex:1;border-bottom:3px dotted #c6c7ca;margin:0 12px 8px}
+.rc .tot{display:flex;align-items:flex-end;justify-content:space-between;font-weight:800;white-space:nowrap}
+.rc .tot span{font-size:30px}
+.rc .tot b{font-family:'Inter';font-size:96px;letter-spacing:-.05em;line-height:.9}
+.rc .bc{height:90px;margin-top:40px;background:repeating-linear-gradient(90deg,#0b0b0c 0 4px,transparent 4px 7px,#0b0b0c 7px 9px,transparent 9px 15px,#0b0b0c 15px 21px,transparent 21px 24px)}
+.rc .ty2{text-align:center;font-size:20px;color:var(--mut);margin-top:16px}
+
+/* S8/S9 shell ending */
+.cin{display:flex;align-items:center;gap:26px;padding:0 26px 0 30px;background:#fff;box-shadow:0 0 0 2px var(--ink),0 6px 0 var(--ink),0 30px 50px rgba(0,0,0,.12)}
+.cbar{position:absolute}
+.av{width:76px;height:76px;border-radius:50%;background:linear-gradient(135deg,#d9d9d7,#a9aaad);flex:none}
+.cin .tx{flex:1;font-size:46px;font-weight:600;letter-spacing:.02em}
+.send{width:84px;height:84px;border-radius:50%;background:var(--ink);display:grid;place-items:center;color:#fff;font-size:40px;flex:none}
+.dm{position:absolute;padding:30px 44px;border-radius:44px 44px 44px 12px;background:var(--ink);color:#fff;font-size:42px;font-weight:500;white-space:nowrap}
+.dm small{display:block;font-family:'JetBrains Mono';font-size:20px;color:#9a9ca1;margin-bottom:8px}
+.bigmk{position:absolute;left:400px;top:600px;width:280px;height:280px;border-radius:50%;display:grid;place-items:center;font-family:'JetBrains Mono';font-weight:800;font-size:96px;color:#fff;background:radial-gradient(circle at 34% 26%,#6a6c71 0 8%,#1c1d20 42%,#000 100%);box-shadow:inset 0 6px 10px rgba(255,255,255,.3),inset 0 -14px 26px rgba(0,0,0,.6),0 40px 80px rgba(0,0,0,.28)}
+.erings{position:absolute;left:290px;top:490px;width:500px;height:500px}
+.fol{position:absolute;left:300px;top:1390px;width:480px;height:132px;border-radius:999px;display:grid;place-items:center;font-size:50px;font-weight:600;background:var(--ink);color:#fff;box-shadow:0 22px 44px rgba(0,0,0,.22)}
+.fol2{position:absolute;left:300px;top:1390px;width:480px;height:132px;border-radius:999px;display:grid;place-items:center;font-size:50px;font-weight:600;background:#fff;color:var(--ink);border:3px solid var(--ink);opacity:0}
+.tapd{position:absolute;width:90px;height:90px;border-radius:50%;background:rgba(11,11,12,.18);border:3px solid rgba(11,11,12,.55);opacity:0}
+.rip{position:absolute;left:540px;top:1456px;width:10px;height:10px;margin:-5px;border-radius:50%;border:4px solid var(--ink);opacity:0}
+</style></head>
+<body>
+<svg width="0" height="0" style="position:absolute"><defs>
+  <filter id="mb" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur id="mbg" stdDeviation="0 0"/></filter>
+</defs></svg>
+<div class="f" id="F">
+ <div id="cam"><div id="stage"><div id="world">
+
+  <!-- S1 hook: a whole browser on the scale vs a bit of HTML -->
+  <div class="sc" id="s1" data-pose="0,0,0,0,0,0">
+    <div class="ring" style="left:-260px;top:-180px;width:720px;height:720px;transform:translateZ(-500px)"></div>
+    <div class="C sans ty" style="top:250px;font-size:100px;font-weight:700;letter-spacing:-.05em" data-t="0.7" data-cd=".03">your scraper spins up</div>
+    <div class="C ser rv" style="top:378px;font-size:124px" data-t="1.86"><span class="g">a whole</span> Chrome...</div>
+    <div class="C ser" style="top:530px;font-size:92px"><span class="rv g" data-t="3.18">just to read</span> <span class="pp hpill" data-t="3.96">HTML</span></div>
+    <div class="card scl c3d" id="scl" data-t="0.25" data-rx="14" data-ry="-8">
+      <div class="hd">WEIGHT CHECK<span>~ per scrape</span></div>
+      <div class="post"></div><div class="base"></div>
+      <div class="hang" id="hl"><svg width="260" height="240"><path d="M130 0 L14 232 M130 0 L246 232" stroke="#0b0b0c" stroke-width="4" fill="none"/></svg><div class="pan"></div>
+        <div class="blk" id="blk"><div class="dots"><i></i><i></i><i></i></div><b>Chrome</b><small>GPU · paint · layout<br>tabs · fonts · images</small></div></div>
+      <div class="hang" id="hr"><svg width="260" height="240"><path d="M130 0 L14 232 M130 0 L246 232" stroke="#0b0b0c" stroke-width="4" fill="none"/></svg><div class="pan"></div>
+        <div class="htm" id="htm">&lt;html&gt;</div></div>
+      <div class="beam" id="beam"></div><div class="piv"></div>
+      <div class="wt a pp" data-t="2.6">a full browser</div>
+      <div class="wt b pp" data-t="3.75">a few KB of text</div>
+    </div>
+  </div>
+
+  <!-- S2 meet Lightpanda: extruded coin with the real logo -->
+  <div class="sc" id="s2" data-pose="2400,0,-600,-30,0,0">
+    <div class="ring" style="left:640px;top:-160px;width:700px;height:700px;transform:translateZ(-600px)"></div>
+    <div class="C kick rv" style="top:236px;font-size:32px" data-t="5.1">meet</div>
+    <div class="C sans ty" style="top:300px;font-size:168px;font-weight:700;letter-spacing:-.055em" data-t="5.42" data-cd=".04">Lightpanda</div>
+    <div class="coin" id="coin"></div>
+    <div class="C sans rv" style="top:1150px;font-size:84px" data-t="6.5">a headless browser</div>
+    <div class="C ser" style="top:1290px;font-size:120px"><span class="rv g" data-t="7.5">built from</span> <span class="rv" data-t="7.9">scratch,</span></div>
+    <div class="C ser" style="top:1450px;font-size:110px"><span class="rv g" data-t="8.45">in</span> <span class="pp zigb" data-t="8.5">Zig</span></div>
+    <svg class="zz" width="1080" height="1920" style="pointer-events:none"><path class="dl" data-t="8.55" data-d=".35" d="M380 1640 l40 -34 l40 34 l40 -34 l40 34 l40 -34 l40 34 l40 -34 l40 34 l40 -34 l40 34" stroke="#0b0b0c" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+  </div>
+
+  <!-- S3 not a fork: engine layers, rendering slides out -->
+  <div class="sc" id="s3" data-pose="300,2700,-900,0,26,0">
+    <div class="ring" style="left:-280px;top:1300px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="C sans ty" style="top:250px;font-size:96px;font-weight:700;letter-spacing:-.05em" data-t="9.52" data-cd=".03">not a Chromium fork.</div>
+    <div class="C ser rv" style="top:372px;font-size:104px" data-t="10.84"><span class="g">no</span> graphical rendering.</div>
+    <div class="fork pp" data-t="9.75"><div>⑂ fork of chromium/chromium<span class="x" id="fx"></span></div></div>
+    <div class="eng" id="eng">
+      <div class="lay cut" id="L0" style="top:0"><div class="ic">▦</div><div class="nm">Paint<small>pixels</small></div><div class="sk"></div><div class="st ok2">SKIP</div></div>
+      <div class="lay cut" id="L1" style="top:140px"><div class="ic">▤</div><div class="nm">Layout<small>boxes</small></div><div class="sk"></div><div class="st ok2">SKIP</div></div>
+      <div class="lay cut" id="L2" style="top:280px"><div class="ic">◩</div><div class="nm">GPU raster<small>graphics</small></div><div class="sk"></div><div class="st ok2">SKIP</div></div>
+      <div class="lay" id="L3" style="top:420px"><div class="ic">&lt;/&gt;</div><div class="nm">DOM</div><div class="st ok">KEEP ✓</div></div>
+      <div class="lay" id="L4" style="top:560px"><div class="ic">JS</div><div class="nm">JavaScript</div><div class="st ok">KEEP ✓</div></div>
+      <div class="lay" id="L5" style="top:700px"><div class="ic">⇅</div><div class="nm">Network</div><div class="st ok">KEEP ✓</div></div>
+    </div>
+  </div>
+
+  <!-- S4 benchmark race: 100 pages -->
+  <div class="sc" id="s4" data-pose="2700,2700,-1400,32,0,0">
+    <div class="ring" style="left:620px;top:-200px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="C kick rv" style="top:236px;font-size:30px" data-t="15.1">in their benchmark</div>
+    <div class="C sans ty" style="top:290px;font-size:112px;font-weight:700;letter-spacing:-.05em" data-t="16.28" data-cd=".04">100 pages</div>
+    <div class="card race c3d" data-t="15.35" data-rx="12" data-ry="10">
+      <div class="hd">CRAWL · 100 PAGES<span>AWS m5.large</span></div>
+      <div class="lane" style="top:110px"><div class="who"><img src="media/lpd-logo.png">Lightpanda</div><div class="tm" id="tm1">0.0s</div><div class="cells" id="c1"></div></div>
+      <div class="lane" style="top:320px"><div class="who"><div class="cr"></div>Headless Chrome</div><div class="tm" id="tm2">0.0s</div><div class="cells" id="c2"></div></div>
+      <div class="done" id="dn1" style="right:190px;top:104px;opacity:0">DONE ✓</div>
+    </div>
+    <div class="big5"><b class="rv" data-t="17.38">5s</b><i class="rv" data-t="18.26">instead of 46s</i></div>
+    <div class="real c3d" style="left:118px;top:1240px;width:844px" data-t="17.7" data-rx="10" data-ry="-8"><img src="media/execution-time-v2.png"></div>
+    <div class="src" style="left:118px;top:1580px">from the Lightpanda README</div>
+  </div>
+
+  <!-- S5 memory: chip towers -->
+  <div class="sc" id="s5" data-pose="5200,2700,-1400,-30,0,0">
+    <div class="ring" style="left:-260px;top:-160px;width:720px;height:720px;transform:translateZ(-600px)"></div>
+    <div class="C sans ty" style="top:250px;font-size:150px;font-weight:700;letter-spacing:-.06em" data-t="20.02" data-cd=".05">123 MB</div>
+    <div class="C ser rv" style="top:410px;font-size:108px" data-t="21.76"><span class="g">instead of</span> 2 GB.</div>
+    <div id="towers" style="position:absolute;left:0;top:0;width:1080px;height:1920px;transform-style:preserve-3d">
+      <div class="tw" id="tw1" style="left:140px"></div>
+      <div class="tw" id="tw2" style="left:640px"></div>
+      <div class="twl rv" style="left:140px" data-t="20.4"><b>Lightpanda</b><span>peak · 100 pages</span></div>
+      <div class="twl rv" style="left:640px" data-t="21.9"><b>Chrome</b><span>peak · 100 pages</span></div>
+      <div class="x16 pp" style="left:170px;top:1120px" data-t="22.25">16× less</div>
+    </div>
+    <div class="real c3d" style="left:250px;top:1590px;width:580px" data-t="21.5" data-rx="8" data-ry="6"><img src="media/memory-frame-v2.png"></div>
+  </div>
+
+  <!-- S6 your scripts still work: code card + plug -->
+  <div class="sc" id="s6" data-pose="7800,2700,-1400,30,0,0">
+    <div class="ring" style="left:620px;top:1300px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="C sans rv" style="top:250px;font-size:96px;font-weight:700;letter-spacing:-.05em" data-t="23.52">the best part?</div>
+    <div class="C ser rv" style="top:368px;font-size:100px" data-t="25.5"><span class="g">your scripts</span> still work.</div>
+    <div class="card code c3d" data-t="23.7" data-rx="12" data-ry="-6">
+      <div class="tabs"><div class="tb" id="tbA">puppeteer.js</div><div class="tb" id="tbB">playwright.js</div></div>
+      <pre id="codeA"><span class="c">// same script, new browser</span>
+import puppeteer from 'puppeteer-core';
+
+const browser = await puppeteer.connect({
+  browserWSEndpoint: <span class="hl">"ws://127.0.0.1:9222"</span>,
+});</pre>
+      <pre id="codeB"><span class="c">// same script, new browser</span>
+import { chromium } from 'playwright';
+
+const browser = await chromium
+  .connectOverCDP(<span class="hl">"ws://127.0.0.1:9222"</span>);
+</pre>
+    </div>
+    <div class="plugz" id="plugz">
+      <svg style="position:absolute;left:0;top:0" width="1080" height="420"><path id="cable" d="M-40 140 C 40 140, 40 205, 70 205" stroke="#0b0b0c" stroke-width="22" stroke-linecap="round" fill="none"/></svg>
+      <div class="plug" id="plug" style="left:60px"><div class="bd"><small>your script</small><b id="plb">Puppeteer</b></div><div class="pr" style="top:44px"></div><div class="pr" style="top:104px"></div></div>
+      <div class="sock"><div class="sl" style="top:44px"></div><div class="sl" style="top:104px"></div><small>CDP server</small><b>Lightpanda</b><em>:9222</em></div>
+      <div class="spark" id="spark"></div>
+    </div>
+    <div class="conn pp" data-t="26.95"><div>connected ✓</div></div>
+  </div>
+
+  <!-- S7 open source receipt -->
+  <div class="sc" id="s7" data-pose="10400,2700,-1400,-28,0,0">
+    <div class="ring" style="left:-280px;top:1300px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="C sans ty" style="top:250px;font-size:120px;font-weight:700;letter-spacing:-.05em" data-t="28.28" data-cd=".04">open source.</div>
+    <div id="rcg" style="position:absolute;left:0;top:0;width:1080px;height:1920px;transform-style:preserve-3d">
+      <div class="prn"><div class="nm">GITHUB · PRINT</div><div class="led"></div><div class="slot"></div></div>
+      <div class="rcw"><div class="rc" id="rc">
+        <h6>LIGHTPANDA-IO/BROWSER</h6><div class="su">github.com · receipt no. 0001</div>
+        <hr>
+        <div class="ln">LANGUAGE<i></i><span>Zig</span></div>
+        <div class="ln">BUILT FOR<i></i><span>AI + automation</span></div>
+        <div class="ln">SPEED<i></i><span>9× faster</span></div>
+        <div class="ln">MEMORY<i></i><span>16× less</span></div>
+        <div class="ln">LICENSE<i></i><span>AGPL-3.0</span></div>
+        <hr>
+        <div class="tot"><span>★ STARS</span><b id="stars">0</b></div>
+        <div class="bc"></div>
+        <div class="ty2">thanks, mate · @git.mate</div>
+      </div></div>
+    </div>
+  </div>
+
+  <!-- S8 comment -->
+  <div class="sc" id="s8" data-pose="12000,5400,-6000,24,0,0">
+    <div class="ring" style="left:620px;top:1300px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="C sans rv" style="top:380px;font-size:120px;font-weight:500" data-t="31.3">Comment</div>
+    <div class="C sans ty" style="top:510px;font-size:196px;font-weight:700;letter-spacing:-.04em" data-t="31.62" data-cd=".05">GITMATE</div>
+    <div class="cbar cin c3d" style="left:64px;top:860px;width:952px;height:140px;border-radius:999px" data-t="31.25" data-rx="10"><div class="av"></div><div class="tx" id="ctx"></div><div class="send">↑</div></div>
+    <div class="dm pp" style="left:250px;top:1110px" data-t="32.42"><small>git.mate · message</small>Here's your link, mate 🔗</div>
+  </div>
+
+  <!-- S9 end -->
+  <div class="sc" id="s9" data-pose="14400,5400,-6000,-24,0,0">
+    <div class="ring" style="left:-300px;top:-160px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="ring" style="left:640px;top:1400px;width:760px;height:760px;transform:translateZ(-800px)"></div>
+    <svg class="erings" viewBox="0 0 500 500"><circle id="er1" cx="250" cy="250" r="226" fill="none" stroke="#0b0b0c" stroke-width="3" stroke-dasharray="1420" stroke-dashoffset="1420" transform="rotate(-90 250 250)"/>
+      <circle id="er2" cx="250" cy="250" r="246" fill="none" stroke="#c9cacc" stroke-width="2" stroke-dasharray="1546" stroke-dashoffset="1546" transform="rotate(90 250 250)"/></svg>
+    <div class="bigmk" id="bigmk">&gt;_</div>
+    <div class="C sans ty" style="top:1050px;font-size:104px;font-weight:700" data-t="33.6" data-cd=".05">@git.mate</div>
+    <div class="C ser" style="top:1200px;font-size:96px"><span class="rv g" data-t="34.1">1 repo</span> <span class="rv" data-t="34.35">every</span> <span class="rv" data-t="34.6">day.</span></div>
+    <div class="fol pp" id="fol" data-t="33.8">Follow</div>
+    <div class="fol2" id="fol2">Following ✓</div>
+    <div class="rip" id="rip"></div>
+    <div class="tapd" id="tapd" style="left:640px;top:1560px"></div>
+  </div>
+
+ </div></div></div>
+ <div class="top"><div class="brand"><div class="mk">&gt;_</div>git.mate</div><div class="tag" id="tag"><b>01</b> / 9</div></div>
+ <div class="grain"></div>
+</div>
+<script>
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+// all times below are in voice_raw seconds; the voice is sped up SPD x, so video t = raw / SPD
+const SPD = 1.04, RAWTOTAL = 36.6, TOTAL = +(RAWTOTAL / SPD).toFixed(2); window.__TOTAL = TOTAL;
+const S = [0, 5.0, 9.5, 15.1, 19.75, 23.45, 28.15, 31.15, 33.35];
+const NS = S.length;
+
+// build: coin layers, race cells, chip towers
+const coin = $('#coin');
+for (let i = 0; i < 26; i++) { const d = document.createElement('div'); d.className = 'ly'; d.style.transform = `translateZ(${-i * 1.6}px)`; coin.appendChild(d); }
+coin.insertAdjacentHTML('beforeend', '<div class="bk" style="transform:rotateY(180deg) translateZ(41.6px)">lightpanda.io</div><div class="fc" style="transform:translateZ(1px)"><img src="media/lpd-logo.png"></div>');
+for (const id of ['#c1', '#c2']) for (let i = 0; i < 100; i++) $(id).appendChild(document.createElement('i'));
+const CH1 = [], CH2 = [];
+{ const c = document.createElement('div'); c.className = 'chip lp'; c.style.top = '1340px'; $('#tw1').appendChild(c); CH1.push(c); }
+for (let i = 0; i < 16; i++) { const c = document.createElement('div'); c.className = 'chip'; c.style.top = (1340 - i * 46) + 'px'; $('#tw2').appendChild(c); CH2.push(c); }
+
+const scenes = $$('.sc');
+const poses = scenes.map(s => s.dataset.pose.split(',').map(Number));
+scenes.forEach((s, i) => { const [x, y, z, ry, rx, rz] = poses[i]; s.style.transform = `translate3d(${x}px,${y}px,${z}px) rotateY(${ry}deg) rotateX(${rx}deg) rotateZ(${rz}deg)`; });
+const tl = gsap.timeline({ paused: true });
+
+// shell: typing / reveals / pops / 3D cards / line draws
+$$('.ty').forEach(el => { const t = +el.dataset.t, cd = +(el.dataset.cd || .045); const txt = el.textContent; el.textContent = '';
+  const chs = [...txt].map(c => { const s = document.createElement('span'); s.className = 'ch'; s.textContent = c; el.appendChild(s); return s; });
+  tl.set(chs, { opacity: 0 }, 0);
+  chs.forEach((c, i) => tl.fromTo(c, { opacity: 0, y: 26, filter: 'blur(14px)' }, { opacity: 1, y: 0, filter: 'blur(0px)', duration: .42, ease: 'power3.out', immediateRender: false }, Math.max(0.001, t + i * cd))); });
+$$('.rv').forEach(el => { const t = +el.dataset.t; if (isNaN(t)) return;
+  tl.set(el, { opacity: 0 }, 0); tl.fromTo(el, { opacity: 0, y: 46, filter: 'blur(16px)' }, { opacity: 1, y: 0, filter: 'blur(0px)', duration: .55, ease: 'power3.out', immediateRender: false }, Math.max(0.001, t)); });
+$$('.pp').forEach(el => { const t = +el.dataset.t;
+  tl.set(el, { opacity: 0 }, 0); tl.fromTo(el, { opacity: 0, scale: .55, filter: 'blur(10px)' }, { opacity: 1, scale: 1, filter: 'blur(0px)', duration: .5, ease: 'back.out(2.2)', immediateRender: false }, t); });
+$$('.c3d').forEach(el => { const t = +el.dataset.t, rx = +(el.dataset.rx || 0), ry = +(el.dataset.ry || 0);
+  tl.set(el, { opacity: 0, transformPerspective: 1500 }, 0);
+  tl.fromTo(el, { opacity: 0, rotationX: rx + 50, rotationY: ry * 2.5, y: 260, z: -500, scale: .9 }, { opacity: 1, rotationX: rx, rotationY: ry, y: 0, z: 0, scale: 1, duration: 1.05, ease: 'expo.out', immediateRender: false }, Math.max(0.001, t));
+  tl.to(el, { rotationX: rx * .4, rotationY: -ry * .5, duration: 3.2, ease: 'sine.inOut' }, Math.max(0.001, t) + 1.05); });
+$$('path.dl').forEach(p => { const L = p.getTotalLength() + 2; p.style.strokeDasharray = L;
+  tl.set(p, { strokeDashoffset: L }, 0); tl.to(p, { strokeDashoffset: 0, duration: +(p.dataset.d || .5), ease: 'power2.inOut' }, +p.dataset.t); });
+
+// S1 scale: Chrome block drops in, beam slams down; HTML lands, barely moves
+const sc = { a: 0 };
+tl.set('#blk', { opacity: 0, y: -380 }, 0); tl.to('#blk', { opacity: 1, duration: .1 }, 1.95); tl.to('#blk', { y: 0, duration: .35, ease: 'power3.in' }, 1.95);
+tl.to(sc, { a: -16, duration: .7, ease: 'back.out(2.6)' }, 2.3);
+tl.set('#htm', { opacity: 0, y: -300 }, 0); tl.to('#htm', { opacity: 1, duration: .1 }, 3.7); tl.to('#htm', { y: 0, duration: .3, ease: 'power3.in' }, 3.7);
+tl.to(sc, { a: -14.4, duration: .18, ease: 'power2.out', yoyo: true, repeat: 1 }, 4.0);
+
+// S2 coin flips in
+tl.set('#coin', { opacity: 0, transformPerspective: 1600, rotationY: -200, rotationX: 30, z: -600 }, 0);
+tl.to('#coin', { opacity: 1, duration: .2 }, 5.1);
+tl.to('#coin', { rotationY: 0, rotationX: 8, z: 0, duration: 1.25, ease: 'expo.out' }, 5.1);
+tl.to('#coin', { rotationY: -18, rotationX: 12, duration: 3, ease: 'sine.inOut' }, 6.35);
+
+// S3 fork struck, rendering layers struck then thrown out, keepers rise
+tl.set('#fx', { scaleX: 0 }, 0); tl.to('#fx', { scaleX: 1, duration: .3, ease: 'power3.out' }, 10.24);
+tl.set('#eng', { transformPerspective: 1600, rotationX: 16, rotationY: -14 }, 0);
+$$('.lay').forEach((l, k) => { tl.set(l, { opacity: 0 }, 0); tl.fromTo(l, { opacity: 0, rotationX: -80, y: 80, z: -200 }, { opacity: 1, rotationX: 0, y: 0, z: 0, duration: .6, ease: 'expo.out', immediateRender: false }, 9.7 + k * .1); });
+[0, 1, 2].forEach(k => { const L = '#L' + k;
+  tl.set(L + ' .sk', { width: 0 }, 0); tl.to(L + ' .sk', { width: 420, duration: .25, ease: 'power2.out' }, 10.95 + k * .25);
+  tl.to(L, { x: 1100, rotationY: 50, rotationZ: 8, opacity: 0, duration: .55, ease: 'power3.in' }, 11.95 + k * .1); });
+[3, 4, 5].forEach(k => { tl.to('#L' + k, { y: -420, duration: .6, ease: 'expo.inOut' }, 12.25 + (k - 3) * .05); });
+[[3, 12.68], [4, 13.24], [5, 14.22]].forEach(([k, t]) => { const st = '#L' + k + ' .st';
+  tl.set(st, { opacity: 0, scale: 2 }, 0); tl.to(st, { opacity: 1, scale: 1, duration: .22, ease: 'power4.in' }, t);
+  tl.to('#L' + k, { z: 60, duration: .2, ease: 'power2.out', yoyo: true, repeat: 1 }, t); });
+
+// S4 race: Lightpanda fills fast, Chrome crawls
+tl.set('#dn1', { opacity: 0, scale: 2 }, 0); tl.to('#dn1', { opacity: 1, scale: 1, duration: .2, ease: 'power4.in' }, 17.5);
+
+// S5 chips stack
+CH1.forEach(c => { tl.set(c, { opacity: 0, y: -300 }, 0); tl.to(c, { opacity: 1, y: 0, duration: .35, ease: 'power3.in' }, 20.25); });
+CH2.forEach((c, i) => { tl.set(c, { opacity: 0, y: -300 }, 0); tl.to(c, { opacity: 1, y: 0, duration: .25, ease: 'power3.in' }, 21.0 + i * .1); });
+tl.set('#towers', { transformPerspective: 1700, rotationY: 18, rotationX: 8 }, 0);
+tl.to('#towers', { rotationY: 8, duration: 3.5, ease: 'sine.inOut' }, 19.9);
+
+// S6 plug label swaps, plug slides into socket
+tl.set('#plug', { x: 0 }, 0); tl.set('#cable', { attr: { d: 'M-40 140 C 40 140, 40 205, 70 205' } }, 0);
+tl.set('#plugz', { transformPerspective: 1600, rotationX: 18, rotationY: -12 }, 0);
+tl.fromTo('#plugz', { opacity: 0, y: 200 }, { opacity: 1, y: 0, duration: .7, ease: 'expo.out', immediateRender: false }, 24.3); tl.set('#plugz', { opacity: 0 }, 0);
+tl.to('#plug', { x: 236, duration: .4, ease: 'power3.in' }, 26.7);
+tl.to('#cable', { attr: { d: 'M-40 140 C 140 140, 200 205, 316 205' }, duration: .4, ease: 'power3.in' }, 26.7);
+tl.fromTo('#spark', { opacity: .9, width: 10, height: 10, margin: -5 }, { opacity: 0, width: 420, height: 420, margin: -210, duration: .6, ease: 'power2.out', immediateRender: false }, 27.1);
+
+// S7 receipt prints
+tl.set('#rcg', { transformPerspective: 1700, rotationX: 14, rotationY: 10 }, 0);
+tl.set('#rc', { y: -1060 }, 0); tl.to('#rc', { y: 0, duration: 1.9, ease: 'power1.inOut' }, 28.45);
+tl.to('#rcg', { rotationY: -6, duration: 3, ease: 'sine.inOut' }, 28.3);
+const stc = { n: 0 }; tl.fromTo(stc, { n: 0 }, { n: 39374, duration: .9, ease: 'power2.out', immediateRender: false }, 29.6);
+
+// S8 comment typing
+const cm = { n: 0 };
+tl.fromTo(cm, { n: 0 }, { n: 7, duration: .6, ease: 'none', immediateRender: false, onUpdate: () => $('#ctx').textContent = 'GITMATE'.slice(0, Math.round(cm.n)) }, 31.75);
+
+// S9 end
+tl.set('#bigmk', { opacity: 0, scale: .2 }, 0);
+tl.to('#bigmk', { opacity: 1, scale: 1, duration: .9, ease: 'back.out(1.8)' }, 33.35);
+tl.fromTo('#er1', { attr: { 'stroke-dashoffset': 1420 } }, { attr: { 'stroke-dashoffset': 0 }, duration: 1.0, ease: 'power2.inOut', immediateRender: false }, 33.5);
+tl.fromTo('#er2', { attr: { 'stroke-dashoffset': 1546 } }, { attr: { 'stroke-dashoffset': 0 }, duration: 1.2, ease: 'power2.inOut', immediateRender: false }, 33.65);
+tl.to('#tapd', { opacity: 1, left: 560, top: 1440, duration: .5, ease: 'power2.out' }, 34.8);
+tl.to('#tapd', { scale: .7, duration: .1 }, 35.3); tl.to('#tapd', { scale: 1, duration: .15 }, 35.4);
+tl.to('#fol', { scale: .93, duration: .1 }, 35.3); tl.to('#fol', { scale: 1, duration: .2 }, 35.4);
+tl.set('#fol2', { opacity: 1 }, 35.4); tl.set('#fol', { opacity: 0 }, 35.4);
+tl.fromTo('#rip', { opacity: .7, width: 10, height: 10, margin: -5 }, { opacity: 0, width: 640, height: 640, margin: -320, duration: .8, ease: 'power2.out', immediateRender: false }, 35.35);
+tl.to('#tapd', { opacity: 0, duration: .3 }, 35.8);
+tl.to({}, { duration: .01 }, RAWTOTAL);
+
+// camera: pure function of raw time
+const ease = x => x < .5 ? 16 * x ** 5 : 1 - Math.pow(-2 * x + 2, 5) / 2;
+const TD = .8, TPRE = .45;
+function camAt(t) {
+  let i = 0; for (let k = 0; k < S.length; k++) if (t >= S[k] - TPRE) i = k;
+  const ta = S[i] - TPRE; let p = poses[i].slice(), d = 0, rr = 0;
+  if (i > 0 && t < ta + TD) { const u = (t - ta) / TD, e = ease(u), a = poses[i - 1]; p = a.map((v, j) => v + (poses[i][j] - v) * e); d = Math.sin(u * Math.PI) * 700; rr = Math.sin(u * Math.PI) * (i % 2 ? 4 : -4); }
+  const st = Math.max(0, t - (S[i] - TPRE + TD)); const dz = Math.min(st, 6) * 8;
+  return { x: p[0], y: p[1], z: p[2] - dz, ry: p[3] + Math.sin(t * .6) * .6, rx: p[4] + Math.sin(t * .45) * .5, rz: p[5] + rr, d, i };
+}
+function camT(c) { return `translateZ(${-c.d + 60}px) rotateZ(${-c.rz}deg) rotateX(${-c.rx}deg) rotateY(${-c.ry}deg) translate3d(${-c.x}px,${-c.y}px,${-c.z}px)`; }
+const world = $('#world'), mbg = $('#mbg'), cam = $('#cam');
+const c1 = [...$('#c1').children], c2 = [...$('#c2').children];
+// beam geometry (card coords): pivot at (476,216), half-length 360
+function tick(t) {
+  const c = camAt(t), p = camAt(Math.max(0, t - SPD / 30));
+  world.style.transform = camT(c);
+  const hx = Math.abs(c.x - p.x) * .9 + Math.abs(c.ry - p.ry) * 32, vy = Math.abs(c.y - p.y) * .9 + Math.abs(c.rx - p.rx) * 32, zz = Math.abs(c.z - p.z + (p.d - c.d)) * .25;
+  const bx = Math.min(70, hx * .22 + zz * .05), by = Math.min(70, vy * .22 + zz * .05);
+  if (bx + by > .4) { mbg.setAttribute('stdDeviation', `${bx.toFixed(1)} ${by.toFixed(1)}`); cam.style.filter = 'url(#mb)'; } else cam.style.filter = 'none';
+  scenes.forEach((s, k) => { s.style.visibility = (k === c.i || (k === c.i - 1 && t < S[c.i] - TPRE + TD)) ? 'visible' : 'hidden'; });
+  $('#tag').innerHTML = `<b>${String(c.i + 1).padStart(2, '0')}</b> / ${NS}`;
+  // S1 beam + hanging pans
+  const a = sc.a * Math.PI / 180, wob = t > 2.3 && t < 4.6 ? Math.sin((t - 2.3) * 9) * Math.exp(-(t - 2.3) * 2.2) * 1.2 : 0;
+  const A = a + wob * Math.PI / 180;
+  $('#beam').style.transform = `rotate(${sc.a + wob}deg)`;
+  const L = [476 - 360 * Math.cos(A), 216 - 360 * Math.sin(A)], R = [476 + 360 * Math.cos(A), 216 + 360 * Math.sin(A)];
+  $('#hl').style.left = (L[0] - 130) + 'px'; $('#hl').style.top = (L[1]) + 'px';
+  $('#hr').style.left = (R[0] - 130) + 'px'; $('#hr').style.top = (R[1]) + 'px';
+  // S4 race
+  const u1 = Math.max(0, Math.min(1, (t - 16.5) / 0.95)), u2 = Math.max(0, Math.min(1, (t - 16.5) / 2.3));
+  const e1 = 1 - Math.pow(1 - u1, 2), n1 = Math.round(e1 * 100), n2 = Math.round(u2 * 100);
+  c1.forEach((g, k) => g.className = k < n1 ? 'on' : ''); c2.forEach((g, k) => g.className = k < n2 ? 'on2' : '');
+  $('#tm1').textContent = (e1 * 5).toFixed(1) + 's'; $('#tm2').textContent = (u2 * 46).toFixed(u2 >= 1 ? 0 : 1) + 's';
+  // S6 tabs/code/plug label
+  const B = t >= 25.14; $('#tbA').className = 'tb' + (B ? '' : ' on'); $('#tbB').className = 'tb' + (B ? ' on' : '');
+  $('#codeA').style.display = B ? 'none' : 'block'; $('#codeB').style.display = B ? 'block' : 'none';
+  $('#plb').textContent = B ? 'Playwright' : 'Puppeteer';
+  // S7 stars
+  $('#stars').textContent = Math.round(stc.n).toLocaleString('en-US');
+}
+window.__seek = vt => { const t = vt * SPD; tl.time(t, false); tick(t); const ims = [...document.images].map(i => i.complete ? null : i.decode().catch(() => {})).filter(Boolean); return Promise.all(ims); };
+__seek(0);
+if (!navigator.webdriver) { const t0 = performance.now(); const loop = () => { window.__seek(((performance.now() - t0) / 1000) % TOTAL); requestAnimationFrame(loop); }; requestAnimationFrame(loop); }
+</script>
+</body></html>

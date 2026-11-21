@@ -1,0 +1,397 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<title>git.mate ilovenotch</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<style>
+:root{--ink:#0b0b0c;--mut:#8b8d91;--dim:#cfd0d2;--bg:#f7f7f5}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#fff}
+.f{position:relative;width:1080px;height:1920px;overflow:hidden;background:radial-gradient(ellipse 110% 70% at 50% 45%,#ffffff 0%,#f7f7f5 55%,#eeeeec 100%);color:var(--ink);font-family:'Inter',sans-serif}
+#cam{position:absolute;inset:0}
+#stage{position:absolute;inset:0;perspective:1800px;perspective-origin:50% 50%}
+#world{position:absolute;left:0;top:0;width:1080px;height:1920px;transform-style:preserve-3d;transform-origin:540px 960px}
+.sc{position:absolute;left:0;top:0;width:1080px;height:1920px;transform-style:preserve-3d;transform-origin:540px 960px;visibility:hidden}
+.ring{position:absolute;border-radius:50%;border:70px solid rgba(10,10,12,.045);filter:blur(26px)}
+.grain{position:absolute;inset:0;opacity:.05;mix-blend-mode:multiply;z-index:8;pointer-events:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
+.top{position:absolute;left:64px;right:64px;top:84px;height:80px;z-index:6}
+.brand{position:absolute;left:0;top:0;display:flex;align-items:center;gap:16px;font-family:'JetBrains Mono';font-weight:700;font-size:28px}
+.mk{width:58px;height:58px;border-radius:50%;display:grid;place-items:center;font-family:'JetBrains Mono';font-weight:800;font-size:22px;color:#fff;background:radial-gradient(circle at 34% 28%,#5a5c61 0 10%,#1a1b1e 45%,#000 100%);box-shadow:inset 0 2px 3px rgba(255,255,255,.35),0 8px 18px rgba(0,0,0,.25)}
+.tag{position:absolute;right:0;top:14px;font-family:'JetBrains Mono';font-size:24px;color:var(--mut);white-space:nowrap}
+.tag b{color:var(--ink);font-weight:700}
+.C{position:absolute;left:0;right:0;text-align:center;white-space:nowrap}
+.kick{font-family:'JetBrains Mono';font-size:26px;color:var(--mut);letter-spacing:1px}
+.sans{font-weight:600;letter-spacing:-.035em;line-height:1}
+.ser{font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;letter-spacing:-.01em;line-height:1}
+.ch{display:inline-block;white-space:pre}
+.mono{font-family:'JetBrains Mono'}
+.card{position:absolute;background:#fff;border-radius:26px;box-shadow:0 0 0 2px var(--ink),0 8px 0 var(--ink),0 40px 70px rgba(0,0,0,.14);overflow:hidden}
+.bpill{display:inline-block;padding:4px 26px 12px;border-radius:24px;background:var(--ink);color:#fff;font-family:'Inter';font-style:normal;font-weight:600;letter-spacing:-.035em;vertical-align:6px}
+.g{}
+
+
+/* S1 lid + dead notch */
+.lid1{position:absolute;left:40px;top:640px;width:1000px;height:640px;border-radius:40px 40px 0 0;background:#1a1b1e;box-shadow:0 0 0 3px var(--ink),0 10px 0 var(--ink),0 50px 80px rgba(0,0,0,.18);overflow:hidden}
+.lid1 .scr{position:absolute;left:26px;right:26px;top:26px;bottom:0;border-radius:18px 18px 0 0;background:linear-gradient(180deg,#f4f4f2,#dcdcda);overflow:hidden}
+.lid1 .mb{position:absolute;left:0;right:0;top:0;height:46px;background:rgba(255,255,255,.7);display:flex;align-items:center;gap:26px;padding:0 26px;font-family:'Inter';font-weight:600;font-size:20px;color:#3a3b3e}
+.lid1 .mb .r{margin-left:auto;display:flex;gap:18px}
+.notch1{position:absolute;left:345px;top:0;width:258px;height:62px;border-radius:0 0 26px 26px;background:#000}
+.notch1 i{position:absolute;left:122px;top:20px;width:14px;height:14px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#3a3d48,#0b0b0c)}
+.cur{position:absolute;width:44px;height:60px;z-index:4}
+.dead{position:absolute;left:0;right:0;top:1340px;text-align:center}
+.dead span{display:inline-block;padding:18px 34px;border-radius:999px;border:3px dashed var(--ink);font-family:'JetBrains Mono';font-weight:800;font-size:32px}
+.zz1{position:absolute;font-family:'Instrument Serif';font-style:italic;font-size:64px;color:#8b8d91}
+
+/* S2 icon tile + growing notch with real footage */
+.tile{position:absolute;left:420px;top:560px;width:240px;height:240px}
+.tile .tf{position:absolute;inset:0;border-radius:56px;overflow:hidden;background:#fff;box-shadow:0 0 0 3px var(--ink)}
+.tile .tf img{width:100%;height:100%;display:block}
+.tile .tk{position:absolute;inset:0;border-radius:56px;background:var(--ink)}
+.grow{position:absolute;left:64px;top:880px;width:952px;height:551px;border-radius:0 0 44px 44px;background:#000;overflow:hidden;box-shadow:0 10px 0 #3a3b3e,0 40px 70px rgba(0,0,0,.22)}
+.grow img{position:absolute;left:0;top:0;width:952px;height:551px}
+.realb{position:absolute;right:18px;bottom:16px;z-index:3;padding:6px 14px;border-radius:999px;font-family:'JetBrains Mono';font-weight:800;font-size:17px;background:#fff;color:var(--ink)}
+.chips2{position:absolute;left:0;right:0;top:1500px;text-align:center;font-family:'JetBrains Mono';font-weight:800;font-size:30px;white-space:pre}
+
+/* S3 now playing + mixer console */
+.np{left:90px;top:600px;width:900px;height:250px;background:#0b0b0c;color:#fff;border-radius:0 0 40px 40px;padding:34px 40px;display:flex;align-items:center;gap:34px}
+.np .art{width:180px;height:180px;border-radius:24px;flex:none;background:conic-gradient(from 30deg,#fafafa,#8b8d91,#2a2b2e,#d5d6d8,#fafafa);box-shadow:inset 0 0 0 3px rgba(255,255,255,.2)}
+.np .meta{flex:1}
+.np .tt{font-weight:700;font-size:42px;letter-spacing:-.02em}
+.np .ar{font-family:'JetBrains Mono';font-size:22px;color:#9a9ca1;margin-top:6px}
+.np .wv{display:flex;align-items:center;gap:6px;height:70px;margin-top:14px}
+.np .wv i{width:9px;border-radius:5px;background:#fff}
+.mix{position:absolute;left:90px;top:930px;width:900px;height:640px;perspective:1600px}
+.desk{position:absolute;inset:0;border-radius:30px;background:#fff;box-shadow:0 0 0 2.5px var(--ink),0 10px 0 var(--ink),0 40px 70px rgba(0,0,0,.14);transform-origin:50% 100%}
+.fd{position:absolute;top:40px;width:150px;height:560px}
+.fd .tr{position:absolute;left:69px;top:40px;width:12px;height:400px;border-radius:6px;background:#e6e6e4;box-shadow:inset 0 0 0 2px #cfd0d2}
+.fd .fl{position:absolute;left:69px;width:12px;border-radius:6px;background:var(--ink)}
+.fd .kn{position:absolute;left:25px;width:100px;height:54px;border-radius:14px;background:linear-gradient(180deg,#fff,#d9dadc);box-shadow:0 0 0 2.5px var(--ink),0 6px 0 var(--ink)}
+.fd .kn:after{content:'';position:absolute;left:14px;right:14px;top:24px;height:4px;border-radius:2px;background:var(--ink)}
+.fd .ap{position:absolute;left:35px;top:462px;width:80px;height:80px;border-radius:22px;display:grid;place-items:center;font-weight:700;font-size:38px;color:#fff;background:var(--ink)}
+.fd .pc{position:absolute;left:0;right:0;top:0;text-align:center;font-family:'JetBrains Mono';font-weight:800;font-size:22px}
+
+/* S4 shelf */
+.shelf{position:absolute;left:64px;top:860px;width:952px;height:400px;transform-style:preserve-3d}
+.shelf .sp{position:absolute;inset:0;border-radius:0 0 40px 40px;background:#000;overflow:hidden;box-shadow:0 10px 0 #3a3b3e,0 40px 70px rgba(0,0,0,.22)}
+.shelf .sp img{position:absolute;left:0;top:0;width:952px;height:327px}
+.fdrop{position:absolute;width:150px;height:190px;border-radius:16px;background:#fff;box-shadow:0 0 0 2.5px var(--ink),0 6px 0 var(--ink),0 30px 50px rgba(0,0,0,.18);padding:16px;font-family:'JetBrains Mono';font-weight:800;font-size:18px}
+.fdrop .fi{height:96px;border-radius:10px;background:repeating-linear-gradient(0deg,#e6e6e4 0 10px,#fff 10px 20px);margin-bottom:12px}
+.air{position:absolute;left:0;right:0;top:1340px;text-align:center}
+.air span{display:inline-block;padding:18px 36px;border-radius:999px;background:var(--ink);color:#fff;font-family:'JetBrains Mono';font-weight:800;font-size:30px}
+
+/* S5 prism of real panels */
+.prw{position:absolute;left:64px;top:690px;width:952px;height:520px;perspective:2200px}
+.prism{position:absolute;left:0;top:0;width:952px;height:520px;transform-style:preserve-3d}
+.pf{position:absolute;left:0;top:0;width:952px;height:520px;border-radius:28px;background:#000;overflow:hidden;box-shadow:0 0 0 3px var(--ink);backface-visibility:hidden;display:grid;place-items:center}
+.pf img{width:900px;height:470px;object-fit:contain;display:block}
+.pf .lb{position:absolute;left:22px;top:18px;padding:6px 14px;border-radius:999px;background:#fff;color:var(--ink);font-family:'JetBrains Mono';font-weight:800;font-size:18px}
+.dots5{position:absolute;left:0;right:0;top:1320px;display:flex;justify-content:center;gap:22px}
+.dots5 div{padding:14px 28px;border-radius:999px;font-family:'JetBrains Mono';font-weight:800;font-size:26px;box-shadow:inset 0 0 0 2.5px var(--ink)}
+
+/* S6 RAM stick */
+.memn{position:absolute;left:0;right:0;top:600px;text-align:center;font-weight:700;font-size:200px;letter-spacing:-.06em;white-space:nowrap}
+.memn small{font-size:90px;letter-spacing:-.03em;margin-left:16px}
+.dimw{position:absolute;left:90px;top:880px;width:900px;height:260px;perspective:1800px}
+.dimm{position:absolute;left:0;top:0;width:900px;height:220px;border-radius:14px;background:linear-gradient(180deg,#2a2b2e,#111214);box-shadow:0 0 0 2.5px var(--ink),0 10px 0 #000,0 40px 60px rgba(0,0,0,.2);transform-style:preserve-3d}
+.dimm .chp{position:absolute;top:40px;width:120px;height:110px;border-radius:8px;background:linear-gradient(160deg,#3a3b3e,#18191b);box-shadow:inset 0 0 0 2px rgba(255,255,255,.14)}
+.dimm .chp.on{background:linear-gradient(160deg,#fafafa,#c9cacc)}
+.dimm .pins{position:absolute;left:30px;right:30px;bottom:0;height:34px;background:repeating-linear-gradient(90deg,#d9dadc 0 10px,transparent 10px 16px)}
+.dimm .notchk{position:absolute;left:520px;bottom:0;width:22px;height:34px;background:#f7f7f5}
+.flat{position:absolute;left:90px;top:1200px;width:900px;height:240px;background:#fff;border-radius:24px;box-shadow:0 0 0 2.5px var(--ink),0 8px 0 var(--ink);padding:20px 26px}
+.flat .fh{display:flex;justify-content:space-between;font-family:'JetBrains Mono';font-weight:800;font-size:20px;color:var(--mut);letter-spacing:1px}
+.cpu6{position:absolute;left:0;right:0;top:1500px;text-align:center}
+.cpu6 span{display:inline-block;padding:18px 34px;border-radius:999px;background:var(--ink);color:#fff;font-family:'JetBrains Mono';font-weight:800;font-size:30px}
+
+/* S7 DMG window */
+.dmg{left:90px;top:640px;width:900px;height:560px;padding:0}
+.dmg .wb{height:62px;display:flex;align-items:center;gap:12px;padding:0 24px;border-bottom:2px solid var(--ink);font-family:'JetBrains Mono';font-weight:800;font-size:22px}
+.dmg .wb i{width:16px;height:16px;border-radius:50%;box-shadow:inset 0 0 0 2px var(--ink)}
+.dmg .wb span{margin-left:auto;margin-right:auto}
+.dicon{position:absolute;left:110px;top:170px;width:220px;height:220px;border-radius:52px;overflow:hidden;box-shadow:0 0 0 3px var(--ink),0 8px 0 var(--ink);z-index:3}
+.dicon img{width:100%;height:100%;display:block}
+.dfold{position:absolute;left:570px;top:180px;width:230px;height:190px}
+.dlab{position:absolute;top:420px;width:300px;text-align:center;font-family:'JetBrains Mono';font-weight:800;font-size:24px}
+.darr{position:absolute;left:350px;top:240px;width:200px;height:80px}
+.brew{position:absolute;left:0;right:0;top:1300px;text-align:center;font-family:'JetBrains Mono';font-weight:700;font-size:24px;color:#55575b;white-space:pre}
+.done7{position:absolute;left:0;right:0;top:1400px;text-align:center}
+.done7 span{display:inline-block;padding:20px 44px;border-radius:999px;background:var(--ink);color:#fff;font-weight:700;font-size:44px}
+
+/* S8 DM thread */
+.thr{left:110px;top:600px;width:860px;height:620px;padding:0}
+.thr .th{height:96px;display:flex;align-items:center;gap:18px;padding:0 28px;border-bottom:2px solid var(--ink)}
+.thr .th .pa{width:58px;height:58px;border-radius:50%;background:linear-gradient(135deg,#d9d9d7,#8b8d91)}
+.thr .th b{font-family:'JetBrains Mono';font-size:26px}
+.thr .th small{display:block;font-family:'JetBrains Mono';font-size:18px;color:var(--mut);font-weight:700}
+.bub{position:absolute;padding:22px 30px;font-size:30px;font-weight:600;white-space:nowrap}
+.bub.in{left:28px;border-radius:34px 34px 34px 10px;background:#ececea}
+.bub.out{right:28px;border-radius:34px 34px 10px 34px;background:var(--ink);color:#fff}
+.bub .lk{font-family:'JetBrains Mono';font-size:24px;font-weight:800;text-decoration:underline}
+.stamp8{position:absolute;right:60px;top:300px;padding:10px 26px;border:5px solid var(--ink);border-radius:14px;font-family:'JetBrains Mono';font-weight:800;font-size:36px;transform:rotate(-8deg);background:#fff}
+.dmus8{position:absolute;left:0;right:0;top:1330px;text-align:center}
+.dmus8 span{display:inline-block;padding:24px 48px;border-radius:999px;background:var(--ink);color:#fff;font-family:'JetBrains Mono';font-weight:800;font-size:40px}
+
+/* ending */
+.cin{display:flex;align-items:center;gap:26px;padding:0 26px 0 30px;background:#fff;box-shadow:0 0 0 2px var(--ink),0 6px 0 var(--ink),0 30px 50px rgba(0,0,0,.12)}
+.cbar{position:absolute}
+.av{width:76px;height:76px;border-radius:50%;background:linear-gradient(135deg,#d9d9d7,#a9aaad);flex:none}
+.cin .tx{flex:1;font-size:46px;font-weight:600;letter-spacing:.02em}
+.send{width:84px;height:84px;border-radius:50%;background:var(--ink);display:grid;place-items:center;color:#fff;font-size:40px;flex:none}
+.dm{position:absolute;padding:30px 44px;border-radius:44px 44px 44px 12px;background:var(--ink);color:#fff;font-size:42px;font-weight:500;white-space:nowrap}
+.dm small{display:block;font-family:'JetBrains Mono';font-size:20px;color:#9a9ca1;margin-bottom:8px}
+.bigmk{position:absolute;left:400px;top:600px;width:280px;height:280px;border-radius:50%;display:grid;place-items:center;font-family:'JetBrains Mono';font-weight:800;font-size:96px;color:#fff;background:radial-gradient(circle at 34% 26%,#6a6c71 0 8%,#1c1d20 42%,#000 100%);box-shadow:inset 0 6px 10px rgba(255,255,255,.3),inset 0 -14px 26px rgba(0,0,0,.6),0 40px 80px rgba(0,0,0,.28)}
+.erings{position:absolute;left:290px;top:490px;width:500px;height:500px}
+.fol{position:absolute;left:300px;top:1390px;width:480px;height:132px;border-radius:999px;display:grid;place-items:center;font-size:50px;font-weight:600;background:var(--ink);color:#fff;box-shadow:0 22px 44px rgba(0,0,0,.22)}
+.fol2{position:absolute;left:300px;top:1390px;width:480px;height:132px;border-radius:999px;display:grid;place-items:center;font-size:50px;font-weight:600;background:#fff;color:var(--ink);border:3px solid var(--ink);opacity:0}
+.tapd{position:absolute;width:90px;height:90px;border-radius:50%;background:rgba(11,11,12,.18);border:3px solid rgba(11,11,12,.55);opacity:0}
+.rip{position:absolute;left:540px;top:1456px;width:10px;height:10px;margin:-5px;border-radius:50%;border:4px solid var(--ink);opacity:0}
+</style></head>
+<body>
+<svg width="0" height="0" style="position:absolute"><defs>
+  <filter id="mb" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur id="mbg" stdDeviation="0 0"/></filter>
+</defs></svg>
+<div class="f" id="F">
+ <div id="cam"><div id="stage"><div id="world">
+
+  <!-- S1 hook: the notch that does nothing -->
+  <div class="sc" id="s1" data-pose="0,0,0,0,0,0">
+    <div class="ring" style="left:-260px;top:-180px;width:720px;height:720px;transform:translateZ(-500px)"></div>
+    <div class="C sans ty" style="top:250px;font-size:112px;font-weight:700;letter-spacing:-.055em;transform:translateZ(120px)" data-t="0.08" data-cd=".04">That black notch?</div>
+    <div class="C ser rv" style="top:405px;font-size:112px;transform:translateZ(120px)" data-t="2.9">does <span class="bpill">nothing.</span></div>
+    <div class="lid1 c3d" data-t="0.2" data-rx="10"><div class="scr"><div class="mb"><b></b><span>File</span><span>Edit</span><span>View</span><span>Window</span><div class="r"><span>⌁</span><span>Tue 9:41</span></div></div><div class="notch1" id="n1"><i></i></div>
+      <span class="zz1" id="zz1" style="left:620px;top:80px">z</span><span class="zz1" id="zz2" style="left:670px;top:40px;font-size:48px">z</span>
+      <svg class="cur" id="cur" viewBox="0 0 44 60"><path d="M4 2 L4 48 L16 37 L24 56 L32 52 L24 34 L40 34 Z" fill="#0b0b0c" stroke="#fff" stroke-width="3" stroke-linejoin="round"/></svg>
+      <div class="rip" id="crip" style="left:474px;top:40px"></div></div></div>
+    <div class="dead pp" data-t="3.7"><span>features: 0</span></div>
+  </div>
+
+  <!-- S2 meet: real icon tile + notch grows into the real app -->
+  <div class="sc" id="s2" data-pose="2600,0,-800,30,0,0">
+    <div class="ring" style="left:640px;top:-160px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="C sans ty" style="top:250px;font-size:150px;font-weight:700;letter-spacing:-.055em;transform:translateZ(120px)" data-t="6.0" data-cd=".045">ILoveNotch</div>
+    <div class="C ser rv" style="top:420px;font-size:84px;transform:translateZ(120px)" data-t="9.9">a tiny <span class="bpill">control center.</span></div>
+    <div class="tile" id="tile"><div class="tk" style="transform:translateZ(-18px)"></div><div class="tf"><img src="media/icon_g.png"></div></div>
+    <div class="grow" id="grow"><img id="gimg" src="media/gif/g000.jpg"><div class="realb" id="rb2">REAL · README GIF</div></div>
+    <div class="chips2" id="chips2"></div>
+  </div>
+
+  <!-- S3 music + per-app volume -->
+  <div class="sc" id="s3" data-pose="2600,2600,-1400,0,-26,0">
+    <div class="ring" style="left:-300px;top:1200px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="C sans ty" style="top:250px;font-size:150px;font-weight:700;letter-spacing:-.055em;transform:translateZ(120px)" data-t="11.52" data-cd=".05">Hover.</div>
+    <div class="C ser rv" style="top:420px;font-size:100px;transform:translateZ(120px)" data-t="13.3">music + <span class="bpill">every app.</span></div>
+    <div class="card np" id="np"><div class="art"></div><div class="meta"><div class="tt">Now Playing</div><div class="ar">any app · artwork · controls</div><div class="wv" id="wv"></div></div></div>
+    <div class="mix c3d" data-t="12.9" data-rx="16"><div class="desk"></div><div id="fds"></div></div>
+  </div>
+
+  <!-- S4 shelf -->
+  <div class="sc" id="s4" data-pose="5200,2600,-600,-30,0,0">
+    <div class="ring" style="left:600px;top:-200px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="C sans ty" style="top:250px;font-size:140px;font-weight:700;letter-spacing:-.055em;transform:translateZ(120px)" data-t="15.5" data-cd=".035">Drop files.</div>
+    <div class="C ser rv" style="top:410px;font-size:100px;transform:translateZ(120px)" data-t="16.0">keep them <span class="bpill">handy.</span></div>
+    <div class="shelf c3d" data-t="15.3" data-rx="12"><div class="sp"><img src="media/shelf_g.jpg"><div class="realb">REAL · SHELF</div></div></div>
+    <div id="fdz"></div>
+    <div class="air pp" data-t="16.35"><span>↗ AirDrop · Quick Look</span></div>
+  </div>
+
+  <!-- S5 prism: calendar / timer / AI limits (real screenshots) -->
+  <div class="sc" id="s5" data-pose="5200,5200,-1200,0,24,0">
+    <div class="ring" style="left:-280px;top:-160px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="C sans ty" style="top:250px;font-size:110px;font-weight:700;letter-spacing:-.05em;transform:translateZ(120px)" data-t="17.44" data-cd=".035">Calendar. Timers.</div>
+    <div class="C ser rv" style="top:400px;font-size:104px;transform:translateZ(120px)" data-t="20.5">your <span class="bpill">AI limits.</span></div>
+    <div class="prw"><div class="prism" id="prism">
+      <div class="pf" id="pf0"><img src="media/calendar_g.jpg"><div class="lb">REAL · CALENDAR</div></div>
+      <div class="pf" id="pf1"><img src="media/timer_g.jpg"><div class="lb">REAL · TIMER</div></div>
+      <div class="pf" id="pf2"><img src="media/claude_g.jpg"><div class="lb">REAL · CLAUDE + CODEX LIMITS</div></div>
+    </div></div>
+    <div class="dots5"><div id="d50">Calendar</div><div id="d51">Timers</div><div id="d52">AI usage</div></div>
+  </div>
+
+  <!-- S6 RAM -->
+  <div class="sc" id="s6" data-pose="2600,5200,-1800,28,0,0">
+    <div class="ring" style="left:640px;top:1300px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="C sans ty" style="top:230px;font-size:150px;font-weight:700;letter-spacing:-.055em;transform:translateZ(120px)" data-t="22.64" data-cd=".05">Native.</div>
+    <div class="C ser rv" style="top:400px;font-size:100px;transform:translateZ(120px)" data-t="23.6">light on <span class="bpill">RAM.</span></div>
+    <div class="memn" id="memn">0<small>MB</small></div>
+    <div class="dimw c3d" data-t="23.0" data-rx="30" data-ry="-8"><div class="dimm" id="dimm"></div></div>
+    <div class="flat c3d" data-t="24.2" data-rx="10"><div class="fh"><span>MEMORY · 20-HOUR WORKDAY</span><span id="flv"></span></div>
+      <svg viewBox="0 0 848 170" width="848" height="170"><path d="M0 150 H848" stroke="#e2e3e4" stroke-width="2"/><path id="fline" d="M0 140 C60 70 110 62 170 62 L848 60" fill="none" stroke="#0b0b0c" stroke-width="6" stroke-linecap="round" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1"/></svg></div>
+    <div class="cpu6 pp" data-t="25.25"><span>0.0% CPU at rest</span></div>
+  </div>
+
+  <!-- S7 install -->
+  <div class="sc" id="s7" data-pose="2600,7800,-1000,0,-24,0">
+    <div class="ring" style="left:-300px;top:-160px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="C sans ty" style="top:250px;font-size:140px;font-weight:700;letter-spacing:-.055em;transform:translateZ(120px)" data-t="26.48" data-cd=".04">Download.</div>
+    <div class="C ser rv" style="top:410px;font-size:104px;transform:translateZ(120px)" data-t="27.8">drag. <span class="bpill">done.</span></div>
+    <div class="card dmg c3d" data-t="26.4" data-rx="12" data-ry="6"><div class="wb"><i></i><i></i><i></i><span>ILoveNotch.dmg</span></div>
+      <svg class="darr" viewBox="0 0 200 80"><path d="M10 40 H170 M150 18 L178 40 L150 62" fill="none" stroke="#0b0b0c" stroke-width="6" stroke-dasharray="14 12" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <svg class="dfold" id="dfold" viewBox="0 0 230 190"><path d="M10 30 Q10 14 26 14 H88 L106 34 H204 Q220 34 220 50 V170 Q220 184 204 184 H26 Q10 184 10 170 Z" fill="#e2e3e4" stroke="#0b0b0c" stroke-width="5"/><path d="M10 64 H220 V170 Q220 184 204 184 H26 Q10 184 10 170 Z" fill="#fff" stroke="#0b0b0c" stroke-width="5"/><text x="115" y="140" text-anchor="middle" font-family="Inter" font-weight="700" font-size="54" fill="#0b0b0c">A</text></svg>
+      <div class="dicon" id="dicon"><img src="media/icon_g.png"></div>
+      <div class="dlab" style="left:70px">ILoveNotch</div><div class="dlab" style="left:535px">Applications</div></div>
+    <div class="brew" id="brew"></div>
+    <div class="done7 pp" data-t="28.8"><span>done ✓ · free</span></div>
+  </div>
+
+  <!-- S8 builder + DM FEATURE -->
+  <div class="sc" id="s8" data-pose="0,7800,-1500,-30,0,0">
+    <div class="ring" style="left:640px;top:-160px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="C sans ty" style="top:250px;font-size:140px;font-weight:700;letter-spacing:-.055em;transform:translateZ(120px)" data-t="29.92" data-cd=".05">Built by</div>
+    <div class="C ser rv" style="top:410px;font-size:100px;transform:translateZ(120px)" data-t="30.3"><span class="bpill">@niyamvora</span></div>
+    <div class="card thr c3d" data-t="29.85" data-rx="10" data-ry="-6"><div class="th"><div class="pa"></div><div><b>niyamvora</b><small>git.mate · DMs</small></div></div>
+      <div class="bub in" id="bb1" style="top:140px"><small style="display:block;font-family:'JetBrains Mono';font-size:18px;color:#8b8d91;margin-bottom:6px">sent you a repo</small><span class="lk">github.com/niyamvora/ILoveNotch</span></div>
+      <div class="stamp8" id="stp8">FEATURED ✓</div>
+      <div class="bub out" id="bb2" style="top:470px">want yours featured too?</div></div>
+    <div class="dmus8 pp" data-t="33.2"><span>DM us “FEATURE”</span></div>
+  </div>
+
+  <!-- S8 comment -->
+  <div class="sc" id="s9" data-pose="0,10400,-900,0,24,0">
+    <div class="ring" style="left:620px;top:1300px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="C sans rv" style="top:380px;font-size:120px;font-weight:500" data-t="34.7">Comment</div>
+    <div class="C sans ty" style="top:510px;font-size:196px;font-weight:700;letter-spacing:-.04em" data-t="35.0" data-cd=".05">GITMATE</div>
+    <div class="cbar cin c3d" style="left:64px;top:860px;width:952px;height:140px;border-radius:999px" data-t="34.6" data-rx="10"><div class="av"></div><div class="tx" id="ctx"></div><div class="send">↑</div></div>
+    <div class="dm pp" style="left:250px;top:1110px" data-t="35.9"><small>git.mate · message</small>Here's your link, mate →</div>
+  </div>
+  <!-- S9 end -->
+  <div class="sc" id="s10" data-pose="2600,10400,-1300,28,0,0">
+    <div class="ring" style="left:-300px;top:-160px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="ring" style="left:640px;top:1400px;width:760px;height:760px;transform:translateZ(-800px)"></div>
+    <svg class="erings" viewBox="0 0 500 500"><circle id="er1" cx="250" cy="250" r="226" fill="none" stroke="#0b0b0c" stroke-width="3" stroke-dasharray="1420" stroke-dashoffset="1420" transform="rotate(-90 250 250)"/>
+      <circle id="er2" cx="250" cy="250" r="246" fill="none" stroke="#c9cacc" stroke-width="2" stroke-dasharray="1546" stroke-dashoffset="1546" transform="rotate(90 250 250)"/></svg>
+    <div class="bigmk" id="bigmk">&gt;_</div>
+    <div class="C sans ty" style="top:1050px;font-size:104px;font-weight:700" data-t="37.3" data-cd=".05">@git.mate</div>
+    <div class="C ser" style="top:1200px;font-size:96px"><span class="rv g" data-t="37.8">1 repo</span> <span class="rv" data-t="38.1">every</span> <span class="rv" data-t="38.35">day.</span></div>
+    <div class="fol pp" id="fol" data-t="37.45">Follow</div>
+    <div class="fol2" id="fol2">Following ✓</div>
+    <div class="rip" id="rip"></div>
+    <div class="tapd" id="tapd" style="left:640px;top:1560px"></div>
+  </div>
+ </div></div></div>
+ <div class="top"><div class="brand"><div class="mk">&gt;_</div>git.mate</div><div class="tag" id="tag"><b>01</b> / 9</div></div>
+ <div class="grain"></div>
+</div>
+<script>
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+const SPD = 1.12, RAWTOTAL = 40.0, TOTAL = RAWTOTAL / SPD; window.__TOTAL = TOTAL;
+const S = [0, 4.85, 11.3, 15.4, 17.25, 22.4, 26.3, 29.8, 34.55, 36.95];
+const NS = S.length;
+const sm = (a, b, x) => { const k = Math.min(1, Math.max(0, (x - a) / (b - a))); return k * k * (3 - 2 * k); };
+const cl = (a, b, x) => Math.min(1, Math.max(0, (x - a) / (b - a)));
+const bump = (t, c, w) => Math.max(0, 1 - Math.abs(t - c) / w);
+const pad3 = n => String(n).padStart(3, '0');
+
+// S3 waveform + faders
+$('#wv').innerHTML = Array.from({ length: 34 }, (_, i) => `<i id="wv${i}"></i>`).join('');
+const APPS = [['♫', 'Music'], ['S', 'Spotify'], ['Z', 'Zoom'], ['◎', 'Safari']];
+const FV = [[.7, .85], [.6, .25], [.5, .95], [.8, 0]];
+$('#fds').innerHTML = APPS.map(([g, n], i) => `<div class="fd" style="left:${45 + i * 210}px"><div class="pc" id="fp${i}">0%</div><div class="tr"></div><div class="fl" id="ff${i}"></div><div class="kn" id="fk${i}"></div><div class="ap">${g}</div></div>`).join('');
+// S4 dropped files
+const FILES = ['notes.pdf', 'shot.png', 'deck.key'];
+$('#fdz').innerHTML = FILES.map((f, i) => `<div class="fdrop" id="fz${i}" style="left:${170 + i * 270}px;top:620px"><div class="fi"></div>${f}</div>`).join('');
+// S5 prism faces
+const PR = 150;
+[0, 1, 2].forEach(i => { $('#pf' + i).style.transform = `rotateX(${-i * 120}deg) translateZ(${PR}px)`; });
+// S6 dimm chips
+$('#dimm').innerHTML = Array.from({ length: 7 }, (_, i) => `<div class="chp" id="ch${i}" style="left:${28 + i * 122}px"></div>`).join('') + '<div class="pins"></div><div class="notchk"></div>';
+
+const scenes = $$('.sc');
+const poses = scenes.map(s => s.dataset.pose.split(',').map(Number));
+scenes.forEach((s, i) => { const [x, y, z, ry, rx, rz] = poses[i]; s.style.transform = `translate3d(${x}px,${y}px,${z}px) rotateY(${ry}deg) rotateX(${rx}deg) rotateZ(${rz}deg)`; });
+const tl = gsap.timeline({ paused: true });
+$$('.ty').forEach(el => { const t = +el.dataset.t, cd = +(el.dataset.cd || .045); const txt = el.textContent; el.textContent = '';
+  const chs = [...txt].map(c => { const s = document.createElement('span'); s.className = 'ch'; s.textContent = c; el.appendChild(s); return s; });
+  tl.set(chs, { opacity: 0 }, 0);
+  chs.forEach((c, i) => tl.fromTo(c, { opacity: 0, y: 26, filter: 'blur(14px)' }, { opacity: 1, y: 0, filter: 'blur(0px)', duration: .42, ease: 'power3.out', immediateRender: false }, Math.max(0.001, t + i * cd))); });
+$$('.rv').forEach(el => { const t = +el.dataset.t; if (isNaN(t)) return;
+  tl.set(el, { opacity: 0 }, 0); tl.fromTo(el, { opacity: 0, y: 46, filter: 'blur(16px)' }, { opacity: 1, y: 0, filter: 'blur(0px)', duration: .55, ease: 'power3.out', immediateRender: false }, Math.max(0.001, t)); });
+$$('.pp').forEach(el => { const t = +el.dataset.t;
+  tl.set(el, { opacity: 0 }, 0); tl.fromTo(el, { opacity: 0, scale: .55, filter: 'blur(10px)' }, { opacity: 1, scale: 1, filter: 'blur(0px)', duration: .5, ease: 'back.out(2.2)', immediateRender: false }, t); });
+$$('.c3d').forEach(el => { const t = +el.dataset.t, rx = +(el.dataset.rx || 0), ry = +(el.dataset.ry || 0);
+  tl.set(el, { opacity: 0, transformPerspective: 1500 }, 0);
+  tl.fromTo(el, { opacity: 0, rotationX: rx + 50, rotationY: ry * 2.5, y: 260, z: -500, scale: .9 }, { opacity: 1, rotationX: rx, rotationY: ry, y: 0, z: 0, scale: 1, duration: 1.05, ease: 'expo.out', immediateRender: false }, Math.max(0.001, t));
+  tl.to(el, { rotationX: rx * .4, rotationY: -ry * .5, duration: 3.2, ease: 'sine.inOut' }, Math.max(0.001, t) + 1.05); });
+// comment typing
+const cm = { n: 0 };
+tl.fromTo(cm, { n: 0 }, { n: 7, duration: .45, ease: 'none', immediateRender: false, onUpdate: () => $('#ctx').textContent = 'GITMATE'.slice(0, Math.round(cm.n)) }, 35.15);
+// end
+const E = 37.0;
+tl.set('#bigmk', { opacity: 0, scale: .2 }, 0);
+tl.to('#bigmk', { opacity: 1, scale: 1, duration: .9, ease: 'back.out(1.8)' }, E);
+tl.fromTo('#er1', { attr: { 'stroke-dashoffset': 1420 } }, { attr: { 'stroke-dashoffset': 0 }, duration: 1.0, ease: 'power2.inOut', immediateRender: false }, E + .15);
+tl.fromTo('#er2', { attr: { 'stroke-dashoffset': 1546 } }, { attr: { 'stroke-dashoffset': 0 }, duration: 1.2, ease: 'power2.inOut', immediateRender: false }, E + .3);
+tl.to('#tapd', { opacity: 1, left: 560, top: 1440, duration: .5, ease: 'power2.out' }, E + 1.4);
+tl.to('#tapd', { scale: .7, duration: .1 }, E + 1.9); tl.to('#tapd', { scale: 1, duration: .15 }, E + 2.0);
+tl.to('#fol', { scale: .93, duration: .1 }, E + 1.9); tl.to('#fol', { scale: 1, duration: .2 }, E + 2.0);
+tl.set('#fol2', { opacity: 1 }, E + 2.0); tl.set('#fol', { opacity: 0 }, E + 2.0);
+tl.fromTo('#rip', { opacity: .7, width: 10, height: 10, margin: -5 }, { opacity: 0, width: 640, height: 640, margin: -320, duration: .8, ease: 'power2.out', immediateRender: false }, E + 1.95);
+tl.to('#tapd', { opacity: 0, duration: .3 }, E + 2.35);
+tl.to({}, { duration: .01 }, RAWTOTAL);
+const ease = x => x < .5 ? 16 * x ** 5 : 1 - Math.pow(-2 * x + 2, 5) / 2;
+const TD = .8, TPRE = .45;
+function camAt(t) {
+  let i = 0; for (let k = 0; k < S.length; k++) if (t >= S[k] - TPRE) i = k;
+  const ta = S[i] - TPRE; let p = poses[i].slice(), d = 0, rr = 0;
+  if (i > 0 && t < ta + TD) { const u = (t - ta) / TD, e = ease(u), a = poses[i - 1]; p = a.map((v, j) => v + (poses[i][j] - v) * e); d = Math.sin(u * Math.PI) * 700; rr = Math.sin(u * Math.PI) * (i % 2 ? 4 : -4); }
+  const st = Math.max(0, t - (S[i] - TPRE + TD)); const dz = Math.min(st, 6) * 8;
+  return { x: p[0], y: p[1], z: p[2] - dz, ry: p[3] + Math.sin(t * .6) * .6, rx: p[4] + Math.sin(t * .45) * .5, rz: p[5] + rr, d, i };
+}
+function camT(c) { return `translateZ(${-c.d + 60}px) rotateZ(${-c.rz}deg) rotateX(${-c.rx}deg) rotateY(${-c.ry}deg) translate3d(${-c.x}px,${-c.y}px,${-c.z}px)`; }
+const world = $('#world'), mbg = $('#mbg'), cam = $('#cam');
+const typeAt = (t, t0, dur, s) => s.slice(0, Math.max(0, Math.min(s.length, Math.round((t - t0) / dur * s.length))));
+function tick(t) {
+  const c = camAt(t), p = camAt(Math.max(0, t - SPD / 30));
+  world.style.transform = camT(c);
+  const hx = Math.abs(c.x - p.x) * .9 + Math.abs(c.ry - p.ry) * 32, vy = Math.abs(c.y - p.y) * .9 + Math.abs(c.rx - p.rx) * 32, zz = Math.abs(c.z - p.z + (p.d - c.d)) * .25;
+  const bx = Math.min(70, hx * .22 + zz * .05), by = Math.min(70, vy * .22 + zz * .05);
+  if (bx + by > .4) { mbg.setAttribute('stdDeviation', `${bx.toFixed(1)} ${by.toFixed(1)}`); cam.style.filter = 'url(#mb)'; } else cam.style.filter = 'none';
+  scenes.forEach((s, k) => { s.style.visibility = (k === c.i || (k === c.i - 1 && t < S[c.i] - TPRE + TD)) ? 'visible' : 'hidden'; });
+  $('#tag').innerHTML = `<b>${String(c.i + 1).padStart(2, '0')}</b> / ${NS}`;
+  // S1 cursor pokes the notch, nothing happens
+  { const mv = sm(1.9, 2.7, t), cu = $('#cur');
+    cu.style.left = (700 - 240 * mv + Math.sin(t * 2) * 4) + 'px'; cu.style.top = (360 - 310 * mv) + 'px'; cu.style.opacity = sm(1.7, 1.9, t);
+    cu.style.transform = `scale(${1 - .18 * (bump(t, 2.95, .08) + bump(t, 3.45, .08))})`;
+    const r = Math.max(cl(2.95, 3.4, t) * (t < 3.45 ? 1 : 0), cl(3.45, 3.9, t)), rp = $('#crip');
+    const rs = 10 + 160 * r; rp.style.width = rs + 'px'; rp.style.height = rs + 'px'; rp.style.margin = (-rs / 2) + 'px'; rp.style.opacity = r > 0 && r < 1 ? (1 - r) * .7 : 0;
+    $('#n1').style.transform = `translateX(${Math.sin(t * 50) * bump(t, 3.0, .1) * 0}px)`;
+    [1, 2].forEach(k => { const z = $('#zz' + k), q = cl(3.7 + k * .2, 4.8 + k * .2, t); z.style.opacity = Math.sin(q * Math.PI); z.style.transform = `translate(${q * 30}px,${-q * 40}px)`; }); }
+  // S2 icon flip, notch grows into the real app
+  { const fk = sm(4.9, 5.7, t); $('#tile').style.transform = `perspective(1400px) translateY(${(1 - fk) * 200}px) rotateY(${(1 - fk) * 200 - 14 + 10 * sm(6, 11, t)}deg) rotateX(10deg) scale(${1 + bump(t, 5.75, .15) * .06})`; $('#tile').style.opacity = sm(4.85, 5.0, t);
+    const g = sm(8.2, 9.0, t), gw = 258 + (952 - 258) * g, gh = 62 + (551 - 62) * g, gr = $('#grow');
+    gr.style.width = gw + 'px'; gr.style.height = gh + 'px'; gr.style.left = (540 - gw / 2) + 'px'; gr.style.borderRadius = `0 0 ${26 + 18 * g}px ${26 + 18 * g}px`; gr.style.opacity = sm(7.9, 8.05, t);
+    gr.style.transform = `perspective(2000px) rotateX(${12 - 4 * g}deg)`;
+    $('#gimg').style.opacity = sm(8.8, 9.1, t); $('#rb2').style.opacity = sm(9.1, 9.3, t);
+    const fi = Math.max(0, Math.floor((t - 8.6) / .08)) % 120; const src = `media/gif/g${pad3(fi)}.jpg`; if (!$('#gimg').src.endsWith(src)) $('#gimg').src = src;
+    $('#chips2').textContent = typeAt(t, 7.3, .9, 'free · open-source · MIT'); }
+  // S3 now playing + mixer
+  { const nk = sm(11.55, 12.15, t); $('#np').style.opacity = sm(11.5, 11.6, t); $('#np').style.transformOrigin = '50% 0'; $('#np').style.transform = `perspective(1500px) rotateX(${(1 - nk) * -80 + 6}deg) scaleY(${.3 + .7 * nk})`;
+    for (let i = 0; i < 34; i++) { const h = 10 + 56 * Math.abs(Math.sin(t * 7 + i * .7) * Math.sin(t * 3.1 + i * 1.9)) * sm(12.2, 12.5, t); $('#wv' + i).style.height = h + 'px'; }
+    APPS.forEach((_, i) => { const [a, b] = FV[i], t0 = 13.6 + i * .3, v = a + (b - a) * sm(t0, t0 + .5, t) + Math.sin(t * 2 + i) * .02 * sm(13, 13.5, t), y = 40 + 400 * (1 - v) - 27;
+      $('#fk' + i).style.top = y + 'px'; $('#ff' + i).style.top = (y + 27) + 'px'; $('#ff' + i).style.height = (440 - y - 27) + 'px'; $('#fp' + i).textContent = Math.round(v * 100) + '%'; }); }
+  // S4 files fly in from the front, drop into the shelf
+  { FILES.forEach((_, i) => { const t0 = 15.75 + i * .15, k = sm(t0, t0 + .45, t), dn = sm(16.45 + i * .06, 16.8 + i * .06, t), e = $('#fz' + i);
+      e.style.opacity = sm(t0 - .02, t0 + .08, t) * (1 - sm(16.7 + i * .06, 16.85 + i * .06, t));
+      e.style.transform = `translate3d(0,${dn * 380}px,${(1 - k) * 900 + 60}px) rotateZ(${(i - 1) * 8 * (1 - dn)}deg) rotateX(${(1 - k) * 40}deg) scale(${1 - dn * .5})`; }); }
+  // S5 prism rotates face by face
+  { const step = sm(18.45, 18.95, t) + sm(20.35, 20.85, t), ik = sm(17.2, 17.9, t);
+    $('#prism').style.transform = `translateZ(${-PR}px) rotateX(${step * 120 + (1 - ik) * -70}deg) rotateY(${-8 + 6 * sm(17, 22, t)}deg)`;
+    $('#prism').style.opacity = sm(17.15, 17.3, t);
+    const cur = t < 18.7 ? 0 : t < 20.6 ? 1 : 2; [0, 1, 2].forEach(i => { const e = $('#d5' + i); e.style.background = i === cur ? '#0b0b0c' : '#fff'; e.style.color = i === cur ? '#fff' : '#0b0b0c'; e.style.opacity = sm(17.6 + i * .1, 17.8 + i * .1, t); }); }
+  // S6 77 MB counter, chip lights, flat memory line
+  { const m = sm(24.4, 25.5, t); $('#memn').innerHTML = `${Math.round(77 * m)}<small>MB</small>`; $('#memn').style.opacity = sm(24.3, 24.45, t); $('#memn').style.transform = `scale(${1 + bump(t, 25.55, .15) * .06})`;
+    for (let i = 0; i < 7; i++) $('#ch' + i).className = 'chp' + (i === 0 && t > 25.0 ? ' on' : '');
+    $('#fline').setAttribute('stroke-dashoffset', 1 - sm(24.8, 25.7, t)); $('#flv').textContent = t > 25.6 ? '~77 MB · flat' : ''; }
+  // S7 drag icon into Applications
+  { const d = sm(27.75, 28.5, t), lift = Math.sin(d * Math.PI), di = $('#dicon');
+    di.style.left = (110 + 460 * d) + 'px'; di.style.top = (170 - lift * 60) + 'px'; di.style.transform = `scale(${1 + lift * .08 - sm(28.45, 28.6, t) * .35})`; di.style.opacity = 1 - sm(28.5, 28.65, t) * .9;
+    $('#dfold').style.transform = `scale(${1 + bump(t, 28.6, .15) * .1})`;
+    $('#brew').textContent = typeAt(t, 28.3, .7, 'or: brew install --cask niyamvora/tap/ilovenotch'); }
+  // S8 DM thread
+  { const b1 = sm(30.5, 30.8, t); $('#bb1').style.opacity = b1; $('#bb1').style.transform = `translateY(${(1 - b1) * 30}px)`;
+    const st = sm(31.1, 31.3, t); $('#stp8').style.opacity = st; $('#stp8').style.transform = `rotate(-8deg) scale(${2 - st + bump(t, 31.32, .1) * .08})`;
+    const b2 = sm(32.0, 32.3, t); $('#bb2').style.opacity = b2; $('#bb2').style.transform = `translateY(${(1 - b2) * 30}px)`; }
+}
+window.__seek = vt => { const t = vt * SPD; tl.time(t, false); tick(t); const ims = [...document.images].map(i => i.complete ? null : i.decode().catch(() => {})).filter(Boolean); return Promise.all(ims); };
+__seek(0);
+if (!navigator.webdriver) { const t0 = performance.now(); const loop = () => { window.__seek(((performance.now() - t0) / 1000) % TOTAL); requestAnimationFrame(loop); }; requestAnimationFrame(loop); }
+</script>
+</body></html>

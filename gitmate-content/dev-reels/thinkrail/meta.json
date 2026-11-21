@@ -1,0 +1,8 @@
+{
+ "video": "gitmate_thinkrail.mp4",
+ "title": "ThinkRail: JetBrains' open-source IDE for AI agents",
+ "description": "JetBrains open-sourced an IDE built for AI agents \ud83d\ude86\n\nThinkRail wraps the pi coding agent in a real IDE:\n\u2192 Every task gets its own git worktree + branch, so agents work in parallel without touching your checkout\n\u2192 Merge the good branch, delete the rest\n\u2192 Living SPEC.md files sit beside your code, so decisions survive after the chat ends\n\u2192 Editor, diffs, terminals, PRs + CI checks in one window\n\u2192 MCP servers, Agent Skills, JetBrains AI or your own provider\n\n\u2705 Free + Apache 2.0\n\u2705 Desktop app (macOS, Windows, Linux) or one-line CLI install\n\nComment GITMATE and I'll send you the link \ud83d\udc47\nFollow @git.mate for 1 useful repo every day.\n\n#github #opensource #jetbrains #aiagents #codingagent #ide #git #devtools #developer #programming #softwareengineering #ai\n",
+ "repo": "https://github.com/JetBrains/thinkrail",
+ "theme": "light",
+ "duration": 37.4
+}

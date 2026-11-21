@@ -1,0 +1,16 @@
+You can spot an AI-made website in two seconds. Hallmark fixes that. ✍️
+
+Hallmark is a free, open-source design skill for Claude Code, Codex and Cursor, made by Together AI:
+→ Deals you 3 themes from a catalog of 48 real materials
+→ Builds the page around what the visitor came to do
+→ Lints it in a real browser against the "AI slop" tells (eyebrow labels, one colored word, a sign-up box on every page)
+→ A fresh-context reviewer gets the last word
+→ Redesign or audit any existing page by name
+
+✅ One command: npx skills add nutlope/hallmark -g
+✅ Free + MIT licensed
+
+Comment GITMATE and I'll send you the link 👇
+Follow @git.mate for 1 useful repo every day.
+
+#github #opensource #claudecode #cursor #codex #webdesign #uidesign #frontend #aitools #devtools #developer #programming

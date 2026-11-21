@@ -1,0 +1,16 @@
+Stop typing. Just talk, and your words land in any app. 🎙️
+
+Handy (36k+ ⭐ on GitHub) is a free, open source speech-to-text app that runs completely offline:
+→ Hold a shortcut, speak, let go: the text gets pasted right where your cursor is
+→ Works in any text field: Slack, your code editor, Google Docs, anywhere
+→ Local models: Whisper (small / medium / turbo / large) or Parakeet V3, which is CPU-optimized
+→ Your voice never leaves your machine, no cloud, no account
+→ Silence filtered with Silero VAD before transcription
+
+✅ Free + open source (MIT)
+✅ macOS, Windows and Linux (brew install --cask handy / winget install cjpais.Handy)
+
+Comment GITMATE and I'll send you the link 👇
+Follow @git.mate for 1 useful repo every day.
+
+#github #opensource #speechtotext #dictation #whisper #privacy #offline #productivity #devtools #developer #programming #rust

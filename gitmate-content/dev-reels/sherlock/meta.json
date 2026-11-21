@@ -1,0 +1,9 @@
+{
+ "video": "gitmate_sherlock.mp4",
+ "title": "Sherlock: find accounts by username across 400+ social networks",
+ "description": "One username... every account it's tied to. \ud83d\udd0d\n\nSherlock is a free, open-source Python CLI that hunts down social media accounts by username across 400+ social networks:\n\u2192 sherlock user123 checks every site in its list in one go\n\u2192 Prints every profile it finds ([+] GitHub, Reddit, YouTube, Spotify...)\n\u2192 Save the hits with --txt, --csv or --xlsx\n\u2192 Check several usernames at once, or route requests through a proxy\n\nBest first use: run it on your OWN handle and see how much of you is out there.\n\n\u2705 Free + open source (MIT) \u00b7 100K+ \u2605 on GitHub\nInstall: pipx install sherlock-project\nRun: sherlock yourname\n\nComment GITMATE and I'll send you the link \ud83d\udc47\nFollow @git.mate for 1 useful repo every day.\n\n#github #opensource #python #osint #cybersecurity #privacy #infosec #devtools #developer #programming #coding #cli #terminal\n",
+ "repo": "https://github.com/sherlock-project/sherlock",
+ "theme": "dark",
+ "duration": 34.83,
+ "source": "github.com/trending (2026-11-09, 104,479 stars, +2,373 that day)"
+}

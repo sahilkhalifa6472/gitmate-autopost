@@ -1,0 +1,17 @@
+Five different apps… just to download stuff? 😩
+
+Ghost Downloader is a free, open-source download manager that does it all in one app:
+→ Paste a video link, drag the timeline and save only the part you need
+→ Torrents (magnet), live streams (M3U8), FTP, eD2k and Hugging Face models in one queue
+→ Link expired mid-download? Change it, your progress is kept
+→ Browser extension sends downloads straight to the app
+→ Windows, macOS, Linux and Android
+→ ~13.9K ⭐ on GitHub, GPL-3.0
+
+Get it: free installers on the GitHub Releases page (XiaoYouChR/Ghost-Downloader-3).
+Please only download content you have the right to download 🙏
+
+Comment GITMATE and I'll send you the link 👇
+Follow @git.mate for 1 useful repo every day.
+
+#downloadmanager #idm #freeapps #opensource #github #windows #macos #linux #android #torrent #productivity #techtips #developer #programming #coding #softwaretools

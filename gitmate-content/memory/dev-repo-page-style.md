@@ -1,0 +1,21 @@
+---
+name: dev-repo-page-style
+description: Owner's 2nd Instagram page idea: GitHub repo awareness reels in dark B&W developer motion-design style (sample frames, rules)
+metadata:
+  type: project
+  modified: 2026-10-23T20:07:18.683Z
+---
+
+- 2026-10-23 owner (thread "Content aur posting automation"): wants a new IG page like @gittrend.io (trending open-source repos, features mention) but made like Growaun's detailed motion-design reels. Style: dark developer look, black background, black & white only. NO subtitles; use kinetic typography instead (like Growaun reels). First step was 2-3 UI sample frames before building more.
+- Sample frames (2026-10-23): /mnt/project-files/dev-reels/style-frames/ (frame1-hook, frame2-setup, frame3-cta .png + frames.html). Example repo openGym; page handle @git.mate (owner chose 2026-10-23). Fonts Inter Tight 900 + JetBrains Mono; grey (#53575e) second line instead of outline text (text-stroke on Inter Tight shows glyph overlap artifacts). Owner rejected v1 as "artificial": wants Apple liquid-glass / water-drop glassy style. v2 = glass-frame1..3 .png + glass-frames.html (frosted glass panels w/ rim light, specular sheen, SVG displacement refraction, blurred white light ribbons/orbs + faint code behind, glossy beads, water drops in empty space). 2026-10-23 owner APPROVED the v2 liquid-glass style. Owner chose @git.mate. Work moved 2026-10-23 to thread "git.mate Instagram page". openGym remake assets: /mnt/project-files/dev-reels/opengym/ (reference.mp4, voice_raw.mp3 English Marcus voice 35.8s, script.txt with scene plan), vend/ (gsap + inlined fonts).
+- openGym carousel (9 slides 1080x1350, carousel.py/cshots.js): dev-reels/opengym/carousel/.
+- 2026-10-23 owner RULES for all future @git.mate reels: (1) voiceover with emotion, friendly "mate" tone people connect with; simple, not over-acted. (2) Use LESS glass (v1 overused it): keep glass for a few key cards, rest flatter/cleaner. (3) Use the repo's REAL images/screenshots/videos from its GitHub README whenever available. (4) End CTA: "Comment GITMATE if you want the link". (5) Final shot: a strong profile card with a Follow button. (6) 2026-10-23: ALL cards must be 3D style (real perspective, depth, tilted planes) and scene transitions must be 3D camera-angle moves (camera orbit/dolly/rotate between scenes), not flat fades.
+- Profile picture: glossy white bead with ">_" on black; files in /mnt/project-files/dev-reels/brand/.
+- Animated .webp repo media -> PIL sprite strips played by tick. raw.githubusercontent.com works for README when the GitHub API is blocked.
+- Related: [[growaun-reel-pipeline]]
+- 2026-10-24 owner RULE: alternate themes, one DARK reel, next LIGHT reel (same black & white, light = white bg/black ink, no colors). Light style: white bg, letter-by-letter blur typing + serif italic accent words, whip 3D camera moves with motion blur (ref /mnt/project-files/dev-reels/light-ref/). UI components must be NEW every reel, see [[gitmate-new-ui-per-reel]]. Owner disliked the old sliding profile-card ending: end = mark + rings draw, handle types, Follow pill tapped. Music: NEVER use the owner's uploaded track (owner 2026-10-24: remove it); light reels use our own synthesized bed light-ref/lightmusic.wav (lightmusic.py), volume ~0.24, ducked under voice. Light template: dev-reels/security-audit-light/. Daily task prompt updated to alternate themes via log.json "theme".
+
+- 2026-10-23: REA (morluto/rea) = first full 3D reel, template at /mnt/project-files/dev-reels/rea/ (reel.html, render.js, sfx3.py). Reel log: /mnt/project-files/dev-reels/log.json.
+- 2026-10-23: daily scheduled task "git.mate daily reel (1 per day)" trig_01Nvp77iUK48wXhrE3MVTSid (older ones disabled), 10:42 IST, makes 1 reel/day into dev-reels/<slug>/. Posting: server queue, see [[gitmate-autopost]].
+- Daily runs: newest = latest template (2026-10-24 security-audit, dev-reels/security-audit/: exploded 3D phase stack). Real media: Playwright screenshots of the github.com repo page work (curl blocked).
+- 2026-10-26 daily run: Nutlope/hallmark (light), dev-reels/hallmark/ = newest LIGHT template (shell + render.js with ../vend path). 3D-intersection gotcha: an element placed over a tilted c3d card slices through it; put overlays (stamps) INSIDE the card instead. Camera drift dz 8/s (14 cut edges on wide rows).

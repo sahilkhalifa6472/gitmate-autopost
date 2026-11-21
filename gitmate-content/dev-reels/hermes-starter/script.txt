@@ -1,0 +1,8 @@
+[excited] Mate... never coded in your life? You can still run your own AI agent.
+[warm] This free guide is called Hermes Starter. Built by Sharkawy.
+It sets up Hermes, the open source agent from Nous Research, step by step.
+One line to install. Then pick a free brain: Nous Portal, OpenRouter, or run it offline with Ollama.
+Say hi... and it's alive.
+[excited] And the best part? It remembers you, and turns hard tasks into skills it reuses.
+[friendly] Want your repo featured too? DM us FEATURE.
+Comment GITMATE and I'll send you the link.

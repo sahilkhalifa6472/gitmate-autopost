@@ -1,0 +1,213 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter+Tight:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#f5f6f7;--mut:rgba(235,238,242,.58);--dim:rgba(235,238,242,.32)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#000}
+.f{position:relative;width:1080px;height:1920px;overflow:hidden;background:#030304;color:var(--ink);font-family:'Inter Tight',sans-serif;margin-bottom:40px;isolation:isolate}
+.mono{font-family:'JetBrains Mono',monospace}
+
+/* ---------- backdrop: light forms the glass can bend ---------- */
+.bg{position:absolute;inset:0;z-index:0}
+.orb{position:absolute;border-radius:50%;filter:blur(70px)}
+.ribbon{position:absolute;border-radius:999px;filter:blur(2px);background:linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,.4) 45%,rgba(255,255,255,.7) 52%,rgba(255,255,255,.2) 70%,rgba(255,255,255,0))}
+.code{position:absolute;left:60px;right:60px;font-family:'JetBrains Mono';font-size:30px;line-height:1.7;color:rgba(255,255,255,.16);white-space:pre}
+.grain{position:absolute;inset:0;opacity:.09;mix-blend-mode:overlay;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
+.vig{position:absolute;inset:0;background:radial-gradient(ellipse 90% 70% at 50% 50%,transparent 45%,rgba(0,0,0,.75) 100%)}
+
+/* ---------- liquid glass ---------- */
+.glass{position:relative;border-radius:48px;
+  background:linear-gradient(160deg,rgba(255,255,255,.16),rgba(255,255,255,.05) 38%,rgba(255,255,255,.03) 62%,rgba(255,255,255,.09)),rgba(8,9,11,.42);
+  -webkit-backdrop-filter:blur(26px) saturate(1.6) brightness(1.08);backdrop-filter:url(#refract) blur(26px) saturate(1.6) brightness(1.08);
+  box-shadow:
+    inset 0 2px 1px rgba(255,255,255,.55),
+    inset 0 -2px 1px rgba(255,255,255,.12),
+    inset 18px 0 40px -30px rgba(255,255,255,.35),
+    inset -18px 0 40px -30px rgba(255,255,255,.18),
+    inset 0 -40px 60px -40px rgba(255,255,255,.14),
+    0 40px 90px rgba(0,0,0,.65),0 6px 18px rgba(0,0,0,.4)}
+/* rim light */
+.glass::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1.6px;
+  background:linear-gradient(150deg,rgba(255,255,255,.9),rgba(255,255,255,.12) 30%,rgba(255,255,255,.04) 55%,rgba(255,255,255,.4) 85%,rgba(255,255,255,.75));
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}
+/* specular sheen across the top */
+.glass::after{content:"";position:absolute;left:4%;right:4%;top:1.5%;height:38%;border-radius:44px 44px 50% 50%/44px 44px 30% 30%;
+  background:linear-gradient(180deg,rgba(255,255,255,.22),rgba(255,255,255,.04) 70%,transparent);pointer-events:none}
+.glass > *{position:relative;z-index:1}
+.pill{border-radius:999px}
+.pill::after{border-radius:999px;top:6%;height:44%}
+
+/* water drops */
+.drop{position:absolute;border-radius:50%;z-index:1;
+  background:radial-gradient(circle at 32% 28%,rgba(255,255,255,.95) 0 6%,rgba(255,255,255,.25) 14%,rgba(255,255,255,.04) 40%,rgba(255,255,255,0) 60%),
+             radial-gradient(circle at 55% 78%,rgba(255,255,255,.55),rgba(255,255,255,0) 32%),radial-gradient(circle at 50% 50%,rgba(255,255,255,.06),rgba(255,255,255,.18) 70%,rgba(255,255,255,.5) 100%);
+  -webkit-backdrop-filter:blur(3px) brightness(1.25) contrast(1.1);backdrop-filter:blur(3px) brightness(1.25) contrast(1.1);
+  box-shadow:inset 0 -6px 14px rgba(255,255,255,.22),inset 0 4px 8px rgba(0,0,0,.35),0 14px 26px rgba(0,0,0,.55)}
+
+/* ---------- layout ---------- */
+.top{position:absolute;left:64px;right:64px;top:88px;display:flex;justify-content:space-between;align-items:center;z-index:3}
+.brand{display:flex;align-items:center;gap:18px;padding:14px 30px 14px 14px;font-family:'JetBrains Mono';font-weight:700;font-size:30px}
+.bead{width:62px;height:62px;border-radius:50%;display:grid;place-items:center;font-family:'JetBrains Mono';font-weight:800;font-size:24px;color:#050505;
+  background:radial-gradient(circle at 35% 28%,#fff 0 18%,#e4e6ea 45%,#9da1a8 100%);box-shadow:inset 0 -5px 10px rgba(0,0,0,.25),inset 0 3px 4px #fff,0 10px 24px rgba(0,0,0,.6)}
+.tag{padding:18px 30px;font-family:'JetBrains Mono';font-size:24px;color:var(--mut)}
+.tag b{color:var(--ink)}
+.layer{position:absolute;left:64px;right:64px;z-index:3}
+.kick{font-family:'JetBrains Mono';font-size:28px;color:var(--mut);letter-spacing:1px}
+.kick b{color:var(--ink);font-weight:700}
+.h{font-weight:900;letter-spacing:-5px;line-height:.9;text-transform:uppercase;
+  background:linear-gradient(180deg,#ffffff 0%,#f1f2f4 45%,#a9adb4 100%);-webkit-background-clip:text;background-clip:text;color:transparent;
+  filter:drop-shadow(0 14px 30px rgba(0,0,0,.6))}
+.h .soft{background:linear-gradient(180deg,rgba(255,255,255,.55),rgba(255,255,255,.18));-webkit-background-clip:text;background-clip:text;color:transparent}
+.cur{display:inline-block;width:.4em;height:.78em;border-radius:10px;vertical-align:-.04em;margin-left:.1em;background:linear-gradient(180deg,#fff,#9da1a8)}
+.prog{position:absolute;left:64px;right:64px;bottom:90px;display:flex;gap:12px;z-index:3;padding:16px 18px}
+.prog i{flex:1;height:8px;border-radius:4px;background:rgba(255,255,255,.16)}
+.prog i.on{background:linear-gradient(90deg,#fff,#cfd2d6);box-shadow:0 0 14px rgba(255,255,255,.5)}
+
+.chrome{display:flex;align-items:center;gap:14px;padding:30px 36px 22px}
+.chrome i{width:20px;height:20px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,rgba(255,255,255,.25) 60%);opacity:.55}
+.url{margin-left:16px;flex:1;font-family:'JetBrains Mono';font-size:22px;color:var(--mut);padding:12px 22px;border-radius:999px;background:rgba(0,0,0,.25);box-shadow:inset 0 1px 2px rgba(0,0,0,.5),inset 0 -1px 0 rgba(255,255,255,.12)}
+.repo{padding:22px 48px 50px}
+.rrow{display:flex;align-items:center;gap:24px}
+.av{width:96px;height:96px;border-radius:30px;display:grid;place-items:center;background:linear-gradient(160deg,rgba(255,255,255,.22),rgba(255,255,255,.05));box-shadow:inset 0 2px 1px rgba(255,255,255,.6),inset 0 -2px 1px rgba(255,255,255,.1),0 12px 24px rgba(0,0,0,.4)}
+.rname{font-family:'JetBrains Mono';font-size:48px;font-weight:800}
+.rsub{font-family:'JetBrains Mono';font-size:22px;color:var(--mut);margin-top:6px}
+.rdesc{margin-top:30px;font-size:38px;line-height:1.28;color:rgba(255,255,255,.86);font-weight:500}
+.chips{display:flex;flex-wrap:wrap;gap:14px;margin-top:32px}
+.chip{font-family:'JetBrains Mono';font-size:23px;padding:12px 22px;border-radius:999px;color:rgba(255,255,255,.85);background:rgba(255,255,255,.06);box-shadow:inset 0 1px 1px rgba(255,255,255,.35),inset 0 -1px 1px rgba(255,255,255,.06)}
+.chip.solid{background:linear-gradient(180deg,#fff,#d9dce0);color:#050505;font-weight:800;box-shadow:inset 0 -3px 6px rgba(0,0,0,.18),0 6px 16px rgba(255,255,255,.18)}
+.stats{display:flex;gap:16px;margin-top:36px}
+.stat{flex:1;border-radius:26px;padding:24px 26px;background:rgba(0,0,0,.22);box-shadow:inset 0 1px 2px rgba(0,0,0,.5),inset 0 -1px 0 rgba(255,255,255,.14)}
+.stat .k{font-family:'JetBrains Mono';font-size:20px;color:var(--mut)}
+.stat .v{margin-top:8px;font-size:42px;font-weight:800}
+
+.term{font-family:'JetBrains Mono';font-size:30px;line-height:1.8;padding:18px 46px 46px}
+.term .p{color:var(--dim)}
+.term .c{color:rgba(255,255,255,.35)}
+.term .ok{font-weight:800}
+.feat{display:flex;flex-direction:column;gap:22px}
+.fr{display:flex;align-items:center;gap:28px;padding:28px 32px;border-radius:36px}
+.fr .bead{width:72px;height:72px;font-size:26px;flex:none}
+.ft{font-size:38px;font-weight:800}
+.fs{font-family:'JetBrains Mono';font-size:22px;color:var(--mut);margin-top:6px}
+.x{text-decoration:line-through;text-decoration-thickness:5px;color:var(--dim)}
+
+.steps{display:flex;flex-direction:column;gap:24px}
+.st2{display:flex;align-items:center;gap:30px;padding:32px 36px;border-radius:40px}
+.st2 .bead{width:70px;height:70px;font-size:30px;flex:none}
+.st2 .t{font-size:40px;font-weight:800}
+.st2 .s{font-family:'JetBrains Mono';font-size:22px;color:var(--mut);margin-top:6px}
+.handle{display:inline-flex;align-items:center;gap:20px;padding:18px 44px 18px 18px;font-family:'JetBrains Mono';font-weight:800;font-size:40px}
+</style></head><body>
+
+<svg width="0" height="0" style="position:absolute">
+  <filter id="refract" x="0" y="0" width="100%" height="100%">
+    <feTurbulence type="fractalNoise" baseFrequency="0.006 0.009" numOctaves="2" seed="7" result="n"/>
+    <feGaussianBlur in="n" stdDeviation="2" result="nb"/>
+    <feDisplacementMap in="SourceGraphic" in2="nb" scale="70" xChannelSelector="R" yChannelSelector="G"/>
+  </filter>
+</svg>
+
+<!-- FRAME 1: HOOK -->
+<section class="f" id="f1">
+  <div class="bg">
+    <div class="orb" style="width:760px;height:760px;left:-260px;top:880px;background:radial-gradient(circle,rgba(255,255,255,.55),rgba(255,255,255,0) 65%)"></div>
+    <div class="orb" style="width:620px;height:620px;right:-220px;top:1260px;background:radial-gradient(circle,rgba(200,205,212,.45),rgba(255,255,255,0) 65%)"></div>
+    <div class="ribbon" style="width:1500px;height:120px;left:-220px;top:1080px;transform:rotate(-16deg)"></div>
+    <div class="ribbon" style="width:1300px;height:46px;left:-80px;top:1420px;transform:rotate(-16deg);opacity:.6"></div>
+    <div class="code" style="top:930px">{ "name": "openGym",
+  "license": "AGPL-3.0",
+  "selfHosted": true,
+  "ads": 0, "subscription": null }
+docker compose up -d
+→ workouts · plans · stats</div>
+    <div class="grain"></div><div class="vig"></div>
+  </div>
+  <div class="top"><div class="brand glass pill"><div class="bead">&gt;_</div>repo.daily</div><div class="tag glass pill"><b>#01</b> trending</div></div>
+  <div class="layer" style="top:270px">
+    <div class="kick">// <b>open-source</b> · free forever</div>
+    <div class="h" style="font-size:150px;margin-top:34px">Stop paying<br>for your<br><span class="soft">gym app</span><span class="cur"></span></div>
+  </div>
+  <div class="drop" style="width:64px;height:64px;left:900px;top:790px"></div>
+  <div class="drop" style="width:30px;height:30px;left:990px;top:860px"></div>
+  <div class="layer" style="top:920px">
+    <div class="glass">
+      <div class="chrome"><i></i><i></i><i></i><div class="url">github.com / openGym</div></div>
+      <div class="repo">
+        <div class="rrow"><div class="av"><svg width="54" height="54" viewBox="0 0 24 24" fill="#f5f6f7"><rect x="1" y="9" width="3" height="6" rx="1"/><rect x="4.5" y="7" width="3" height="10" rx="1"/><rect x="7.5" y="11" width="9" height="2"/><rect x="16.5" y="7" width="3" height="10" rx="1"/><rect x="20" y="9" width="3" height="6" rx="1"/></svg></div>
+          <div><div class="rname">openGym</div><div class="rsub">public · open-source</div></div></div>
+        <div class="rdesc">A self-hosted gym &amp; body-weight tracker you actually own.</div>
+        <div class="chips"><span class="chip solid">self-hosted</span><span class="chip">AGPL-3.0</span><span class="chip">docker</span><span class="chip">react</span></div>
+        <div class="stats"><div class="stat"><div class="k">price</div><div class="v">₹0</div></div><div class="stat"><div class="k">setup</div><div class="v">1 cmd</div></div><div class="stat"><div class="k">ads</div><div class="v">none</div></div></div>
+      </div>
+    </div>
+  </div>
+  <div class="drop" style="width:46px;height:46px;left:120px;top:1700px"></div>
+  <div class="prog glass pill"><i class="on"></i><i></i><i></i><i></i><i></i></div>
+</section>
+
+<!-- FRAME 2: SETUP -->
+<section class="f" id="f2">
+  <div class="bg">
+    <div class="orb" style="width:820px;height:820px;right:-300px;top:640px;background:radial-gradient(circle,rgba(255,255,255,.5),rgba(255,255,255,0) 65%)"></div>
+    <div class="orb" style="width:600px;height:600px;left:-240px;top:1300px;background:radial-gradient(circle,rgba(200,205,212,.4),rgba(255,255,255,0) 65%)"></div>
+    <div class="ribbon" style="width:1500px;height:110px;left:-200px;top:880px;transform:rotate(14deg)"></div>
+    <div class="ribbon" style="width:1400px;height:60px;left:-200px;top:1480px;transform:rotate(14deg);opacity:.55"></div>
+    <div class="code" style="top:780px">services:
+  opengym:
+    image: opengym:latest
+    ports: ["3000:3000"]
+    volumes: ["./data:/data"]
+# your data. your box.</div>
+    <div class="grain"></div><div class="vig"></div>
+  </div>
+  <div class="top"><div class="brand glass pill"><div class="bead">&gt;_</div>repo.daily</div><div class="tag glass pill"><b>02</b> / setup</div></div>
+  <div class="layer" style="top:260px">
+    <div class="h" style="font-size:156px">One<br><span class="soft">command.</span></div>
+    <div style="font-size:42px;font-weight:600;color:rgba(255,255,255,.75);margin-top:30px">Your data stays on <b style="color:#fff">your</b> box.</div>
+  </div>
+  <div class="layer" style="top:800px">
+    <div class="glass">
+      <div class="chrome"><i></i><i></i><i></i><div class="url">~/opengym — zsh</div></div>
+      <div class="term">
+        <div><span class="p">$</span> git clone …/openGym</div>
+        <div><span class="p">$</span> docker compose up -d</div>
+        <div class="c"># pulling images…</div>
+        <div class="ok">✓ running → localhost:3000<span class="cur" style="height:32px;width:16px;border-radius:4px"></span></div>
+      </div>
+    </div>
+  </div>
+  <div class="drop" style="width:56px;height:56px;left:96px;top:1255px"></div>
+  <div class="layer feat" style="top:1340px">
+    <div class="fr glass"><div class="bead">01</div><div><div class="ft">Guided workouts</div><div class="fs">rest timer · sets · reps</div></div></div>
+    <div class="fr glass"><div class="bead">02</div><div><div class="ft"><span class="x">Subscription</span>&nbsp; ₹0</div><div class="fs">no signup · no ads · no cloud</div></div></div>
+  </div>
+  <div class="prog glass pill"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></div>
+</section>
+
+<!-- FRAME 3: CTA -->
+<section class="f" id="f3">
+  <div class="bg">
+    <div class="orb" style="width:900px;height:900px;left:90px;top:820px;background:radial-gradient(circle,rgba(255,255,255,.42),rgba(255,255,255,0) 65%)"></div>
+    <div class="ribbon" style="width:1500px;height:130px;left:-210px;top:1060px;transform:rotate(-12deg)"></div>
+    <div class="ribbon" style="width:1400px;height:50px;left:-150px;top:1380px;transform:rotate(-12deg);opacity:.6"></div>
+    <div class="grain"></div><div class="vig"></div>
+  </div>
+  <div class="top"><div class="brand glass pill"><div class="bead">&gt;_</div>repo.daily</div><div class="tag glass pill"><b>05</b> / save it</div></div>
+  <div class="layer" style="top:260px">
+    <div class="kick">// don't lose this repo</div>
+    <div class="h" style="font-size:210px;margin-top:30px">Save<br><span class="soft">this.</span></div>
+  </div>
+  <div class="drop" style="width:70px;height:70px;left:120px;top:1440px"></div>
+  <div class="drop" style="width:32px;height:32px;left:210px;top:1505px"></div>
+  <div class="layer steps" style="top:870px">
+    <div class="st2 glass"><div class="bead">1</div><div><div class="t">Save the reel</div><div class="s">repo link in caption</div></div></div>
+    <div class="st2 glass"><div class="bead">2</div><div><div class="t">Star it on GitHub</div><div class="s">search: openGym</div></div></div>
+    <div class="st2 glass"><div class="bead">3</div><div><div class="t">Follow for 1 repo / day</div><div class="s">new open-source, every morning</div></div></div>
+  </div>
+  <div class="layer" style="top:1560px;text-align:center">
+    <div class="handle glass pill"><div class="bead">&gt;_</div>@repo.daily</div>
+  </div>
+  <div class="prog glass pill"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></div>
+</section>
+</body></html>

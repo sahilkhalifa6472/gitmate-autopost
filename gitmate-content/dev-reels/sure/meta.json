@@ -1,0 +1,10 @@
+{
+ "video": "gitmate_sure.mp4",
+ "title": "Sure: a free, open-source personal finance app (Mint alternative, self-hosted)",
+ "description": "Mint shut down\u2026 and now every budget app wants a monthly subscription. \ud83d\udcb8\n\nSure is a free, open-source personal finance app you run yourself:\n\u2192 Net worth, cash flow, spending and outflows on one clean dashboard\n\u2192 Connect bank accounts, set budgets, track investments\n\u2192 Import your old Mint (or Monarch) data\n\u2192 Built-in AI assistant you can ask about your money\n\u2192 Self-host with one Docker compose file: your money data stays with you\n\nThe backstory: the Maybe Finance team spent nearly $1M building it, then open-sourced it. Sure is the community fork that kept it alive.\n\n\u2705 Free \u00b7 AGPL-3.0 \u00b7 16K+ \u2605 on GitHub\n\nComment GITMATE and I'll send you the link \ud83d\udc47\nFollow @git.mate for 1 useful repo every day.\n\n#personalfinance #budgeting #mint #budgetapp #selfhosted #opensource #github #docker #homelab #money #networth #fintech #developer #programming #coding #devtools\n",
+ "repo": "https://github.com/we-promise/sure",
+ "theme": "dark",
+ "duration": 35.28,
+ "cover_offset_ms": 3800,
+ "source": "github.com/trending weekly (2026-11-18, 4,786 stars this week, 16.3K total)"
+}
