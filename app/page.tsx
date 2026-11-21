@@ -33,7 +33,7 @@ export default async function Dashboard() {
   return (
     <>
       <Nav />
-      <AutoRefresh seconds={30} />
+      <AutoRefresh seconds={30} run={!!posting || !!nextReel?.force} />
       <div className="wrap">
         <div className="ph"><h1>Dashboard</h1></div>
         <div className="chips">
