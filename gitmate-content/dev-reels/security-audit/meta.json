@@ -1,0 +1,22 @@
+{
+ "title": "Cloudflare's bug hunting skill is #1 on GitHub",
+ "caption": "Cloudflare just open-sourced their bug hunting skill, and it's #1 on GitHub trending today 🔍\n\nsecurity-audit turns your coding agent into a full security auditor:\n→ 6 phases: recon, hunting, validation, structured output, verification, report\n→ The agent that checks a bug is never the agent that found it\n→ Verified findings.json, not noise\n\n✅ Install: npx skills add cloudflare/security-audit-skill --skill security-audit\n✅ Then just say: \"security audit this codebase\"\n✅ Free, MIT\n\nComment GITMATE for the link 👇\nFollow @git.mate for 1 useful repo every day.\n\n#github #opensource #cybersecurity #appsec #cloudflare #aiagents #claudecode #codingagent #developer #programming #devtools #securityaudit\n",
+ "hashtags": [
+  "#1",
+  "#github",
+  "#opensource",
+  "#cybersecurity",
+  "#appsec",
+  "#cloudflare",
+  "#aiagents",
+  "#claudecode",
+  "#codingagent",
+  "#developer",
+  "#programming",
+  "#devtools",
+  "#securityaudit"
+ ],
+ "repo_url": "https://github.com/cloudflare/security-audit-skill",
+ "date": "2026-10-24",
+ "video": "/mnt/project-files/dev-reels/security-audit/gitmate_security_audit.mp4"
+}

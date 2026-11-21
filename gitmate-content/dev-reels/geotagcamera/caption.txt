@@ -1,0 +1,18 @@
+Every GPS camera app… ads before the camera even opens, then a subscription just to stamp your location? 📍
+
+GeoTag Camera, built by @konkomaji, is a free, open-source GPS camera for Android:
+→ Stamps place, address (Plus Code), coordinates and time on every photo
+→ Signs each photo on your phone (SHA-256 + Android Keystore), so anyone can check the photo and its GPS/time weren't changed
+→ Works with no signal: capture, stamp, sign and verify offline
+→ Export CSV, KML, GeoJSON and PDF site reports
+→ No ads, no account, no paywall
+
+Install: download the APK from GitHub Releases (Android 8.0+, no Google Play services needed). F-Droid and Google Play coming soon.
+
+Free, GPL-3.0 · built by @konkomaji 🙌
+
+Want your repo featured too? DM us FEATURE 📩
+Comment GITMATE and I'll send you the link 👇
+Follow @git.mate for 1 useful repo every day.
+
+#android #gps #camera #geotag #fieldwork #surveying #opensource #github #freeapps #androidapps #privacy #indiedev #developer #programming #coding #productivity

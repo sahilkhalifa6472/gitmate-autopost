@@ -1,0 +1,439 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<title>git.mate hermes-starter</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<style>
+:root{--ink:#0b0b0c;--mut:#8b8d91;--dim:#cfd0d2;--bg:#f7f7f5}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#fff}
+.f{position:relative;width:1080px;height:1920px;overflow:hidden;background:radial-gradient(ellipse 110% 70% at 50% 45%,#ffffff 0%,#f7f7f5 55%,#eeeeec 100%);color:var(--ink);font-family:'Inter',sans-serif}
+#cam{position:absolute;inset:0}
+#stage{position:absolute;inset:0;perspective:1800px;perspective-origin:50% 50%}
+#world{position:absolute;left:0;top:0;width:1080px;height:1920px;transform-style:preserve-3d;transform-origin:540px 960px}
+.sc{position:absolute;left:0;top:0;width:1080px;height:1920px;transform-style:preserve-3d;transform-origin:540px 960px;visibility:hidden}
+.ring{position:absolute;border-radius:50%;border:70px solid rgba(10,10,12,.045);filter:blur(26px)}
+.grain{position:absolute;inset:0;opacity:.05;mix-blend-mode:multiply;z-index:8;pointer-events:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
+.top{position:absolute;left:64px;right:64px;top:84px;height:80px;z-index:6}
+.brand{position:absolute;left:0;top:0;display:flex;align-items:center;gap:16px;font-family:'JetBrains Mono';font-weight:700;font-size:28px}
+.mk{width:58px;height:58px;border-radius:50%;display:grid;place-items:center;font-family:'JetBrains Mono';font-weight:800;font-size:22px;color:#fff;background:radial-gradient(circle at 34% 28%,#5a5c61 0 10%,#1a1b1e 45%,#000 100%);box-shadow:inset 0 2px 3px rgba(255,255,255,.35),0 8px 18px rgba(0,0,0,.25)}
+.tag{position:absolute;right:0;top:14px;font-family:'JetBrains Mono';font-size:24px;color:var(--mut);white-space:nowrap}
+.tag b{color:var(--ink);font-weight:700}
+.C{position:absolute;left:0;right:0;text-align:center;white-space:nowrap}
+.kick{font-family:'JetBrains Mono';font-size:26px;color:var(--mut);letter-spacing:1px}
+.sans{font-weight:600;letter-spacing:-.035em;line-height:1}
+.ser{font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;letter-spacing:-.01em;line-height:1}
+.ch{display:inline-block;white-space:pre}
+.mono{font-family:'JetBrains Mono'}
+.card{position:absolute;background:#fff;border-radius:26px;box-shadow:0 0 0 2px var(--ink),0 8px 0 var(--ink),0 40px 70px rgba(0,0,0,.14);overflow:hidden}
+.bpill{display:inline-block;padding:4px 26px 12px;border-radius:24px;background:var(--ink);color:#fff;font-family:'Inter';font-style:normal;font-weight:600;letter-spacing:-.035em;vertical-align:6px}
+/* S1 first terminal + minted coin */
+.ps{position:absolute;left:140px;top:560px;width:800px;height:360px;border-radius:26px;background:var(--ink);color:#fff;box-shadow:0 12px 0 #3a3b3e,0 50px 80px rgba(0,0,0,.25);overflow:hidden}
+.ps .bar1{height:62px;background:#232427;display:flex;align-items:center;gap:12px;padding:0 26px;font-family:'JetBrains Mono';font-size:22px;color:#9a9ca1;white-space:nowrap}
+.ps .bar1 i{width:16px;height:16px;border-radius:50%;background:#55575b}
+.ps .bd1{padding:34px 36px;font-family:'JetBrains Mono';font-size:42px;white-space:pre;line-height:1.5}
+.ps .q{color:#8b8d91;font-size:26px}
+.cur1{display:inline-block;width:22px;height:44px;background:#fff;vertical-align:-8px}
+.coin{position:absolute;left:390px;top:1000px;width:300px;height:300px;transform-style:preserve-3d}
+.coin .ed{position:absolute;inset:0;border-radius:50%;background:#55575b;box-shadow:inset 0 0 0 3px var(--ink)}
+.coin .fc1{position:absolute;inset:0;border-radius:50%;background:#fff;box-shadow:inset 0 0 0 6px var(--ink),inset 0 0 0 16px #fff,inset 0 0 0 19px var(--ink);overflow:hidden;transform:translateZ(36px)}
+.coin .fc1 img{position:absolute;left:38px;top:34px;width:224px;height:228px;border-radius:50%}
+.coin .bk1{position:absolute;inset:0;border-radius:50%;background:var(--ink);transform:rotateY(180deg)}
+/* S2 guidebook */
+.book{position:absolute;left:190px;top:540px;width:700px;height:800px;transform-style:preserve-3d}
+.book .pg{position:absolute;left:0;top:0;width:700px;height:800px;border-radius:8px 22px 22px 8px;background:#fff;box-shadow:inset 0 0 0 3px var(--ink);overflow:hidden}
+.book .pg img{position:absolute;left:14px;top:60px;width:672px;height:auto}
+.book .pg .hd3{position:absolute;left:24px;top:16px;font-family:'JetBrains Mono';font-weight:700;font-size:22px;white-space:nowrap}
+.book .lyr{position:absolute;left:6px;top:6px;width:700px;height:800px;border-radius:8px 22px 22px 8px;background:#e9e9e7;box-shadow:inset 0 0 0 3px var(--ink)}
+.book .cov{position:absolute;left:0;top:0;width:700px;height:800px;transform-origin:0 50%;transform-style:preserve-3d}
+.book .cov .fr3,.book .cov .bk3{position:absolute;inset:0;border-radius:8px 22px 22px 8px;backface-visibility:hidden}
+.book .cov .fr3{background:var(--ink);color:#fff;padding:70px 60px;transform:translateZ(2px)}
+.book .cov .bk3{background:#d9d9d7;box-shadow:inset 0 0 0 3px var(--ink);transform:rotateY(180deg)}
+.fr3 .k3{font-family:'JetBrains Mono';font-size:24px;color:#9a9ca1;letter-spacing:3px}
+.fr3 .t3{font-weight:700;font-size:104px;letter-spacing:-.05em;line-height:.95;margin-top:40px}
+.fr3 .s3{font-family:'Instrument Serif';font-style:italic;font-size:64px;margin-top:26px;line-height:1.05}
+.fr3 .sp3{position:absolute;left:0;top:0;width:40px;height:100%;background:#232427}
+.fr3 .ft3{position:absolute;left:60px;bottom:60px;font-family:'JetBrains Mono';font-size:22px;color:#9a9ca1;white-space:nowrap}
+.fr3 .med{position:absolute;right:56px;bottom:46px;width:140px;height:140px;border-radius:50%;background:#fff;overflow:hidden;box-shadow:0 0 0 5px #fff,0 0 0 8px #55575b}
+.fr3 .med img{width:140px;height:142px}
+.stk{position:absolute;left:300px;top:1400px;padding:22px 40px;border-radius:60px;background:#fff;box-shadow:0 0 0 4px var(--ink),0 8px 0 var(--ink),0 24px 40px rgba(0,0,0,.14);font-family:'JetBrains Mono';font-weight:800;font-size:34px;white-space:nowrap;transform:translateZ(80px) rotate(-4deg)}
+.stk span{color:var(--mut);font-weight:500}
+/* S3 lightbox sign + dominoes */
+.lbx{position:absolute;left:60px;top:560px;width:960px;height:230px;border-radius:26px;background:#111214;box-shadow:0 0 0 4px var(--ink),0 12px 0 #3a3b3e,0 40px 70px rgba(0,0,0,.22);display:grid;place-items:center}
+.lbx img{width:880px;height:auto;filter:brightness(1.6) contrast(1.1)}
+.lbx .bulb{position:absolute;width:14px;height:14px;border-radius:50%;background:#fff;box-shadow:0 0 14px #fff}
+.doms{position:absolute;left:88px;top:980px;width:904px;height:320px;transform-style:preserve-3d}
+.dom{position:absolute;top:0;width:100px;height:300px;transform-origin:50% 100%;transform-style:preserve-3d}
+.dom .df{position:absolute;inset:0;border-radius:14px;background:#fff;box-shadow:inset 0 0 0 3px var(--ink);transform:translateZ(18px);display:flex;flex-direction:column;align-items:center;padding-top:26px}
+.dom .db{position:absolute;inset:0;border-radius:14px;background:#55575b;box-shadow:inset 0 0 0 3px var(--ink)}
+.dom .df small{font-family:'JetBrains Mono';font-size:15px;color:var(--mut);letter-spacing:1px}
+.dom .df b{font-family:'Instrument Serif';font-style:italic;font-weight:400;font-size:110px;line-height:1;margin-top:10px}
+.dom .df i{width:60px;height:4px;background:var(--ink);margin-top:22px}
+.dom .df em{font-family:'JetBrains Mono';font-style:normal;font-size:14px;margin-top:18px;white-space:nowrap}
+.dom.on .df{background:var(--ink);color:#fff}.dom.on .df small{color:#9a9ca1}.dom.on .df i{background:#fff}
+/* S4 install: command bar + giant enter key + chips */
+.cmdb{position:absolute;left:70px;top:600px;width:940px;height:120px;border-radius:24px;background:#fff;box-shadow:0 0 0 3px var(--ink),0 8px 0 var(--ink);display:flex;align-items:center;padding:0 30px;font-family:'JetBrains Mono';font-weight:700;font-size:22px;white-space:pre}
+.cmdb .pr{color:var(--mut)}
+.ekey{position:absolute;left:330px;top:820px;width:420px;height:300px;transform-style:preserve-3d}
+.ekey .sd{position:absolute;inset:0;border-radius:40px;background:#3a3b3e}
+.ekey .top4{position:absolute;inset:0;border-radius:40px;background:linear-gradient(170deg,#2a2b2e,#0b0b0c 70%);box-shadow:inset 0 3px 4px rgba(255,255,255,.25),inset 0 -10px 20px rgba(0,0,0,.5);color:#fff;display:grid;place-items:center;font-family:'JetBrains Mono';font-weight:800;font-size:58px;letter-spacing:4px}
+.ekey .top4 span{font-size:80px;margin-left:10px}
+.chips{position:absolute;left:70px;top:1220px;width:940px;display:flex;justify-content:center;gap:18px}
+.chp{padding:16px 24px;border-radius:40px;background:#fff;box-shadow:0 0 0 3px var(--ink),0 6px 0 var(--ink);font-family:'JetBrains Mono';font-weight:800;font-size:26px;white-space:nowrap}
+/* S5 brain cartridges */
+.carts{position:absolute;left:60px;top:600px;width:960px;height:560px;transform-style:preserve-3d}
+.cart{position:absolute;top:60px;width:290px;height:440px;transform-style:preserve-3d}
+.cart .cb{position:absolute;inset:0;border-radius:22px 22px 10px 10px;background:linear-gradient(180deg,#e4e4e2,#c9cacc);box-shadow:inset 0 0 0 3px var(--ink),0 8px 0 var(--ink);transform:translateZ(1px)}
+.cart .grv{position:absolute;left:30px;right:30px;top:22px;height:44px;background:repeating-linear-gradient(90deg,#a9aaad 0 6px,transparent 6px 18px)}
+.cart .lab{position:absolute;left:22px;right:22px;top:86px;height:250px;border-radius:12px;background:#fff;box-shadow:inset 0 0 0 3px var(--ink);padding:22px 20px}
+.cart .lab b{display:block;font-family:'JetBrains Mono';font-weight:800;font-size:26px;letter-spacing:1px;white-space:nowrap}
+.cart .lab .bn{font-family:'Instrument Serif';font-style:italic;font-size:62px;line-height:1;margin-top:24px}
+.cart .lab small{display:block;font-family:'JetBrains Mono';font-size:18px;color:var(--mut);margin-top:22px;white-space:nowrap}
+.cart .pinr{position:absolute;left:40px;right:40px;bottom:12px;height:46px;background:repeating-linear-gradient(90deg,#0b0b0c 0 10px,transparent 10px 20px);border-radius:4px}
+.cart.on .cb{background:linear-gradient(180deg,#2a2b2e,#0b0b0c)}.cart.on .grv{background:repeating-linear-gradient(90deg,#55575b 0 6px,transparent 6px 18px)}.cart.on .pinr{background:repeating-linear-gradient(90deg,#d9d9d7 0 10px,transparent 10px 20px)}
+.slotb{position:absolute;left:150px;top:1260px;width:780px;height:120px;border-radius:24px;background:var(--ink);box-shadow:0 10px 0 #3a3b3e,0 30px 50px rgba(0,0,0,.2);display:flex;align-items:center;gap:22px;padding:0 34px;color:#fff;font-family:'JetBrains Mono';font-weight:700;font-size:30px;white-space:nowrap}
+.slotb .led{width:22px;height:22px;border-radius:50%;background:#55575b}
+.slotb .led.on{background:#fff;box-shadow:0 0 16px #fff}
+.slotb .hole{margin-left:auto;width:260px;height:24px;border-radius:12px;background:#000;box-shadow:inset 0 0 0 3px #55575b}
+/* S6 chat + heartbeat */
+.bub{position:absolute;padding:30px 42px;font-size:46px;font-weight:500;white-space:nowrap}
+.bub.me{right:90px;top:600px;border-radius:44px 44px 12px 44px;background:var(--ink);color:#fff}
+.bub.ai{left:90px;top:790px;width:820px;min-height:150px;border-radius:44px 44px 44px 12px;background:#fff;box-shadow:0 0 0 3px var(--ink),0 8px 0 var(--ink);white-space:normal;line-height:1.25}
+.bub.ai small{display:block;font-family:'JetBrains Mono';font-size:20px;color:var(--mut);margin-bottom:10px}
+.dots{display:inline-flex;gap:12px}.dots i{width:18px;height:18px;border-radius:50%;background:var(--ink)}
+.ecg{position:absolute;left:60px;top:1120px;width:960px;height:180px}
+/* S7 memory recipe box */
+.rbox{position:absolute;left:170px;top:620px;width:740px;height:700px;transform-style:preserve-3d}
+.rbox .bkw{position:absolute;left:0;top:200px;width:740px;height:500px;border-radius:24px;background:#d9d9d7;box-shadow:inset 0 0 0 4px var(--ink)}
+.rbox .fw{position:absolute;left:0;top:380px;width:740px;height:320px;border-radius:12px 12px 24px 24px;background:#fff;box-shadow:inset 0 0 0 4px var(--ink),0 10px 0 var(--ink);transform:translateZ(120px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px}
+.rbox .fw .lbl{padding:14px 30px;border-radius:12px;box-shadow:inset 0 0 0 3px var(--ink);font-family:'JetBrains Mono';font-weight:800;font-size:32px;white-space:nowrap}
+.rbox .fw small{font-family:'JetBrains Mono';font-size:22px;color:var(--mut)}
+.icard{position:absolute;width:420px;height:300px;border-radius:16px;background:#fff;box-shadow:0 0 0 3px var(--ink),0 6px 0 var(--ink);padding:24px 28px;font-family:'JetBrains Mono'}
+.icard b{display:block;font-size:28px;font-weight:800;padding-bottom:12px;border-bottom:3px solid var(--ink)}
+.icard p{font-size:21px;line-height:1.55;margin-top:12px;white-space:nowrap}
+.icard.dk{background:var(--ink);color:#fff;box-shadow:0 0 0 3px var(--ink),0 6px 0 #3a3b3e}.icard.dk b{border-color:#fff}
+/* S8 task -> keycap skill */
+.task{position:absolute;left:70px;top:600px;width:440px;height:330px;padding:26px 28px;font-family:'JetBrains Mono'}
+.task b{display:block;font-size:26px;font-weight:800;white-space:nowrap}
+.task p{font-size:20px;color:#3a3b3e;margin-top:14px;white-space:nowrap}
+.task p s{color:var(--mut)}
+.arw{position:absolute;left:530px;top:730px;width:90px;height:60px}
+.kc{position:absolute;left:650px;top:600px;width:340px;height:330px;transform-style:preserve-3d}
+.kc .ks{position:absolute;inset:0;border-radius:34px;background:#3a3b3e}
+.kc .kt{position:absolute;inset:0;border-radius:34px;background:linear-gradient(165deg,#fff,#e4e4e2);box-shadow:inset 0 0 0 4px var(--ink),inset 0 -14px 0 #cfd0d2;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'JetBrains Mono'}
+.kc .kt small{font-size:20px;color:var(--mut);letter-spacing:2px}
+.kc .kt b{font-size:40px;font-weight:800;margin-top:14px;white-space:nowrap}
+.kc .kt i{font-family:'Instrument Serif';font-size:40px;margin-top:10px}
+.shot8{position:absolute;left:90px;top:1010px;width:900px;height:506px}
+.shot8 img{width:100%;height:100%;display:block}
+/* S9 DM mailbox */
+.fcard{position:absolute;left:240px;top:620px;width:600px;height:170px;border-radius:24px;background:#fff;box-shadow:0 0 0 4px var(--ink),0 8px 0 var(--ink);display:flex;align-items:center;padding:0 40px;gap:24px;font-family:'JetBrains Mono';font-weight:800;font-size:64px;letter-spacing:4px;white-space:pre}
+.fcard .ic9{width:70px;height:70px;border-radius:50%;background:var(--ink);color:#fff;display:grid;place-items:center;font-size:30px;letter-spacing:0;flex:none}
+.mbx{position:absolute;left:190px;top:960px;width:700px;height:420px;transform-style:preserve-3d}
+.mbx .mt{position:absolute;left:0;top:0;width:700px;height:420px;border-radius:30px;background:linear-gradient(170deg,#2a2b2e,#0b0b0c 60%);box-shadow:0 14px 0 #000,0 50px 70px rgba(0,0,0,.28)}
+.mbx .sl{position:absolute;left:110px;top:70px;width:480px;height:40px;border-radius:20px;background:#000;box-shadow:inset 0 0 0 3px #55575b,inset 0 10px 14px rgba(255,255,255,.08)}
+.mbx .pl9{position:absolute;left:150px;top:180px;width:400px;height:110px;border-radius:16px;background:#fff;display:grid;place-items:center;font-family:'JetBrains Mono';font-weight:800;font-size:38px;white-space:nowrap}
+.mbx .fl{position:absolute;left:560px;top:-140px;width:20px;height:160px;background:#55575b;border-radius:6px;transform-origin:50% 100%}
+.mbx .fl i{position:absolute;left:0;top:0;width:90px;height:60px;background:#fff;border-radius:6px;box-shadow:inset 0 0 0 3px var(--ink)}
+.mbx .cnt{position:absolute;left:150px;top:320px;width:400px;text-align:center;font-family:'JetBrains Mono';font-size:22px;color:#9a9ca1;white-space:nowrap}
+
+/* ending */
+.cin{display:flex;align-items:center;gap:26px;padding:0 26px 0 30px;background:#fff;box-shadow:0 0 0 2px var(--ink),0 6px 0 var(--ink),0 30px 50px rgba(0,0,0,.12)}
+.cbar{position:absolute}
+.av{width:76px;height:76px;border-radius:50%;background:linear-gradient(135deg,#d9d9d7,#a9aaad);flex:none}
+.cin .tx{flex:1;font-size:46px;font-weight:600;letter-spacing:.02em}
+.send{width:84px;height:84px;border-radius:50%;background:var(--ink);display:grid;place-items:center;color:#fff;font-size:40px;flex:none}
+.dm{position:absolute;padding:30px 44px;border-radius:44px 44px 44px 12px;background:var(--ink);color:#fff;font-size:42px;font-weight:500;white-space:nowrap}
+.dm small{display:block;font-family:'JetBrains Mono';font-size:20px;color:#9a9ca1;margin-bottom:8px}
+.bigmk{position:absolute;left:400px;top:600px;width:280px;height:280px;border-radius:50%;display:grid;place-items:center;font-family:'JetBrains Mono';font-weight:800;font-size:96px;color:#fff;background:radial-gradient(circle at 34% 26%,#6a6c71 0 8%,#1c1d20 42%,#000 100%);box-shadow:inset 0 6px 10px rgba(255,255,255,.3),inset 0 -14px 26px rgba(0,0,0,.6),0 40px 80px rgba(0,0,0,.28)}
+.erings{position:absolute;left:290px;top:490px;width:500px;height:500px}
+.fol{position:absolute;left:300px;top:1390px;width:480px;height:132px;border-radius:999px;display:grid;place-items:center;font-size:50px;font-weight:600;background:var(--ink);color:#fff;box-shadow:0 22px 44px rgba(0,0,0,.22)}
+.fol2{position:absolute;left:300px;top:1390px;width:480px;height:132px;border-radius:999px;display:grid;place-items:center;font-size:50px;font-weight:600;background:#fff;color:var(--ink);border:3px solid var(--ink);opacity:0}
+.tapd{position:absolute;width:90px;height:90px;border-radius:50%;background:rgba(11,11,12,.18);border:3px solid rgba(11,11,12,.55);opacity:0}
+.rip{position:absolute;left:540px;top:1456px;width:10px;height:10px;margin:-5px;border-radius:50%;border:4px solid var(--ink);opacity:0}
+</style></head>
+<body>
+<svg width="0" height="0" style="position:absolute"><defs>
+  <filter id="mb" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur id="mbg" stdDeviation="0 0"/></filter>
+</defs></svg>
+<div class="f" id="F">
+ <div id="cam"><div id="stage"><div id="world">
+
+  <!-- S1 hook: first terminal ever, an agent coin is minted out of it -->
+  <div class="sc" id="s1" data-pose="0,0,0,0,0,0">
+    <div class="ring" style="left:-260px;top:-180px;width:720px;height:720px;transform:translateZ(-500px)"></div>
+    <div class="C sans ty" style="top:300px;font-size:128px;font-weight:700;letter-spacing:-.055em;transform:translateZ(120px)" data-t="0.6" data-cd=".04">Never coded?</div>
+    <div class="ps c3d" id="ps" data-t="0.1" data-rx="14" data-ry="-8">
+      <div class="bar1"><i></i><i></i><i></i>&nbsp;Windows PowerShell</div>
+      <div class="bd1" id="ps1"></div>
+    </div>
+    <div class="coin" id="coin"><div class="ed" style="transform:translateZ(0)"></div><div class="ed" style="transform:translateZ(6px)"></div><div class="ed" style="transform:translateZ(12px)"></div><div class="ed" style="transform:translateZ(18px)"></div><div class="ed" style="transform:translateZ(24px)"></div><div class="ed" style="transform:translateZ(30px)"></div><div class="bk1"></div><div class="fc1"><img src="media/logo_s.png"></div></div>
+    <div class="C sans rv" style="top:1350px;font-size:82px;font-weight:700;letter-spacing:-.045em;transform:translateZ(120px)" data-t="2.75">You can still run</div>
+    <div class="C ser rv" style="top:1460px;font-size:96px;transform:translateZ(120px)" data-t="3.6">your own <span class="bpill">AI agent.</span></div>
+  </div>
+
+  <!-- S2 the guidebook opens on the real repo page -->
+  <div class="sc" id="s2" data-pose="2600,0,-800,-28,0,0">
+    <div class="ring" style="left:640px;top:1300px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="C kick rv" style="top:236px;font-size:30px;transform:translateZ(140px)" data-t="5.15">a free guide called</div>
+    <div class="C sans ty" style="top:300px;font-size:112px;font-weight:700;letter-spacing:-.05em;transform:translateZ(140px)" data-t="6.3" data-cd=".04">Hermes Starter</div>
+    <div class="book" id="book">
+      <div class="lyr" style="transform:translateZ(-18px)"></div><div class="lyr" style="transform:translateZ(-12px)"></div><div class="lyr" style="transform:translateZ(-6px)"></div>
+      <div class="pg"><div class="hd3">github.com/projectalphatech/hermes-starter</div><img src="media/gh_g.jpg"></div>
+      <div class="cov" id="cov"><div class="fr3"><div class="sp3"></div><div class="k3">STEP BY STEP · 15 MIN</div><div class="t3">Hermes<br>Starter</div><div class="s3">for people who<br>never coded.</div><div class="ft3">EN · Egyptian Arabic · MIT</div><div class="med"><img src="media/logo_s.png"></div></div><div class="bk3"></div></div>
+    </div>
+    <div class="stk pp" data-t="7.7"><span>built by</span> @sharkawyai</div>
+  </div>
+
+  <!-- S3 real Hermes banner on a lightbox + steps fall like dominoes -->
+  <div class="sc" id="s3" data-pose="2600,2600,-1400,0,24,0">
+    <div class="ring" style="left:-300px;top:1200px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="C sans rv" style="top:236px;font-size:96px;font-weight:700;letter-spacing:-.05em;transform:translateZ(140px)" data-t="9.0">It sets up</div>
+    <div class="C ser rv" style="top:340px;font-size:104px;transform:translateZ(140px)" data-t="9.4">the <span class="bpill">Hermes</span> agent.</div>
+    <div class="lbx c3d" data-t="9.35" data-rx="10" data-ry="6"><img src="media/banner_g.png">
+      <div class="bulb" style="left:22px;top:22px"></div><div class="bulb" style="right:22px;top:22px"></div><div class="bulb" style="left:22px;bottom:22px"></div><div class="bulb" style="right:22px;bottom:22px"></div></div>
+    <div class="C kick rv" style="top:840px;font-size:28px;transform:translateZ(140px)" data-t="10.3">open source · by Nous Research · MIT</div>
+    <div class="doms" id="doms"></div>
+    <div class="C ser rv" style="top:1400px;font-size:96px;transform:translateZ(140px)" data-t="12.25">step by step.</div>
+  </div>
+
+  <!-- S4 one line: command bar + giant ENTER key -->
+  <div class="sc" id="s4" data-pose="0,2600,-900,30,0,0">
+    <div class="ring" style="left:620px;top:-200px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="C sans rv" style="top:236px;font-size:110px;font-weight:700;letter-spacing:-.05em;transform:translateZ(140px)" data-t="13.45">One line</div>
+    <div class="C ser rv" style="top:356px;font-size:116px;transform:translateZ(140px)" data-t="13.75">to install.</div>
+    <div class="cmdb c3d" data-t="13.4" data-rx="10"><span id="cmd4"></span></div>
+    <div class="ekey" id="ekey"><div class="sd" style="transform:translateZ(0)"></div><div class="sd" style="transform:translateZ(10px)"></div><div class="sd" style="transform:translateZ(20px)"></div><div class="sd" style="transform:translateZ(30px)"></div><div class="top4" id="etop" style="transform:translateZ(40px)">ENTER<span>↵</span></div></div>
+    <div class="chips"><div class="chp pp" data-t="13.95">✓ python</div><div class="chp pp" data-t="14.03">✓ node.js</div><div class="chp pp" data-t="14.11">✓ ripgrep</div><div class="chp pp" data-t="14.19">✓ ffmpeg</div></div>
+  </div>
+
+  <!-- S5 pick a free brain: three cartridges -->
+  <div class="sc" id="s5" data-pose="-2600,2600,-1300,0,-22,0">
+    <div class="ring" style="left:620px;top:1300px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="C sans rv" style="top:236px;font-size:110px;font-weight:700;letter-spacing:-.05em;transform:translateZ(140px)" data-t="15.2">Pick a free</div>
+    <div class="C ser rv" style="top:356px;font-size:126px;transform:translateZ(140px)" data-t="15.65"><span class="bpill">brain.</span></div>
+    <div class="carts" id="carts">
+      <div class="cart" id="ct0" style="left:0"><div class="cb"><div class="grv"></div><div class="lab"><b>NOUS PORTAL</b><div class="bn">easiest</div><small>free models</small></div><div class="pinr"></div></div></div>
+      <div class="cart" id="ct1" style="left:335px"><div class="cb"><div class="grv"></div><div class="lab"><b>OPENROUTER</b><div class="bn">:free</div><small>many free models</small></div><div class="pinr"></div></div></div>
+      <div class="cart" id="ct2" style="left:670px"><div class="cb"><div class="grv"></div><div class="lab"><b>OLLAMA</b><div class="bn">offline</div><small>on your own PC</small></div><div class="pinr"></div></div></div>
+    </div>
+    <div class="slotb c3d" data-t="15.3" data-rx="16"><div class="led" id="led5"></div><span id="slt5">hermes model</span><div class="hole"></div></div>
+  </div>
+
+  <!-- S6 say hi: chat + heartbeat -->
+  <div class="sc" id="s6" data-pose="-2600,5200,-800,-30,0,0">
+    <div class="ring" style="left:-300px;top:-160px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="C ser rv" style="top:270px;font-size:150px;transform:translateZ(140px)" data-t="20.0">Say hi…</div>
+    <div class="bub me pp" style="transform:translateZ(80px)" data-t="20.25">hi</div>
+    <div class="bub ai c3d" data-t="20.5" data-rx="8" data-ry="-6"><small>hermes</small><span id="ai6"></span></div>
+    <svg class="ecg" viewBox="0 0 960 180"><path id="ecgp" d="M0 90 H300 L330 90 L350 40 L380 160 L410 10 L440 130 L460 90 H620 L640 70 L660 90 H960" fill="none" stroke="#0b0b0c" stroke-width="7" stroke-linejoin="round" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1"/><circle id="ecgd" r="12" fill="#0b0b0c" cx="0" cy="90" opacity="0"/></svg>
+    <div class="C sans" style="top:1400px;font-size:110px;font-weight:700;letter-spacing:-.05em;transform:translateZ(140px)"><span class="rv" data-t="21.05">and it's</span> <span class="ser rv" style="font-weight:400;letter-spacing:-.01em" data-t="21.5">alive.</span></div>
+  </div>
+
+  <!-- S7 memory: index cards file into a recipe box -->
+  <div class="sc" id="s7" data-pose="0,5200,-1400,0,24,0">
+    <div class="ring" style="left:620px;top:1300px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="C kick rv" style="top:236px;font-size:30px;transform:translateZ(140px)" data-t="22.3">and the best part?</div>
+    <div class="C sans rv" style="top:300px;font-size:110px;font-weight:700;letter-spacing:-.05em;transform:translateZ(140px)" data-t="22.6">It remembers</div>
+    <div class="C ser rv" style="top:420px;font-size:126px;transform:translateZ(140px)" data-t="23.55"><span class="bpill">you.</span></div>
+    <div class="rbox" id="rbox">
+      <div class="bkw"></div>
+      <div class="icard" id="ic1" style="left:40px;top:120px;transform:translateZ(40px)"><b>MEMORY.md</b><p>- project: koshary site</p><p>- uses PowerShell</p><p>- last: added menu</p></div>
+      <div class="icard dk" id="ic2" style="left:280px;top:120px;transform:translateZ(80px)"><b>USER.md</b><p>- beginner</p><p>- likes step by step</p><p>- speaks Egyptian</p></div>
+      <div class="fw"><div class="lbl">~/.hermes/memories</div><small>day 1 → day 2 → day 30</small></div>
+    </div>
+  </div>
+
+  <!-- S8 a hard task becomes a reusable skill key (real Skills page) -->
+  <div class="sc" id="s8" data-pose="2600,5200,-900,28,0,0">
+    <div class="ring" style="left:-300px;top:1300px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="C sans rv" style="top:236px;font-size:104px;font-weight:700;letter-spacing:-.05em;transform:translateZ(140px)" data-t="24.7">Hard task?</div>
+    <div class="C ser rv" style="top:352px;font-size:112px;transform:translateZ(140px)" data-t="25.6">now it's a <span class="bpill">skill.</span></div>
+    <div class="card task c3d" data-t="24.65" data-rx="10" data-ry="10"><b>build koshary site</b><p id="tk1">☐ write index.html</p><p id="tk2">☐ menu + prices</p><p id="tk3">☐ WhatsApp button</p><p id="tk4">☐ make it mobile</p></div>
+    <svg class="arw" viewBox="0 0 90 60"><path id="arwp" d="M4 30 H74 M56 10 L78 30 L56 50" fill="none" stroke="#0b0b0c" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1"/></svg>
+    <div class="kc" id="kc"><div class="ks" style="transform:translateZ(0)"></div><div class="ks" style="transform:translateZ(12px)"></div><div class="ks" style="transform:translateZ(24px)"></div><div class="kt" id="kct" style="transform:translateZ(36px)"><small>SKILL</small><b>/koshary-site</b><i>reused.</i></div></div>
+    <div class="card shot8 c3d" data-t="25.05" data-rx="12" data-ry="-6"><img src="media/skills_g.jpg"></div>
+  </div>
+
+  <!-- S9 DM FEATURE into the git.mate mailbox -->
+  <div class="sc" id="s9" data-pose="2600,7800,-1300,0,-24,0">
+    <div class="ring" style="left:620px;top:-200px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="C sans rv" style="top:236px;font-size:100px;font-weight:700;letter-spacing:-.05em;transform:translateZ(140px)" data-t="27.4">Want your repo</div>
+    <div class="C ser rv" style="top:352px;font-size:116px;transform:translateZ(140px)" data-t="28.05">featured too?</div>
+    <div class="fcard" id="fcard"><div class="ic9">DM</div><span id="ftx"></span></div>
+    <div class="mbx c3d" data-t="27.5" data-rx="16" data-ry="-6"><div class="mt"></div><div class="sl"></div><div class="fl" id="flag"><i></i></div><div class="pl9">@git.mate</div><div class="cnt">paid features · DM us</div></div>
+  </div>
+
+  <!-- S10 comment -->
+  <div class="sc" id="s10" data-pose="0,7800,-800,-30,0,0">
+    <div class="ring" style="left:620px;top:1300px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="C sans rv" style="top:380px;font-size:120px;font-weight:500" data-t="30.3">Comment</div>
+    <div class="C sans ty" style="top:510px;font-size:196px;font-weight:700;letter-spacing:-.04em" data-t="30.55" data-cd=".05">GITMATE</div>
+    <div class="cbar cin c3d" style="left:64px;top:860px;width:952px;height:140px;border-radius:999px" data-t="30.2" data-rx="10"><div class="av"></div><div class="tx" id="ctx"></div><div class="send">↑</div></div>
+    <div class="dm pp" style="left:250px;top:1110px" data-t="31.1"><small>git.mate · message</small>Here's your link, mate →</div>
+  </div>
+
+  <!-- S11 end -->
+  <div class="sc" id="s11" data-pose="-2600,7800,-1400,24,0,0">
+    <div class="ring" style="left:-300px;top:-160px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="ring" style="left:640px;top:1400px;width:760px;height:760px;transform:translateZ(-800px)"></div>
+    <svg class="erings" viewBox="0 0 500 500"><circle id="er1" cx="250" cy="250" r="226" fill="none" stroke="#0b0b0c" stroke-width="3" stroke-dasharray="1420" stroke-dashoffset="1420" transform="rotate(-90 250 250)"/>
+      <circle id="er2" cx="250" cy="250" r="246" fill="none" stroke="#c9cacc" stroke-width="2" stroke-dasharray="1546" stroke-dashoffset="1546" transform="rotate(90 250 250)"/></svg>
+    <div class="bigmk" id="bigmk">&gt;_</div>
+    <div class="C sans ty" style="top:1050px;font-size:104px;font-weight:700" data-t="32.55" data-cd=".05">@git.mate</div>
+    <div class="C ser" style="top:1200px;font-size:96px"><span class="rv g" data-t="33.05">1 repo</span> <span class="rv" data-t="33.35">every</span> <span class="rv" data-t="33.6">day.</span></div>
+    <div class="fol pp" id="fol" data-t="32.7">Follow</div>
+    <div class="fol2" id="fol2">Following ✓</div>
+    <div class="rip" id="rip"></div>
+    <div class="tapd" id="tapd" style="left:640px;top:1560px"></div>
+  </div>
+
+ </div></div></div>
+ <div class="top"><div class="brand"><div class="mk">&gt;_</div>git.mate</div><div class="tag" id="tag"><b>01</b> / 11</div></div>
+ <div class="grain"></div>
+</div>
+<script>
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+// all times are voice seconds (SPD 1.0)
+const SPD = 1.0, RAWTOTAL = 34.95, TOTAL = +(RAWTOTAL / SPD).toFixed(2); window.__TOTAL = TOTAL;
+const S = [0, 5.0, 8.9, 13.45, 14.95, 19.9, 22.2, 24.55, 27.25, 30.25, 32.2];
+const NS = S.length;
+
+// S3 dominoes: the guide's 7 steps
+const STEPS = [['terminal'], ['install'], ['doctor'], ['model'], ['say hi'], ['first code'], ['memory']];
+STEPS.forEach(([w], k) => { const d = document.createElement('div'); d.className = 'dom'; d.id = 'dm' + k; d.style.left = (k * 134) + 'px';
+  d.innerHTML = [0, 6, 12].map(z => `<div class="db" style="transform:translateZ(${z}px)"></div>`).join('') + `<div class="df"><small>STEP</small><b>${k}</b><i></i><em>${w}</em></div>`; $('#doms').appendChild(d); });
+
+const scenes = $$('.sc');
+const poses = scenes.map(s => s.dataset.pose.split(',').map(Number));
+scenes.forEach((s, i) => { const [x, y, z, ry, rx, rz] = poses[i]; s.style.transform = `translate3d(${x}px,${y}px,${z}px) rotateY(${ry}deg) rotateX(${rx}deg) rotateZ(${rz}deg)`; });
+const tl = gsap.timeline({ paused: true });
+
+// shell: typing / reveals / pops / 3D cards
+$$('.ty').forEach(el => { const t = +el.dataset.t, cd = +(el.dataset.cd || .045); const txt = el.textContent; el.textContent = '';
+  const chs = [...txt].map(c => { const s = document.createElement('span'); s.className = 'ch'; s.textContent = c; el.appendChild(s); return s; });
+  tl.set(chs, { opacity: 0 }, 0);
+  chs.forEach((c, i) => tl.fromTo(c, { opacity: 0, y: 26, filter: 'blur(14px)' }, { opacity: 1, y: 0, filter: 'blur(0px)', duration: .42, ease: 'power3.out', immediateRender: false }, Math.max(0.001, t + i * cd))); });
+$$('.rv').forEach(el => { const t = +el.dataset.t; if (isNaN(t)) return;
+  tl.set(el, { opacity: 0 }, 0); tl.fromTo(el, { opacity: 0, y: 46, filter: 'blur(16px)' }, { opacity: 1, y: 0, filter: 'blur(0px)', duration: .55, ease: 'power3.out', immediateRender: false }, Math.max(0.001, t)); });
+$$('.pp').forEach(el => { const t = +el.dataset.t;
+  tl.set(el, { opacity: 0 }, 0); tl.fromTo(el, { opacity: 0, scale: .55, filter: 'blur(10px)' }, { opacity: 1, scale: 1, filter: 'blur(0px)', duration: .5, ease: 'back.out(2.2)', immediateRender: false }, t); });
+$$('.c3d').forEach(el => { const t = +el.dataset.t, rx = +(el.dataset.rx || 0), ry = +(el.dataset.ry || 0);
+  tl.set(el, { opacity: 0, transformPerspective: 1500 }, 0);
+  tl.fromTo(el, { opacity: 0, rotationX: rx + 50, rotationY: ry * 2.5, y: 260, z: -500, scale: .9 }, { opacity: 1, rotationX: rx, rotationY: ry, y: 0, z: 0, scale: 1, duration: 1.05, ease: 'expo.out', immediateRender: false }, Math.max(0.001, t));
+  tl.to(el, { rotationX: rx * .4, rotationY: -ry * .5, duration: 3.2, ease: 'sine.inOut' }, Math.max(0.001, t) + 1.05); });
+
+// S1 coin is minted out of the terminal and spins to face us
+tl.set('#coin', { opacity: 0, y: -260, z: -300, rotationY: -540, rotationX: 10, scale: .4, transformPerspective: 1400 }, 0);
+tl.to('#coin', { opacity: 1, duration: .1 }, 3.3);
+tl.to('#coin', { y: 0, z: 0, scale: 1, rotationY: -20, duration: 1.1, ease: 'expo.out' }, 3.3);
+tl.to('#coin', { rotationY: 14, duration: 2.2, ease: 'sine.inOut' }, 4.4);
+
+// S2 book: cover swings open on the real repo page
+tl.set('#book', { rotationX: 12, rotationY: 16, scale: .9, transformPerspective: 1800 }, 0);
+tl.set('#book', { opacity: 0, y: 300, z: -600 }, 0); tl.to('#book', { opacity: 1, y: 0, z: 0, duration: .9, ease: 'expo.out' }, 5.05);
+tl.to('#book', { rotationY: 4, duration: 3.6, ease: 'sine.inOut' }, 5.9);
+tl.to('#cov', { rotationY: -55, x: -1000, z: 260, opacity: 0, duration: .6, ease: 'power3.in' }, 6.95);
+
+// S3 dominoes stand up, then fall back one by one (step by step)
+tl.set('#doms', { rotationX: 18, transformPerspective: 1700 }, 0);
+for (let k = 0; k < 7; k++) { tl.set('#dm' + k, { opacity: 0, y: 120, rotationX: 0 }, 0);
+  tl.to('#dm' + k, { opacity: 1, y: 0, duration: .45, ease: 'back.out(1.8)' }, 10.6 + k * .08);
+  tl.to('#dm' + k, { rotationX: -72, duration: .32, ease: 'power2.in' }, 12.2 + k * .11);
+  tl.set('#dm' + k, { attr: { class: 'dom on' } }, 12.25 + k * .11); }
+
+// S4 enter key arrives and is pressed
+tl.set('#ekey', { rotationX: 34, rotationY: -12, transformPerspective: 1500, opacity: 0, z: -400 }, 0);
+tl.to('#ekey', { opacity: 1, z: 0, duration: .6, ease: 'expo.out' }, 13.4);
+tl.to('#etop', { z: -28, duration: .1, ease: 'power2.in' }, 13.9); tl.to('#etop', { z: 40, duration: .25, ease: 'back.out(3)' }, 14.02);
+tl.set('#etop', { z: 40 }, 0);
+
+// S5 cartridges rise and light up on each name
+tl.set('#carts', { rotationX: 12, rotationY: -10, transformPerspective: 1800 }, 0); tl.to('#carts', { rotationY: 8, duration: 4.6, ease: 'sine.inOut' }, 15.0);
+[['#ct0', 15.2], ['#ct1', 15.3], ['#ct2', 15.4]].forEach(([c, t]) => { tl.set(c, { opacity: 0, y: 200, z: -300 }, 0); tl.to(c, { opacity: 1, y: 0, z: 0, duration: .7, ease: 'expo.out' }, t); });
+[['#ct0', 16.5], ['#ct1', 17.3], ['#ct2', 18.7]].forEach(([c, t]) => { tl.to(c, { y: -50, z: 80, rotationX: -8, duration: .35, ease: 'back.out(2)' }, t); tl.set(c, { attr: { class: 'cart on' } }, t + .05); });
+
+// S6 heartbeat line
+tl.fromTo('#ecgp', { attr: { 'stroke-dashoffset': 1 } }, { attr: { 'stroke-dashoffset': 0 }, duration: .9, ease: 'power1.inOut', immediateRender: false }, 21.3);
+
+// S7 cards drop into the memory box
+tl.set('#rbox', { rotationX: 20, rotationY: -12, transformPerspective: 1800, scale: .95 }, 0); tl.to('#rbox', { rotationY: -2, duration: 2.6, ease: 'sine.inOut' }, 22.2);
+tl.set(['#ic1', '#ic2'], { opacity: 0, y: -700 }, 0);
+tl.to('#ic1', { opacity: 1, duration: .05 }, 22.75); tl.to('#ic1', { y: 0, duration: .5, ease: 'back.out(1.2)' }, 22.75);
+tl.to('#ic2', { opacity: 1, duration: .05 }, 23.35); tl.to('#ic2', { y: 0, duration: .5, ease: 'back.out(1.2)' }, 23.35);
+
+// S8 steps tick, arrow draws, keycap forms and gets pressed
+['#tk1', '#tk2', '#tk3', '#tk4'].forEach((k, i) => tl.set(k, { textContent: '☑ ' + ['write index.html', 'menu + prices', 'WhatsApp button', 'make it mobile'][i] }, 25.0 + i * .14));
+tl.fromTo('#arwp', { attr: { 'stroke-dashoffset': 1 } }, { attr: { 'stroke-dashoffset': 0 }, duration: .35, ease: 'power2.out', immediateRender: false }, 25.55);
+tl.set('#kc', { opacity: 0, scale: .3, rotationX: 30, rotationY: -30, transformPerspective: 1400 }, 0);
+tl.to('#kc', { opacity: 1, scale: 1, rotationX: 22, rotationY: -16, duration: .6, ease: 'back.out(1.6)' }, 25.8);
+tl.set('#kct', { z: 36 }, 0);
+tl.to('#kct', { z: 6, duration: .1, ease: 'power2.in' }, 26.45); tl.to('#kct', { z: 36, duration: .25, ease: 'back.out(3)' }, 26.57);
+
+// S9 FEATURE card typed then slides into the mailbox slot
+tl.set('#fcard', { opacity: 0, rotationX: 0, transformPerspective: 1400 }, 0);
+tl.to('#fcard', { opacity: 1, duration: .3 }, 28.5);
+tl.to('#fcard', { y: 380, rotationX: -62, scaleX: .78, duration: .45, ease: 'power3.in' }, 29.75);
+tl.to('#fcard', { opacity: 0, duration: .08 }, 30.17);
+tl.set('#flag', { rotation: 0 }, 0); tl.to('#flag', { rotation: -90, duration: .35, ease: 'back.out(2)' }, 30.05);
+
+// S10 comment typing
+const cm = { n: 0 };
+tl.fromTo(cm, { n: 0 }, { n: 7, duration: .45, ease: 'none', immediateRender: false, onUpdate: () => $('#ctx').textContent = 'GITMATE'.slice(0, Math.round(cm.n)) }, 30.65);
+
+// S11 end
+tl.set('#bigmk', { opacity: 0, scale: .2 }, 0);
+tl.to('#bigmk', { opacity: 1, scale: 1, duration: .9, ease: 'back.out(1.8)' }, 32.25);
+tl.fromTo('#er1', { attr: { 'stroke-dashoffset': 1420 } }, { attr: { 'stroke-dashoffset': 0 }, duration: 1.0, ease: 'power2.inOut', immediateRender: false }, 32.4);
+tl.fromTo('#er2', { attr: { 'stroke-dashoffset': 1546 } }, { attr: { 'stroke-dashoffset': 0 }, duration: 1.2, ease: 'power2.inOut', immediateRender: false }, 32.55);
+tl.to('#tapd', { opacity: 1, left: 560, top: 1440, duration: .5, ease: 'power2.out' }, 33.65);
+tl.to('#tapd', { scale: .7, duration: .1 }, 34.15); tl.to('#tapd', { scale: 1, duration: .15 }, 34.25);
+tl.to('#fol', { scale: .93, duration: .1 }, 34.15); tl.to('#fol', { scale: 1, duration: .2 }, 34.25);
+tl.set('#fol2', { opacity: 1 }, 34.25); tl.set('#fol', { opacity: 0 }, 34.25);
+tl.fromTo('#rip', { opacity: .7, width: 10, height: 10, margin: -5 }, { opacity: 0, width: 640, height: 640, margin: -320, duration: .8, ease: 'power2.out', immediateRender: false }, 34.2);
+tl.to('#tapd', { opacity: 0, duration: .3 }, 34.6);
+tl.to({}, { duration: .01 }, RAWTOTAL);
+
+// camera: pure function of time
+const ease = x => x < .5 ? 16 * x ** 5 : 1 - Math.pow(-2 * x + 2, 5) / 2;
+const TD = .8, TPRE = .45;
+function camAt(t) {
+  let i = 0; for (let k = 0; k < S.length; k++) if (t >= S[k] - TPRE) i = k;
+  const ta = S[i] - TPRE; let p = poses[i].slice(), d = 0, rr = 0;
+  if (i > 0 && t < ta + TD) { const u = (t - ta) / TD, e = ease(u), a = poses[i - 1]; p = a.map((v, j) => v + (poses[i][j] - v) * e); d = Math.sin(u * Math.PI) * 700; rr = Math.sin(u * Math.PI) * (i % 2 ? 4 : -4); }
+  const st = Math.max(0, t - (S[i] - TPRE + TD)); const dz = Math.min(st, 6) * 8;
+  return { x: p[0], y: p[1], z: p[2] - dz, ry: p[3] + Math.sin(t * .6) * .6, rx: p[4] + Math.sin(t * .45) * .5, rz: p[5] + rr, d, i };
+}
+function camT(c) { return `translateZ(${-c.d + 60}px) rotateZ(${-c.rz}deg) rotateX(${-c.rx}deg) rotateY(${-c.ry}deg) translate3d(${-c.x}px,${-c.y}px,${-c.z}px)`; }
+const world = $('#world'), mbg = $('#mbg'), cam = $('#cam');
+const typeAt = (t, t0, dur, s) => s.slice(0, Math.max(0, Math.min(s.length, Math.round((t - t0) / dur * s.length))));
+const CMD4 = 'curl -fsSL hermes-agent.nousresearch.com/install.sh | bash';
+const AI6 = "Hey! I'm Hermes. What are we building?";
+function tick(t) {
+  const c = camAt(t), p = camAt(Math.max(0, t - SPD / 30));
+  world.style.transform = camT(c);
+  const hx = Math.abs(c.x - p.x) * .9 + Math.abs(c.ry - p.ry) * 32, vy = Math.abs(c.y - p.y) * .9 + Math.abs(c.rx - p.rx) * 32, zz = Math.abs(c.z - p.z + (p.d - c.d)) * .25;
+  const bx = Math.min(70, hx * .22 + zz * .05), by = Math.min(70, vy * .22 + zz * .05);
+  if (bx + by > .4) { mbg.setAttribute('stdDeviation', `${bx.toFixed(1)} ${by.toFixed(1)}`); cam.style.filter = 'url(#mb)'; } else cam.style.filter = 'none';
+  scenes.forEach((s, k) => { s.style.visibility = (k === c.i || (k === c.i - 1 && t < S[c.i] - TPRE + TD)) ? 'visible' : 'hidden'; });
+  $('#tag').innerHTML = `<b>${String(c.i + 1).padStart(2, '0')}</b> / ${NS}`;
+  // S1 terminal: blinking cursor, then "hermes" typed
+  { const blink = Math.floor(t * 2.4) % 2 === 0; const cmd = typeAt(t, 2.9, .35, 'hermes');
+    const out = t > 3.35 ? '\n<span class="q">→ starting your agent…</span>' : '';
+    $('#ps1').innerHTML = '<span style="color:#8b8d91">PS&gt; </span>' + cmd + (t < 3.35 && blink ? '<span class="cur1"></span>' : t < 3.35 ? '<span class="cur1" style="opacity:0"></span>' : '') + out; }
+  // S4 command types fast
+  $('#cmd4').innerHTML = '<span class="pr">$ </span>' + typeAt(t, 13.2, .55, CMD4);
+  // S5 slot status
+  { const n = t < 16.5 ? 0 : t < 17.3 ? 1 : t < 18.7 ? 2 : 3; $('#led5').className = 'led' + (n ? ' on' : ''); $('#slt5').textContent = n ? ['', 'nous portal', 'openrouter', 'ollama · offline'][n] : 'hermes model'; }
+  // S6 typing dots, then reply typed
+  $('#ai6').innerHTML = t < 20.85 ? '<span class="dots"><i></i><i></i><i></i></span>' : typeAt(t, 20.85, .7, AI6);
+  { const e = Math.max(0, Math.min(1, (t - 21.3) / .9)); const d = $('#ecgd'); d.setAttribute('opacity', e > 0 ? 1 : 0); d.setAttribute('cx', (e * 960).toFixed(1));
+    const x = e * 960; let y = 90; if (x > 330 && x < 460) { const pts = [[330, 90], [350, 40], [380, 160], [410, 10], [440, 130], [460, 90]]; for (let k = 0; k < 5; k++) if (x >= pts[k][0] && x <= pts[k + 1][0]) { const u = (x - pts[k][0]) / (pts[k + 1][0] - pts[k][0]); y = pts[k][1] + (pts[k + 1][1] - pts[k][1]) * u; } } else if (x > 620 && x < 660) y = x < 640 ? 90 - (x - 620) : 70 + (x - 640); d.setAttribute('cy', y.toFixed(1)); }
+  // S9 FEATURE typed
+  $('#ftx').textContent = typeAt(t, 28.85, .55, 'FEATURE');
+}
+window.__seek = vt => { const t = vt * SPD; tl.time(t, false); tick(t); const ims = [...document.images].map(i => i.complete ? null : i.decode().catch(() => {})).filter(Boolean); return Promise.all(ims); };
+__seek(0);
+if (!navigator.webdriver) { const t0 = performance.now(); const loop = () => { window.__seek(((performance.now() - t0) / 1000) % TOTAL); requestAnimationFrame(loop); }; requestAnimationFrame(loop); }
+</script>
+</body></html>

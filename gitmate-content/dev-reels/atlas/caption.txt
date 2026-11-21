@@ -1,0 +1,18 @@
+Why is Windows Explorer STILL searching for a file you saved yesterday? 😩
+
+Atlas is a free, open-source file manager for Windows, built by a solo dev in Rust:
+→ Native + GPU-accelerated: every pixel drawn on the GPU
+→ Instant indexed search that finds files as you type (Ctrl+K jumps to any folder)
+→ Press Space to preview images, video, audio, docs, code and archives
+→ Tabs, split panes and 5 views (grid, list, details, Miller columns, tree)
+→ Converts images, video, audio and docs locally: your files never leave your PC
+
+✅ Free on the Microsoft Store (alpha, Windows 10/11) · AGPL-3.0
+✅ Or build it yourself: cargo run --release
+
+Built something cool yourself? DM us your repo 📩 If we love it, we'll share it.
+
+Comment GITMATE and I'll send you the link 👇
+Follow @git.mate for 1 useful repo every day.
+
+#github #opensource #windows #filemanager #rust #productivity #devtools #developer #programming #windows11 #indiedev #buildinpublic

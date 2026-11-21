@@ -1,0 +1,19 @@
+Why does every music app want an account and a subscription… just to play songs you already own? 🎧
+
+Playnck, built by @fakhar_arrazi, is a free desktop music player for the music files you already have:
+→ Songs, albums, artists, genres, playlists + listening history
+→ Synced lyrics and a 10-band equalizer with presets
+→ Auto-Tag: identifies a song from its audio (AcoustID + MusicBrainz) and fixes title, artist and cover
+→ Metadata edits are written back into the real files
+→ Convert to MP3, AAC, Opus, FLAC, ALAC or WAV in one batch
+→ No account, no subscription, no cloud library
+
+Install: download the installer from GitHub Releases. Windows 10/11 (.exe) and Linux (.deb, .rpm).
+
+Free, source on GitHub (custom no-selling license) · built by @fakhar_arrazi 🙌
+
+Want your repo featured too? DM us FEATURE 📩
+Comment GITMATE and I'll send you the link 👇
+Follow @git.mate for 1 useful repo every day.
+
+#musicplayer #mp3 #flac #windows #linux #opensource #github #music #audiophile #localmusic #indiedev #developer #programming #coding #freeapps #productivity

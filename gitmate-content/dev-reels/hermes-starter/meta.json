@@ -1,0 +1,10 @@
+{
+ "video": "gitmate_hermes-starter.mp4",
+ "title": "Hermes Starter: a free beginner's guide to running your own Hermes AI agent (by @sharkawyai)",
+ "description": "Never coded? You can still run your own AI agent \ud83e\udd16\n\nHermes Starter, built by @sharkawyai, is a free step-by-step guide (English + Egyptian Arabic) that sets up Hermes Agent, the open-source agent from Nous Research, in about 15-20 minutes:\n\u2192 Step 0: open a terminal (PowerShell or Terminal, no coding needed)\n\u2192 Step 1: one install line for Windows, Mac or Linux\n\u2192 Step 2: hermes doctor to check it works\n\u2192 Step 3: pick a free brain: Nous Portal, OpenRouter :free models, or offline with Ollama (64K+ context)\n\u2192 Step 4: say hi with hermes\n\u2192 Step 5: build your first web page with a copy-paste prompt\n\u2192 Step 6: memory + skills: it remembers you in MEMORY.md / USER.md and turns hard tasks into reusable /skills\n\nUnofficial beginner guide, MIT. Hermes Agent \u00a9 Nous Research, MIT.\n\nWant your repo featured too? DM us FEATURE \ud83d\udce9\nComment GITMATE and I'll send you the link \ud83d\udc47\nFollow @git.mate for 1 useful repo every day.\n\n#github #opensource #aiagents #hermesagent #nousresearch #ai #llm #ollama #openrouter #beginners #learntocode #developer #programming #coding #devtools\n",
+ "repo": "https://github.com/projectalphatech/hermes-starter",
+ "built_by": "@sharkawyai",
+ "theme": "light",
+ "duration": 34.97,
+ "cover_offset_ms": 4400
+}

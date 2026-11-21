@@ -1,0 +1,10 @@
+{
+ "video": "gitmate_arcane.mp4",
+ "title": "Arcane: a free, open-source Docker dashboard (self-hosted)",
+ "description": "Still typing docker ps, docker logs, docker restart\u2026 fifty times a day? \ud83d\udc33\n\nArcane is a free, open-source dashboard for all your Docker stuff:\n\u2192 Start, stop and restart containers in one click\n\u2192 Live logs + CPU / memory right there\n\u2192 Edit and deploy Compose projects from the browser\n\u2192 Checks your images for updates and known vulnerabilities\n\u2192 Volumes, networks, remote hosts through agents\n\nSetup is one container: grab the compose.yaml, docker compose up -d, open port 3552. Done.\n\n\u2705 Always free \u00b7 BSD-3-Clause \u00b7 8.9K+ \u2605 on GitHub\n\nComment GITMATE and I'll send you the link \ud83d\udc47\nFollow @git.mate for 1 useful repo every day.\n\n#docker #dockercompose #selfhosted #homelab #devops #opensource #github #containers #sysadmin #linux #portainer #webdev #developer #programming #coding #devtools\n",
+ "repo": "https://github.com/getarcaneapp/arcane",
+ "theme": "dark",
+ "duration": 34.8,
+ "cover_offset_ms": 5850,
+ "source": "github.com/trending (2026-11-17, Docker management tool, 8,868 stars)"
+}

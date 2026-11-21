@@ -1,0 +1,20 @@
+Still paying every month just to look at your own business's books? 🧾
+
+Personal ERP, built by solo dev @madhur_772005, is a free, self-hosted ERP for small businesses:
+→ Billing: money in / money out that posts real double-entry
+→ Accounting: chart of accounts, journals, trial balance, P&L, balance sheet, cash flow
+→ Sales: quotations, orders, GST invoices, receivables
+→ Purchasing + inventory with stock valuation
+→ Invoice scanning: upload a bill, fields get extracted for you
+→ Web app + desktop app (Windows, macOS, Linux)
+
+Runs on your own server, your data stays in your own PostgreSQL. No seat count, no renewal email.
+Start: git clone → make setup → make up (one Docker Compose stack)
+
+MIT licence · built by @madhur_772005 🙌
+
+Want your repo featured too? DM us FEATURE 📩
+Comment GITMATE and I'll send you the link 👇
+Follow @git.mate for 1 useful repo every day.
+
+#github #opensource #erp #smallbusiness #selfhosted #accounting #bookkeeping #invoice #python #fastapi #react #flutter #docker #developer #programming #coding

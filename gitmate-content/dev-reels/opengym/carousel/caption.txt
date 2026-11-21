@@ -1,0 +1,20 @@
+Stop paying $12.99/month for a gym app 🏋️
+
+openGym is a free, open-source workout tracker you host yourself. You own it, your data stays with you.
+
+✅ No subscription, no ads
+✅ Weekly plans + guided sessions that track every set
+✅ Body-weight log, synced on phone & laptop
+✅ 1,300+ exercises with animated demos
+✅ Estimated 1RM + muscle map
+✅ One Docker command to run it
+✅ Fingerprint / Face ID login on any device
+
+🔗 Repo: search "openGym" on GitHub
+
+💾 Save this so you don't lose it
+👉 Follow @git.mate for 1 new open-source repo every day
+
+Which app should I replace next? Comment below 👇
+
+#opensource #github #selfhosted #developer #programming #coding #fitness #gymapp #workouttracker #docker #webdev #devtools #foss #tech #100daysofcode

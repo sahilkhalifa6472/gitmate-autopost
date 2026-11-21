@@ -1,0 +1,13 @@
+This is #1 on GitHub trending right now, mate 🔍
+
+REA = Reverse Engineer Anything.
+You see a cool feature in an app and wonder "how did they build that?"
+REA plugs into your AI agent (Claude Code, Cursor, Codex & more) and lets it inspect apps, websites and binaries. No source code needed.
+
+✅ One command: npx rea-agents setup
+✅ Free, MIT, runs locally
+
+Comment GITMATE and I'll send you the link 👇
+Follow @git.mate for 1 useful repo every day.
+
+#github #opensource #reverseengineering #aiagents #claudecode #cursor #developer #programming #coding #devtools #mcp #softwareengineering

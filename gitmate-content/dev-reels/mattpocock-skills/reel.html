@@ -1,0 +1,525 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<title>git.mate mattpocock-skills</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter+Tight:wght@400;500;600;700;800;900&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<style>
+:root{--ink:#f5f6f7;--mut:rgba(235,238,242,.58);--dim:rgba(235,238,242,.32)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#000}
+.f{position:relative;width:1080px;height:1920px;overflow:hidden;background:radial-gradient(ellipse 120% 80% at 50% 40%,#0d0e11 0%,#040405 60%,#000 100%);color:var(--ink);font-family:'Inter Tight',sans-serif}
+.vig{position:absolute;inset:0;z-index:5;pointer-events:none;background:radial-gradient(ellipse 90% 70% at 50% 50%,transparent 50%,rgba(0,0,0,.7) 100%)}
+.grain{position:absolute;inset:0;opacity:.08;mix-blend-mode:overlay;z-index:8;pointer-events:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
+#stage{position:absolute;inset:0;perspective:2200px;perspective-origin:50% 46%;z-index:2}
+#world{position:absolute;left:0;top:0;width:1080px;height:1920px;transform-style:preserve-3d}
+.sc{position:absolute;left:0;top:0;width:1080px;height:1920px;transform-style:preserve-3d;backface-visibility:hidden;visibility:hidden}
+#s1{visibility:visible}
+.c3{position:absolute;border-radius:34px;overflow:hidden;background:linear-gradient(160deg,#1d1e22 0%,#121316 45%,#0b0c0e 100%);
+  box-shadow:inset 0 1.5px 0 rgba(255,255,255,.2),inset 0 0 0 1.5px rgba(255,255,255,.07),0 3px 0 #1b1c1f,0 6px 0 #16171a,0 9px 0 #111214,0 12px 0 #0c0d0f,0 60px 90px rgba(0,0,0,.75)}
+.c3.lite{background:linear-gradient(160deg,#f7f8f9,#d9dce0);color:#08090a;box-shadow:inset 0 2px 0 #fff,0 3px 0 #c3c6cb,0 6px 0 #aeb2b8,0 9px 0 #9a9ea4,0 12px 0 #868a90,0 60px 90px rgba(0,0,0,.7)}
+.bead{width:62px;height:62px;border-radius:50%;display:grid;place-items:center;font-family:'JetBrains Mono';font-weight:800;font-size:24px;color:#050505;flex:none;
+  background:radial-gradient(circle at 35% 28%,#fff 0 18%,#e4e6ea 45%,#9da1a8 100%);box-shadow:inset 0 -5px 10px rgba(0,0,0,.25),inset 0 3px 4px #fff,0 10px 24px rgba(0,0,0,.6)}
+.top{position:absolute;left:64px;right:64px;top:88px;height:90px;z-index:6}
+.brand{position:absolute;left:0;top:0;display:flex;align-items:center;gap:18px;padding:14px 30px 14px 14px;font-family:'JetBrains Mono';font-weight:700;font-size:30px;border-radius:999px;background:#0e0f11;box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 0 0 1.5px rgba(255,255,255,.1)}
+.tag{position:absolute;right:0;top:12px;padding:18px 30px;font-family:'JetBrains Mono';font-size:24px;color:var(--mut);white-space:nowrap;border-radius:999px;background:#0e0f11;box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 0 0 1.5px rgba(255,255,255,.08)}
+.tag b{color:var(--ink)}
+.prog{position:absolute;left:64px;right:64px;bottom:96px;display:flex;gap:10px;z-index:6}
+.prog i{flex:1;height:8px;border-radius:4px;background:rgba(255,255,255,.14);position:relative;overflow:hidden}
+.prog i b{position:absolute;left:0;top:0;bottom:0;width:0;background:#f2f3f5;border-radius:4px}
+.L{position:absolute;left:64px;right:64px}
+.kick{font-family:'JetBrains Mono';font-size:28px;color:var(--mut);letter-spacing:1px;white-space:pre;height:40px}
+.h{font-weight:900;letter-spacing:-5px;line-height:.92;text-transform:uppercase}
+.h .ln{display:block;white-space:nowrap}
+.h .w{display:inline-block;padding-bottom:.05em;margin-right:.2em;background-image:linear-gradient(180deg,#ffffff 0%,#f1f2f4 50%,#b4b8be 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.h .w:last-child{margin-right:0}
+.h .soft .w{background-image:linear-gradient(180deg,rgba(255,255,255,.62),rgba(255,255,255,.24))}
+.h .ser{font-family:'Instrument Serif';font-style:italic;font-weight:400;text-transform:none;letter-spacing:-2px}
+.lbl{font-family:'JetBrains Mono';font-size:22px;color:var(--mut)}
+.mono{font-family:'JetBrains Mono'}
+.chrome{display:flex;align-items:center;gap:14px;padding:16px 24px;height:54px}
+.chrome i{width:15px;height:15px;border-radius:50%;background:rgba(255,255,255,.3)}
+.chrome span{margin-left:12px;font-family:'JetBrains Mono';font-size:19px;color:var(--mut)}
+.real{position:absolute;right:20px;top:12px;z-index:3;padding:7px 16px;border-radius:999px;font-family:'JetBrains Mono';font-weight:800;font-size:17px;background:#f2f3f5;color:#08090a}
+
+
+.g{filter:grayscale(1) contrast(1.08)}
+.mimg{position:absolute;left:0;top:0;width:100%;height:100%;object-fit:cover;display:block}
+
+/* S1 explorer pain: marquee search bar */
+.mq{position:absolute;left:64px;top:1300px;width:952px;height:110px}
+
+/* S1 star odometer: real 3D digit drums */
+.odo{display:flex;align-items:center;justify-content:center;gap:12px;height:100%}
+.odo .st{font-size:120px;line-height:1;margin-right:26px;color:#f2f3f5;text-shadow:0 0 40px rgba(255,255,255,.35)}
+.win{position:relative;width:118px;height:200px;overflow:hidden;border-radius:18px;background:#050506;box-shadow:inset 0 0 0 2px rgba(255,255,255,.14),inset 0 30px 30px -10px #000,inset 0 -30px 30px -10px #000;perspective:700px}
+.drum{position:absolute;left:0;top:0;width:118px;height:200px;transform-style:preserve-3d}
+.drum b{position:absolute;left:0;top:0;width:118px;height:200px;display:grid;place-items:center;font-weight:900;font-size:150px;letter-spacing:-4px;backface-visibility:hidden;
+  background-image:linear-gradient(180deg,#fff,#c9ccd1);-webkit-background-clip:text;background-clip:text;color:transparent}
+.win::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(0,0,0,.85),transparent 30%,transparent 70%,rgba(0,0,0,.85));pointer-events:none}
+.odo .sep{font-weight:900;font-size:130px;color:#f2f3f5;width:40px;text-align:center;line-height:1;position:relative;top:22px}
+.odo .kk{font-weight:900;font-size:150px;color:#f2f3f5;margin-left:8px;letter-spacing:-4px}
+.starb{position:absolute;left:340px;top:1260px;width:400px;height:120px;border-radius:28px;display:flex;align-items:center;justify-content:center;gap:20px;font-family:'JetBrains Mono';font-weight:800;font-size:38px;
+  background:linear-gradient(180deg,#fbfbfc,#d4d7db);color:#08090a;box-shadow:0 8px 0 #9a9ea4,0 30px 60px rgba(0,0,0,.6)}
+.starb em{font-style:normal;padding:6px 16px;border-radius:999px;background:#08090a;color:#f2f3f5;font-size:28px}
+
+/* S2 manila folder of .md files (B&W) */
+.fold{position:absolute;left:190px;top:820px;width:700px;height:560px;transform-style:preserve-3d}
+.fold .bk{position:absolute;left:0;top:40px;width:700px;height:520px;border-radius:26px;background:linear-gradient(180deg,#2a2c31,#16171a);box-shadow:inset 0 0 0 2px rgba(255,255,255,.12)}
+.fold .tb{position:absolute;left:0;top:0;width:250px;height:70px;border-radius:22px 22px 0 0;background:#2a2c31;box-shadow:inset 0 2px 0 rgba(255,255,255,.12)}
+.fold .tb span{position:absolute;left:28px;top:16px;font-family:'JetBrains Mono';font-weight:800;font-size:26px;color:var(--mut)}
+.fold .fr{position:absolute;left:0;top:200px;width:700px;height:360px;border-radius:22px;transform-origin:50% 100%;
+  background:linear-gradient(180deg,#e9ebee,#b9bdc3);box-shadow:inset 0 3px 0 #fff,0 -2px 0 rgba(0,0,0,.2)}
+.fold .fr b{position:absolute;left:44px;bottom:44px;font-family:'JetBrains Mono';font-weight:800;font-size:44px;color:#08090a}
+.fold .fr small{position:absolute;right:44px;bottom:52px;font-family:'JetBrains Mono';font-weight:700;font-size:26px;color:#55595f}
+.sheet{position:absolute;left:115px;top:70px;width:470px;height:420px;border-radius:16px;background:#f7f8f9;color:#08090a;padding:26px 28px;box-shadow:0 2px 0 #c3c6cb,0 20px 40px rgba(0,0,0,.45);transform-origin:50% 100%}
+.sheet .fn{font-family:'JetBrains Mono';font-weight:800;font-size:26px;white-space:nowrap}
+.sheet i{display:block;height:12px;border-radius:6px;background:#d3d6da;margin-top:16px}
+
+/* S3 rocker switch: vibe coding -> real engineering */
+.rock{position:absolute;left:64px;top:1250px;width:952px;height:200px}
+.rock .lab{position:absolute;top:66px;font-family:'JetBrains Mono';font-weight:800;font-size:34px;white-space:nowrap}
+.rock .lab.l{left:0;color:var(--mut)}
+.rock .lab.r{right:0}
+.rock .strike{position:absolute;left:-6px;top:22px;height:5px;width:0;background:#f2f3f5;border-radius:3px}
+.rock .base{position:absolute;left:356px;top:20px;width:240px;height:150px;border-radius:30px;background:#08090a;box-shadow:inset 0 0 0 3px rgba(255,255,255,.25),0 8px 0 #050506;perspective:900px}
+.rock .pad{position:absolute;left:14px;top:14px;width:212px;height:122px;border-radius:22px;transform-style:preserve-3d;
+  background:linear-gradient(90deg,#9a9ea4,#f7f8f9 50%,#c9ccd1);box-shadow:inset 0 2px 0 #fff}
+.rock .pad i{position:absolute;top:44px;width:34px;height:34px;border-radius:50%;box-shadow:inset 0 0 0 5px #08090a}
+.rock .pad i.on{background:#08090a}
+
+/* S4 asked vs built + slash command */
+.ab{position:absolute;top:640px;width:456px;height:360px;padding:30px 32px}
+.ab .lb2{font-family:'JetBrains Mono';font-weight:800;font-size:24px;letter-spacing:2px;color:var(--mut)}
+.ab .big{font-size:50px;font-weight:900;letter-spacing:-1px;line-height:1.05;margin-top:18px}
+.ab .wf{margin-top:24px;display:flex;flex-direction:column;gap:12px}
+.ab .wf i{display:block;height:22px;border-radius:8px;background:rgba(255,255,255,.18)}
+.ab.lite .lb2{color:#55595f}
+.ab.lite .wf i{background:#b6bac0}
+.xb{position:absolute;right:26px;top:22px;width:74px;height:74px;border-radius:50%;display:grid;place-items:center;font-size:44px;font-weight:900;background:#f2f3f5;color:#08090a;box-shadow:0 5px 0 #9a9ea4}
+.cmd{display:flex;align-items:center;gap:22px;padding:0 34px;font-family:'JetBrains Mono';font-size:46px;font-weight:800}
+.cmd .pr{color:var(--mut)}
+.cmd .q{flex:1;white-space:pre}
+.cmd .cu{display:inline-block;width:20px;height:50px;background:#f2f3f5;vertical-align:-9px;margin-left:4px}
+.cmd .ent{padding:12px 24px;border-radius:14px;font-size:26px;background:#f2f3f5;color:#08090a;box-shadow:0 7px 0 #9a9ea4;white-space:nowrap}
+.dd{padding:26px 34px}
+.dd .nm{font-family:'JetBrains Mono';font-weight:800;font-size:34px}
+.dd .ds{font-size:30px;font-weight:600;color:var(--mut);margin-top:10px;line-height:1.25}
+.dd .ds b{color:#f2f3f5}
+
+/* S5 grilling rounds + design tree */
+.qr{padding:26px 34px}
+.qrow{display:flex;gap:22px;align-items:flex-start;padding:16px 0;border-bottom:1.5px solid rgba(255,255,255,.08)}
+.qrow:last-child{border-bottom:0}
+.qrow .qn{flex:none;width:76px;height:56px;border-radius:14px;display:grid;place-items:center;font-family:'JetBrains Mono';font-weight:800;font-size:26px;background:#f2f3f5;color:#08090a}
+.qrow .qt{font-size:34px;font-weight:800;white-space:nowrap}
+.qrow .qa{font-family:'JetBrains Mono';font-size:23px;color:var(--mut);margin-top:6px;white-space:nowrap}
+.qrow .qa b{color:#f2f3f5}
+.tree{position:absolute;left:64px;top:1110px;width:952px;height:330px}
+.fr0{position:absolute;left:64px;right:64px;top:1470px;text-align:center;font-family:'JetBrains Mono';font-weight:800;font-size:32px;white-space:nowrap}
+.fr0 span{padding:16px 30px;border-radius:999px;box-shadow:inset 0 0 0 3px #f2f3f5}
+
+/* S6 test runner + red/green/refactor prism */
+.run{padding:26px 34px;font-family:'JetBrains Mono'}
+.run .hd{font-size:24px;color:var(--mut)}
+.run .row{display:flex;align-items:center;gap:22px;margin-top:26px}
+.run .ic{flex:none;width:70px;height:70px;border-radius:18px;display:grid;place-items:center;font-size:40px;font-weight:900}
+.run .ic.f{background:#08090a;color:#f2f3f5;box-shadow:inset 0 0 0 3px #f2f3f5}
+.run .ic.p{background:#f2f3f5;color:#08090a}
+.run .tn{flex:1;font-size:30px;font-weight:700;white-space:nowrap}
+.run .bd{flex:none;padding:8px 18px;border-radius:999px;font-size:22px;font-weight:800;white-space:nowrap}
+.run .sum{margin-top:24px;font-size:24px;color:var(--mut)}
+.run .sum b{color:#f2f3f5}
+.pwrap{position:absolute;left:110px;top:1030px;width:860px;height:260px;perspective:1600px}
+.prism{position:absolute;inset:0;transform-style:preserve-3d}
+.pf{position:absolute;left:0;top:0;width:860px;height:260px;border-radius:24px;display:flex;align-items:center;justify-content:center;gap:34px;backface-visibility:hidden;font-weight:900;font-size:96px;letter-spacing:-3px}
+.pf small{font-family:'JetBrains Mono';font-size:30px;font-weight:800;letter-spacing:1px}
+.pf.r{background:#08090a;color:#f2f3f5;box-shadow:inset 0 0 0 4px #f2f3f5}
+.pf.g{background:linear-gradient(180deg,#fbfbfc,#d4d7db);color:#08090a}
+.pf.x{background:linear-gradient(180deg,#3a3c41,#1d1e22);color:#f2f3f5;box-shadow:inset 0 0 0 2px rgba(255,255,255,.3)}
+.loop3{position:absolute;left:64px;right:64px;top:1360px;display:flex;justify-content:center;gap:18px;font-family:'JetBrains Mono';font-weight:800;font-size:28px}
+.loop3 span{padding:12px 24px;border-radius:999px;box-shadow:inset 0 0 0 2px rgba(255,255,255,.25);color:var(--mut)}
+.loop3 span.on{background:#f2f3f5;color:#08090a;box-shadow:none}
+
+/* S7 architecture report + mud -> deep modules */
+.hm{font-family:'JetBrains Mono';font-weight:800;letter-spacing:-2px;line-height:1.02}
+.hm .ln{display:block;white-space:nowrap}
+.hm .w{display:inline-block}
+.rep{padding:24px 34px}
+.rep .hd{display:flex;justify-content:space-between;font-family:'JetBrains Mono';font-size:23px;color:var(--mut)}
+.rep .it{display:flex;align-items:center;gap:20px;margin-top:20px;font-family:'JetBrains Mono';font-size:28px;font-weight:700;white-space:nowrap}
+.rep .it i{flex:none;width:46px;height:46px;border-radius:12px;display:grid;place-items:center;font-style:normal;font-weight:800;font-size:24px;background:#f2f3f5;color:#08090a}
+.rep .it em{font-style:normal;color:var(--mut)}
+.mud{position:absolute;left:64px;top:1000px;width:420px;height:420px}
+.xh{position:absolute;width:86px;height:86px;opacity:0}
+.xh::before,.xh::after{content:"";position:absolute;inset:0;border:4px solid #f2f3f5;border-radius:10px;clip-path:polygon(0 0,30% 0,30% 8%,8% 8%,8% 30%,0 30%,0 70%,8% 70%,8% 92%,30% 92%,30% 100%,70% 100%,70% 92%,92% 92%,92% 70%,100% 70%,100% 30%,92% 30%,92% 8%,70% 8%,70% 0,100% 0,100% 100%,0 100%)}
+.xh::after{border:0;clip-path:none;inset:38px;border-radius:50%;background:#f2f3f5}
+.marr{position:absolute;left:500px;top:1190px;width:70px;height:40px}
+.blocks{position:absolute;left:600px;top:1000px;width:416px;height:420px;perspective:1400px}
+.blk{position:absolute;left:30px;width:356px;height:110px;transform-style:preserve-3d}
+.blk .tp{position:absolute;inset:0;border-radius:18px;display:flex;align-items:center;justify-content:space-between;padding:0 24px;font-family:'JetBrains Mono';font-weight:800;font-size:24px;background:linear-gradient(180deg,#fbfbfc,#d4d7db);color:#08090a;
+  box-shadow:0 4px 0 #b4b8be,0 8px 0 #9a9ea4,0 12px 0 #868a90,0 16px 0 #73777d,0 20px 0 #5f6369,0 34px 50px rgba(0,0,0,.6)}
+.blk .tp span{padding:6px 12px;border-radius:10px;background:#08090a;color:#f2f3f5;font-size:18px}
+
+/* S8 LICENSE file + agent dock + install */
+.lic{display:flex;align-items:center;gap:34px;padding:0 40px}
+.lic .doc{flex:none;width:120px;height:150px;border-radius:14px;background:#08090a;position:relative;box-shadow:inset 0 0 0 3px #08090a}
+.lic .doc::after{content:"MIT";position:absolute;left:0;right:0;top:52px;text-align:center;font-family:'JetBrains Mono';font-weight:800;font-size:30px;color:#f2f3f5}
+.lic .tx b{display:block;font-size:56px;font-weight:900;letter-spacing:-2px}
+.lic .tx small{display:block;font-family:'JetBrains Mono';font-size:22px;color:#55595f;margin-top:8px;white-space:nowrap}
+.lic .ok{margin-left:auto;padding:12px 22px;border-radius:999px;background:#08090a;color:#f2f3f5;font-family:'JetBrains Mono';font-weight:800;font-size:22px;white-space:nowrap}
+.dock{padding:0}
+.dock .slot{position:absolute;top:96px;width:200px;height:250px;border-radius:22px;background:#050506;box-shadow:inset 0 10px 24px rgba(0,0,0,.9),inset 0 0 0 2px rgba(255,255,255,.1)}
+.dock .led{position:absolute;top:44px;width:18px;height:18px;border-radius:50%;background:rgba(255,255,255,.14)}
+.dock .hd{position:absolute;left:36px;top:30px;font-family:'JetBrains Mono';font-size:23px;color:var(--mut)}
+.cart{position:absolute;top:110px;width:176px;height:222px;border-radius:18px;background:linear-gradient(180deg,#fbfbfc,#c9ccd1);color:#08090a;box-shadow:0 6px 0 #9a9ea4,0 26px 40px rgba(0,0,0,.6);display:flex;flex-direction:column;justify-content:flex-end;padding:20px 18px}
+.cart b{font-size:34px;font-weight:900;letter-spacing:-1px;line-height:1}
+.cart small{font-family:'JetBrains Mono';font-size:17px;font-weight:700;color:#55595f;margin-top:8px}
+.cart i{position:absolute;left:18px;top:20px;width:52px;height:8px;border-radius:4px;background:#08090a}
+.ins{padding:26px 36px;font-family:'JetBrains Mono';font-size:28px;line-height:44px;white-space:pre}
+.ins .p{color:var(--mut)}
+/* S9 comment */
+.cm{padding:30px 34px}
+.rowc{display:flex;align-items:center;gap:20px}
+.av2{width:70px;height:70px;border-radius:50%;flex:none;background:radial-gradient(circle at 35% 28%,#5a5e64,#1b1d20);box-shadow:inset 0 0 0 2px rgba(255,255,255,.2)}
+.cin{flex:1;padding:20px 26px;border-radius:999px;font-size:32px;font-weight:700;background:rgba(255,255,255,.06);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.14)}
+.send{width:76px;height:76px;border-radius:50%;display:grid;place-items:center;background:#f2f3f5;color:#000;font-size:34px;font-weight:900;flex:none}
+.posted{display:flex;gap:20px;align-items:flex-start;margin-top:30px}
+.posted .u{font-weight:800;font-size:28px}
+.posted .c{font-size:34px;font-weight:800;margin-top:4px}
+.dm{padding:24px 30px;border-radius:32px 32px 32px 10px;font-size:32px;font-weight:700}
+.dm small{display:block;font-family:'JetBrains Mono';font-size:20px;color:#55595f;font-weight:500;margin-bottom:6px}
+.tap{position:absolute;width:96px;height:96px;opacity:0;z-index:4}
+
+/* S10 end */
+.erings{position:absolute;left:290px;top:420px;width:500px;height:500px}
+.bigmk{position:absolute;left:390px;top:520px;width:300px;height:300px;font-size:110px;letter-spacing:-6px}
+.hnd{position:absolute;left:0;right:0;top:1000px;text-align:center;font-family:'JetBrains Mono';font-weight:800;font-size:92px;white-space:pre;height:120px}
+.fol{position:absolute;left:280px;top:1390px;width:520px;height:132px;border-radius:999px;display:grid;place-items:center;font-size:52px;font-weight:900;background:linear-gradient(180deg,#fbfbfc,#d4d7db);color:#08090a;box-shadow:0 6px 0 #9a9ea4,0 20px 60px rgba(255,255,255,.16)}
+.fol2{position:absolute;left:280px;top:1390px;width:520px;height:132px;border-radius:999px;display:grid;place-items:center;font-size:52px;font-weight:900;background:#101114;color:#f5f6f7;box-shadow:inset 0 0 0 3px rgba(255,255,255,.7);opacity:0}
+.erip{position:absolute;left:540px;top:1456px;border-radius:50%;border:4px solid rgba(255,255,255,.8);opacity:0}
+</style></head><body>
+<div class="f" id="F">
+ <div id="stage"><div id="world">
+
+  <!-- S1 hook: 316.9K stars on 3D digit drums -->
+  <section class="sc" id="s1">
+    <div class="L kick" style="top:250px" data-k="// github.com/mattpocock/skills"></div>
+    <div class="L h" style="top:304px">
+      <span class="ln" style="font-size:124px"><span class="w" data-t="0.72">Over</span><span class="w" data-t="1.06">300,000</span></span>
+      <span class="ln soft" style="font-size:120px"><span class="w ser" data-t="2.2">stars.</span></span>
+    </div>
+    <div class="c3 in" style="left:64px;top:640px;width:952px;height:380px" data-t="0.25" data-rx="8" data-ry="-8">
+      <div class="lbl" style="position:absolute;left:36px;top:26px">stargazers · github</div>
+      <div class="odo" style="padding-top:30px"><div class="st">★</div>
+        <div class="win"><div class="drum" id="d0"></div></div><div class="win"><div class="drum" id="d1"></div></div><div class="win"><div class="drum" id="d2"></div></div>
+        <div class="sep">.</div><div class="win"><div class="drum" id="d3"></div></div><div class="kk">K</div></div>
+    </div>
+    <div class="starb" id="starb" style="top:1100px"><span id="sbt">☆ Star</span><em>316.9k</em></div>
+  </section>
+
+  <!-- S2 twist: just a folder of markdown files -->
+  <section class="sc" id="s2">
+    <div class="L kick" style="top:250px" data-k="// ls skills/"></div>
+    <div class="L h" style="top:304px">
+      <span class="ln" style="font-size:150px;letter-spacing:-7px"><span class="w" data-t="4.36">A folder</span></span>
+      <span class="ln soft" style="font-size:96px;letter-spacing:-3px"><span class="w ser" data-t="4.82">of markdown files.</span></span>
+    </div>
+    <div class="fold" id="fold">
+      <div class="tb"><span>skills/</span></div>
+      <div class="bk"></div>
+      <div id="sheets"></div>
+      <div class="fr" id="ffr"><b>.md</b><small>SKILL.md × many</small></div>
+    </div>
+  </section>
+
+  <!-- S3 meet it: real README banner + vibe/real rocker switch -->
+  <section class="sc" id="s3">
+    <div class="L kick" style="top:250px" data-k="// meet"></div>
+    <div class="L h" style="top:304px">
+      <span class="ln" style="font-size:112px"><span class="w" data-t="6.4">Matt</span><span class="w" data-t="6.64">Pocock's</span></span>
+      <span class="ln soft" style="font-size:120px"><span class="w ser" data-t="7.16">skills.</span></span>
+    </div>
+    <div class="c3 in" style="left:64px;top:600px;width:952px;height:500px" data-t="6.1" data-rx="8" data-ry="8"><img class="mimg g" src="media/banner.jpg"><div class="real">REAL README</div></div>
+    <div class="L kick" style="top:1150px;text-align:center" data-k2="used every day · straight from his .agents dir" data-t="8.5"></div>
+    <div class="rock" id="rock">
+      <div class="lab l">vibe coding<div class="strike" id="strk"></div></div>
+      <div class="base"><div class="pad" id="rpad"><i style="left:28px"></i><i class="on" style="right:28px"></i></div></div>
+      <div class="lab r" id="rlab">real engineering</div>
+    </div>
+  </section>
+
+  <!-- S4 misaligned: asked vs built, then /grill-me -->
+  <section class="sc" id="s4">
+    <div class="L kick" style="top:250px" data-k="// misaligned"></div>
+    <div class="L h" style="top:304px">
+      <span class="ln soft" style="font-size:84px;letter-spacing:-3px"><span class="w ser" data-t="13.02">your agent built the</span></span>
+      <span class="ln" style="font-size:116px"><span class="w" data-t="14.02">wrong</span><span class="w" data-t="14.3">thing?</span></span>
+    </div>
+    <div class="c3 ab in" style="left:64px" data-t="13.0" data-rx="6" data-ry="10"><div class="lb2">YOU ASKED</div><div class="big">a simple<br>login page</div><div class="wf"><i style="width:70%"></i><i style="width:70%"></i><i style="width:40%"></i></div></div>
+    <div class="c3 lite ab in" style="left:560px" data-t="13.4" data-rx="6" data-ry="-10"><div class="lb2">AGENT BUILT</div><div class="big">a 6-step<br>signup wizard</div><div class="wf"><i style="width:90%"></i><i style="width:80%"></i><i style="width:95%"></i><i style="width:60%"></i></div><div class="xb pp2" data-t="14.3">✕</div></div>
+    <div class="c3 cmd in" style="left:64px;top:1070px;width:952px;height:130px" data-t="14.8" data-rx="6"><span class="pr">&gt;</span><div class="q"><span id="cq"></span><span class="cu" id="ccu"></span></div><div class="ent">enter ↵</div></div>
+    <div class="c3 dd in" style="left:64px;top:1240px;width:952px;height:200px" data-t="15.45" data-rx="8" data-z="40"><div class="nm">/grill-me</div><div class="ds">A relentless interview to <b>sharpen a plan</b> or design.</div></div>
+  </section>
+
+  <!-- S5 the grilling: question rounds + design tree resolving -->
+  <section class="sc" id="s5">
+    <div class="L kick" style="top:250px" data-k="// grilling session"></div>
+    <div class="L h" style="top:304px">
+      <span class="ln" style="font-size:130px"><span class="w" data-t="17.66">Question,</span></span>
+      <span class="ln soft" style="font-size:104px;letter-spacing:-3px"><span class="w ser" data-t="18.2">after question.</span></span>
+    </div>
+    <div class="c3 qr in" style="left:64px;top:600px;width:952px;height:450px" data-t="16.6" data-rx="8" data-ry="-8">
+      <div class="lbl">round 1 · frontier</div>
+      <div class="qrow pp3" data-t="16.95"><div class="qn">Q1</div><div><div class="qt">Who signs in?</div><div class="qa">➜ recommended: <b>teams, not solo users</b></div></div></div>
+      <div class="qrow pp3" data-t="17.66"><div class="qn">Q2</div><div><div class="qt">Where do sessions live?</div><div class="qa">➜ recommended: <b>Postgres</b></div></div></div>
+      <div class="qrow pp3" data-t="18.48"><div class="qn">Q3</div><div><div class="qt">Invites in v1?</div><div class="qa">➜ recommended: <b>email only</b></div></div></div>
+    </div>
+    <svg class="tree" viewBox="0 0 952 330" id="tree"></svg>
+    <div class="fr0" id="fr0"><span>frontier: empty · plan: clear ✓</span></div>
+  </section>
+
+  <!-- S6 /tdd: failing test -> pass, then red/green/refactor prism -->
+  <section class="sc" id="s6">
+    <div class="L kick" style="top:250px" data-k="// test-driven"></div>
+    <div class="L h" style="top:300px">
+      <span class="ln" style="font-size:190px;letter-spacing:-8px"><span class="w" data-t="21.56">/tdd</span></span>
+      <span class="ln soft" style="font-size:104px;letter-spacing:-3px"><span class="w ser" data-t="23.36">test first.</span></span>
+    </div>
+    <div class="c3 run in" style="left:64px;top:660px;width:952px;height:300px" data-t="22.9" data-rx="8" data-ry="8">
+      <div class="hd">$ npm test</div>
+      <div class="row"><div class="ic f" id="ric">✕</div><div class="tn">user can checkout with valid cart</div><div class="bd" id="rbd">FAIL</div></div>
+      <div class="sum" id="rsum"><b>1 failed</b> · 0 passed</div>
+    </div>
+    <div class="L kick" style="top:1420px;text-align:center" data-k2="one vertical slice at a time" data-t="23.9"></div>
+    <div class="pwrap" id="pwrap" style="top:1060px"><div class="prism" id="prism">
+      <div class="pf r">RED <small>✕ fail</small></div>
+      <div class="pf g">GREEN <small>✓ pass</small></div>
+      <div class="pf x">REFACTOR <small>↻ clean</small></div>
+    </div></div>
+  </section>
+
+  <!-- S7 architecture report + mud untangled into deep modules -->
+  <section class="sc" id="s7">
+    <div class="L kick" style="top:250px" data-k="// architecture"></div>
+    <div class="L hm" style="top:304px">
+      <span class="ln" style="font-size:74px"><span class="w pp2" data-t="27.8">/improve-codebase-</span></span>
+      <span class="ln" style="font-size:74px;color:var(--mut)"><span class="w pp2" data-t="28.76">architecture</span></span>
+    </div>
+    <div class="c3 rep in" style="left:64px;top:540px;width:952px;height:300px" data-t="28.0" data-rx="8" data-ry="-8">
+      <div class="hd"><span>architecture-report.html</span><span id="rcnt">scanning…</span></div>
+      <div class="it pp2" data-t="29.48"><i>1</i>OrderService <em>→ deepen module</em></div>
+      <div class="it pp2" data-t="29.74"><i>2</i>auth/ helpers <em>→ one clean seam</em></div>
+      <div class="it pp2" data-t="29.98"><i>3</i>utils.ts <em>→ split by domain</em></div>
+    </div>
+    <svg class="mud" viewBox="0 0 420 420" id="mud"></svg>
+    <div class="xh" id="xh0" style="left:120px;top:1080px"></div><div class="xh" id="xh1" style="left:300px;top:1170px"></div><div class="xh" id="xh2" style="left:170px;top:1290px"></div>
+    <svg class="marr" viewBox="0 0 70 40" id="marr"><path d="M2 20 H58 M44 6 L60 20 L44 34" fill="none" stroke="#f2f3f5" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <div class="blocks">
+      <div class="blk" id="b0" style="top:20px"><div class="tp">orders<span>deep</span></div></div>
+      <div class="blk" id="b1" style="top:160px"><div class="tp">auth<span>deep</span></div></div>
+      <div class="blk" id="b2" style="top:300px"><div class="tp">billing<span>deep</span></div></div>
+    </div>
+    <div class="L kick" style="top:1470px;text-align:center" data-k2="before it turns into a ball of mud." data-t="31.0"></div>
+  </section>
+
+  <!-- S8 small, MIT, plugs into any agent -->
+  <section class="sc" id="s8">
+    <div class="L kick" style="top:250px" data-k="// plug it in"></div>
+    <div class="L h" style="top:300px">
+      <span class="ln" style="font-size:140px;letter-spacing:-6px"><span class="w" data-t="33.1">Small.</span><span class="w" data-t="33.74">MIT.</span></span>
+      <span class="ln soft" style="font-size:100px;letter-spacing:-3px"><span class="w ser" data-t="34.82">works with:</span></span>
+    </div>
+    <div class="c3 lite lic in" style="left:64px;top:620px;width:952px;height:190px" data-t="33.6" data-rx="8" data-ry="-6"><div class="doc"></div><div class="tx"><b>LICENSE</b><small>MIT · © 2026 Matt Pocock</small></div><div class="ok">free to use</div></div>
+    <div class="c3 dock in" style="left:64px;top:880px;width:952px;height:380px" data-t="34.6" data-rx="10" data-ry="6">
+      <div class="hd">your agent</div>
+      <div class="slot" style="left:36px"></div><div class="slot" style="left:258px"></div><div class="slot" style="left:480px"></div><div class="slot" style="left:702px"></div>
+      <div class="led" id="l0" style="left:127px"></div><div class="led" id="l1" style="left:349px"></div><div class="led" id="l2" style="left:571px"></div><div class="led" id="l3" style="left:793px"></div>
+      <div class="cart" id="k0" style="left:48px"><i></i><b>Claude<br>Code</b><small>plugin</small></div>
+      <div class="cart" id="k1" style="left:270px"><i></i><b>Codex</b><small>plugin</small></div>
+      <div class="cart" id="k2" style="left:492px"><i></i><b>Copilot</b><small>plugin</small></div>
+      <div class="cart" id="k3" style="left:714px"><i></i><b>Cursor</b><small>npx skills</small></div>
+    </div>
+    <div class="c3 ins in" style="left:64px;top:1330px;width:952px;height:150px" data-t="34.9" data-rx="8" data-ry="-6"><div id="ins"></div></div>
+  </section>
+
+  <!-- S9 comment -->
+  <section class="sc" id="s9">
+    <div class="L kick" style="top:250px" data-k="// want the link?"></div>
+    <div class="L h" style="top:304px">
+      <span class="ln" style="font-size:132px"><span class="w" data-t="38.16">Comment</span></span>
+      <span class="ln soft" style="font-size:190px;letter-spacing:-8px"><span class="w" data-t="38.52">GITMATE</span></span>
+    </div>
+    <div class="c3 cm in" style="left:64px;top:690px;width:952px;height:390px" data-t="38.1" data-ry="-10" data-rx="8">
+      <div class="lbl" style="margin-bottom:22px">comments</div>
+      <div class="rowc"><div class="av2"></div><div class="cin"><span id="t9" style="color:rgba(255,255,255,.4)">Add a comment…</span></div><div class="send" id="snd9">↑</div></div>
+      <div class="posted" id="pst9"><div class="av2" style="width:56px;height:56px"></div><div><div class="u">you <span class="lbl">· now</span></div><div class="c">GITMATE</div></div></div>
+    </div>
+    <div class="c3 lite dm in" style="left:300px;top:1150px;width:560px;height:130px" data-t="39.15" data-z="80"><small>git.mate · message</small>Here's your link, mate 🔗</div>
+  </section>
+
+  <!-- S10 end -->
+  <section class="sc" id="s10">
+    <svg class="erings" viewBox="0 0 500 500"><circle id="er1" cx="250" cy="250" r="226" fill="none" stroke="#f5f6f7" stroke-width="3" stroke-dasharray="1420" stroke-dashoffset="1420" transform="rotate(-90 250 250)"/>
+      <circle id="er2" cx="250" cy="250" r="246" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="2" stroke-dasharray="1546" stroke-dashoffset="1546" transform="rotate(90 250 250)"/></svg>
+    <div class="bead bigmk" id="bigmk">&gt;_</div>
+    <div class="hnd" id="hnd"></div>
+    <div class="L h" style="top:1160px;font-size:84px;letter-spacing:-3px;text-align:center"><span class="ln soft"><span class="w" data-t="40.9">1</span><span class="w" data-t="41.05">repo</span><span class="w" data-t="41.2">every</span><span class="w" data-t="41.35">day.</span></span></div>
+    <div class="fol" id="fol">Follow</div>
+    <div class="fol2" id="fol2">Following ✓</div>
+    <div class="erip" id="erip"></div>
+    <svg class="tap" id="tap10" viewBox="0 0 100 100" style="left:600px;top:1420px"><circle cx="50" cy="50" r="34" fill="rgba(255,255,255,.25)" stroke="#fff" stroke-width="5"/><circle cx="50" cy="50" r="12" fill="#fff"/></svg>
+  </section>
+ </div></div>
+
+ <div class="top"><div class="brand"><div class="bead">&gt;_</div>git.mate</div><div class="tag" id="tag"><b>01</b> / hook</div></div>
+ <div class="prog" id="prog"></div>
+ <div class="vig"></div><div class="grain"></div>
+</div>
+
+<script>
+(function () {
+  // times are voice-take seconds; the voice is sped up 1.12x, so the page runs at SPD
+  const SPD = 1.12;
+  const S = [0, 3.5, 5.95, 12.75, 16.45, 20.95, 27.3, 32.75, 38.1, 40.1];
+  const TOTAL = 42.85; window.__TOTAL = TOTAL / SPD;
+  const LABEL = ['hook', 'the twist', 'meet it', '/grill-me', 'grilling', '/tdd', 'architecture', 'plug it in', 'link', 'follow'];
+  const $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)];
+  const tl = gsap.timeline({ paused: true, defaults: { ease: 'power3.out' } });
+  $('#prog').innerHTML = S.map(() => '<i><b></b></i>').join('');
+  const scenes = $$('.sc');
+  const R = 2400, STEP = 30;
+  scenes.forEach((sc, i) => { sc.style.transform = `rotateY(${i * STEP}deg) translateZ(${R}px)`; });
+  const cam = { a: 0, d: 0, rx: 0, rz: 0 };
+  const MOVE = { 2: 'roll', 4: 'crane', 6: 'roll', 8: 'crane', 9: 'crane' };
+  scenes.forEach((sc, i) => {
+    tl.set(sc, { visibility: 'visible' }, Math.max(0, S[i] - .62));
+    if (i < scenes.length - 1) tl.set(sc, { visibility: 'hidden' }, S[i + 1] + .45);
+    if (i) {
+      const t0 = S[i] - .58, dir = i % 2 ? 1 : -1, mv = MOVE[i];
+      const prx = mv === 'crane' ? 22 : 9 * dir, prz = mv === 'roll' ? 9 * dir : mv === 'crane' ? 0 : 3 * dir, pd = mv === 'crane' ? 1250 : 900;
+      tl.to(cam, { a: i * STEP, duration: 1.0, ease: 'power3.inOut' }, t0);
+      tl.to(cam, { keyframes: [{ d: pd, rx: prx, rz: prz, duration: .5, ease: 'power2.out' }, { d: 0, rx: 0, rz: 0, duration: .5, ease: 'power2.in' }] }, t0);
+    }
+  });
+  tl.set(scenes[0], { visibility: 'visible' }, 0);
+  $$('.h .w').forEach((w) => { const t = +w.dataset.t; if (!t) return;
+    tl.fromTo(w, { opacity: 0, y: 70, scale: 1.12, filter: 'blur(18px)' }, { opacity: 1, y: 0, scale: 1, filter: 'blur(0px)', duration: .55, ease: 'expo.out' }, t); });
+  scenes.forEach((sc, i) => { const k = $('.kick', sc); if (!k || !k.dataset.k) return; const txt = k.dataset.k, o = { n: 0 }; k.textContent = i ? '' : txt; if (!i) return;
+    tl.fromTo(o, { n: 0 }, { n: txt.length, duration: Math.min(.7, txt.length * .025), ease: 'none', immediateRender: false, onUpdate: () => { k.textContent = txt.slice(0, Math.round(o.n)); } }, S[i] + .05); });
+  $$('[data-k2]').forEach(k => { const txt = k.dataset.k2, o = { n: 0 }; k.textContent = '';
+    tl.fromTo(o, { n: 0 }, { n: txt.length, duration: .8, ease: 'none', immediateRender: false, onUpdate: () => { k.textContent = txt.slice(0, Math.round(o.n)); } }, +k.dataset.t); });
+  $$('.in').forEach((c) => {
+    const t = +c.dataset.t, rx = +(c.dataset.rx || 0), ry = +(c.dataset.ry || 0), z = +(c.dataset.z || 0);
+    const end = { autoAlpha: 1, z, rotationX: rx, rotationY: ry, y: 0, duration: .9, ease: 'expo.out' };
+    if (!t) { gsap.set(c, end); return; }
+    tl.fromTo(c, { autoAlpha: 0, z: -900, rotationX: rx + 40, rotationY: ry * 2, y: 120 }, end, t);
+  });
+  $$('.pp2').forEach(e => { const t = +e.dataset.t;
+    tl.fromTo(e, { opacity: 0, scale: .6, filter: 'blur(10px)' }, { opacity: 1, scale: 1, filter: 'blur(0px)', duration: .45, ease: 'back.out(2.2)' }, t); });
+  $$('.pp3').forEach(e => { const t = +e.dataset.t;
+    tl.fromTo(e, { opacity: 0, x: 120, filter: 'blur(10px)' }, { opacity: 1, x: 0, filter: 'blur(0px)', duration: .5, ease: 'expo.out' }, t); });
+  const typer = (el, text, t, d) => { const o = { n: 0 }; tl.fromTo(o, { n: 0 }, { n: text.length, duration: d, ease: 'none', immediateRender: false, onUpdate: () => { el.textContent = text.slice(0, Math.round(o.n)); } }, t); };
+  const sm = (a, b, x) => { const k = Math.min(1, Math.max(0, (x - a) / (b - a))); return k * k * (3 - 2 * k); };
+  const twl = (t, a, b, s) => s.slice(0, Math.round(Math.min(1, Math.max(0, (t - a) / (b - a))) * s.length));
+
+  // S1 drums: 10 faces each, radius so faces meet
+  const DR = 100 / Math.tan(Math.PI / 10);
+  for (let d = 0; d < 4; d++) { let h = ''; for (let k = 0; k < 10; k++) h += `<b style="transform:rotateX(${-k * 36}deg) translateZ(${DR}px)">${k}</b>`; $('#d' + d).innerHTML = h; }
+  const DT = [3, 1, 6, 9];
+  // S2 sheets with real skill file names
+  const SH = ['grill-me', 'tdd', 'triage', 'handoff', 'to-spec', 'diagnosing-bugs'];
+  $('#sheets').innerHTML = SH.map((n, i) => `<div class="sheet" id="sh${i}"><div class="fn">${n}/SKILL.md</div><i style="width:80%"></i><i style="width:92%"></i><i style="width:64%"></i><i style="width:86%"></i><i style="width:50%"></i></div>`).join('');
+  // S5 design tree
+  const TN = [[476, 40], [240, 160], [712, 160], [110, 285], [370, 285], [582, 285], [842, 285]];
+  const TE = [[0, 1], [0, 2], [1, 3], [1, 4], [2, 5], [2, 6]];
+  const TT = [17.0, 17.7, 18.2, 18.7, 19.1, 19.5, 19.85];
+  $('#tree').innerHTML = TE.map(([a, b], i) => `<line id="te${i}" x1="${TN[a][0]}" y1="${TN[a][1]}" x2="${TN[b][0]}" y2="${TN[b][1]}" stroke="rgba(255,255,255,.55)" stroke-width="4" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1"/>`).join('') +
+    TN.map(([x, y], i) => `<g id="tn${i}" opacity="0"><circle cx="${x}" cy="${y}" r="30" fill="#050506" stroke="#f2f3f5" stroke-width="4"/><circle id="tf${i}" cx="${x}" cy="${y}" r="0" fill="#f2f3f5"/><text id="tk${i}" x="${x}" y="${y + 11}" text-anchor="middle" font-family="JetBrains Mono" font-weight="800" font-size="30" fill="#08090a" opacity="0">✓</text></g>`).join('');
+  // S7 ball of mud: deterministic tangle
+  { let s = 7; const rnd = () => (s = (s * 16807) % 2147483647) / 2147483647; let h = '';
+    for (let k = 0; k < 16; k++) { const p = () => { const a = rnd() * Math.PI * 2, r = 40 + rnd() * 150; return [210 + Math.cos(a) * r, 210 + Math.sin(a) * r]; };
+      const [a, b, c, d] = [p(), p(), p(), p()];
+      h += `<path class="mp" d="M${a} C${b} ${c} ${d}" fill="none" stroke="rgba(255,255,255,${.35 + rnd() * .5})" stroke-width="${2 + rnd() * 3}" stroke-linecap="round" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1"/>`; }
+    $('#mud').innerHTML = h; }
+  const MP = $$('.mp');
+  const INS = '$ claude plugin install\n  mattpocock-skills@claude-plugins-official';
+
+  // S9 comment flow
+  tl.call(() => { $('#t9').textContent = 'Add a comment…'; $('#t9').style.color = 'rgba(255,255,255,.4)'; }, null, 38.59);
+  tl.call(() => { $('#t9').style.color = '#fff'; }, null, 38.6);
+  typer($('#t9'), 'GITMATE', 38.6, .3);
+  tl.fromTo('#snd9', { scale: 1 }, { scale: .8, duration: .1, yoyo: true, repeat: 1 }, 38.92);
+  tl.fromTo('#pst9', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: .35 }, 38.98);
+  // S10 end
+  tl.fromTo('#bigmk', { opacity: 0, scale: .2, rotation: -40 }, { opacity: 1, scale: 1, rotation: 0, duration: .9, ease: 'back.out(1.8)' }, 40.15);
+  tl.fromTo('#er1', { attr: { 'stroke-dashoffset': 1420 } }, { attr: { 'stroke-dashoffset': 0 }, duration: 1.0, ease: 'power2.inOut', immediateRender: false }, 40.3);
+  tl.fromTo('#er2', { attr: { 'stroke-dashoffset': 1546 } }, { attr: { 'stroke-dashoffset': 0 }, duration: 1.2, ease: 'power2.inOut', immediateRender: false }, 40.45);
+  typer($('#hnd'), '@git.mate', 40.55, .5);
+  tl.fromTo('#fol', { opacity: 0, scale: .6 }, { opacity: 1, scale: 1, duration: .5, ease: 'back.out(2)' }, 41.1);
+  tl.fromTo('#tap10', { opacity: 0, x: 160, y: 140 }, { opacity: 1, x: 0, y: 0, duration: .5, ease: 'power2.out' }, 41.45);
+  tl.to('#tap10', { scale: .75, duration: .1, yoyo: true, repeat: 1 }, 42);
+  tl.to('#fol', { scale: .93, duration: .1 }, 42);
+  tl.set('#fol2', { opacity: 1 }, 42.1); tl.set('#fol', { opacity: 0 }, 42.1);
+  tl.fromTo('#erip', { opacity: .8, width: 10, height: 10, margin: -5 }, { opacity: 0, width: 640, height: 640, margin: -320, duration: .8, ease: 'power2.out', immediateRender: false }, 42.05);
+  tl.to('#tap10', { opacity: 0, duration: .3 }, 42.5);
+  tl.to({}, { duration: .01 }, TOTAL);
+
+  const world = $('#world'), tag = $('#tag'), segs = $$('#prog b');
+  const tick = (t) => {
+    const a = cam.a + Math.sin(t * .5) * .35, rx = cam.rx + Math.sin(t * .37 + 1) * .7, rz = cam.rz + Math.sin(t * .29) * .25;
+    scenes.forEach((sc, i) => { sc.style.display = t >= S[i] - .7 && t <= (S[i + 1] || 99) + .5 ? '' : 'none'; });
+    world.style.transform = `translateZ(${-cam.d}px) rotateX(${rx}deg) rotateZ(${rz}deg) translateZ(${-R}px) rotateY(${-a}deg)`;
+    // S1 drums roll into 316.9K, star button pressed
+    DT.forEach((v, d) => { const k = sm(.55 + d * .12, 2.0 + d * .1, t); const turns = 3 + d;
+      $('#d' + d).style.transform = `translateZ(${-DR}px) rotateX(${(v + 10 * turns) * 36 * k}deg)`; });
+    { const pr = Math.max(0, 1 - Math.abs(t - 2.5) / .1); $('#starb').style.transform = `perspective(1200px) rotateX(${14 - sm(.5, 1.2, t) * 6}deg) translateY(${pr * 8 + (1 - sm(.6, 1.1, t)) * 200}px)`;
+      $('#starb').style.opacity = sm(.6, .9, t); $('#starb').style.boxShadow = `0 ${8 - pr * 8}px 0 #9a9ea4,0 30px 60px rgba(0,0,0,.6)`; $('#sbt').textContent = t >= 2.5 ? '★ Starred' : '☆ Star'; }
+    // S2 folder lands, flap opens, sheets fan up
+    { const k = sm(3.3, 4.1, t); $('#fold').style.opacity = sm(3.3, 3.5, t);
+      $('#fold').style.transform = `perspective(1800px) rotateX(${18 + (1 - k) * 40}deg) rotateY(${(1 - k) * -30 + Math.sin(t * .8) * 4}deg) translateY(${(1 - k) * 260}px)`;
+      $('#ffr').style.transform = `translateZ(70px) rotateX(${-sm(4.2, 4.6, t) * 38}deg)`;
+      SH.forEach((n, i) => { const q = sm(4.45 + i * .1, 4.95 + i * .1, t), c = i - 2.5;
+        $('#sh' + i).style.transform = `translateZ(${10 + i * 9}px) translateX(${c * 70 * q}px) translateY(${-q * 300}px) rotateZ(${c * 7 * q}deg)`; }); }
+    // S3 rocker flips to real engineering, vibe coding struck
+    { const k = sm(10.3, 10.55, t); $('#rpad').style.transform = `rotateY(${18 - k * 36}deg)`;
+      $('#rock').style.opacity = sm(9.6, 9.9, t); $('#rock').style.transform = `perspective(1400px) rotateX(${10 + (1 - sm(9.6, 10.0, t)) * 40}deg)`;
+      $('#rlab').style.opacity = .45 + .55 * k; $('#strk').style.width = (sm(11.56, 11.95, t) * 100 + 4) + '%'; $('#strk').style.opacity = t > 11.56 ? 1 : 0; }
+    // S4 slash command types
+    { $('#cq').textContent = twl(t, 15.2, 15.85, '/grill-me'); $('#ccu').style.visibility = Math.floor(t * 3) % 2 ? 'hidden' : 'visible'; }
+    // S5 tree draws and nodes resolve
+    TE.forEach((e, i) => { $('#te' + i).setAttribute('stroke-dashoffset', 1 - sm(TT[0] + .15 + i * .12, TT[0] + .55 + i * .12, t)); });
+    TN.forEach((n, i) => { $('#tn' + i).setAttribute('opacity', sm(16.9 + i * .1, 17.1 + i * .1, t)); const k = sm(TT[i], TT[i] + .25, t);
+      $('#tf' + i).setAttribute('r', k * 30); $('#tk' + i).setAttribute('opacity', k); });
+    $('#fr0').style.opacity = sm(19.95, 20.15, t); $('#fr0').style.transform = `scale(${.8 + .2 * sm(19.95, 20.2, t)})`;
+    // S6 test goes red -> green, then the prism turns red/green/refactor
+    { const p = t >= 24.76; $('#ric').className = 'ic ' + (p ? 'p' : 'f'); $('#ric').textContent = p ? '✓' : '✕';
+      $('#rbd').textContent = p ? 'PASS' : 'FAIL'; $('#rbd').style.cssText = p ? 'background:#f2f3f5;color:#08090a' : 'box-shadow:inset 0 0 0 2px #f2f3f5;color:#f2f3f5';
+      $('#rsum').innerHTML = p ? '0 failed · <b>1 passed</b>' : '<b>1 failed</b> · 0 passed';
+      const pk = Math.max(0, 1 - Math.abs(t - 24.8) / .15); $('#ric').style.transform = `scale(${1 + pk * .25})`;
+      const ang = -120 * (sm(25.95, 26.2, t) + sm(26.48, 26.72, t)); const PD = 260 / (2 * Math.tan(Math.PI / 3));
+      $$('#prism .pf').forEach((f, i) => { f.style.transform = `rotateX(${i * 120}deg) translateZ(${PD}px)`; });
+      $('#prism').style.transform = `translateZ(${-PD}px) rotateX(${ang}deg)`;
+      $('#pwrap').style.opacity = sm(25.2, 25.45, t); $('#pwrap').style.transform = `rotateY(${(1 - sm(25.2, 25.6, t)) * 50 + Math.sin(t) * 3}deg) translateY(${(1 - sm(25.2, 25.6, t)) * 100}px)`; }
+    // S7 mud draws, crosshairs lock, deep blocks rise
+    MP.forEach((p, i) => p.setAttribute('stroke-dashoffset', 1 - sm(28.3 + i * .05, 29.0 + i * .05, t)));
+    $('#mud').style.opacity = 1 - .55 * sm(30.3, 30.7, t);
+    [0, 1, 2].forEach(i => { const t0 = 29.48 + i * .25, k = sm(t0, t0 + .2, t); const x = $('#xh' + i); x.style.opacity = k; x.style.transform = `scale(${1.8 - .8 * k}) rotate(${(1 - k) * 45}deg)`;
+      const bk = sm(30.35 + i * .15, 30.75 + i * .15, t); const b = $('#b' + i); b.style.opacity = bk; b.style.transform = `rotateX(${30 - bk * 12}deg) rotateY(${-14}deg) translateY(${(1 - bk) * 120}px) translateZ(${(1 - bk) * -300}px)`; });
+    $('#rcnt').textContent = t < 29.48 ? 'scanning…' : `${t < 29.74 ? 1 : t < 29.98 ? 2 : 3} found`;
+    $('#marr').style.opacity = sm(30.2, 30.4, t); $('#marr').style.transform = `translateX(${(1 - sm(30.2, 30.5, t)) * -40}px)`;
+    // S8 cartridges drop into the dock, install command types
+    [35.1, 35.85, 36.45, 37.12].forEach((t0, i) => { const k = sm(t0, t0 + .28, t); const c = $('#k' + i);
+      c.style.opacity = sm(t0, t0 + .05, t); c.style.transform = `translateY(${(1 - k) * -420}px) rotateZ(${(1 - k) * (i % 2 ? 8 : -8)}deg)`;
+      $('#l' + i).style.background = t > t0 + .28 ? '#f2f3f5' : 'rgba(255,255,255,.14)'; $('#l' + i).style.boxShadow = t > t0 + .28 ? '0 0 18px rgba(255,255,255,.9)' : 'none'; });
+    { const s = twl(t, 35.2, 36.5, INS); $('#ins').innerHTML = s.replace(/\$/g, '<span class="p">$</span>') + (Math.floor(t * 3) % 2 ? '' : '▌'); }
+    let si = 0; for (let i = 0; i < S.length; i++) if (t >= S[i] - .3) si = i;
+    tag.innerHTML = `<b>${String(si + 1).padStart(2, '0')}</b> / ${LABEL[si]}`;
+    segs.forEach((b, i) => { const e = i < S.length - 1 ? S[i + 1] : TOTAL - 2; b.style.width = Math.min(100, Math.max(0, (t - S[i]) / (e - S[i]) * 100)) + '%'; });
+  };
+  window.__tl = tl;
+  window.__seek = (rt) => { const t = rt * SPD; tl.time(t, false); tick(t); return null; };
+  window.__seek(0);
+  if (!navigator.webdriver) { const t0 = performance.now(); const loop = () => { window.__seek(((performance.now() - t0) / 1000) % (TOTAL / SPD)); requestAnimationFrame(loop); }; requestAnimationFrame(loop); }
+})();
+</script>
+</body></html>

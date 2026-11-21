@@ -1,0 +1,16 @@
+Every new Claude Code session forgets everything. This repo fixes that. 🧠
+
+claude-mem (100k+ ⭐ on GitHub) gives your coding agent a memory that survives between sessions:
+→ Hooks quietly capture every tool call and fix, then compress them into small "observations"
+→ Next session, the right context is injected automatically at SessionStart
+→ Need more? 3-step search (search → timeline → get_observations) for ~10x token savings
+→ Local web viewer to browse your memory, plus <private> tags to keep things out
+
+✅ Open source (Apache-2.0)
+✅ Works with Claude Code, OpenCode, T3 Code and more
+✅ One command: npx claude-mem install
+
+Comment GITMATE and I'll send you the link 👇
+Follow @git.mate for 1 useful repo every day.
+
+#github #opensource #claudecode #aiagents #codingagent #contextengineering #devtools #developer #programming #llm #ai #typescript

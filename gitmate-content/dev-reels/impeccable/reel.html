@@ -1,0 +1,509 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<title>git.mate impeccable</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<style>
+:root{--ink:#0b0b0c;--mut:#8b8d91;--dim:#cfd0d2;--bg:#f7f7f5}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#fff}
+.f{position:relative;width:1080px;height:1920px;overflow:hidden;background:radial-gradient(ellipse 110% 70% at 50% 45%,#ffffff 0%,#f7f7f5 55%,#eeeeec 100%);color:var(--ink);font-family:'Inter',sans-serif}
+#cam{position:absolute;inset:0}
+#stage{position:absolute;inset:0;perspective:1800px;perspective-origin:50% 50%}
+#world{position:absolute;left:0;top:0;width:1080px;height:1920px;transform-style:preserve-3d;transform-origin:540px 960px}
+.sc{position:absolute;left:0;top:0;width:1080px;height:1920px;transform-style:preserve-3d;transform-origin:540px 960px;visibility:hidden}
+.ring{position:absolute;border-radius:50%;border:70px solid rgba(10,10,12,.045);filter:blur(26px)}
+.grain{position:absolute;inset:0;opacity:.05;mix-blend-mode:multiply;z-index:8;pointer-events:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
+.top{position:absolute;left:64px;right:64px;top:84px;height:80px;z-index:6}
+.brand{position:absolute;left:0;top:0;display:flex;align-items:center;gap:16px;font-family:'JetBrains Mono';font-weight:700;font-size:28px}
+.mk{width:58px;height:58px;border-radius:50%;display:grid;place-items:center;font-family:'JetBrains Mono';font-weight:800;font-size:22px;color:#fff;background:radial-gradient(circle at 34% 28%,#5a5c61 0 10%,#1a1b1e 45%,#000 100%);box-shadow:inset 0 2px 3px rgba(255,255,255,.35),0 8px 18px rgba(0,0,0,.25)}
+.tag{position:absolute;right:0;top:14px;font-family:'JetBrains Mono';font-size:24px;color:var(--mut);white-space:nowrap}
+.tag b{color:var(--ink);font-weight:700}
+.C{position:absolute;left:0;right:0;text-align:center;white-space:nowrap}
+.kick{font-family:'JetBrains Mono';font-size:26px;color:var(--mut);letter-spacing:1px}
+.sans{font-weight:600;letter-spacing:-.035em;line-height:1}
+.ser{font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;letter-spacing:-.01em;line-height:1}
+.g{color:var(--mut)}
+.ch{display:inline-block;white-space:pre}
+.mono{font-family:'JetBrains Mono'}
+.card{position:absolute;background:#fff;border-radius:26px;box-shadow:0 0 0 2px var(--ink),0 8px 0 var(--ink),0 40px 70px rgba(0,0,0,.14);overflow:hidden}
+
+/* S1 clone deck of identical AI sites */
+.deck{position:absolute;left:0;top:700px;width:1080px;height:1000px;transform-style:preserve-3d}
+.site{position:absolute;left:280px;top:40px;width:520px;height:700px;border-radius:24px;background:#fff;box-shadow:0 0 0 2px var(--ink),0 8px 0 var(--ink),0 30px 60px rgba(0,0,0,.16);overflow:hidden}
+.site .nv{position:absolute;left:28px;right:28px;top:26px;height:34px;display:flex;align-items:center;gap:14px}
+.site .nv i{display:block;height:10px;border-radius:5px;background:#d6d6d4}
+.site .nv .lo{width:30px;height:30px;border-radius:9px;background:var(--ink)}
+.site .nv .pl{margin-left:auto;width:96px;height:34px;border-radius:17px;background:var(--ink)}
+.site .bl{position:absolute;left:250px;top:90px;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#e9e9e7 0,#9d9ea2 45%,#4a4b4f 100%);filter:blur(2px);opacity:.75}
+.site h4{position:absolute;left:28px;top:108px;width:340px;font-size:52px;font-weight:700;letter-spacing:-.04em;line-height:1.02}
+.site .sb{position:absolute;left:28px;top:300px;width:300px}
+.site .sb i{display:block;height:12px;border-radius:6px;background:#dcdcda;margin-bottom:12px}
+.site .bt{position:absolute;left:28px;top:376px;display:flex;gap:12px}
+.site .bt span{height:50px;padding:0 22px;border-radius:25px;display:grid;place-items:center;font-size:19px;font-weight:600}
+.site .bt .p{background:var(--ink);color:#fff}.site .bt .o{box-shadow:inset 0 0 0 2px var(--ink)}
+.site .tl{position:absolute;left:28px;right:28px;top:470px;display:flex;gap:14px}
+.site .tl div{flex:1;height:170px;border-radius:18px;box-shadow:inset 0 0 0 2px #e0e0de;padding:16px}
+.site .tl b{display:block;width:44px;height:44px;border-radius:12px;background:#2a2b2e}
+.site .tl i{display:block;height:10px;border-radius:5px;background:#dcdcda;margin-top:16px}
+.site .fn{position:absolute;left:28px;bottom:16px;font-family:'JetBrains Mono';font-size:17px;color:var(--mut)}
+.site .no{position:absolute;right:22px;bottom:14px;font-family:'JetBrains Mono';font-size:17px;font-weight:800}
+
+/* S2 specimen + dictionary entry */
+.spec{position:absolute;left:64px;top:560px;width:952px;height:800px;background:#fcfcfb}
+.spec .hd{position:absolute;left:36px;right:36px;top:30px;display:flex;justify-content:space-between;font-family:'JetBrains Mono';font-size:20px;font-weight:700;letter-spacing:2px}
+.spec .hd span{color:var(--mut);font-weight:500;letter-spacing:0}
+.cm{position:absolute;width:30px;height:30px;border-color:var(--ink);border-style:solid;border-width:0}
+.spec svg{position:absolute;left:0;top:0}
+.spec .gl{position:absolute;right:36px;font-family:'JetBrains Mono';font-size:16px;color:var(--mut)}
+.spec .wd{position:absolute;left:60px;top:118px;font-family:'Instrument Serif';font-style:italic;font-size:210px;line-height:1;letter-spacing:-.02em;white-space:nowrap}
+.spec .ph{position:absolute;left:64px;top:410px;font-family:'JetBrains Mono';font-size:26px;color:var(--mut)}
+.spec .ph b{color:var(--ink);font-weight:800;margin-right:18px}
+.spec .df{position:absolute;left:64px;right:64px;font-size:44px;font-weight:600;letter-spacing:-.025em;line-height:1.15}
+.spec .df em{font-family:'JetBrains Mono';font-style:normal;font-size:26px;color:var(--mut);margin-right:16px;font-weight:700;vertical-align:6px}
+.spec .df i{font-family:'Instrument Serif';font-weight:400}
+.chips{position:absolute;left:0;right:0;top:1440px;display:flex;justify-content:center;gap:22px}
+.chips div{padding:16px 28px;border-radius:16px;background:#fff;box-shadow:0 0 0 2px var(--ink),0 5px 0 var(--ink);font-family:'JetBrains Mono';font-size:28px;font-weight:800;white-space:nowrap}
+
+/* S3 slop page with numbered tells */
+.slop{position:absolute;left:110px;top:440px;width:860px;height:640px}
+.slop .nv{position:absolute;left:30px;right:30px;top:24px;height:36px;display:flex;align-items:center;gap:16px}
+.slop .nv i{display:block;width:70px;height:10px;border-radius:5px;background:#d6d6d4}
+.slop .nv .lo{width:32px;height:32px;border-radius:10px;background:var(--ink)}
+.slop .nv .pl{margin-left:auto;width:110px;height:36px;border-radius:18px;background:var(--ink)}
+.slop h4{position:absolute;left:30px;top:100px;width:480px;font-size:60px;font-weight:700;letter-spacing:-.04em;line-height:1.02}
+.slop .gr{position:absolute;left:540px;top:96px;width:290px;height:250px;border-radius:24px;background:linear-gradient(135deg,#d9d9d7 0%,#77787c 55%,#2b2c2f 100%)}
+.slop .nest{position:absolute;left:30px;right:30px;top:380px;height:230px;border-radius:22px;box-shadow:inset 0 0 0 2px #cfcfcd;padding:18px}
+.slop .nest>div{height:100%;border-radius:16px;box-shadow:inset 0 0 0 2px #cfcfcd;padding:16px}
+.slop .nest>div>div{height:100%;border-radius:12px;box-shadow:inset 0 0 0 2px #cfcfcd;padding:16px;display:flex;gap:14px}
+.slop .nest b{display:block;width:60px;height:60px;border-radius:14px;background:#2a2b2e;flex:none}
+.slop .nest i{display:block;height:12px;border-radius:6px;background:#dcdcda;margin-bottom:12px}
+.hl{position:absolute;border-radius:16px;border:5px dashed var(--ink);opacity:0}
+.nb{position:absolute;width:54px;height:54px;border-radius:50%;background:var(--ink);color:#fff;display:grid;place-items:center;font-family:'JetBrains Mono';font-weight:800;font-size:22px;box-shadow:0 0 0 4px #fff}
+.tell{position:absolute;left:64px;width:952px;height:118px;border-radius:22px;background:#fff;box-shadow:0 0 0 2px var(--ink),0 6px 0 var(--ink);display:flex;align-items:center;gap:26px;padding:0 30px}
+.tell .n{width:62px;height:62px;border-radius:50%;background:var(--ink);color:#fff;display:grid;place-items:center;font-family:'JetBrains Mono';font-size:24px;font-weight:800;flex:none}
+.tell .t{flex:1;font-size:46px;font-weight:600;letter-spacing:-.03em;white-space:nowrap}
+.tell .t i{font-family:'Instrument Serif';font-weight:400}
+.tell .s{font-family:'JetBrains Mono';font-size:24px;font-weight:800;padding:8px 16px;border-radius:10px;box-shadow:inset 0 0 0 3px var(--ink);transform:rotate(-6deg)}
+
+/* S4 before / after wipe */
+.cmp{position:absolute;left:64px;top:560px;width:952px;height:714px}
+.cmp img{position:absolute;left:0;top:0;width:100%;height:100%;object-fit:cover;object-position:50% 0}
+.cmp .w2{position:absolute;inset:0}
+.cmp .lb{position:absolute;top:22px;padding:8px 16px;border-radius:10px;font-family:'JetBrains Mono';font-size:20px;font-weight:800;white-space:nowrap}
+.cmp .lb.a{left:22px;background:#fff;color:var(--ink);box-shadow:0 0 0 2px var(--ink)}
+.cmp .lb.b{right:22px;background:var(--ink);color:#fff;box-shadow:0 0 0 2px #fff}
+.hdl{position:absolute;top:0;bottom:0;width:6px;margin-left:-3px;background:#fff;box-shadow:0 0 0 2px var(--ink)}
+.hdl b{position:absolute;left:50%;top:50%;width:84px;height:84px;margin:-42px;border-radius:50%;background:#fff;box-shadow:0 0 0 3px var(--ink),0 10px 24px rgba(0,0,0,.3);display:grid;place-items:center;font-family:'JetBrains Mono';font-size:30px;font-weight:800}
+
+/* S5 live specimen + keycaps */
+.live{position:absolute;left:64px;top:440px;width:952px;height:560px}
+.live .hd{position:absolute;left:0;right:0;top:0;height:70px;border-bottom:2px solid #e2e2e0;background:#fafaf8;display:flex;align-items:center;padding:0 28px;gap:14px;font-family:'JetBrains Mono';font-size:22px;font-weight:700}
+.live .hd span{color:var(--mut);font-weight:500}
+.live .hd em{margin-left:auto;font-style:normal;font-size:22px;font-weight:800;background:var(--ink);color:#fff;padding:6px 14px;border-radius:8px}
+.live .gd{position:absolute;top:70px;bottom:0;width:0;border-left:2px dashed #c8c8c6;opacity:0}
+.live h5{position:absolute;left:70px;top:140px;width:820px;font-weight:600;letter-spacing:-.04em;line-height:1}
+.live .sl{position:absolute;left:70px;width:600px}
+.live .sl i{display:block;height:13px;border-radius:7px;background:#d8d8d6;margin-bottom:14px}
+.live .cta{position:absolute;left:70px;height:66px;padding:0 34px;border-radius:14px;background:var(--ink);color:#fff;display:grid;place-items:center;font-size:24px;font-weight:600}
+.key{position:absolute;top:1110px;width:280px;height:210px;transform-style:preserve-3d}
+.key .bs{position:absolute;left:0;right:0;top:22px;bottom:0;border-radius:30px;background:#0b0b0c}
+.key .cp{position:absolute;left:0;right:0;top:0;height:188px;border-radius:30px;background:linear-gradient(180deg,#ffffff,#ececea);box-shadow:inset 0 0 0 3px var(--ink),inset 0 -12px 0 #dcdcda;display:grid;place-items:center;font-family:'JetBrains Mono';font-size:40px;font-weight:800}
+.key .cp small{position:absolute;left:24px;top:18px;font-size:16px;color:var(--mut);font-weight:500}
+
+/* S6 critique bars + audit drawers */
+.crit{position:absolute;left:64px;top:560px;width:450px;height:800px}
+.crit .hd,.aud .hd{position:absolute;left:28px;right:28px;top:26px;font-family:'JetBrains Mono';font-size:22px;font-weight:800;letter-spacing:3px;display:flex;justify-content:space-between}
+.crit .hd span,.aud .hd span{color:var(--mut);font-weight:500;letter-spacing:0}
+.hr{position:absolute;left:28px;right:28px;height:92px}
+.hr .nm{font-size:25px;font-weight:600;letter-spacing:-.02em}
+.hr .tr{position:absolute;left:0;right:70px;top:46px;height:16px;border-radius:8px;background:#ececea;overflow:hidden}
+.hr .tr i{position:absolute;left:0;top:0;bottom:0;width:100%;border-radius:8px;background:var(--ink);transform-origin:0 50%}
+.hr .sc2{position:absolute;right:0;top:38px;font-family:'JetBrains Mono';font-size:26px;font-weight:800}
+.crit .tot{position:absolute;left:28px;right:28px;bottom:28px;height:96px;border-radius:18px;background:var(--ink);color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 26px;font-family:'JetBrains Mono';font-size:22px}
+.crit .tot b{font-size:46px;font-weight:800}
+.aud{position:absolute;left:566px;top:560px;width:450px;height:800px;transform-style:preserve-3d}
+.aud .bx{position:absolute;inset:0;border-radius:26px;background:#f1f1ef;box-shadow:0 0 0 2px var(--ink),0 8px 0 var(--ink),0 40px 70px rgba(0,0,0,.14)}
+.dr{position:absolute;left:24px;right:24px;height:150px;border-radius:18px;background:#fff;box-shadow:0 0 0 2px var(--ink),0 7px 0 var(--ink),0 22px 30px rgba(0,0,0,.12);padding:20px 22px}
+.dr .p{display:inline-block;font-family:'JetBrains Mono';font-size:30px;font-weight:800;padding:2px 12px;border-radius:8px}
+.dr.p0 .p{background:var(--ink);color:#fff}.dr .p{box-shadow:inset 0 0 0 3px var(--ink)}
+.dr .w{display:inline-block;margin-left:14px;font-family:'JetBrains Mono';font-size:20px;color:var(--mut)}
+.dr .hn{position:absolute;left:50%;bottom:22px;width:110px;height:14px;margin-left:-55px;border-radius:7px;background:var(--ink)}
+.dr .ds{position:absolute;left:22px;top:72px;font-size:22px;font-weight:600;white-space:nowrap}
+
+/* S7 detector */
+.tbar{position:absolute;left:64px;top:430px;width:952px;height:96px;border-radius:20px;background:#0b0b0c;color:#f2f2f0;display:flex;align-items:center;padding:0 30px;font-family:'JetBrains Mono';font-size:32px;font-weight:700;box-shadow:0 8px 0 #000,0 30px 50px rgba(0,0,0,.2);white-space:nowrap;overflow:hidden}
+.tbar span{color:#8b8d91;margin-right:16px}
+.grid{position:absolute;left:64px;top:580px;width:952px;height:690px;padding:36px 40px;display:grid;grid-template-columns:repeat(8,1fr);grid-auto-rows:66px;gap:14px}
+.grid i{border-radius:12px;background:#f0f0ee;box-shadow:inset 0 0 0 2px #d9d9d7;position:relative}
+.grid i.on{background:#fff;box-shadow:inset 0 0 0 3px var(--ink)}
+.grid i.fl{background:var(--ink);box-shadow:none}
+.grid i.fl::after{content:"!";position:absolute;inset:0;display:grid;place-items:center;color:#fff;font-family:'JetBrains Mono';font-weight:800;font-size:28px}
+.grid i.x{visibility:hidden}
+.cnt{position:absolute;left:0;right:0;top:1330px;text-align:center;white-space:nowrap}
+.cnt b{font-size:190px;font-weight:700;letter-spacing:-.06em;line-height:1}
+.cnt i{font-family:'Instrument Serif';font-size:150px;font-weight:400;margin-left:20px}
+.nokey{position:absolute;left:0;right:0;top:1560px;display:flex;justify-content:center;gap:24px}
+.nokey div{display:flex;align-items:center;gap:16px;padding:16px 30px;border-radius:999px;background:#fff;box-shadow:0 0 0 3px var(--ink),0 6px 0 var(--ink);font-family:'JetBrains Mono';font-size:30px;font-weight:800;white-space:nowrap}
+.nokey svg{flex:none}
+
+/* S8 tool drum + install plate */
+.dwin{position:absolute;left:64px;top:420px;width:952px;height:560px;border-radius:30px;background:#fafaf8;box-shadow:0 0 0 2px var(--ink),0 8px 0 var(--ink),0 40px 70px rgba(0,0,0,.14);overflow:hidden}
+.dwin::before,.dwin::after{content:"";position:absolute;left:0;right:0;height:160px;z-index:3;pointer-events:none}
+.dwin::before{top:0;background:linear-gradient(#fafaf8,rgba(250,250,248,0))}
+.dwin::after{bottom:0;background:linear-gradient(rgba(250,250,248,0),#fafaf8)}
+.band{position:absolute;left:28px;right:28px;top:220px;height:120px;border-radius:20px;box-shadow:inset 0 0 0 3px var(--ink);z-index:4}
+.band::before{content:"▶";position:absolute;left:-2px;top:38px;font-size:30px;transform:translateX(-50%)}
+.drum{position:absolute;left:0;top:225px;width:952px;height:110px;transform-style:preserve-3d;perspective:none}
+.drum div{position:absolute;left:0;top:0;width:952px;height:110px;display:grid;place-items:center;font-size:66px;font-weight:600;letter-spacing:-.035em;backface-visibility:hidden;white-space:nowrap}
+.plate{position:absolute;left:64px;top:1060px;width:952px;height:330px;transform-style:preserve-3d}
+.plate .bd{position:absolute;inset:0;border-radius:30px;background:linear-gradient(170deg,#2c2d31,#0b0b0c 55%);box-shadow:inset 0 3px 0 rgba(255,255,255,.18),0 12px 0 #000,0 40px 60px rgba(0,0,0,.25)}
+.plate .sw{position:absolute;width:22px;height:22px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#d8d8d6,#55575c);box-shadow:0 1px 0 rgba(255,255,255,.2)}
+.plate .sw::after{content:"";position:absolute;left:4px;right:4px;top:10px;height:2px;background:#2a2b2e;transform:rotate(35deg)}
+.plate small{position:absolute;left:0;right:0;top:50px;text-align:center;font-family:'JetBrains Mono';font-size:22px;letter-spacing:7px;color:#9a9ca1}
+.plate .cmd{position:absolute;left:60px;right:60px;top:108px;height:100px;border-radius:18px;background:#141518;box-shadow:inset 0 0 0 2px #2c2d31;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono';font-size:46px;font-weight:800;color:#f4f4f2;white-space:pre}
+.plate .ft{position:absolute;left:0;right:0;bottom:44px;text-align:center;font-family:'JetBrains Mono';font-size:24px;color:#a3a5a9}
+.plate .ft b{color:#fff}
+
+/* comment + end (shell) */
+.cin{display:flex;align-items:center;gap:26px;padding:0 26px 0 30px;background:#fff;box-shadow:0 0 0 2px var(--ink),0 6px 0 var(--ink),0 30px 50px rgba(0,0,0,.12)}
+.cbar{position:absolute}
+.av{width:76px;height:76px;border-radius:50%;background:linear-gradient(135deg,#d9d9d7,#a9aaad);flex:none}
+.cin .tx{flex:1;font-size:46px;font-weight:600;letter-spacing:.02em}
+.send{width:84px;height:84px;border-radius:50%;background:var(--ink);display:grid;place-items:center;color:#fff;font-size:40px;flex:none}
+.dm{position:absolute;padding:30px 44px;border-radius:44px 44px 44px 12px;background:var(--ink);color:#fff;font-size:42px;font-weight:500;white-space:nowrap}
+.dm small{display:block;font-family:'JetBrains Mono';font-size:20px;color:#9a9ca1;margin-bottom:8px}
+.bigmk{position:absolute;left:400px;top:600px;width:280px;height:280px;border-radius:50%;display:grid;place-items:center;font-family:'JetBrains Mono';font-weight:800;font-size:96px;color:#fff;background:radial-gradient(circle at 34% 26%,#6a6c71 0 8%,#1c1d20 42%,#000 100%);box-shadow:inset 0 6px 10px rgba(255,255,255,.3),inset 0 -14px 26px rgba(0,0,0,.6),0 40px 80px rgba(0,0,0,.28)}
+.erings{position:absolute;left:290px;top:490px;width:500px;height:500px}
+.fol{position:absolute;left:300px;top:1390px;width:480px;height:132px;border-radius:999px;display:grid;place-items:center;font-size:50px;font-weight:600;background:var(--ink);color:#fff;box-shadow:0 22px 44px rgba(0,0,0,.22)}
+.fol2{position:absolute;left:300px;top:1390px;width:480px;height:132px;border-radius:999px;display:grid;place-items:center;font-size:50px;font-weight:600;background:#fff;color:var(--ink);border:3px solid var(--ink);opacity:0}
+.tapd{position:absolute;width:90px;height:90px;border-radius:50%;background:rgba(11,11,12,.18);border:3px solid rgba(11,11,12,.55);opacity:0}
+.rip{position:absolute;left:540px;top:1456px;width:10px;height:10px;margin:-5px;border-radius:50%;border:4px solid var(--ink);opacity:0}
+</style></head>
+<body>
+<svg width="0" height="0" style="position:absolute"><defs>
+  <filter id="mb" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur id="mbg" stdDeviation="0 0"/></filter>
+</defs></svg>
+<div class="f" id="F">
+ <div id="cam"><div id="stage"><div id="world">
+
+  <!-- S1 hook: a deck of identical AI sites -->
+  <div class="sc" id="s1" data-pose="0,0,0,0,0,0">
+    <div class="ring" style="left:-260px;top:-180px;width:720px;height:720px;transform:translateZ(-500px)"></div>
+    <div class="C sans ty" style="top:250px;font-size:104px;font-weight:700;letter-spacing:-.05em" data-t="0.85" data-cd=".035">your AI-built site</div>
+    <div class="C ser rv" style="top:378px;font-size:120px" data-t="2.14"><span class="g">looks like</span> every</div>
+    <div class="C ser rv" style="top:500px;font-size:120px" data-t="3.06">other AI site.</div>
+    <div class="deck" id="deck"></div>
+  </div>
+
+  <!-- S2 this repo fixes that: specimen + dictionary -->
+  <div class="sc" id="s2" data-pose="2400,0,-600,-30,0,0">
+    <div class="ring" style="left:640px;top:-160px;width:700px;height:700px;transform:translateZ(-600px)"></div>
+    <div class="C sans rv" style="top:250px;font-size:100px" data-t="4.68">this repo</div>
+    <div class="C ser rv" style="top:362px;font-size:116px" data-t="5.3">fixes that.</div>
+    <div class="card spec c3d" id="spec" data-t="5.9" data-rx="12" data-ry="8">
+      <div class="hd">SPECIMEN · NO. 01<span>pbakaus/impeccable</span></div>
+      <div class="cm" style="left:16px;top:16px;border-left-width:4px;border-top-width:4px"></div>
+      <div class="cm" style="right:16px;top:16px;border-right-width:4px;border-top-width:4px"></div>
+      <div class="cm" style="left:16px;bottom:16px;border-left-width:4px;border-bottom-width:4px"></div>
+      <div class="cm" style="right:16px;bottom:16px;border-right-width:4px;border-bottom-width:4px"></div>
+      <svg width="952" height="800">
+        <path class="dl" data-t="6.1" data-d=".5" d="M36 140 L916 140" stroke="#b5b6b9" stroke-width="2" stroke-dasharray="8 8" fill="none"/>
+        <path class="dl" data-t="6.2" data-d=".5" d="M36 214 L916 214" stroke="#b5b6b9" stroke-width="2" fill="none"/>
+        <path class="dl" data-t="6.3" data-d=".5" d="M36 300 L916 300" stroke="#0b0b0c" stroke-width="3" fill="none"/>
+        <path class="dl" data-t="7.6" data-d=".4" d="M64 384 L888 384" stroke="#0b0b0c" stroke-width="2" fill="none"/>
+      </svg>
+      <div class="gl" style="top:116px">cap</div><div class="gl" style="top:190px">x-height</div><div class="gl" style="top:306px">baseline</div>
+      <div class="wd ty" data-t="6.8" data-cd=".045">Impeccable</div>
+      <div class="ph rv" data-t="7.5"><b>im·pec·ca·ble</b>adj.</div>
+      <div class="df rv" style="top:480px" data-t="7.85"><em>1.</em>the design <i>vocabulary</i></div>
+      <div class="df rv" style="top:540px;padding-left:58px" data-t="8.9">for your coding agent.</div>
+      <div class="df rv g" style="top:650px;font-size:36px" data-t="9.5"><em>2.</em>catches AI slop before it ships.</div>
+    </div>
+    <div class="chips"><div data-k="9.2">★ 95k+ stars</div><div data-k="9.35">Apache-2.0</div><div data-k="9.5">free</div></div>
+  </div>
+
+  <!-- S3 the tells -->
+  <div class="sc" id="s3" data-pose="2400,-2600,-600,0,25,0">
+    <div class="C ser rv" style="top:250px;font-size:120px" data-t="10.28">you know the look.</div>
+    <div class="card slop c3d" id="slop" data-t="10.2" data-rx="14">
+      <div class="nv"><div class="lo"></div><i></i><i></i><i></i><div class="pl"></div></div>
+      <h4>Supercharge your workflow</h4>
+      <div class="gr"></div>
+      <div class="nest"><div><div><b></b><div style="flex:1"><i style="width:70%"></i><i style="width:90%"></i><i style="width:50%"></i></div></div></div></div>
+      <div class="hl" id="hl1" style="left:16px;top:86px;width:510px;height:150px"></div>
+      <div class="hl" id="hl2" style="left:526px;top:82px;width:318px;height:278px"></div>
+      <div class="hl" id="hl3" style="left:16px;top:366px;width:828px;height:258px"></div>
+      <div class="nb pp" style="left:466px;top:62px" data-t="11.34">01</div>
+      <div class="nb pp" style="left:790px;top:58px" data-t="12.6">02</div>
+      <div class="nb pp" style="left:790px;top:342px" data-t="13.74">03</div>
+    </div>
+    <div class="tell" id="t1" style="top:1160px"><div class="n">01</div><div class="t">Inter <i>for everything</i></div><div class="s" id="st1">SLOP</div></div>
+    <div class="tell" id="t2" style="top:1300px"><div class="n">02</div><div class="t">purple <i>gradients</i></div><div class="s" id="st2">SLOP</div></div>
+    <div class="tell" id="t3" style="top:1440px"><div class="n">03</div><div class="t">cards <i>inside</i> cards</div><div class="s" id="st3">SLOP</div></div>
+  </div>
+
+  <!-- S4 same brief, before/after wipe -->
+  <div class="sc" id="s4" data-pose="4800,-2600,-1800,30,0,0">
+    <div class="C" style="top:270px;height:150px">
+      <span class="swap sans" data-a="15.3" data-b="16.08" style="position:absolute;left:0;right:0;font-size:116px">same model.</span>
+      <span class="swap sans" data-a="16.1" data-b="17.0" style="position:absolute;left:0;right:0;font-size:116px">same brief.</span>
+      <span class="swap ser" data-a="17.06" data-b="18.3" style="position:absolute;left:0;right:0;font-size:124px"><span class="g">with</span> Impeccable?</span>
+      <span class="swap ser" data-a="18.34" data-b="99" style="position:absolute;left:0;right:0;font-size:150px">that.</span>
+    </div>
+    <div class="card cmp c3d" id="cmp" data-t="15.1" data-rx="10" data-ry="-4">
+      <img src="without.jpg">
+      <div class="w2" id="w2"><img src="with.jpg"></div>
+      <div class="lb a" id="lba">WITHOUT</div>
+      <div class="lb b" id="lbb">WITH IMPECCABLE</div>
+      <div class="hdl" id="hdl"><b>⟷</b></div>
+    </div>
+    <div class="C mono g rv" style="top:1340px;font-size:26px" data-t="15.6">same model · same brief · real README demo</div>
+    <div class="C ser rv" style="top:1420px;font-size:84px" data-t="16.3">one guesthouse, <span class="g">built twice.</span></div>
+  </div>
+
+  <!-- S5 commands: keycaps drive a live headline -->
+  <div class="sc" id="s5" data-pose="4800,0,-3600,-25,0,0">
+    <div class="ring" style="left:-300px;top:1300px;width:800px;height:800px;transform:translateZ(-600px)"></div>
+    <div class="C sans rv" style="top:250px;font-size:96px" data-t="19.35">you get <span class="ser" style="font-size:112px">commands.</span></div>
+    <div class="card live c3d" id="live" data-t="19.25" data-rx="10" data-ry="10">
+      <div class="hd">hero.tsx<span>· live</span><em id="lst">/impeccable</em></div>
+      <div class="gd" id="gd1" style="left:70px"></div><div class="gd" id="gd2" style="left:882px"></div>
+      <h5 id="lh">Fourteen rooms on a cliff.</h5>
+      <div class="sl" id="lsl"><i style="width:92%"></i><i style="width:76%"></i></div>
+      <div class="cta" id="lcta">Ask about dates</div>
+    </div>
+    <div class="key" id="k1" style="left:64px"><div class="bs"></div><div class="cp"><small>steer</small>/bolder</div></div>
+    <div class="key" id="k2" style="left:400px"><div class="bs"></div><div class="cp"><small>steer</small>/quieter</div></div>
+    <div class="key" id="k3" style="left:736px"><div class="bs"></div><div class="cp"><small>finish</small>/polish</div></div>
+    <div class="C mono g rv" style="top:1400px;font-size:28px" data-t="21.9">+21 more: distill · typeset · layout · harden…</div>
+  </div>
+
+  <!-- S6 critique + audit -->
+  <div class="sc" id="s6" data-pose="7200,0,-3600,25,0,0">
+    <div class="C sans rv" style="top:250px;font-size:96px" data-t="22.5">critique <span class="g">scores.</span></div>
+    <div class="C ser rv" style="top:360px;font-size:116px" data-t="24.16">audit ranks.</div>
+    <div class="card crit c3d" id="crit" data-t="22.4" data-rx="8" data-ry="12">
+      <div class="hd">CRITIQUE<span>sample</span></div>
+      <div class="hr" style="top:96px"><div class="nm">visibility</div><div class="tr"><i data-w=".8"></i></div><div class="sc2">8</div></div>
+      <div class="hr" style="top:192px"><div class="nm">consistency</div><div class="tr"><i data-w=".6"></i></div><div class="sc2">6</div></div>
+      <div class="hr" style="top:288px"><div class="nm">hierarchy</div><div class="tr"><i data-w=".4"></i></div><div class="sc2">4</div></div>
+      <div class="hr" style="top:384px"><div class="nm">error prevention</div><div class="tr"><i data-w=".7"></i></div><div class="sc2">7</div></div>
+      <div class="hr" style="top:480px"><div class="nm">aesthetics</div><div class="tr"><i data-w=".5"></i></div><div class="sc2">5</div></div>
+      <div class="tot">fix first<b>hierarchy</b></div>
+    </div>
+    <div class="aud" id="aud">
+      <div class="bx"></div>
+      <div class="hd" style="z-index:1">AUDIT<span>ranked</span></div>
+      <div class="dr p0" style="top:84px"><span class="p">P0</span><span class="w">blocking</span><div class="ds">contrast 2.1 : 1</div><div class="hn"></div></div>
+      <div class="dr" style="top:260px"><span class="p">P1</span><span class="w">major</span><div class="ds">no focus states</div><div class="hn"></div></div>
+      <div class="dr" style="top:436px"><span class="p">P2</span><span class="w">minor</span><div class="ds">overflow at 360px</div><div class="hn"></div></div>
+      <div class="dr" style="top:612px"><span class="p">P3</span><span class="w">polish</span><div class="ds">cramped padding</div><div class="hn"></div></div>
+    </div>
+  </div>
+
+  <!-- S7 slop detector -->
+  <div class="sc" id="s7" data-pose="7200,2600,-4800,0,-25,0">
+    <div class="ring" style="left:600px;top:1400px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="C sans rv" style="top:250px;font-size:104px" data-t="25.78">a <span class="ser" style="font-size:124px">slop</span> detector.</div>
+    <div class="tbar c3d" data-t="25.75" data-rx="10"><span>$</span><b id="dcmd" style="font-weight:700"></b></div>
+    <div class="card grid c3d" id="grid" data-t="25.95" data-rx="16"></div>
+    <div class="cnt"><b id="cn">0</b><i>rules.</i></div>
+    <div class="nokey"><div data-k="28.54"><svg width="60" height="36" viewBox="0 0 60 36"><circle cx="14" cy="18" r="10" fill="none" stroke="#0b0b0c" stroke-width="5"/><path d="M24 18 H54 M44 18 V28 M52 18 V26" stroke="#0b0b0c" stroke-width="5" fill="none"/><path class="dl" data-t="28.8" data-d=".25" d="M4 33 L56 3" stroke="#0b0b0c" stroke-width="5" fill="none"/></svg>no API key</div><div data-k="28.7">no LLM</div></div>
+  </div>
+
+  <!-- S8 works with + one command -->
+  <div class="sc" id="s8" data-pose="9600,2600,-4800,-30,0,0">
+    <div class="C sans rv" style="top:250px;font-size:100px" data-t="29.92">works <span class="ser" style="font-size:116px">with</span></div>
+    <div class="dwin c3d" data-t="29.8" data-rx="10" data-ry="-6"><div class="band"></div><div class="drum" id="drum"></div></div>
+    <div class="plate c3d" data-t="32.85" data-rx="16"><div class="bd"></div>
+      <div class="sw" style="left:26px;top:26px"></div><div class="sw" style="right:26px;top:26px"></div><div class="sw" style="left:26px;bottom:26px"></div><div class="sw" style="right:26px;bottom:26px"></div>
+      <small>ONE COMMAND</small><div class="cmd" id="icmd"></div><div class="ft"><b>free</b> · Apache 2.0 · open source</div></div>
+    <div class="C ser g rv" style="top:1470px;font-size:84px" data-t="33.5">that's the whole setup.</div>
+  </div>
+
+  <!-- S9 comment -->
+  <div class="sc" id="s9" data-pose="12000,2600,-6000,24,0,0">
+    <div class="ring" style="left:620px;top:1300px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="C sans rv" style="top:380px;font-size:120px;font-weight:500" data-t="34.42">Comment</div>
+    <div class="C sans ty" style="top:510px;font-size:196px;font-weight:700;letter-spacing:-.04em" data-t="34.75" data-cd=".05">GITMATE</div>
+    <div class="cbar cin c3d" style="left:64px;top:860px;width:952px;height:140px;border-radius:999px" data-t="34.4" data-rx="10"><div class="av"></div><div class="tx" id="ctx"></div><div class="send">↑</div></div>
+    <div class="dm pp" style="left:250px;top:1110px" data-t="35.5"><small>git.mate · message</small>Here's your link, mate 🔗</div>
+  </div>
+
+  <!-- S10 end -->
+  <div class="sc" id="s10" data-pose="14400,2600,-6000,-24,0,0">
+    <div class="ring" style="left:-300px;top:-160px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="ring" style="left:640px;top:1400px;width:760px;height:760px;transform:translateZ(-800px)"></div>
+    <svg class="erings" viewBox="0 0 500 500"><circle id="er1" cx="250" cy="250" r="226" fill="none" stroke="#0b0b0c" stroke-width="3" stroke-dasharray="1420" stroke-dashoffset="1420" transform="rotate(-90 250 250)"/>
+      <circle id="er2" cx="250" cy="250" r="246" fill="none" stroke="#c9cacc" stroke-width="2" stroke-dasharray="1546" stroke-dashoffset="1546" transform="rotate(90 250 250)"/></svg>
+    <div class="bigmk" id="bigmk">&gt;_</div>
+    <div class="C sans ty" style="top:1050px;font-size:104px;font-weight:700" data-t="36.6" data-cd=".05">@git.mate</div>
+    <div class="C ser" style="top:1200px;font-size:96px"><span class="rv g" data-t="37.1">1 repo</span> <span class="rv" data-t="37.35">every</span> <span class="rv" data-t="37.6">day.</span></div>
+    <div class="fol pp" id="fol" data-t="36.8">Follow</div>
+    <div class="fol2" id="fol2">Following ✓</div>
+    <div class="rip" id="rip"></div>
+    <div class="tapd" id="tapd" style="left:640px;top:1560px"></div>
+  </div>
+
+ </div></div></div>
+ <div class="top"><div class="brand"><div class="mk">&gt;_</div>git.mate</div><div class="tag" id="tag"><b>01</b> / 10</div></div>
+ <div class="grain"></div>
+</div>
+<script>
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+// all times below are in voice_raw seconds; the voice is sped up 1.07x, so video t = raw / SPD
+const SPD = 1.07, RAWTOTAL = 39.2, TOTAL = +(RAWTOTAL / SPD).toFixed(2); window.__TOTAL = TOTAL;
+const S = [0, 4.55, 10.15, 15.15, 19.3, 22.35, 25.65, 29.75, 34.3, 36.3];
+const NS = S.length;
+
+// build S1 deck (identical sites) and S7 grid, S8 drum before the shell scans the DOM
+const siteHTML = n => `<div class="nv"><div class="lo"></div><i style="width:60px"></i><i style="width:60px"></i><i style="width:60px"></i><div class="pl"></div></div><div class="bl"></div><h4>Build the future of work</h4><div class="sb"><i style="width:100%"></i><i style="width:80%"></i></div><div class="bt"><span class="p">Get started</span><span class="o">Learn more</span></div><div class="tl"><div><b></b><i></i><i style="width:60%"></i></div><div><b></b><i></i><i style="width:60%"></i></div><div><b></b><i></i><i style="width:60%"></i></div></div><div class="fn">ai-site-${n}.html</div><div class="no">#${n}</div>`;
+const DK = [4812, 4813, 4814, 4815, 4816];
+DK.forEach((n, i) => { const d = document.createElement('div'); d.className = 'site'; d.id = 'site' + i; d.innerHTML = siteHTML(n); $('#deck').appendChild(d); });
+const G = $('#grid'); const FL = [5, 13, 22, 30, 41, 47, 55];
+for (let i = 0; i < 64; i++) { const c = document.createElement('i'); if (i >= 62) c.className = 'x'; G.appendChild(c); }
+const TOOLS = ['Claude Code', 'Cursor', 'Codex CLI', 'GitHub Copilot', 'Gemini CLI', 'Devin', 'OpenCode', 'Kiro', 'Antigravity', 'Replit Agent'];
+const DR = 110 / (2 * Math.tan(Math.PI / TOOLS.length));
+TOOLS.forEach((n, i) => { const d = document.createElement('div'); d.textContent = n; d.style.transform = `rotateX(${-i * 36}deg) translateZ(${DR}px)`; $('#drum').appendChild(d); });
+
+const scenes = $$('.sc');
+const poses = scenes.map(s => s.dataset.pose.split(',').map(Number));
+scenes.forEach((s, i) => { const [x, y, z, ry, rx, rz] = poses[i]; s.style.transform = `translate3d(${x}px,${y}px,${z}px) rotateY(${ry}deg) rotateX(${rx}deg) rotateZ(${rz}deg)`; });
+const tl = gsap.timeline({ paused: true });
+
+// shell: typing / reveals / pops / 3D cards / line draws / swaps
+$$('.ty').forEach(el => { const t = +el.dataset.t, cd = +(el.dataset.cd || .045); const txt = el.textContent; el.textContent = '';
+  const chs = [...txt].map(c => { const s = document.createElement('span'); s.className = 'ch'; s.textContent = c; el.appendChild(s); return s; });
+  tl.set(chs, { opacity: 0 }, 0);
+  chs.forEach((c, i) => tl.fromTo(c, { opacity: 0, y: 26, filter: 'blur(14px)' }, { opacity: 1, y: 0, filter: 'blur(0px)', duration: .42, ease: 'power3.out', immediateRender: false }, Math.max(0.001, t + i * cd))); });
+$$('.rv').forEach(el => { const t = +el.dataset.t; if (isNaN(t)) return;
+  tl.set(el, { opacity: 0 }, 0); tl.fromTo(el, { opacity: 0, y: 46, filter: 'blur(16px)' }, { opacity: 1, y: 0, filter: 'blur(0px)', duration: .55, ease: 'power3.out', immediateRender: false }, Math.max(0.001, t)); });
+$$('.pp').forEach(el => { const t = +el.dataset.t;
+  tl.set(el, { opacity: 0 }, 0); tl.fromTo(el, { opacity: 0, scale: .55, filter: 'blur(10px)' }, { opacity: 1, scale: 1, filter: 'blur(0px)', duration: .5, ease: 'back.out(2.2)', immediateRender: false }, t); });
+$$('.c3d').forEach(el => { const t = +el.dataset.t, rx = +(el.dataset.rx || 0), ry = +(el.dataset.ry || 0);
+  tl.set(el, { opacity: 0, transformPerspective: 1500 }, 0);
+  tl.fromTo(el, { opacity: 0, rotationX: rx + 50, rotationY: ry * 2.5, y: 260, z: -500, scale: .9 }, { opacity: 1, rotationX: rx, rotationY: ry, y: 0, z: 0, scale: 1, duration: 1.05, ease: 'expo.out', immediateRender: false }, Math.max(0.001, t));
+  tl.to(el, { rotationX: rx * .4, rotationY: -ry * .5, duration: 3.2, ease: 'sine.inOut' }, Math.max(0.001, t) + 1.05); });
+$$('path.dl').forEach(p => { const L = p.getTotalLength() + 2; p.style.strokeDasharray = L;
+  tl.set(p, { strokeDashoffset: L }, 0); tl.to(p, { strokeDashoffset: 0, duration: +(p.dataset.d || .5), ease: 'power2.inOut' }, +p.dataset.t); });
+$$('.swap').forEach(el => { tl.set(el, { opacity: 0 }, 0); tl.fromTo(el, { opacity: 0, y: 40, filter: 'blur(12px)' }, { opacity: 1, y: 0, filter: 'blur(0px)', duration: .3, immediateRender: false }, +el.dataset.a);
+  if (+el.dataset.b < 90) tl.to(el, { opacity: 0, y: -40, filter: 'blur(12px)', duration: .22 }, +el.dataset.b - .1); });
+$$('[data-k]').forEach(el => { const t = +el.dataset.k;
+  tl.set(el, { opacity: 0 }, 0); tl.fromTo(el, { opacity: 0, z: 260, y: -30, scale: 1.2 }, { opacity: 1, z: 0, y: 0, scale: 1, duration: .45, ease: 'power3.out', immediateRender: false }, t); });
+
+// S1 identical sites fly in one after another and fan into a receding deck
+DK.forEach((n, i) => { const id = '#site' + i, k = 4 - i;
+  tl.set(id, { opacity: 0, transformPerspective: 1600, x: 0, z: -1400, rotationY: -40, rotationX: 20 }, 0);
+  tl.to(id, { opacity: 1, duration: .2 }, .15 + k * .3);
+  tl.to(id, { x: (i - 2) * 95 + 40, y: (i - 2) * -26, z: -i * 150 + 100, rotationY: -24, rotationX: 8, duration: 1.0, ease: 'expo.out' }, .15 + k * .3);
+  tl.to(id, { x: (i - 2) * 115 + 50, rotationY: -30, duration: 2.6, ease: 'sine.inOut' }, 1.9); });
+
+// S3 tells: dashed box in the card + row + stamp
+[[11.34, '#hl1', '#t1', '#st1'], [12.6, '#hl2', '#t2', '#st2'], [13.74, '#hl3', '#t3', '#st3']].forEach(([t, h, r, s]) => {
+  tl.set(h, { opacity: 0 }, 0); tl.to(h, { opacity: 1, duration: .15 }, t);
+  tl.set(r, { opacity: 0, transformPerspective: 1300 }, 0);
+  tl.fromTo(r, { opacity: 0, rotationX: -70, y: 60 }, { opacity: 1, rotationX: 0, y: 0, duration: .6, ease: 'expo.out', immediateRender: false }, t - .05);
+  tl.set(s, { opacity: 0, scale: 2.4 }, 0); tl.to(s, { opacity: 1, scale: 1, duration: .22, ease: 'power4.in' }, t + .45); });
+
+// S4 wipe: handle sweeps from right to left revealing the Impeccable version
+const wipe = { p: 100 };
+tl.set('#hdl', { opacity: 0 }, 0); tl.to('#hdl', { opacity: 1, duration: .2 }, 16.2);
+tl.fromTo(wipe, { p: 100 }, { p: 88, duration: .5, ease: 'sine.inOut', yoyo: true, repeat: 1, immediateRender: false }, 16.35);
+tl.to(wipe, { p: 0, duration: .85, ease: 'expo.inOut' }, 17.3);
+tl.to('#hdl', { opacity: 0, duration: .25 }, 18.2);
+tl.set('#lbb', { opacity: 0 }, 0); tl.to('#lbb', { opacity: 1, duration: .2 }, 17.85);
+tl.set('#lba', { opacity: 1 }, 0); tl.to('#lba', { opacity: 0, duration: .2 }, 17.6);
+
+// S5 key presses
+[['#k1', 20.2], ['#k2', 20.84], ['#k3', 21.62]].forEach(([k, t]) => {
+  tl.set(k, { opacity: 0, transformPerspective: 1400 }, 0);
+  tl.fromTo(k, { opacity: 0, rotationX: 70, y: 120 }, { opacity: 1, rotationX: 22, y: 0, duration: .7, ease: 'expo.out', immediateRender: false }, 19.55 + (+k[2] - 1) * .08);
+  tl.to(k + ' .cp', { y: 18, duration: .08, ease: 'power2.in' }, t - .04);
+  tl.to(k + ' .cp', { y: 0, duration: .25, ease: 'back.out(3)' }, t + .2); });
+
+// S6 bars fill, drawers slide out
+$$('.hr i').forEach((b, k) => { tl.set(b, { scaleX: 0 }, 0); tl.to(b, { scaleX: +b.dataset.w, duration: .55, ease: 'power3.out' }, 22.9 + k * .16); });
+$$('.hr .sc2').forEach((b, k) => { tl.set(b, { opacity: 0 }, 0); tl.to(b, { opacity: 1, duration: .2 }, 23.3 + k * .16); });
+tl.set('#aud', { opacity: 0, transformPerspective: 1500, rotationY: 8, rotationX: 8 }, 0);
+tl.fromTo('#aud', { opacity: 0, x: 200, z: -400 }, { opacity: 1, x: 0, z: 0, duration: .9, ease: 'expo.out', immediateRender: false }, 23.9);
+$$('.dr').forEach((d, k) => { tl.set(d, { z: 0, y: 0 }, 0);
+  tl.to(d, { z: 70, x: -30, duration: .4, ease: 'back.out(2)' }, 24.45 + k * .18);
+  tl.to(d, { z: 0, x: 0, duration: .5, ease: 'power2.inOut' }, 25.0 + k * .12); });
+tl.to('#aud', { rotationY: 4, duration: 1.6, ease: 'sine.inOut' }, 24.8);
+
+// S7 counter + grid sweep
+const det = { n: 0 }; tl.fromTo(det, { n: 0 }, { n: 62, duration: 1.0, ease: 'power2.out', immediateRender: false }, 27.2);
+const dcmdT = 'npx impeccable detect src/', dc = { n: 0 }; tl.fromTo(dc, { n: 0 }, { n: dcmdT.length, duration: .7, ease: 'none', immediateRender: false }, 26.1);
+tl.fromTo('.cnt', { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: .4, immediateRender: false }, 27.15); tl.set('.cnt', { opacity: 0 }, 0);
+
+// S8 one command types on the plate
+const icT = '$ npx impeccable install', ic = { n: 0 }; tl.fromTo(ic, { n: 0 }, { n: icT.length, duration: .8, ease: 'none', immediateRender: false }, 33.1);
+
+// S9 comment typing
+const cm = { n: 0 };
+tl.fromTo(cm, { n: 0 }, { n: 7, duration: .6, ease: 'none', immediateRender: false, onUpdate: () => $('#ctx').textContent = 'GITMATE'.slice(0, Math.round(cm.n)) }, 34.9);
+
+// S10 end
+tl.set('#bigmk', { opacity: 0, scale: .2 }, 0);
+tl.to('#bigmk', { opacity: 1, scale: 1, duration: .9, ease: 'back.out(1.8)' }, 36.3);
+tl.fromTo('#er1', { attr: { 'stroke-dashoffset': 1420 } }, { attr: { 'stroke-dashoffset': 0 }, duration: 1.0, ease: 'power2.inOut', immediateRender: false }, 36.45);
+tl.fromTo('#er2', { attr: { 'stroke-dashoffset': 1546 } }, { attr: { 'stroke-dashoffset': 0 }, duration: 1.2, ease: 'power2.inOut', immediateRender: false }, 36.6);
+tl.to('#tapd', { opacity: 1, left: 560, top: 1440, duration: .5, ease: 'power2.out' }, 37.75);
+tl.to('#tapd', { scale: .7, duration: .1 }, 38.25); tl.to('#tapd', { scale: 1, duration: .15 }, 38.35);
+tl.to('#fol', { scale: .93, duration: .1 }, 38.25); tl.to('#fol', { scale: 1, duration: .2 }, 38.35);
+tl.set('#fol2', { opacity: 1 }, 38.35); tl.set('#fol', { opacity: 0 }, 38.35);
+tl.fromTo('#rip', { opacity: .7, width: 10, height: 10, margin: -5 }, { opacity: 0, width: 640, height: 640, margin: -320, duration: .8, ease: 'power2.out', immediateRender: false }, 38.3);
+tl.to('#tapd', { opacity: 0, duration: .3 }, 38.75);
+tl.to({}, { duration: .01 }, RAWTOTAL);
+
+// camera: pure function of raw time
+const ease = x => x < .5 ? 16 * x ** 5 : 1 - Math.pow(-2 * x + 2, 5) / 2;
+const TD = .8, TPRE = .45;
+function camAt(t) {
+  let i = 0; for (let k = 0; k < S.length; k++) if (t >= S[k] - TPRE) i = k;
+  const ta = S[i] - TPRE; let p = poses[i].slice(), d = 0, rr = 0;
+  if (i > 0 && t < ta + TD) { const u = (t - ta) / TD, e = ease(u), a = poses[i - 1]; p = a.map((v, j) => v + (poses[i][j] - v) * e); d = Math.sin(u * Math.PI) * 700; rr = Math.sin(u * Math.PI) * (i % 2 ? 4 : -4); }
+  const st = Math.max(0, t - (S[i] - TPRE + TD)); const dz = Math.min(st, 6) * 8;
+  return { x: p[0], y: p[1], z: p[2] - dz, ry: p[3] + Math.sin(t * .6) * .6, rx: p[4] + Math.sin(t * .45) * .5, rz: p[5] + rr, d, i };
+}
+function camT(c) { return `translateZ(${-c.d + 60}px) rotateZ(${-c.rz}deg) rotateX(${-c.rx}deg) rotateY(${-c.ry}deg) translate3d(${-c.x}px,${-c.y}px,${-c.z}px)`; }
+const world = $('#world'), mbg = $('#mbg'), cam = $('#cam');
+const LIVE = [ // live headline states for /bolder /quieter /polish
+  { t: 0, fs: 72, fw: 600, c: '#0b0b0c', ls: '-.04em', lab: '/impeccable', g: 0 },
+  { t: 20.2, fs: 104, fw: 700, c: '#0b0b0c', ls: '-.055em', lab: '/bolder', g: 0 },
+  { t: 20.84, fs: 60, fw: 400, c: '#8b8d91', ls: '-.02em', lab: '/quieter', g: 0 },
+  { t: 21.62, fs: 84, fw: 600, c: '#0b0b0c', ls: '-.045em', lab: '/polish ✓', g: 1 }];
+const gcells = [...G.children];
+function tick(t) {
+  const c = camAt(t), p = camAt(Math.max(0, t - SPD / 30));
+  world.style.transform = camT(c);
+  const hx = Math.abs(c.x - p.x) * .9 + Math.abs(c.ry - p.ry) * 32, vy = Math.abs(c.y - p.y) * .9 + Math.abs(c.rx - p.rx) * 32, zz = Math.abs(c.z - p.z + (p.d - c.d)) * .25;
+  const bx = Math.min(70, hx * .22 + zz * .05), by = Math.min(70, vy * .22 + zz * .05);
+  if (bx + by > .4) { mbg.setAttribute('stdDeviation', `${bx.toFixed(1)} ${by.toFixed(1)}`); cam.style.filter = 'url(#mb)'; } else cam.style.filter = 'none';
+  scenes.forEach((s, k) => { s.style.visibility = (k === c.i || (k === c.i - 1 && t < S[c.i] - TPRE + TD)) ? 'visible' : 'hidden'; });
+  $('#tag').innerHTML = `<b>${String(c.i + 1).padStart(2, '0')}</b> / ${NS}`;
+  // S4 wipe
+  $('#w2').style.clipPath = `inset(0 0 0 ${wipe.p}%)`; $('#hdl').style.left = wipe.p + '%';
+  // S5 live headline
+  let L = LIVE[0]; LIVE.forEach(s => { if (t >= s.t) L = s; });
+  const lh = $('#lh'); lh.style.fontSize = L.fs + 'px'; lh.style.fontWeight = L.fw; lh.style.color = L.c; lh.style.letterSpacing = L.ls;
+  const lines = L.fs > 90 ? 2 : (L.fs > 66 ? 2 : 1), hh = lines * L.fs;
+  $('#lsl').style.top = (140 + hh + (L.g ? 56 : 40)) + 'px'; $('#lcta').style.top = (140 + hh + (L.g ? 160 : 136)) + 'px';
+  $('#lst').textContent = L.lab; $('#gd1').style.opacity = $('#gd2').style.opacity = L.g ? 1 : 0;
+  // S7 grid sweep + flagged rules
+  const lit = Math.max(0, Math.min(62, Math.floor((t - 26.9) / 1.0 * 62)));
+  gcells.forEach((g, k) => { if (k >= 62) return; g.className = k < lit ? (FL.includes(k) && t > 27.0 + k / 62 + .15 ? 'fl' : 'on') : ''; });
+  $('#cn').textContent = Math.round(det.n); $('#dcmd').textContent = dcmdT.slice(0, Math.round(dc.n));
+  // S8 drum: steps to each spoken tool, then keeps rolling for "and more"
+  const steps = [[30.0, 0], [30.85, 1], [31.45, 2]]; let ang = 0;
+  steps.forEach(([ts, k], j) => { const u = Math.max(0, Math.min(1, (t - ts) / .35)); if (t >= ts) ang = (j ? steps[j - 1][1] : 0) * 36 + (k - (j ? steps[j - 1][1] : 0)) * 36 * (1 - Math.pow(1 - u, 3)); });
+  if (t > 32.0) ang = 72 + (t - 32.0) * 140;
+  $('#drum').style.transform = `rotateX(${ang}deg)`;
+  $('#icmd').textContent = icT.slice(0, Math.round(ic.n));
+}
+window.__seek = vt => { const t = vt * SPD; tl.time(t, false); tick(t); };
+__seek(0);
+if (!navigator.webdriver) { const t0 = performance.now(); const loop = () => { window.__seek(((performance.now() - t0) / 1000) % TOTAL); requestAnimationFrame(loop); }; requestAnimationFrame(loop); }
+</script>
+</body></html>

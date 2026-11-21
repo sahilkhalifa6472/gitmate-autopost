@@ -1,0 +1,15 @@
+Cloudflare just open-sourced their bug hunting skill, and it's #1 on GitHub trending today 🔍
+
+security-audit turns your coding agent into a full security auditor:
+→ 6 phases: recon, hunting, validation, structured output, verification, report
+→ The agent that checks a bug is never the agent that found it
+→ Verified findings.json, not noise
+
+✅ Install: npx skills add cloudflare/security-audit-skill --skill security-audit
+✅ Then just say: "security audit this codebase"
+✅ Free, MIT
+
+Comment GITMATE for the link 👇
+Follow @git.mate for 1 useful repo every day.
+
+#github #opensource #cybersecurity #appsec #cloudflare #aiagents #claudecode #codingagent #developer #programming #devtools #securityaudit

@@ -1,0 +1,21 @@
+{
+ "account": "git.mate",
+ "n": 6,
+ "slug": "opengym",
+ "title": "Open Gym: free self-hosted workout tracker",
+ "video": {
+  "file": "6.mp4",
+  "duration_sec": 37.4,
+  "source": "/mnt/project-files/dev-reels/opengym/gitmate_opengym.mp4"
+ },
+ "instagram": {
+  "caption": "Stop paying for your gym app 🏋️\n\nOpen Gym is a free, self-hosted workout tracker that you actually own:\n→ Plan your week + guided sessions that track every set\n→ 1,300+ exercises with animated demos\n→ Estimated 1RM + a muscle map of everything you trained\n→ Body weight synced across phone and laptop\n→ Your data stays in a folder you control\n\n✅ One Docker command and it's running\n✅ No subscription. No ads.\n\nComment GITMATE and I'll send you the link 👇\nFollow @git.mate for 1 useful repo every day.\n\n#github #opensource #selfhosted #fitness #gym #workout #docker #developer #programming #coding #homelab #devtools",
+  "hashtags": [],
+  "cover_offset_ms": 6200,
+  "share_to_feed": true
+ },
+ "posting": {
+  "audience": "US",
+  "timezone": "America/New_York"
+ }
+}

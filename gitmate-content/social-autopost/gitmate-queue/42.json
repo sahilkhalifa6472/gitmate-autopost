@@ -1,0 +1,22 @@
+{
+ "account": "git.mate",
+ "n": 42,
+ "slug": "ghost-downloader",
+ "title": "Ghost Downloader: free open-source download manager",
+ "video": {
+  "file": "42.mp4",
+  "duration_sec": 32.0,
+  "source": "/mnt/project-files/dev-reels/ghost-downloader/gitmate_ghost-downloader.mp4"
+ },
+ "instagram": {
+  "caption": "Five different apps\u2026 just to download stuff? \ud83d\ude29\n\nGhost Downloader is a free, open-source download manager that does it all in one app:\n\u2192 Paste a video link, drag the timeline and save only the part you need\n\u2192 Torrents (magnet), live streams (M3U8), FTP, eD2k and Hugging Face models in one queue\n\u2192 Link expired mid-download? Change it, your progress is kept\n\u2192 Browser extension sends downloads straight to the app\n\u2192 Windows, macOS, Linux and Android\n\u2192 ~13.9K \u2b50 on GitHub, GPL-3.0\n\nGet it: free installers on the GitHub Releases page (XiaoYouChR/Ghost-Downloader-3).\nPlease only download content you have the right to download \ud83d\ude4f\n\nComment GITMATE and I'll send you the link \ud83d\udc47\nFollow @git.mate for 1 useful repo every day.\n\n#downloadmanager #idm #freeapps #opensource #github #windows #macos #linux #android #torrent #productivity #techtips #developer #programming #coding #softwaretools\n",
+  "hashtags": [],
+  "cover_offset_ms": 2600,
+  "share_to_feed": true
+ },
+ "posting": {
+  "audience": "US",
+  "timezone": "America/New_York"
+ },
+ "link": "https://github.com/XiaoYouChR/Ghost-Downloader-3"
+}

@@ -1,0 +1,19 @@
+Your expensive AI model should be the boss, not the intern 🧠
+
+/improve is a new agent skill from shadcn (creator of shadcn/ui):
+→ Your smartest model audits the whole repo: bugs, security, performance, tests, tech debt, deps, DX, docs + feature ideas
+→ Every finding comes with exact file:line evidence, impact, effort and confidence
+→ It re-checks every finding itself and drops the false alarms
+→ You pick what matters, it writes one self-contained plan per finding in plans/
+→ Plans have verification gates + STOP conditions, so a much cheaper model can execute them step by step
+→ It never touches your source code. The plan is the product.
+
+Install: npx skills add shadcn/improve
+Then run: /improve (or /improve quick, /improve security, /improve branch)
+
+✅ Free + open source (MIT) · 11K+ ★ on GitHub
+
+Comment GITMATE and I'll send you the link 👇
+Follow @git.mate for 1 useful repo every day.
+
+#github #opensource #shadcn #aiagents #claudecode #codex #ai #llm #codereview #developer #programming #coding #webdev #devtools

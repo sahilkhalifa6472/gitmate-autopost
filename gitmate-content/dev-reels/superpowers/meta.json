@@ -1,0 +1,10 @@
+{
+ "title": "Superpowers: the skills framework that makes your AI coding agent plan, test and review",
+ "caption": "Your AI coding agent jumps straight into code. This repo stops that. \u26a1\n\nSuperpowers (308k \u2b50 on GitHub) is a skills framework that gives your coding agent a real dev process:\n\u2192 Brainstorming first: it asks what you're actually building, then writes a spec you sign off\n\u2192 Writing plans: bite-sized tasks of 2-5 minutes, with exact file paths and verify steps\n\u2192 A fresh subagent per task (subagent-driven development)\n\u2192 Real TDD: write the test, watch it fail, then make it pass\n\u2192 Two-stage code review (spec, then code quality) before moving on\n\n\u2705 Free + open source (MIT)\n\u2705 Works with Claude Code, Codex, Cursor, Gemini CLI, Copilot CLI and more\n\nComment GITMATE and I'll send you the link \ud83d\udc47\nFollow @git.mate for 1 useful repo every day.\n\n#github #opensource #claudecode #aiagents #codingagent #tdd #softwareengineering #devtools #developer #programming #cursor #ai\n",
+ "repo_url": "https://github.com/obra/superpowers",
+ "date": "2026-10-29",
+ "theme": "dark",
+ "video": "/mnt/project-files/dev-reels/superpowers/gitmate_superpowers.mp4",
+ "duration_sec": 35.81,
+ "cover_offset_ms": 4780
+}

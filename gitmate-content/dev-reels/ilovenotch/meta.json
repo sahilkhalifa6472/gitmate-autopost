@@ -1,0 +1,10 @@
+{
+ "video": "gitmate_ilovenotch.mp4",
+ "title": "ILoveNotch: turn your MacBook notch into a free control center (by @niyamvora)",
+ "description": "That black notch on your MacBook? It does\u2026 nothing. \ud83d\udda4\n\nILoveNotch, built by @niyamvora, turns it into a tiny control center:\n\u2192 Hover it: now playing + a volume slider for every app\n\u2192 Drop files on it to keep them handy (Quick Look, AirDrop)\n\u2192 Calendar, Reminders, notes, timers, network speed\n\u2192 See your Claude, Codex and Copilot usage limits at a glance\n\u2192 Native SwiftUI, ~77 MB of RAM, 0.0% CPU at rest\n\nInstall: download the DMG, drag it into Applications, done (or brew install --cask niyamvora/tap/ilovenotch). macOS 14.6+.\n\nFree and open-source (MIT) \u00b7 built by @niyamvora \ud83d\ude4c\n\nWant your repo featured too? DM us FEATURE \ud83d\udce9\nComment GITMATE and I'll send you the link \ud83d\udc47\nFollow @git.mate for 1 useful repo every day.\n\n#macbook #macos #mac #notch #productivity #opensource #github #swiftui #macapps #apple #developer #programming #coding #devtools #indiedev #setup\n",
+ "repo": "https://github.com/niyamvora/ILoveNotch",
+ "theme": "light",
+ "duration": 35.71,
+ "cover_offset_ms": 3800,
+ "source": "Old free DM repo (Orders > free, @niyamvora)"
+}

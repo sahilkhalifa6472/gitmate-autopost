@@ -1,0 +1,16 @@
+Your AI-built website looks like every other AI website. This repo fixes that. 🎨
+
+Impeccable (95k+ ⭐ on GitHub) is a design vocabulary for your coding agent:
+→ Steer with commands like /bolder, /quieter, /polish, /distill, /typeset (24 in total)
+→ critique scores your design against usability heuristics, audit ranks fixes from P0 (blocking) to P3 (polish)
+→ A slop detector with 62 deterministic rules: Inter everywhere, purple gradients, cards inside cards… No LLM, no API key
+→ Live mode: pick an element in your browser and cycle through variants
+
+✅ Free + open source (Apache 2.0)
+✅ Works with Claude Code, Cursor, Codex CLI, GitHub Copilot, Gemini CLI and more
+✅ One command: npx impeccable install
+
+Comment GITMATE and I'll send you the link 👇
+Follow @git.mate for 1 useful repo every day.
+
+#github #opensource #webdesign #uidesign #claudecode #cursor #aiagents #frontend #devtools #developer #programming #ai

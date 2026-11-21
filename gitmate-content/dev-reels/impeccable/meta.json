@@ -1,0 +1,8 @@
+{
+ "video": "gitmate_impeccable.mp4",
+ "title": "Impeccable: stop your AI agent from shipping generic UI",
+ "description": "Your AI-built website looks like every other AI website. This repo fixes that. \ud83c\udfa8\n\nImpeccable (95k+ \u2b50 on GitHub) is a design vocabulary for your coding agent:\n\u2192 Steer with commands like /bolder, /quieter, /polish, /distill, /typeset (24 in total)\n\u2192 critique scores your design against usability heuristics, audit ranks fixes from P0 (blocking) to P3 (polish)\n\u2192 A slop detector with 62 deterministic rules: Inter everywhere, purple gradients, cards inside cards\u2026 No LLM, no API key\n\u2192 Live mode: pick an element in your browser and cycle through variants\n\n\u2705 Free + open source (Apache 2.0)\n\u2705 Works with Claude Code, Cursor, Codex CLI, GitHub Copilot, Gemini CLI and more\n\u2705 One command: npx impeccable install\n\nComment GITMATE and I'll send you the link \ud83d\udc47\nFollow @git.mate for 1 useful repo every day.\n\n#github #opensource #webdesign #uidesign #claudecode #cursor #aiagents #frontend #devtools #developer #programming #ai\n",
+ "repo": "https://github.com/pbakaus/impeccable",
+ "theme": "light",
+ "duration": 36.58
+}

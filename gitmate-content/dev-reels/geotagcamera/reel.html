@@ -1,0 +1,349 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<title>git.mate geotagcamera</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<style>
+:root{--ink:#0b0b0c;--mut:#8b8d91;--dim:#cfd0d2;--bg:#f7f7f5}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#fff}
+.f{position:relative;width:1080px;height:1920px;overflow:hidden;background:radial-gradient(ellipse 110% 70% at 50% 45%,#ffffff 0%,#f7f7f5 55%,#eeeeec 100%);color:var(--ink);font-family:'Inter',sans-serif}
+#cam{position:absolute;inset:0}
+#stage{position:absolute;inset:0;perspective:1800px;perspective-origin:50% 50%}
+#world{position:absolute;left:0;top:0;width:1080px;height:1920px;transform-style:preserve-3d;transform-origin:540px 960px}
+.sc{position:absolute;left:0;top:0;width:1080px;height:1920px;transform-style:preserve-3d;transform-origin:540px 960px;visibility:hidden}
+.ring{position:absolute;border-radius:50%;border:70px solid rgba(10,10,12,.045);filter:blur(26px)}
+.grain{position:absolute;inset:0;opacity:.05;mix-blend-mode:multiply;z-index:8;pointer-events:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
+.top{position:absolute;left:64px;right:64px;top:84px;height:80px;z-index:6}
+.brand{position:absolute;left:0;top:0;display:flex;align-items:center;gap:16px;font-family:'JetBrains Mono';font-weight:700;font-size:28px}
+.mk{width:58px;height:58px;border-radius:50%;display:grid;place-items:center;font-family:'JetBrains Mono';font-weight:800;font-size:22px;color:#fff;background:radial-gradient(circle at 34% 28%,#5a5c61 0 10%,#1a1b1e 45%,#000 100%);box-shadow:inset 0 2px 3px rgba(255,255,255,.35),0 8px 18px rgba(0,0,0,.25)}
+.tag{position:absolute;right:0;top:14px;font-family:'JetBrains Mono';font-size:24px;color:var(--mut);white-space:nowrap}
+.tag b{color:var(--ink);font-weight:700}
+.C{position:absolute;left:0;right:0;text-align:center;white-space:nowrap}
+.kick{font-family:'JetBrains Mono';font-size:26px;color:var(--mut);letter-spacing:1px}
+.sans{font-weight:600;letter-spacing:-.035em;line-height:1}
+.ser{font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;letter-spacing:-.01em;line-height:1}
+.ch{display:inline-block;white-space:pre}
+.mono{font-family:'JetBrains Mono'}
+.card{position:absolute;background:#fff;border-radius:26px;box-shadow:0 0 0 2px var(--ink),0 8px 0 var(--ink),0 40px 70px rgba(0,0,0,.14);overflow:hidden}
+.bpill{display:inline-block;padding:4px 26px 12px;border-radius:24px;background:var(--ink);color:#fff;font-family:'Inter';font-style:normal;font-weight:600;letter-spacing:-.035em;vertical-align:6px}
+.g{}
+
+
+/* ===== GeoTag Camera scene CSS ===== */
+.realb{position:absolute;right:18px;top:18px;z-index:3;padding:7px 16px;border-radius:999px;font-family:'JetBrains Mono';font-weight:800;font-size:17px;background:var(--ink);color:#fff}
+.phone{position:absolute;width:440px;height:960px;border-radius:64px;padding:16px;background:linear-gradient(160deg,#2b2c30,#0b0b0c);box-shadow:0 0 0 3px var(--ink),0 10px 0 #1a1a1c,0 18px 0 #0b0b0c,0 60px 90px rgba(0,0,0,.22)}
+.phone .scr{position:relative;width:100%;height:100%;border-radius:50px;overflow:hidden;background:#000}
+.phone .scr img{position:absolute;left:0;top:0;width:100%;height:100%;object-fit:cover;display:block}
+.phone .isl{position:absolute;left:50%;top:30px;width:110px;height:30px;margin-left:-55px;border-radius:15px;background:#000;z-index:4}
+/* S1 ad wall */
+.adov{position:absolute;inset:0;background:#111214;color:#fff;display:grid;place-items:center;z-index:2}
+.adov .big{font-weight:700;font-size:200px;letter-spacing:-.05em;line-height:1}
+.adov .ad{position:absolute;left:30px;top:80px;padding:6px 16px;border-radius:8px;background:#fff;color:#000;font-family:'JetBrains Mono';font-weight:800;font-size:22px}
+.adov .sk{position:absolute;right:26px;bottom:70px;padding:16px 26px;border-radius:14px;background:rgba(255,255,255,.12);font-family:'JetBrains Mono';font-weight:700;font-size:24px;white-space:pre}
+.adov .bars{position:absolute;left:30px;right:30px;top:640px}
+.adov .bars i{display:block;height:18px;border-radius:9px;background:rgba(255,255,255,.14);margin-bottom:16px}
+.pw{position:absolute;left:0;right:0;bottom:0;height:470px;border-radius:40px 40px 0 0;background:#fff;color:var(--ink);z-index:3;padding:40px 36px;box-shadow:0 -20px 40px rgba(0,0,0,.4)}
+.pw .lk{width:80px;height:96px;margin:0 auto 18px;display:block}
+.pw h5{text-align:center;font-weight:700;font-size:40px;letter-spacing:-.03em}
+.pw p{text-align:center;font-family:'JetBrains Mono';font-size:21px;color:var(--mut);margin-top:12px}
+.pw .bt{margin:30px auto 0;width:300px;height:76px;border-radius:38px;background:var(--ink);color:#fff;display:grid;place-items:center;font-weight:700;font-size:30px}
+.st1{position:absolute;left:640px;top:1250px;padding:14px 36px;border:6px solid var(--ink);border-radius:20px;font-family:'Instrument Serif';font-style:italic;font-size:92px;transform:rotate(-8deg);opacity:0;background:rgba(255,255,255,.85)}
+/* S2 credit */
+.cred{position:absolute;left:0;right:0;top:1620px;text-align:center;font-family:'JetBrains Mono';font-size:30px;white-space:pre;height:44px}
+/* S3 stamp anatomy */
+.stc{left:60px;top:640px;width:960px;height:230px;padding:0;border-radius:22px}
+.stc img{width:100%;height:100%;display:block}
+.lead{position:absolute;width:3px;background:var(--ink);transform-origin:50% 0}
+.fld{position:absolute;left:96px;width:888px;height:118px;border-radius:22px;background:#fff;box-shadow:0 0 0 2.5px var(--ink),0 7px 0 var(--ink),0 26px 40px rgba(0,0,0,.1);display:flex;align-items:center;gap:26px;padding:0 30px}
+.fld .k{font-family:'JetBrains Mono';font-weight:800;font-size:22px;color:var(--mut);width:150px}
+.fld .v{font-weight:600;font-size:40px;letter-spacing:-.02em;white-space:nowrap}
+.dot{position:absolute;width:26px;height:26px;border-radius:50%;background:var(--ink);box-shadow:0 0 0 7px #fff,0 0 0 9.5px var(--ink)}
+/* S4 seal */
+.ph4{left:90px;top:600px}
+.seal{position:absolute;left:560px;top:660px;width:400px;height:400px;border-radius:50%;display:grid;place-items:center;text-align:center;
+  background:radial-gradient(circle at 36% 30%,#4a4b50 0 8%,#1a1b1e 50%,#000 100%);color:#fff;box-shadow:inset 0 6px 12px rgba(255,255,255,.25),inset 0 -10px 20px rgba(0,0,0,.6),0 30px 60px rgba(0,0,0,.3)}
+.seal b{display:block;font-family:'Instrument Serif';font-style:italic;font-weight:400;font-size:84px;line-height:1}
+.seal small{display:block;font-family:'JetBrains Mono';font-size:22px;letter-spacing:3px;margin-top:10px;color:#c9cacc}
+.seal svg{position:absolute;inset:14px}
+.hash{position:absolute;left:540px;top:1120px;width:440px;font-family:'JetBrains Mono';font-size:23px;line-height:1.55;white-space:pre;height:150px}
+.ver{left:90px;top:1600px;width:900px;height:342px;padding:0;border-radius:22px}
+.ver img{width:100%;height:100%;display:block}
+/* S5 signal + plaques */
+.sig{position:absolute;left:390px;top:560px;width:300px;height:260px}
+.sig i{position:absolute;bottom:0;width:52px;border-radius:12px;background:var(--ink)}
+.sigl{position:absolute;left:0;right:0;top:850px;text-align:center;font-family:'JetBrains Mono';font-weight:700;font-size:30px;white-space:pre;height:44px}
+.plq{position:absolute;left:150px;width:780px;height:170px;border-radius:28px;background:linear-gradient(180deg,#fff,#ececea);box-shadow:0 0 0 3px var(--ink),0 10px 0 var(--ink),0 34px 50px rgba(0,0,0,.14);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:96px;letter-spacing:-.05em}
+.plq .no{font-family:'Instrument Serif';font-style:italic;font-weight:400;margin-right:24px;color:var(--mut)}
+.plq .sk{position:absolute;right:34px;top:50%;width:96px;height:96px;margin-top:-48px;border-radius:50%;background:var(--ink);color:#fff;display:grid;place-items:center;font-size:52px;font-weight:800;transform:scale(0)}
+/* S6 apk */
+.apk{position:absolute;left:360px;top:560px;width:360px;height:360px;transform-style:preserve-3d}
+.apk .fc{position:absolute;display:grid;place-items:center;border-radius:6px}
+.apk .fr{background:linear-gradient(160deg,#fff,#e4e4e2);box-shadow:inset 0 0 0 3px var(--ink);font-weight:800;font-size:72px;letter-spacing:-.04em}
+.apk .sd{background:#1a1b1e}
+.apk .tp{background:#3a3b40}
+.fn6{position:absolute;left:0;right:0;top:1000px;text-align:center;font-family:'JetBrains Mono';font-weight:800;font-size:30px;white-space:pre;height:44px}
+.rel{left:70px;top:1110px;width:940px;height:300px;padding:34px 40px}
+.rel .h{font-family:'JetBrains Mono';font-size:22px;color:var(--mut)}
+.rel .r{display:flex;align-items:center;gap:20px;margin-top:22px;font-family:'JetBrains Mono';font-weight:700;font-size:28px;white-space:nowrap}
+.rel .r b{flex:none;width:40px;height:40px;border-radius:10px;background:var(--ink);color:#fff;display:grid;place-items:center;font-size:24px}
+.by6{position:absolute;left:0;right:0;top:1480px;text-align:center;font-size:58px}
+/* S7 DM thread */
+.th{left:110px;top:640px;width:860px;height:500px;padding:30px 36px}
+.th .hd{display:flex;align-items:center;gap:20px;padding-bottom:24px;border-bottom:2px solid #e3e3e1}
+.th .hd .mk{width:70px;height:70px;font-size:26px}
+.th .hd b{font-family:'JetBrains Mono';font-size:30px}
+.bub{position:absolute;padding:24px 36px;border-radius:40px;font-size:40px;font-weight:600;white-space:nowrap}
+.bub.me{right:36px;background:var(--ink);color:#fff;border-radius:40px 40px 12px 40px}
+.bub.them{left:36px;background:#efefed;border-radius:40px 40px 40px 12px}
+.plane{position:absolute;width:90px;height:90px}
+
+/* ending */
+.cin{display:flex;align-items:center;gap:26px;padding:0 26px 0 30px;background:#fff;box-shadow:0 0 0 2px var(--ink),0 6px 0 var(--ink),0 30px 50px rgba(0,0,0,.12)}
+.cbar{position:absolute}
+.av{width:76px;height:76px;border-radius:50%;background:linear-gradient(135deg,#d9d9d7,#a9aaad);flex:none}
+.cin .tx{flex:1;font-size:46px;font-weight:600;letter-spacing:.02em}
+.send{width:84px;height:84px;border-radius:50%;background:var(--ink);display:grid;place-items:center;color:#fff;font-size:40px;flex:none}
+.dm{position:absolute;padding:30px 44px;border-radius:44px 44px 44px 12px;background:var(--ink);color:#fff;font-size:42px;font-weight:500;white-space:nowrap}
+.dm small{display:block;font-family:'JetBrains Mono';font-size:20px;color:#9a9ca1;margin-bottom:8px}
+.bigmk{position:absolute;left:400px;top:600px;width:280px;height:280px;border-radius:50%;display:grid;place-items:center;font-family:'JetBrains Mono';font-weight:800;font-size:96px;color:#fff;background:radial-gradient(circle at 34% 26%,#6a6c71 0 8%,#1c1d20 42%,#000 100%);box-shadow:inset 0 6px 10px rgba(255,255,255,.3),inset 0 -14px 26px rgba(0,0,0,.6),0 40px 80px rgba(0,0,0,.28)}
+.erings{position:absolute;left:290px;top:490px;width:500px;height:500px}
+.fol{position:absolute;left:300px;top:1390px;width:480px;height:132px;border-radius:999px;display:grid;place-items:center;font-size:50px;font-weight:600;background:var(--ink);color:#fff;box-shadow:0 22px 44px rgba(0,0,0,.22)}
+.fol2{position:absolute;left:300px;top:1390px;width:480px;height:132px;border-radius:999px;display:grid;place-items:center;font-size:50px;font-weight:600;background:#fff;color:var(--ink);border:3px solid var(--ink);opacity:0}
+.tapd{position:absolute;width:90px;height:90px;border-radius:50%;background:rgba(11,11,12,.18);border:3px solid rgba(11,11,12,.55);opacity:0}
+.rip{position:absolute;left:540px;top:1456px;width:10px;height:10px;margin:-5px;border-radius:50%;border:4px solid var(--ink);opacity:0}
+</style></head>
+<body>
+<svg width="0" height="0" style="position:absolute"><defs>
+  <filter id="mb" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur id="mbg" stdDeviation="0 0"/></filter>
+</defs></svg>
+<div class="f" id="F">
+ <div id="cam"><div id="stage"><div id="world">
+  <!-- S1 hook: ad wall + paywall -->
+  <div class="sc" id="s1" data-pose="0,0,0,0,0,0">
+    <div class="ring" style="left:-300px;top:1300px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+        <div class="C sans ty" style="top:260px;font-size:82px;font-weight:700;letter-spacing:-.05em;transform:translateZ(120px)" data-t="0.08" data-cd=".035">Ads before the camera?</div>
+    <div class="C ser rv" style="top:400px;font-size:90px;transform:translateZ(120px)" data-t="4.5">then a <span class="bpill">subscription</span></div>
+    <div class="phone" id="ph1" style="left:320px;top:560px">
+      <div class="scr"><img src="media/s1.jpg"><div class="isl"></div>
+        <div class="adov" id="adov"><span class="ad">AD</span><div class="big" id="adn">5</div><div class="bars"><i style="width:80%"></i><i></i><i style="width:60%"></i></div><div class="sk" id="adsk">Skip in 5</div></div>
+        <div class="pw" id="pw"><svg class="lk" viewBox="0 0 80 96"><path id="shk1" d="M18 42 V28 a22 22 0 0 1 44 0 V42" fill="none" stroke="#0b0b0c" stroke-width="8"/><rect x="6" y="42" width="68" height="50" rx="12" fill="#0b0b0c"/></svg>
+          <h5>Unlock location stamp</h5><p>PRO · weekly subscription</p><div class="bt">Subscribe</div></div>
+      </div></div>
+    <div class="st1" id="st1">nope.</div>
+  </div>
+
+  <!-- S2 meet GeoTag Camera -->
+  <div class="sc" id="s2" data-pose="2600,0,-1200,30,0,0">
+    <div class="ring" style="left:640px;top:-160px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="C sans ty" style="top:250px;font-size:120px;font-weight:700;letter-spacing:-.055em;transform:translateZ(120px)" data-t="7.44" data-cd=".04">this one's free.</div>
+    <div class="C ser rv" style="top:400px;font-size:86px;transform:translateZ(120px)" data-t="8.72">GeoTag Camera <span class="bpill">Android</span></div>
+    <div class="phone" id="ph2" style="left:320px;top:600px"><div class="scr"><img src="media/s1.jpg"><div class="isl"></div></div><span class="realb" style="top:70px;right:40px">REAL APP</span></div>
+    <div class="cred" id="cred2"></div>
+  </div>
+
+  <!-- S3 stamp anatomy -->
+  <div class="sc" id="s3" data-pose="2600,2600,-900,0,-24,0">
+    <div class="ring" style="left:-300px;top:-160px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="C sans ty" style="top:250px;font-size:104px;font-weight:700;letter-spacing:-.05em;transform:translateZ(120px)" data-t="10.8" data-cd=".04">Stamped on</div>
+    <div class="C ser rv" style="top:390px;font-size:96px;transform:translateZ(120px)" data-t="14.48">every <span class="bpill">photo</span></div>
+    <div class="card stc c3d" data-t="10.7" data-rx="8"><img src="media/stamp.jpg"><span class="realb">REAL STAMP</span></div>
+    <div class="lead" id="ld" style="left:66px;top:900px;height:0"></div>
+    <div class="fld" id="fd0" style="top:950px"><span class="k">PLACE</span><span class="v">College Square, Kolkata</span></div>
+    <div class="fld" id="fd1" style="top:1110px"><span class="k">ADDRESS</span><span class="v">7MJCH9F7+2H · Plus Code</span></div>
+    <div class="fld" id="fd2" style="top:1270px"><span class="k">LAT · LONG</span><span class="v">22.572600°, 88.363900°</span></div>
+    <div class="fld" id="fd3" style="top:1430px"><span class="k">TIME</span><span class="v">14/10/2026 01:39 AM</span></div>
+    <div class="dot" id="dt0" style="left:54px;top:996px"></div><div class="dot" id="dt1" style="left:54px;top:1156px"></div><div class="dot" id="dt2" style="left:54px;top:1316px"></div><div class="dot" id="dt3" style="left:54px;top:1476px"></div>
+  </div>
+
+  <!-- S4 signed on the phone -->
+  <div class="sc" id="s4" data-pose="0,2600,-1400,-28,0,0">
+    <div class="ring" style="left:640px;top:1300px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="C sans ty" style="top:250px;font-size:104px;font-weight:700;letter-spacing:-.05em;transform:translateZ(120px)" data-t="16.16" data-cd=".04">Signed on</div>
+    <div class="C ser rv" style="top:390px;font-size:96px;transform:translateZ(120px)" data-t="17.0">your <span class="bpill">phone</span></div>
+    <div class="phone" id="ph4" style="left:80px;top:590px;width:350px;height:770px;border-radius:52px"><div class="scr" style="border-radius:44px"><img src="media/s2.jpg"><div class="isl"></div></div></div>
+    <div class="seal" id="seal"><svg viewBox="0 0 392 392"><circle cx="196" cy="196" r="180" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="2" stroke-dasharray="6 10"/></svg><div><b>signed</b><small>SHA-256</small></div></div>
+    <div class="hash" id="hash"></div>
+    <div class="card ver c3d" data-t="18.3" data-rx="8" data-ry="-6" style="top:1500px"><img src="media/verify.jpg"><span class="realb">REAL CHECK</span></div>
+  </div>
+
+  <!-- S5 no signal, no ads/account/paywall -->
+  <div class="sc" id="s5" data-pose="0,5200,-900,0,26,0">
+    <div class="ring" style="left:-300px;top:1300px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="C sans ty" style="top:250px;font-size:104px;font-weight:700;letter-spacing:-.05em;transform:translateZ(120px)" data-t="21.0" data-cd=".04">Works offline.</div>
+    <div class="sig" id="sig"><i style="left:0;height:70px"></i><i style="left:82px;height:130px"></i><i style="left:164px;height:190px"></i><i style="left:246px;height:250px"></i></div>
+    <div class="sigl" id="sigl"></div>
+    <div class="plq" id="pq0" style="top:1000px"><span class="no">no</span>ads<b class="sk" id="sk0">✓</b></div>
+    <div class="plq" id="pq1" style="top:1230px"><span class="no">no</span>account<b class="sk" id="sk1">✓</b></div>
+    <div class="plq" id="pq2" style="top:1460px"><span class="no">no</span>paywall<b class="sk" id="sk2">✓</b></div>
+  </div>
+
+  <!-- S6 APK from GitHub Releases -->
+  <div class="sc" id="s6" data-pose="2600,5200,-1300,30,0,0">
+    <div class="ring" style="left:640px;top:-160px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="C sans ty" style="top:250px;font-size:110px;font-weight:700;letter-spacing:-.05em;transform:translateZ(120px)" data-t="25.16" data-cd=".04">grab the APK.</div>
+    <div class="C ser rv" style="top:400px;font-size:80px;transform:translateZ(120px)" data-t="26.08">from <span class="bpill">GitHub Releases</span></div>
+    <div class="apk" id="apk"></div>
+    <div class="fn6" id="fn6"></div>
+    <div class="card rel c3d" data-t="25.6" data-rx="8"><div class="h">konkomaji/geotagcamera · latest release</div>
+      <div class="r"><b>↓</b>geotagcamera-arm64-v8a.apk</div><div class="r"><b>↓</b>geotagcamera-universal.apk</div><div class="r" style="color:var(--mut)"><b style="background:#b9babd">#</b>.sha256 checksums</div></div>
+    <div class="by6 ser rv" data-t="26.5">built by <span class="bpill">@konkomaji</span></div>
+  </div>
+
+  <!-- S7 DM FEATURE -->
+  <div class="sc" id="s7" data-pose="2600,7800,-900,0,-24,0">
+    <div class="ring" style="left:-300px;top:-160px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="C sans ty" style="top:260px;font-size:82px;font-weight:700;letter-spacing:-.055em;transform:translateZ(120px)" data-t="27.41" data-cd=".035">Want your repo featured?</div>
+    <div class="C ser rv" style="top:390px;font-size:92px;transform:translateZ(120px)" data-t="28.96">DM us <span class="bpill">FEATURE</span></div>
+    <div class="card th c3d" data-t="27.5" data-rx="8" data-ry="-6"><div class="hd"><div class="mk">&gt;_</div><b>git.mate</b></div>
+      <div class="bub me" id="bm" style="top:170px"><span id="bmt"></span></div>
+      <div class="bub them" id="bt" style="top:330px">Send us your repo 👀</div>
+      </div>
+    <svg class="plane" id="plane" viewBox="0 0 24 24" style="left:780px;top:760px"><path d="M2 21l21-9L2 3v7l15 2-15 2z" fill="#0b0b0c"/></svg>
+  </div>
+
+  <!-- S8 comment -->
+  <div class="sc" id="s8" data-pose="0,7800,-1300,-30,0,0">
+    <div class="ring" style="left:620px;top:1300px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="C sans rv" style="top:380px;font-size:120px;font-weight:500" data-t="30.24">Comment</div>
+    <div class="C sans ty" style="top:510px;font-size:196px;font-weight:700;letter-spacing:-.04em" data-t="30.56" data-cd=".05">GITMATE</div>
+    <div class="cbar cin c3d" style="left:64px;top:860px;width:952px;height:140px;border-radius:999px" data-t="29.95" data-rx="10"><div class="av"></div><div class="tx" id="ctx"></div><div class="send">↑</div></div>
+    <div class="dm pp" style="left:250px;top:1110px" data-t="31.35"><small>git.mate · message</small>Here's your link, mate →</div>
+  </div>
+  <!-- S9 end -->
+  <div class="sc" id="s9" data-pose="0,10400,-900,0,24,0">
+    <div class="ring" style="left:-300px;top:-160px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="ring" style="left:640px;top:1400px;width:760px;height:760px;transform:translateZ(-800px)"></div>
+    <svg class="erings" viewBox="0 0 500 500"><circle id="er1" cx="250" cy="250" r="226" fill="none" stroke="#0b0b0c" stroke-width="3" stroke-dasharray="1420" stroke-dashoffset="1420" transform="rotate(-90 250 250)"/>
+      <circle id="er2" cx="250" cy="250" r="246" fill="none" stroke="#c9cacc" stroke-width="2" stroke-dasharray="1546" stroke-dashoffset="1546" transform="rotate(90 250 250)"/></svg>
+    <div class="bigmk" id="bigmk">&gt;_</div>
+    <div class="C sans ty" style="top:1050px;font-size:104px;font-weight:700" data-t="32.6" data-cd=".05">@git.mate</div>
+    <div class="C ser" style="top:1200px;font-size:96px"><span class="rv g" data-t="33.1">1 repo</span> <span class="rv" data-t="33.4">every</span> <span class="rv" data-t="33.65">day.</span></div>
+    <div class="fol pp" id="fol" data-t="32.75">Follow</div>
+    <div class="fol2" id="fol2">Following ✓</div>
+    <div class="rip" id="rip"></div>
+    <div class="tapd" id="tapd" style="left:640px;top:1560px"></div>
+  </div>
+ </div></div></div>
+ <div class="top"><div class="brand"><div class="mk">&gt;_</div>git.mate</div><div class="tag" id="tag"><b>01</b> / 9</div></div>
+ <div class="grain"></div>
+</div>
+<script>
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+const SPD = 1.06, RAWTOTAL = 35.1, TOTAL = RAWTOTAL / SPD; window.__TOTAL = TOTAL;
+const S = [0, 6.95, 10.55, 15.45, 20.75, 24.85, 27.2, 30.1, 32.25];
+const NS = S.length;
+const sm = (a, b, x) => { const k = Math.min(1, Math.max(0, (x - a) / (b - a))); return k * k * (3 - 2 * k); };
+const cl = (a, b, x) => Math.min(1, Math.max(0, (x - a) / (b - a)));
+const bump = (t, c, w) => Math.max(0, 1 - Math.abs(t - c) / w);
+
+// S6 APK box
+{ const w = 300, d = 300, cube = `<div class="fc fr" style="left:30px;top:30px;width:${w}px;height:${w}px;transform:translateZ(${d / 2}px)">APK</div>
+  <div class="fc sd" style="left:30px;top:30px;width:${d}px;height:${w}px;transform:rotateY(90deg) translateZ(${w / 2}px)"></div>
+  <div class="fc sd" style="left:30px;top:30px;width:${d}px;height:${w}px;transform:rotateY(-90deg) translateZ(${w / 2}px)"></div>
+  <div class="fc fr" style="left:30px;top:30px;width:${w}px;height:${w}px;transform:rotateY(180deg) translateZ(${d / 2}px);font-size:40px">.apk</div>
+  <div class="fc tp" style="left:30px;top:30px;width:${w}px;height:${d}px;transform:rotateX(90deg) translateZ(${w / 2}px)"></div>
+  <div class="fc tp" style="left:30px;top:30px;width:${w}px;height:${d}px;transform:rotateX(-90deg) translateZ(${w / 2}px)"></div>`; $('#apk').innerHTML = cube; }
+
+const scenes = $$('.sc');
+const poses = scenes.map(s => s.dataset.pose.split(',').map(Number));
+scenes.forEach((s, i) => { const [x, y, z, ry, rx, rz] = poses[i]; s.style.transform = `translate3d(${x}px,${y}px,${z}px) rotateY(${ry}deg) rotateX(${rx}deg) rotateZ(${rz}deg)`; });
+const tl = gsap.timeline({ paused: true });
+$$('.ty').forEach(el => { const t = +el.dataset.t, cd = +(el.dataset.cd || .045); const txt = el.textContent; el.textContent = '';
+  const chs = [...txt].map(c => { const s = document.createElement('span'); s.className = 'ch'; s.textContent = c; el.appendChild(s); return s; });
+  tl.set(chs, { opacity: 0 }, 0);
+  chs.forEach((c, i) => tl.fromTo(c, { opacity: 0, y: 26, filter: 'blur(14px)' }, { opacity: 1, y: 0, filter: 'blur(0px)', duration: .42, ease: 'power3.out', immediateRender: false }, Math.max(0.001, t + i * cd))); });
+$$('.rv').forEach(el => { const t = +el.dataset.t; if (isNaN(t)) return;
+  tl.set(el, { opacity: 0 }, 0); tl.fromTo(el, { opacity: 0, y: 46, filter: 'blur(16px)' }, { opacity: 1, y: 0, filter: 'blur(0px)', duration: .55, ease: 'power3.out', immediateRender: false }, Math.max(0.001, t)); });
+$$('.pp').forEach(el => { const t = +el.dataset.t;
+  tl.set(el, { opacity: 0 }, 0); tl.fromTo(el, { opacity: 0, scale: .55, filter: 'blur(10px)' }, { opacity: 1, scale: 1, filter: 'blur(0px)', duration: .5, ease: 'back.out(2.2)', immediateRender: false }, t); });
+$$('.c3d').forEach(el => { const t = +el.dataset.t, rx = +(el.dataset.rx || 0), ry = +(el.dataset.ry || 0);
+  tl.set(el, { opacity: 0, transformPerspective: 1500 }, 0);
+  tl.fromTo(el, { opacity: 0, rotationX: rx + 50, rotationY: ry * 2.5, y: 260, z: -500, scale: .9 }, { opacity: 1, rotationX: rx, rotationY: ry, y: 0, z: 0, scale: 1, duration: 1.05, ease: 'expo.out', immediateRender: false }, Math.max(0.001, t));
+  tl.to(el, { rotationX: rx * .4, rotationY: -ry * .5, duration: 3.2, ease: 'sine.inOut' }, Math.max(0.001, t) + 1.05); });
+// comment typing
+const cm = { n: 0 };
+tl.fromTo(cm, { n: 0 }, { n: 7, duration: .45, ease: 'none', immediateRender: false, onUpdate: () => $('#ctx').textContent = 'GITMATE'.slice(0, Math.round(cm.n)) }, 30.7);
+// end
+const E = 32.3;
+tl.set('#bigmk', { opacity: 0, scale: .2 }, 0);
+tl.to('#bigmk', { opacity: 1, scale: 1, duration: .9, ease: 'back.out(1.8)' }, E);
+tl.fromTo('#er1', { attr: { 'stroke-dashoffset': 1420 } }, { attr: { 'stroke-dashoffset': 0 }, duration: 1.0, ease: 'power2.inOut', immediateRender: false }, E + .15);
+tl.fromTo('#er2', { attr: { 'stroke-dashoffset': 1546 } }, { attr: { 'stroke-dashoffset': 0 }, duration: 1.2, ease: 'power2.inOut', immediateRender: false }, E + .3);
+tl.to('#tapd', { opacity: 1, left: 560, top: 1440, duration: .5, ease: 'power2.out' }, E + 1.4);
+tl.to('#tapd', { scale: .7, duration: .1 }, E + 1.9); tl.to('#tapd', { scale: 1, duration: .15 }, E + 2.0);
+tl.to('#fol', { scale: .93, duration: .1 }, E + 1.9); tl.to('#fol', { scale: 1, duration: .2 }, E + 2.0);
+tl.set('#fol2', { opacity: 1 }, E + 2.0); tl.set('#fol', { opacity: 0 }, E + 2.0);
+tl.fromTo('#rip', { opacity: .7, width: 10, height: 10, margin: -5 }, { opacity: 0, width: 640, height: 640, margin: -320, duration: .8, ease: 'power2.out', immediateRender: false }, E + 1.95);
+tl.to('#tapd', { opacity: 0, duration: .3 }, E + 2.35);
+tl.to({}, { duration: .01 }, RAWTOTAL);
+
+const ease = x => x < .5 ? 16 * x ** 5 : 1 - Math.pow(-2 * x + 2, 5) / 2;
+const TD = .8, TPRE = .45;
+function camAt(t) {
+  let i = 0; for (let k = 0; k < S.length; k++) if (t >= S[k] - TPRE) i = k;
+  const ta = S[i] - TPRE; let p = poses[i].slice(), d = 0, rr = 0;
+  if (i > 0 && t < ta + TD) { const u = (t - ta) / TD, e = ease(u), a = poses[i - 1]; p = a.map((v, j) => v + (poses[i][j] - v) * e); d = Math.sin(u * Math.PI) * 700; rr = Math.sin(u * Math.PI) * (i % 2 ? 4 : -4); }
+  const st = Math.max(0, t - (S[i] - TPRE + TD)); const dz = Math.min(st, 6) * 8;
+  return { x: p[0], y: p[1], z: p[2] - dz, ry: p[3] + Math.sin(t * .6) * .6, rx: p[4] + Math.sin(t * .45) * .5, rz: p[5] + rr, d, i };
+}
+function camT(c) { return `translateZ(${-c.d + 60}px) rotateZ(${-c.rz}deg) rotateX(${-c.rx}deg) rotateY(${-c.ry}deg) translate3d(${-c.x}px,${-c.y}px,${-c.z}px)`; }
+const world = $('#world'), mbg = $('#mbg'), cam = $('#cam');
+const typeAt = (t, t0, dur, s) => s.slice(0, Math.max(0, Math.min(s.length, Math.round((t - t0) / dur * s.length))));
+function tick(t) {
+  const c = camAt(t), p = camAt(Math.max(0, t - SPD / 30));
+  world.style.transform = camT(c);
+  const hx = Math.abs(c.x - p.x) * .9 + Math.abs(c.ry - p.ry) * 32, vy = Math.abs(c.y - p.y) * .9 + Math.abs(c.rx - p.rx) * 32, zz = Math.abs(c.z - p.z + (p.d - c.d)) * .25;
+  const bx = Math.min(70, hx * .22 + zz * .05), by = Math.min(70, vy * .22 + zz * .05);
+  if (bx + by > .4) { mbg.setAttribute('stdDeviation', `${bx.toFixed(1)} ${by.toFixed(1)}`); cam.style.filter = 'url(#mb)'; } else cam.style.filter = 'none';
+  scenes.forEach((s, k) => { s.style.visibility = (k === c.i || (k === c.i - 1 && t < S[c.i] - TPRE + TD)) ? 'visible' : 'hidden'; });
+  $('#tag').innerHTML = `<b>${String(c.i + 1).padStart(2, '0')}</b> / ${NS}`;
+  // S1 ad countdown, paywall slides up, lock clicks, stamp
+  { const pk = sm(0, .6, t), ph = $('#ph1'); ph.style.opacity = sm(0, .12, t);
+    ph.style.transform = `perspective(1600px) translate3d(0,${(1 - pk) * 200}px,${(1 - pk) * -600 + 40}px) rotateX(${6 + (1 - pk) * 30}deg) rotateY(${-14 + 5 * sm(0, 6.5, t)}deg)`;
+    const n = Math.max(1, 5 - Math.floor(cl(2.16, 4.16, t) * 5)); $('#adn').textContent = n; $('#adsk').textContent = 'Skip in ' + n;
+    $('#adov').style.opacity = 1 - sm(4.45, 4.7, t);
+    $('#pw').style.transform = `translateY(${(1 - sm(4.55, 5.0, t)) * 110}%)`;
+    $('#shk1').setAttribute('transform', `translate(0 ${-14 * (1 - sm(5.3, 5.45, t))})`);
+    const st = sm(5.6, 5.78, t); $('#st1').style.opacity = st; $('#st1').style.transform = `translateZ(160px) rotate(-8deg) scale(${2 - st + bump(t, 5.8, .1) * .08})`; }
+  // S2 phone spins in showing its side, credit types
+  { const k = sm(6.9, 7.8, t), ph = $('#ph2'); ph.style.opacity = sm(6.85, 7.0, t);
+    ph.style.transform = `perspective(1600px) translate3d(0,${(1 - k) * 160}px,${(1 - k) * -500 + 40}px) rotateY(${-70 * (1 - k) + 12 * Math.sin(t * .7)}deg) rotateX(6deg)`;
+    $('#cred2').textContent = typeAt(t, 9.3, .8, 'free · open source (GPL-3.0) · by @konkomaji'); }
+  // S3 leader line grows to each field as it is named
+  { const FT = [11.56, 12.16, 12.72, 13.48]; let lh = 0;
+    FT.forEach((t0, i) => { const k = sm(t0 - .12, t0 + .3, t), e = $('#fd' + i), d = $('#dt' + i);
+      e.style.opacity = sm(t0 - .12, t0, t);
+      e.style.transform = `perspective(1400px) translate3d(${(1 - k) * 160}px,0,${(1 - k) * -400 + 30}px) rotateY(${(1 - k) * -40 - 6}deg) scale(${1 + bump(t, t0 + .32, .1) * .03})`;
+      d.style.transform = `translateZ(40px) scale(${sm(t0 - .05, t0 + .1, t)})`;
+      lh = Math.max(lh, (96 + i * 160) * sm(t0 - .25, t0, t)); });
+    $('#ld').style.height = lh + 'px'; $('#ld').style.transform = 'translateZ(30px)'; }
+  // S4 phone, seal slams, hash types
+  { const k = sm(15.3, 16.0, t), ph = $('#ph4'); ph.style.opacity = sm(15.25, 15.4, t);
+    ph.style.transform = `perspective(1600px) translate3d(0,${(1 - k) * 200}px,${(1 - k) * -500 + 30}px) rotateY(${16 - 4 * cl(15.3, 20.3, t)}deg) rotateX(6deg)`;
+    const sk = sm(16.0, 16.3, t), se = $('#seal'); se.style.opacity = sm(15.95, 16.05, t);
+    se.style.transform = `perspective(1400px) translateZ(${60 + (1 - sk) * 500}px) rotateX(${(1 - sk) * 40 + 8}deg) rotateZ(${(1 - sk) * -90 + t * 4}deg) scale(${1 + bump(t, 16.32, .12) * .06})`;
+    $('#hash').textContent = [typeAt(t, 16.6, .45, 'hash: image pixels'), typeAt(t, 17.1, .4, '+ GPS + time'), typeAt(t, 17.55, .5, 'key: Android Keystore')].join('\n'); }
+  // S5 bars drop out, still stamping, plaques + checks
+  { [0, 1, 2, 3].forEach(i => { $('#sig').children[3 - i].style.opacity = 1 - .85 * sm(21.2 + i * .12, 21.3 + i * .12, t); });
+    const sg = sm(20.7, 21.2, t); $('#sig').style.opacity = sm(20.65, 20.8, t); $('#sig').style.transform = `perspective(1400px) translateZ(${(1 - sg) * -500 + 40}px) rotateX(${(1 - sg) * 50 + 10}deg)`;
+    $('#sigl').textContent = typeAt(t, 21.75, .6, 'no signal · still stamping ✓');
+    [[22.3, 22.56], [22.85, 23.2], [23.6, 24.08]].forEach(([t0, tc], i) => { const k = sm(t0 - .1, t0 + .35, t), e = $('#pq' + i);
+      e.style.opacity = sm(t0 - .1, t0, t);
+      e.style.transform = `perspective(1400px) translate3d(0,${(1 - k) * -180}px,${(1 - k) * 400 + 20}px) rotateX(${(1 - k) * 70 + 12}deg) rotateZ(${(i - 1) * 1.5}deg)`;
+      $('#sk' + i).style.transform = `scale(${sm(tc, tc + .15, t) + bump(t, tc + .17, .08) * .2})`; }); }
+  // S6 3D APK box tumbles in
+  { const k = sm(24.8, 25.6, t), b = $('#apk'); b.style.opacity = sm(24.75, 24.9, t);
+    b.style.transform = `perspective(1600px) translate3d(0,${(1 - k) * -300}px,${(1 - k) * -800}px) rotateX(${-18 - (1 - k) * 60}deg) rotateY(${-30 + (1 - k) * 200 + Math.sin(t * .8) * 12}deg)`;
+    $('#fn6').textContent = typeAt(t, 25.5, .6, 'Android 8.0+ · no Google Play needed'); }
+  // S7 type FEATURE, send, plane flies, reply
+  { $('#bmt').textContent = typeAt(t, 28.9, .35, 'FEATURE'); $('#bm').style.opacity = sm(28.8, 28.9, t);
+    const pk = cl(29.3, 29.75, t), pl = $('#plane'); pl.style.opacity = t > 29.3 && t < 29.8 ? 1 : 0;
+    pl.style.transform = `translateZ(140px) translate(${pk * 260}px,${-pk * 480}px) rotate(-30deg) scale(${1 - pk * .5})`;
+    $('#bt').style.opacity = sm(29.55, 29.7, t); $('#bt').style.transform = `translateY(${(1 - sm(29.55, 29.75, t)) * 30}px)`; }
+}
+window.__seek = vt => { const t = vt * SPD; tl.time(t, false); tick(t); const ims = [...document.images].map(i => i.complete ? null : i.decode().catch(() => {})).filter(Boolean); return Promise.all(ims); };
+__seek(0);
+if (!navigator.webdriver) { const t0 = performance.now(); const loop = () => { window.__seek(((performance.now() - t0) / 1000) % TOTAL); requestAnimationFrame(loop); }; requestAnimationFrame(loop); }
+</script>
+</body></html>

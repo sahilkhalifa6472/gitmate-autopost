@@ -1,0 +1,9 @@
+Mate... your server's disk is at ninety-five percent. And you have no idea.
+Meet Infradeck.
+Every server, every container, every service you run... in one self-hosted dashboard.
+Each machine runs a tiny collector, and it all reports back to you.
+Uptime checks run from your own machines, so you know if it's the service... or the network.
+And when something breaks, an AI agent reads the evidence, tells you what's wrong, and proposes the fix. It never touches your servers.
+Built by Karlo. Open source.
+Built something too? DM us your repo.
+Comment GITMATE and I'll send you the link.

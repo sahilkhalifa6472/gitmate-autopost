@@ -1,0 +1,7 @@
+[frustrated] Why does every music app want an account and a subscription... just to play songs you already own?
+[excited] Mate, meet Playnck. A free music player for Windows and Linux, built for your own music files.
+Songs, albums, artists, synced lyrics, and a ten-band equalizer.
+[impressed] Messy tags? Auto-Tag listens to the song and fixes the title, artist and cover for you.
+It even converts your audio to MP3, FLAC or Opus, in one batch.
+[friendly] Built by developer Fakhar Arrazi. Just download the installer, and you're done.
+[warm] Want your repo featured too? DM us FEATURE. And comment GITMATE, I'll send you the link.

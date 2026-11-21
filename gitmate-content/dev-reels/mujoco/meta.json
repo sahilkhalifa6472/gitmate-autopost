@@ -1,0 +1,9 @@
+{
+ "video": "gitmate_mujoco.mp4",
+ "title": "MuJoCo: the open-source physics engine robots learn to walk in",
+ "description": "The physics engine a lot of AI robots learn to walk in \ud83e\udd16\n\nMuJoCo (Multi-Joint dynamics with Contact) is Google DeepMind's open-source physics engine:\n\u2192 Simulates joints, contacts, cloth and soft bodies, fast\n\u2192 Runs right in your browser at mujoco.org, nothing to install\n\u2192 Python: pip install mujoco\n\u2192 MJX runs it on GPUs/TPUs through JAX, so you can run thousands of simulations in parallel\n\u2192 C API, Unity plug-in, prebuilt binaries for Linux, macOS and Windows\n\nIt used to be paid software. DeepMind made it free in 2021 and open-sourced the full code in 2022.\n\n\u2705 Free + open source (Apache 2.0) \u00b7 17K+ \u2605 on GitHub\n\nComment GITMATE and I'll send you the link \ud83d\udc47\nFollow @git.mate for 1 useful repo every day.\n\n#github #opensource #robotics #physics #simulation #ai #machinelearning #reinforcementlearning #python #jax #deepmind #developer #programming #coding\n",
+ "repo": "https://github.com/google-deepmind/mujoco",
+ "theme": "dark",
+ "duration": 34.9,
+ "source": "github.com/trending (2026-11-11, 17,455 stars, +456 that day)"
+}

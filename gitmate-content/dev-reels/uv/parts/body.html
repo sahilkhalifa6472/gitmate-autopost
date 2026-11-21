@@ -1,0 +1,97 @@
+  <!-- S1 hook: slow pip terminal + extruded timer -->
+  <section class="sc" id="s1">
+    <div class="L kick" style="top:250px" data-k="// every python dev, ever"></div>
+    <div class="L h" style="top:304px">
+      <span class="ln" style="font-size:104px"><span class="w" data-t="0.24">Still</span><span class="w" data-t="0.72">staring</span><span class="w" data-t="1.2">at</span></span>
+      <span class="ln" style="font-size:150px;letter-spacing:-3px"><span class="w ser" data-t="1.44">pip install</span><span class="w" data-t="1.9">?</span></span>
+    </div>
+    <div class="c3 trm" id="trm1" style="padding:0">
+      <div class="bar"><i></i><i></i><i></i><span>zsh · ~/project</span></div>
+      <div class="body" id="tb1"></div>
+    </div>
+    <div class="lcdw" id="lcdw">
+      <div class="lcd back" style="transform:translateZ(-36px)"></div><div class="lcd back" style="transform:translateZ(-27px)"></div>
+      <div class="lcd back" style="transform:translateZ(-18px)"></div><div class="lcd back" style="transform:translateZ(-9px)"></div>
+      <div class="lcd face" id="lcd"><span id="lcdn">0.0</span><small>s</small></div>
+    </div>
+    <div class="lcdl lbl" id="lcdl"></div>
+  </section>
+
+  <!-- S2 meet uv: benchmark race -->
+  <section class="sc" id="s2">
+    <div class="L kick" style="top:250px" data-k="// astral-sh/uv"></div>
+    <div class="L h" style="top:304px">
+      <span class="ln" style="font-size:150px"><span class="w ser" data-t="5.92">meet</span><span class="w" data-t="6.32" style="text-transform:none">uv.</span></span>
+      <span class="ln soft" style="font-size:84px;letter-spacing:-3px"><span class="w" data-t="9.36">10–100×</span><span class="w" data-t="10.64">faster</span></span>
+    </div>
+    <div class="trackw"><div class="track" id="track">
+      <div class="lane uvl" style="top:30px"><div class="nm">uv</div><div class="tm" id="rt0">0.00s</div><div class="fill" id="rf0"></div></div>
+      <div class="lane" style="top:196px"><div class="nm">poetry</div><div class="tm" id="rt1">0.00s</div><div class="fill" id="rf1"></div></div>
+      <div class="lane" style="top:362px"><div class="nm">pdm</div><div class="tm" id="rt2">0.00s</div><div class="fill" id="rf2"></div></div>
+      <div class="lane" style="top:528px"><div class="nm">pip-sync</div><div class="tm" id="rt3">0.00s</div><div class="fill" id="rf3"></div></div>
+    </div></div>
+    <div class="c3 src2 in" data-t="10.2" data-rx="10" data-z="40"><span class="real">REAL</span><img class="g" src="media/bench.png"></div>
+    <div class="src2l lbl" id="src2l"></div>
+  </section>
+
+  <!-- S3 our test: twin monoliths -->
+  <section class="sc" id="s3">
+    <div class="L kick" style="top:250px" data-k="// same 41 packages · cold cache"></div>
+    <div class="L h" style="top:304px">
+      <span class="ln" style="font-size:132px"><span class="w" data-t="11.84">We</span><span class="w" data-t="12.0">tested</span><span class="w ser" data-t="12.4">it.</span></span>
+    </div>
+    <div class="c3 mono3 in" style="left:70px" data-t="12.6" data-ry="16" data-rx="6">
+      <div class="hd">pip <span>python -m pip</span></div>
+      <div class="gauge"><b id="g0"></b></div>
+      <div class="tm3" id="tm0">0.0s</div>
+      <div class="out" id="out0"></div>
+    </div>
+    <div class="c3 mono3 in" style="left:570px" data-t="12.8" data-ry="-16" data-rx="6">
+      <div class="hd">uv <span>uv pip install</span></div>
+      <div class="gauge"><b id="g1"></b></div>
+      <div class="tm3" id="tm1">0.0s</div>
+      <div class="out" id="out1"></div>
+    </div>
+    <div class="c3 lite chip3" id="chip3">23× faster</div>
+    <div class="lbl3 lbl" id="lbl3"></div>
+  </section>
+
+  <!-- S4 one tool: cubes merge -->
+  <section class="sc" id="s4">
+    <div class="L kick" style="top:250px" data-k="// uninstall four tools"></div>
+    <div class="L h" style="top:304px">
+      <span class="ln" style="font-size:150px"><span class="w" data-t="17.52">One</span><span class="w" data-t="17.68">tool.</span></span>
+      <span class="ln soft" style="font-size:84px;letter-spacing:-3px"><span class="w" data-t="17.92">replaces</span><span class="w ser" data-t="18.2">four.</span></span>
+    </div>
+    <div class="cubes" id="cubes"></div>
+    <div class="cnt4" id="cnt4"></div>
+    <div class="c3 py4 in" data-t="21.3" data-rx="10" data-z="60"><span id="py4"></span></div>
+  </section>
+
+  <!-- S5 builder -->
+  <section class="sc" id="s5">
+    <div class="L kick" style="top:250px" data-k="// who made it"></div>
+    <div class="L h" style="top:304px">
+      <span class="ln" style="font-size:120px"><span class="w" data-t="23.28">Built</span><span class="w" data-t="23.52">by</span></span>
+      <span class="ln" style="font-size:150px;letter-spacing:-3px"><span class="w ser" data-t="23.68">Astral.</span></span>
+    </div>
+    <div class="c3 ghc in" data-t="23.2" data-ry="-12" data-rx="10"><span class="real">REAL</span><img class="g" src="media/files.png"><div class="scan" id="scan5"></div></div>
+    <div class="c3 lite mk5" id="mk5"><span>the team behind</span><span class="ser">Ruff</span></div>
+  </section>
+
+  <!-- S6 setup + stars -->
+  <section class="sc" id="s6">
+    <div class="L kick" style="top:250px" data-k="// setup"></div>
+    <div class="L h" style="top:304px">
+      <span class="ln" style="font-size:150px"><span class="w" data-t="25.95">One</span><span class="w ser" data-t="26.2">line.</span></span>
+    </div>
+    <div class="c3 cmd6 in" data-t="25.6" data-rx="12" data-z="40"><span style="color:var(--mut)">$ </span><span id="cmd6"></span><span class="cur" id="cur6"></span></div>
+    <div class="keys" id="keys">
+      <div class="key" id="k0" style="left:0"><div class="cap">mac</div></div>
+      <div class="key" id="k1" style="left:315px"><div class="cap">linux</div></div>
+      <div class="key" id="k2" style="left:630px"><div class="cap">windows</div></div>
+    </div>
+    <div class="stw"><div class="c3 abt in" data-t="28.4" data-ry="18" data-rx="6"><span class="real">REAL</span><img class="g" src="media/about.png"><div class="hl" id="hl6"></div></div>
+      <div class="bign" id="bign"><span id="stn6">0</span><small>stars on GitHub</small></div>
+      <div class="starrow" id="starrow"></div></div>
+  </section>

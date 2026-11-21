@@ -1,0 +1,19 @@
+Still staring at pip install… waiting… and waiting? 🐢
+
+uv is a free, open-source Python package and project manager, written in Rust:
+→ 10-100x faster than pip (official benchmark: 0.06s vs 4.63s for pip-sync)
+→ Our own test: same 41 packages, cold cache: pip 48.6s, uv 2.1s
+→ One tool for pip, virtualenv, pyenv, poetry, pipx and more
+→ Installs Python itself: uv python install 3.13
+→ Mac, Linux and Windows
+
+Install in one line:
+curl -LsSf https://astral.sh/uv/install.sh | sh
+(or: pip install uv)
+
+Built by Astral, the team behind Ruff. 92K+ ⭐ on GitHub, MIT / Apache-2.0.
+
+Comment GITMATE and I'll send you the link 👇
+Follow @git.mate for 1 useful repo every day.
+
+#python #uv #pip #rust #programming #coding #developer #opensource #github #devtools #pythonprogramming #datascience #machinelearning #softwareengineering #100daysofcode #webdev

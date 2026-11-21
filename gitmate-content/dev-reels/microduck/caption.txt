@@ -1,0 +1,15 @@
+This tiny duck robot learned to walk on its own. And it's fully open source. 🦆
+
+Microduck is a 25 cm biped robot from Pollen Robotics (part of Hugging Face):
+→ 15 motors, run by a 50 Hz onboard control loop
+→ Every move is a neural network policy, trained in MuJoCo simulation with PPO
+→ It walks, kicks, grabs things, roller skates, and stands itself back up
+→ The whole software stack is on GitHub: Rust daemons, signed updates, the sim
+→ Retrain any move on your own machine, or run the simulated duck with no robot at all
+
+✅ Free + open source (Apache 2.0)
+
+Comment GITMATE and I'll send you the link 👇
+Follow @git.mate for 1 useful repo every day.
+
+#github #opensource #robotics #reinforcementlearning #huggingface #rustlang #machinelearning #ai #mujoco #devtools #developer #programming

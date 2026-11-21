@@ -1,0 +1,16 @@
+Your AI agent has your files, your terminal and your API keys. So who's watching it? 🛡️
+
+NVIDIA open-sourced OpenShell, a safe runtime for autonomous AI agents:
+→ Every agent runs in its own isolated sandbox
+→ One policy decides which files, hosts and APIs it can touch
+→ Kernel-level enforcement on every file, syscall and connection
+→ Agents never see your real credentials
+→ Risky new access gets flagged for you to approve
+
+✅ One command to install (Linux, macOS on Apple Silicon, WSL 2)
+✅ Free + open source (Apache 2.0)
+
+Comment GITMATE and I'll send you the link 👇
+Follow @git.mate for 1 useful repo every day.
+
+#github #opensource #nvidia #aiagents #aisecurity #cybersecurity #claudecode #codingagent #devtools #developer #programming #sandbox

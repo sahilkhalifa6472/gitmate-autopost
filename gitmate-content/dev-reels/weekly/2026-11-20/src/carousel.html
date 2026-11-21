@@ -1,0 +1,139 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<link rel="stylesheet" href="fonts.css">
+<style>
+:root{--ink:#f5f6f7;--mut:rgba(235,238,242,.58);--dim:rgba(235,238,242,.3)}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#000;width:1080px}
+.s{position:relative;width:1080px;height:1350px;overflow:hidden;color:var(--ink);font-family:'Inter Tight',sans-serif;
+  background:radial-gradient(ellipse 110% 70% at 50% 46%,#121318 0%,#060607 58%,#000 100%)}
+.s::before{content:"";position:absolute;inset:0;background:
+  repeating-linear-gradient(0deg,rgba(255,255,255,.022) 0 1px,transparent 1px 64px),
+  repeating-linear-gradient(90deg,rgba(255,255,255,.022) 0 1px,transparent 1px 64px);
+  -webkit-mask:radial-gradient(ellipse 70% 55% at 50% 58%,#000 0%,transparent 75%);mask:radial-gradient(ellipse 70% 55% at 50% 58%,#000 0%,transparent 75%)}
+.glow{position:absolute;left:50%;width:900px;height:220px;margin-left:-450px;border-radius:50%;background:radial-gradient(ellipse,rgba(255,255,255,.13),transparent 70%);filter:blur(30px)}
+.bead{width:52px;height:52px;border-radius:50%;display:grid;place-items:center;font-family:'JetBrains Mono';font-weight:800;font-size:20px;color:#050505;flex:none;
+  background:radial-gradient(circle at 35% 28%,#fff 0 18%,#e4e6ea 45%,#9da1a8 100%);box-shadow:inset 0 -5px 10px rgba(0,0,0,.25),inset 0 3px 4px #fff,0 10px 24px rgba(0,0,0,.6)}
+.top{position:absolute;left:60px;right:60px;top:64px;height:76px;z-index:9}
+.brand{position:absolute;left:0;top:0;display:flex;align-items:center;gap:14px;padding:12px 26px 12px 12px;font-family:'JetBrains Mono';font-weight:700;font-size:26px;border-radius:999px;background:#0e0f11;box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 0 0 1.5px rgba(255,255,255,.1)}
+.tag{position:absolute;right:0;top:10px;padding:15px 26px;font-family:'JetBrains Mono';font-size:22px;color:var(--mut);white-space:nowrap;border-radius:999px;background:#0e0f11;box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 0 0 1.5px rgba(255,255,255,.08)}
+.tag b{color:var(--ink)}
+.kick{position:absolute;left:64px;top:182px;font-family:'JetBrains Mono';font-size:24px;color:var(--mut);letter-spacing:1px;z-index:8}
+.h{position:absolute;left:60px;right:60px;top:220px;z-index:8;font-weight:900;font-size:118px;line-height:.92;letter-spacing:-4px;text-transform:uppercase;white-space:nowrap}
+.sub{position:absolute;left:64px;right:60px;z-index:8;font-family:'Instrument Serif';font-style:italic;font-size:58px;line-height:1.02;color:var(--mut);letter-spacing:-.5px}
+.rank{position:absolute;right:52px;top:150px;font-weight:900;font-size:250px;letter-spacing:-12px;line-height:1;color:transparent;-webkit-text-stroke:0;background:linear-gradient(180deg,rgba(255,255,255,.10),rgba(255,255,255,0) 80%);-webkit-background-clip:text;background-clip:text;z-index:1}
+/* 3D stage */
+.stage{position:absolute;left:0;right:0;perspective:1700px;perspective-origin:50% 30%;z-index:4}
+.card{position:absolute;border-radius:30px;overflow:hidden;background:#0c0d10;transform-style:preserve-3d;
+  box-shadow:inset 0 1.5px 0 rgba(255,255,255,.22),0 0 0 1.5px rgba(255,255,255,.09),0 4px 0 #1b1c1f,0 8px 0 #141518,0 12px 0 #0e0f11,0 16px 0 #0a0a0c,0 80px 120px rgba(0,0,0,.85)}
+.card img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.card .bar{position:absolute;left:0;right:0;top:0;height:46px;background:rgba(14,15,17,.92);display:flex;align-items:center;gap:9px;padding-left:20px;z-index:2;border-bottom:1px solid rgba(255,255,255,.07)}
+.card .bar i{width:12px;height:12px;border-radius:50%;background:#3a3c41}
+.card .bar span{margin-left:16px;font-family:'JetBrains Mono';font-size:17px;color:var(--mut)}
+.card .glare{position:absolute;inset:0;z-index:3;background:linear-gradient(115deg,rgba(255,255,255,.16) 0%,rgba(255,255,255,0) 32%,rgba(255,255,255,0) 70%,rgba(255,255,255,.05) 100%);pointer-events:none}
+.plate{position:absolute;border-radius:34px;background:linear-gradient(160deg,#16171b,#0a0a0c);box-shadow:inset 0 1px 0 rgba(255,255,255,.1),0 0 0 1.5px rgba(255,255,255,.05)}
+.chip{position:absolute;z-index:6;padding:16px 24px;border-radius:22px;font-family:'JetBrains Mono';font-weight:700;font-size:24px;white-space:nowrap;
+  background:linear-gradient(160deg,#f7f8f9,#d9dce0);color:#08090a;box-shadow:inset 0 2px 0 #fff,0 3px 0 #c3c6cb,0 6px 0 #aeb2b8,0 9px 0 #8f9399,0 40px 60px rgba(0,0,0,.7)}
+.chip small{display:block;font-size:15px;font-weight:600;opacity:.55;letter-spacing:1px;margin-bottom:4px}
+.chip.dk{background:rgba(18,19,22,.86);color:var(--ink);box-shadow:inset 0 1px 0 rgba(255,255,255,.2),0 0 0 1.5px rgba(255,255,255,.12),0 40px 60px rgba(0,0,0,.7);backdrop-filter:blur(14px)}
+.facts{position:absolute;left:64px;right:64px;top:1040px;z-index:8;display:grid;gap:14px}
+.facts div{display:flex;gap:18px;align-items:baseline;font-family:'Inter';font-weight:500;font-size:31px;line-height:1.2;color:#e9ebee}
+.facts div b{font-family:'JetBrains Mono';font-weight:700;color:var(--dim);font-size:26px;flex:none}
+.foot{position:absolute;left:64px;right:64px;bottom:58px;height:56px;z-index:8}
+.repo{position:absolute;left:0;top:0;display:flex;align-items:center;gap:12px;padding:0 24px;height:56px;border-radius:999px;font-family:'JetBrains Mono';font-size:21px;color:var(--mut);background:#0e0f11;box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 0 0 1.5px rgba(255,255,255,.08)}
+.repo b{color:var(--ink);font-weight:700}
+.swipe{position:absolute;right:0;top:0;height:56px;display:flex;align-items:center;gap:12px;font-family:'JetBrains Mono';font-size:21px;color:var(--mut)}
+.swipe .arr{width:56px;height:56px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(160deg,#f7f8f9,#d0d3d8);color:#000;font-size:26px;font-weight:800;box-shadow:inset 0 2px 0 #fff,0 4px 0 #9a9ea4,0 20px 30px rgba(0,0,0,.6)}
+.free{display:inline-flex;align-items:center;gap:8px;padding:0 18px;height:40px;border-radius:999px;font-family:'JetBrains Mono';font-size:18px;font-weight:700;background:#f2f3f5;color:#000;margin-left:4px}
+.prog{position:absolute;left:64px;right:64px;bottom:30px;height:4px;display:flex;gap:8px;z-index:8}
+.prog i{flex:1;border-radius:4px;background:rgba(255,255,255,.12)}
+.prog i.on{background:#f2f3f5}
+</style></head><body>
+<div id="root"></div>
+<script src="week.js"></script>
+<script>
+const W = window.WEEK || {};
+const N = 10;
+const prog = (k) => `<div class="prog">${Array.from({length:N},(_,i)=>`<i class="${i<=k?'on':''}"></i>`).join('')}</div>`;
+const topBar = (k) => `<div class="top"><div class="brand"><span class="bead">&gt;_</span>git.mate</div><div class="tag"><b>${String(k+1).padStart(2,'0')}</b> / ${N}</div></div>`;
+
+function cover(){
+  const thumbs = W.repos.map((r,i)=>r.img);
+  const cards = W.repos.slice(0,8).map((r,i)=>{
+    const col=i%4,row=Math.floor(i/4);
+    const x=40+col*232, y=row*300;
+    return `<div class="card" style="left:${x}px;top:${y}px;width:212px;height:276px;border-radius:22px;transform:translateZ(${(i%2?40:0)+(row?0:30)}px)">
+      <img src="${r.img}" style="height:196px;object-fit:${r.fit||'cover'};object-position:${r.pos||'center'};${r.bg?`background:${r.bg};`:''}">
+      <div style="position:absolute;left:0;right:0;bottom:0;height:80px;background:#0e0f11;border-top:1px solid rgba(255,255,255,.08);padding:14px 16px">
+        <div style="font-family:'JetBrains Mono';font-size:14px;color:var(--dim)">#${i+1}</div>
+        <div style="font-weight:900;font-size:${r.name.length>10?19:24}px;letter-spacing:-.5px;white-space:nowrap;margin-top:4px">${r.name}</div></div>
+      <div class="glare"></div></div>`;
+  }).join('');
+  return `<section class="s">${topBar(0)}
+   <div class="kick">// ${W.label}</div>
+   <div class="h" style="font-size:128px;letter-spacing:-5px;top:222px">${W.repos.length} FREE REPOS</div>
+   <div class="sub" style="top:346px;font-size:72px">you missed this week.</div>
+   <div class="glow" style="top:1000px"></div>
+   <div class="stage" style="top:0;height:1350px;perspective:1500px;perspective-origin:50% 0%">
+     <div style="position:absolute;left:60px;top:520px;width:960px;height:580px;transform-style:preserve-3d;transform:rotateX(32deg) rotateZ(-5deg) translateY(10px)">${cards}</div></div>
+   <div class="chip" style="right:72px;top:372px;transform:rotate(4deg);z-index:9"><small>ALL</small>FREE + OPEN SOURCE</div>
+   <div class="foot"><div class="repo"><b>${W.range}</b></div><div class="swipe">swipe <span class="arr">→</span></div></div>
+   ${prog(0)}</section>`;
+}
+
+function repoSlide(r,i){
+  const k = i+1;
+  const card = `<div class="plate" style="left:${r.cx+36}px;top:${r.cy+40}px;width:${r.cw}px;height:${r.ch}px;transform:rotateX(16deg) rotateY(${-r.ry}deg) rotateZ(${r.rz}deg) translateZ(-90px)"></div>
+     <div class="card" style="left:${r.cx}px;top:${r.cy}px;width:${r.cw}px;height:${r.ch}px;transform:rotateX(16deg) rotateY(${-r.ry}deg) rotateZ(${r.rz}deg)">
+       <div class="bar"><i></i><i></i><i></i><span>${r.bar}</span></div>
+       <img src="${r.img}" style="top:46px;height:calc(100% - 46px);object-fit:${r.fit||'cover'};object-position:${r.pos||'center top'};${r.bg?`background:${r.bg};`:''}">
+       <div class="glare"></div></div>`;
+  return `<section class="s">${topBar(k)}
+   <div class="rank">#${k}</div>
+   <div class="kick">// ${r.kick}</div>
+   <div class="h" style="font-size:${r.fs||118}px">${r.name}</div>
+   <div class="sub" style="top:${r.subTop||338}px">${r.sub}</div>
+   <div class="glow" style="top:900px"></div>
+   <div class="stage" style="top:0;height:1350px">${card}</div>
+   ${r.chips.map(c=>`<div class="chip ${c.dk?'dk':''}" style="${c.pos}"><small>${c.k}</small>${c.v}</div>`).join('')}
+   <div class="facts">${r.facts.map((f,j)=>`<div><b>→</b>${f}</div>`).join('')}</div>
+   <div class="foot"><div class="repo">github.com/<b>${r.repo}</b></div><div class="swipe"><span class="arr">→</span></div></div>
+   ${prog(k)}</section>`;
+}
+
+function cta(){
+  const k = N-1;
+  return `<section class="s">${topBar(k)}
+   <div class="kick">// want all ${W.repos.length} links?</div>
+   <div class="h" style="font-size:128px;top:226px">COMMENT</div>
+   <div class="h" style="font-size:128px;top:340px;color:#6b6f76">GITMATE</div>
+   <div class="stage" style="top:0;height:1350px">
+     <div class="card" style="left:150px;top:480px;width:780px;height:300px;transform:rotateX(18deg) rotateY(-8deg) rotateZ(-2deg);background:linear-gradient(160deg,#141518,#0b0b0d)">
+       <div style="position:absolute;left:34px;top:30px;font-family:'JetBrains Mono';font-size:20px;color:var(--mut)">comments</div>
+       <div style="position:absolute;left:34px;top:78px;right:34px;display:flex;align-items:center;gap:18px">
+         <span style="width:54px;height:54px;border-radius:50%;background:linear-gradient(160deg,#5a5d63,#2a2c30)"></span>
+         <span style="font-family:'Inter';font-size:26px"><b>you</b>&nbsp;&nbsp;GITMATE</span>
+         <span style="margin-left:auto;font-size:30px;opacity:.6">♡</span></div>
+       <div style="position:absolute;left:34px;right:34px;top:176px;height:76px;border-radius:999px;background:#1b1c20;box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.08);display:flex;align-items:center;padding:0 12px 0 30px;font-family:'Inter';font-size:26px;color:var(--ink)">GITMATE<span style="display:inline-block;width:3px;height:30px;background:#fff;margin-left:4px"></span>
+         <span style="margin-left:auto;width:54px;height:54px;border-radius:50%;background:#f2f3f5;color:#000;display:grid;place-items:center;font-weight:900;font-size:28px">↑</span></div>
+       <div class="glare"></div></div>
+   </div>
+   <div class="chip" style="right:110px;top:790px;transform:rotate(3deg);z-index:7"><small>DM · git.mate</small>here are all ${W.repos.length} links 🔗</div>
+   <div style="position:absolute;left:0;right:0;top:880px;display:flex;flex-direction:column;align-items:center;z-index:8">
+     <div style="position:relative;width:130px;height:130px;display:grid;place-items:center">
+       <div style="position:absolute;inset:-18px;border-radius:50%;border:2px solid rgba(255,255,255,.18)"></div>
+       <div style="position:absolute;inset:-40px;border-radius:50%;border:1.5px solid rgba(255,255,255,.08)"></div>
+       <span class="bead" style="width:130px;height:130px;font-size:46px">&gt;_</span></div>
+     <div style="margin-top:36px;font-family:'JetBrains Mono';font-weight:700;font-size:42px">@git.mate</div>
+     <div style="margin-top:8px;font-weight:900;font-size:34px;letter-spacing:-.5px;color:#7d8188;text-transform:uppercase">1 useful repo every day.</div>
+     <div style="margin-top:26px;display:flex;gap:16px">
+       <span style="height:66px;padding:0 54px;border-radius:999px;display:grid;place-items:center;font-weight:800;font-size:28px;background:linear-gradient(160deg,#fff,#d6d9de);color:#000;box-shadow:inset 0 2px 0 #fff,0 4px 0 #9a9ea4,0 24px 40px rgba(0,0,0,.6)">Follow</span>
+       <span style="height:66px;padding:0 34px;border-radius:999px;display:grid;place-items:center;font-weight:700;font-size:26px;background:#141518;color:var(--ink);box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 0 0 1.5px rgba(255,255,255,.1)">Save ↓</span></div>
+   </div>
+   ${prog(k)}</section>`;
+}
+
+const S = [cover(), ...W.repos.map(repoSlide), cta()];
+const q = new URLSearchParams(location.search);
+document.getElementById('root').innerHTML = q.has('s') ? S[+q.get('s')] : S.join('');
+</script></body></html>

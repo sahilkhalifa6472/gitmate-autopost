@@ -1,0 +1,22 @@
+{
+ "account": "git.mate",
+ "n": 41,
+ "slug": "geotagcamera",
+ "title": "GeoTag Camera: free GPS stamp camera for Android (by @konkomaji)",
+ "video": {
+  "file": "41.mp4",
+  "duration_sec": 33.03,
+  "source": "/mnt/project-files/dev-reels/geotagcamera/gitmate_geotagcamera.mp4"
+ },
+ "instagram": {
+  "caption": "Every GPS camera app\u2026 ads before the camera even opens, then a subscription just to stamp your location? \ud83d\udccd\n\nGeoTag Camera, built by @konkomaji, is a free, open-source GPS camera for Android:\n\u2192 Stamps place, address (Plus Code), coordinates and time on every photo\n\u2192 Signs each photo on your phone (SHA-256 + Android Keystore), so anyone can check the photo and its GPS/time weren't changed\n\u2192 Works with no signal: capture, stamp, sign and verify offline\n\u2192 Export CSV, KML, GeoJSON and PDF site reports\n\u2192 No ads, no account, no paywall\n\nInstall: download the APK from GitHub Releases (Android 8.0+, no Google Play services needed). F-Droid and Google Play coming soon.\n\nFree, GPL-3.0 \u00b7 built by @konkomaji \ud83d\ude4c\n\nWant your repo featured too? DM us FEATURE \ud83d\udce9\nComment GITMATE and I'll send you the link \ud83d\udc47\nFollow @git.mate for 1 useful repo every day.\n\n#android #gps #camera #geotag #fieldwork #surveying #opensource #github #freeapps #androidapps #privacy #indiedev #developer #programming #coding #productivity\n",
+  "hashtags": [],
+  "cover_offset_ms": 5600,
+  "share_to_feed": true
+ },
+ "posting": {
+  "audience": "US",
+  "timezone": "America/New_York"
+ },
+ "link": "https://github.com/konkomaji/geotagcamera"
+}

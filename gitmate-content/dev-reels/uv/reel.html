@@ -1,0 +1,426 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<title>git.mate uv</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter+Tight:wght@400;500;600;700;800;900&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<style>
+:root{--ink:#f5f6f7;--mut:rgba(235,238,242,.58);--dim:rgba(235,238,242,.32)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#000}
+.f{position:relative;width:1080px;height:1920px;overflow:hidden;background:radial-gradient(ellipse 120% 80% at 50% 40%,#0d0e11 0%,#040405 60%,#000 100%);color:var(--ink);font-family:'Inter Tight',sans-serif}
+.vig{position:absolute;inset:0;z-index:5;pointer-events:none;background:radial-gradient(ellipse 90% 70% at 50% 50%,transparent 50%,rgba(0,0,0,.7) 100%)}
+.grain{position:absolute;inset:0;opacity:.08;mix-blend-mode:overlay;z-index:8;pointer-events:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
+#stage{position:absolute;inset:0;perspective:2200px;perspective-origin:50% 46%;z-index:2}
+#world{position:absolute;left:0;top:0;width:1080px;height:1920px;transform-style:preserve-3d}
+.sc{position:absolute;left:0;top:0;width:1080px;height:1920px;transform-style:preserve-3d;backface-visibility:hidden;visibility:hidden}
+#s1{visibility:visible}
+.c3{position:absolute;border-radius:34px;overflow:hidden;background:linear-gradient(160deg,#1d1e22 0%,#121316 45%,#0b0c0e 100%);
+  box-shadow:inset 0 1.5px 0 rgba(255,255,255,.2),inset 0 0 0 1.5px rgba(255,255,255,.07),0 3px 0 #1b1c1f,0 6px 0 #16171a,0 9px 0 #111214,0 12px 0 #0c0d0f,0 60px 90px rgba(0,0,0,.75)}
+.c3.lite{background:linear-gradient(160deg,#f7f8f9,#d9dce0);color:#08090a;box-shadow:inset 0 2px 0 #fff,0 3px 0 #c3c6cb,0 6px 0 #aeb2b8,0 9px 0 #9a9ea4,0 12px 0 #868a90,0 60px 90px rgba(0,0,0,.7)}
+.bead{width:62px;height:62px;border-radius:50%;display:grid;place-items:center;font-family:'JetBrains Mono';font-weight:800;font-size:24px;color:#050505;flex:none;
+  background:radial-gradient(circle at 35% 28%,#fff 0 18%,#e4e6ea 45%,#9da1a8 100%);box-shadow:inset 0 -5px 10px rgba(0,0,0,.25),inset 0 3px 4px #fff,0 10px 24px rgba(0,0,0,.6)}
+.top{position:absolute;left:64px;right:64px;top:88px;height:90px;z-index:6}
+.brand{position:absolute;left:0;top:0;display:flex;align-items:center;gap:18px;padding:14px 30px 14px 14px;font-family:'JetBrains Mono';font-weight:700;font-size:30px;border-radius:999px;background:#0e0f11;box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 0 0 1.5px rgba(255,255,255,.1)}
+.tag{position:absolute;right:0;top:12px;padding:18px 30px;font-family:'JetBrains Mono';font-size:24px;color:var(--mut);white-space:nowrap;border-radius:999px;background:#0e0f11;box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 0 0 1.5px rgba(255,255,255,.08)}
+.tag b{color:var(--ink)}
+.prog{position:absolute;left:64px;right:64px;bottom:96px;display:flex;gap:10px;z-index:6}
+.prog i{flex:1;height:8px;border-radius:4px;background:rgba(255,255,255,.14);position:relative;overflow:hidden}
+.prog i b{position:absolute;left:0;top:0;bottom:0;width:0;background:#f2f3f5;border-radius:4px}
+.L{position:absolute;left:64px;right:64px}
+.kick{font-family:'JetBrains Mono';font-size:28px;color:var(--mut);letter-spacing:1px;white-space:pre;height:40px}
+.h{font-weight:900;letter-spacing:-5px;line-height:.92;text-transform:uppercase}
+.h .ln{display:block;white-space:nowrap}
+.h .w{display:inline-block;padding-bottom:.05em;margin-right:.2em;background-image:linear-gradient(180deg,#ffffff 0%,#f1f2f4 50%,#b4b8be 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.h .w:last-child{margin-right:0}
+.h .soft .w{background-image:linear-gradient(180deg,rgba(255,255,255,.62),rgba(255,255,255,.24))}
+.h .ser{font-family:'Instrument Serif';font-style:italic;font-weight:400;text-transform:none;letter-spacing:-2px}
+.lbl{font-family:'JetBrains Mono';font-size:22px;color:var(--mut)}
+.g{filter:grayscale(1) contrast(1.12)}
+.real{position:absolute;right:20px;top:18px;z-index:3;padding:7px 16px;border-radius:999px;font-family:'JetBrains Mono';font-weight:800;font-size:17px;background:#f2f3f5;color:#08090a}
+
+
+/* comment */
+.cm{padding:30px 34px}
+.rowc{display:flex;align-items:center;gap:20px}
+.av2{width:70px;height:70px;border-radius:50%;flex:none;background:radial-gradient(circle at 35% 28%,#5a5e64,#1b1d20);box-shadow:inset 0 0 0 2px rgba(255,255,255,.2)}
+.cin{flex:1;padding:20px 26px;border-radius:999px;font-size:32px;font-weight:700;background:rgba(255,255,255,.06);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.14)}
+.send{width:76px;height:76px;border-radius:50%;display:grid;place-items:center;background:#f2f3f5;color:#000;font-size:34px;font-weight:900;flex:none}
+.posted{display:flex;gap:20px;align-items:flex-start;margin-top:30px}
+.posted .u{font-weight:800;font-size:28px}
+.posted .c{font-size:34px;font-weight:800;margin-top:4px}
+.dm{padding:24px 30px;border-radius:32px 32px 32px 10px;font-size:32px;font-weight:700}
+.dm small{display:block;font-family:'JetBrains Mono';font-size:20px;color:#55595f;font-weight:500;margin-bottom:6px}
+.tap{position:absolute;width:96px;height:96px;opacity:0;z-index:4}
+/* end */
+.erings{position:absolute;left:290px;top:420px;width:500px;height:500px}
+.bigmk{position:absolute;left:390px;top:520px;width:300px;height:300px;font-size:110px;letter-spacing:-6px}
+.hnd{position:absolute;left:0;right:0;top:1000px;text-align:center;font-family:'JetBrains Mono';font-weight:800;font-size:92px;white-space:pre;height:120px}
+.fol{position:absolute;left:280px;top:1390px;width:520px;height:132px;border-radius:999px;display:grid;place-items:center;font-size:52px;font-weight:900;background:linear-gradient(180deg,#fbfbfc,#d4d7db);color:#08090a;box-shadow:0 6px 0 #9a9ea4,0 20px 60px rgba(255,255,255,.16)}
+.fol2{position:absolute;left:280px;top:1390px;width:520px;height:132px;border-radius:999px;display:grid;place-items:center;font-size:52px;font-weight:900;background:#101114;color:#f5f6f7;box-shadow:inset 0 0 0 3px rgba(255,255,255,.7);opacity:0}
+.erip{position:absolute;left:540px;top:1456px;border-radius:50%;border:4px solid rgba(255,255,255,.8);opacity:0}
+/* ===== uv scene CSS ===== */
+.mono{font-family:'JetBrains Mono'}
+/* S1 terminal slab + extruded LCD timer */
+.trm{position:absolute;left:84px;top:690px;width:912px;height:560px;border-radius:30px;padding:0;transform-style:preserve-3d}
+.trm .bar{height:66px;display:flex;align-items:center;gap:14px;padding:0 28px;border-bottom:1.5px solid rgba(255,255,255,.08)}
+.trm .bar i{width:18px;height:18px;border-radius:50%;background:#3a3c41}
+.trm .bar span{margin-left:18px;font-family:'JetBrains Mono';font-size:22px;color:var(--dim)}
+.trm .body{padding:26px 34px;font-family:'JetBrains Mono';font-size:27px;line-height:1.55;color:#cfd2d6;white-space:pre}
+.trm .body .p{color:#fff;font-weight:700}
+.trm .body .d{color:#6d7177}
+.pbar{display:inline-block;width:420px;height:16px;border-radius:8px;background:rgba(255,255,255,.1);vertical-align:middle;position:relative;overflow:hidden;margin-right:16px}
+.pbar b{position:absolute;left:0;top:0;bottom:0;background:#e9eaec;border-radius:8px}
+.lcdw{position:absolute;left:190px;top:1330px;width:700px;height:230px;transform-style:preserve-3d}
+.lcd{position:absolute;inset:0;border-radius:28px;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono';font-weight:800;font-size:150px;letter-spacing:-4px}
+.lcd.back{color:#1c1d20;background:#0c0d0f}
+.lcd.face{background:linear-gradient(170deg,#202126,#0f1012);color:#f5f6f7;box-shadow:inset 0 2px 0 rgba(255,255,255,.18),inset 0 0 0 2px rgba(255,255,255,.07)}
+.lcd.face small{font-size:46px;color:var(--mut);margin-left:14px;letter-spacing:0}
+.lcdl{position:absolute;left:0;right:0;top:1585px;text-align:center}
+/* S2 race track */
+.trackw{position:absolute;left:40px;top:650px;width:1000px;height:820px;perspective:1900px;perspective-origin:50% 30%}
+.track{position:absolute;left:110px;top:20px;width:780px;height:700px;transform-origin:50% 0%;transform-style:preserve-3d;
+  background:linear-gradient(180deg,#141518,#0a0b0c);border-radius:26px;box-shadow:inset 0 0 0 2px rgba(255,255,255,.08)}
+.lane{position:absolute;left:26px;right:26px;height:150px;border-radius:18px;background:repeating-linear-gradient(90deg,rgba(255,255,255,.05) 0 2px,transparent 2px 88px);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.08)}
+.lane .nm{position:absolute;left:26px;top:20px;font-family:'JetBrains Mono';font-weight:800;font-size:40px;color:#e7e8ea}
+.lane .tm{position:absolute;right:26px;top:20px;font-family:'JetBrains Mono';font-weight:800;font-size:40px;color:var(--mut)}
+.lane .fill{position:absolute;left:26px;bottom:26px;height:56px;border-radius:12px;background:linear-gradient(180deg,#4a4d53,#2a2c30);box-shadow:inset 0 2px 0 rgba(255,255,255,.2)}
+.lane.uvl .fill{background:linear-gradient(180deg,#ffffff,#c9ccd1)}
+.lane.uvl{box-shadow:inset 0 0 0 3px rgba(255,255,255,.55)}
+.finish{position:absolute;right:30px;top:20px;bottom:20px;width:24px;background:repeating-linear-gradient(180deg,#f5f6f7 0 24px,#111 24px 48px);opacity:.75;border-radius:4px}
+.src2{position:absolute;left:150px;top:1490px;width:780px;height:205px;border-radius:24px;overflow:hidden}
+.src2 img{position:absolute;left:0;top:0;width:780px;height:205px}
+.src2l{position:absolute;left:150px;top:1716px;width:780px;text-align:center}
+/* S3 twin monoliths */
+.mono3{position:absolute;top:660px;width:440px;height:760px;border-radius:30px;padding:30px 30px}
+.mono3 .hd{font-family:'JetBrains Mono';font-weight:800;font-size:46px;display:flex;justify-content:space-between;align-items:center}
+.mono3 .hd span{font-size:20px;color:var(--mut);font-weight:500}
+.mono3 .gauge{position:absolute;left:30px;right:30px;top:120px;height:330px;border-radius:20px;background:rgba(255,255,255,.04);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.1);overflow:hidden}
+.mono3 .gauge b{position:absolute;left:0;right:0;bottom:0;background:linear-gradient(180deg,#d9dbde,#7d8187)}
+.mono3 .tm3{position:absolute;left:0;right:0;top:480px;text-align:center;font-family:'JetBrains Mono';font-weight:800;font-size:96px;letter-spacing:-3px}
+.mono3 .out{position:absolute;left:30px;right:30px;top:610px;font-family:'JetBrains Mono';font-size:21px;line-height:1.5;color:var(--mut);white-space:pre}
+.chip3{position:absolute;left:290px;top:1470px;width:500px;height:120px;border-radius:999px;display:grid;place-items:center;font-size:58px;font-weight:900;letter-spacing:-1px}
+.lbl3{position:absolute;left:0;right:0;top:1625px;text-align:center}
+/* S4 cubes merging */
+.cubes{position:absolute;left:0;top:760px;width:1080px;height:700px;perspective:1800px;transform-style:preserve-3d}
+.cb{position:absolute;transform-style:preserve-3d}
+.cb .fc{position:absolute;left:0;top:0;display:grid;place-items:center;font-family:'JetBrains Mono';font-weight:800;backface-visibility:hidden;border-radius:10px}
+.cb .fr{background:linear-gradient(160deg,#2a2c31,#141518);box-shadow:inset 0 0 0 2px rgba(255,255,255,.14);color:#e9eaec}
+.cb .sd{background:linear-gradient(160deg,#18191c,#0c0d0e);box-shadow:inset 0 0 0 2px rgba(255,255,255,.08)}
+.cb .tp{background:linear-gradient(160deg,#36383d,#202125);box-shadow:inset 0 0 0 2px rgba(255,255,255,.12)}
+.cb.big .fr{background:linear-gradient(160deg,#ffffff,#cfd2d6);color:#08090a}
+.cb.big .sd{background:linear-gradient(160deg,#b9bcc1,#8e9298)}
+.cb.big .tp{background:linear-gradient(160deg,#ffffff,#e2e4e7)}
+.cnt4{position:absolute;left:0;right:0;top:1420px;text-align:center;font-family:'JetBrains Mono';font-weight:800;font-size:44px;color:var(--mut)}
+.py4{position:absolute;left:110px;top:1510px;width:860px;height:150px;border-radius:26px;padding:28px 36px;font-family:'JetBrains Mono';font-size:30px;line-height:1.55;white-space:pre}
+/* S5 builder */
+.ghc{position:absolute;left:70px;top:700px;width:940px;height:560px;border-radius:28px;overflow:hidden}
+.ghc img{position:absolute;left:0;top:0;width:940px}
+.ghc .scan{position:absolute;left:0;right:0;height:120px;background:linear-gradient(180deg,transparent,rgba(255,255,255,.18),transparent)}
+.mk5{position:absolute;left:150px;top:1330px;width:780px;height:150px;border-radius:28px;display:flex;align-items:center;justify-content:center;gap:26px;font-size:46px;font-weight:900}
+.mk5 .ser{font-family:'Instrument Serif';font-style:italic;font-weight:400;font-size:64px}
+/* S6 command strip, keycaps, stars */
+.cmd6{position:absolute;left:60px;top:650px;width:960px;height:120px;border-radius:24px;padding:0 34px;display:flex;align-items:center;font-family:'JetBrains Mono';font-size:30px;white-space:pre}
+.cmd6 .cur{display:inline-block;width:16px;height:34px;background:#f5f6f7;margin-left:4px}
+.keys{position:absolute;left:90px;top:830px;width:900px;height:220px;perspective:1400px}
+.key{position:absolute;top:0;width:270px;height:190px;transform-style:preserve-3d}
+.key .cap{position:absolute;inset:0;border-radius:30px;display:grid;place-items:center;font-family:'JetBrains Mono';font-weight:800;font-size:44px;
+  background:linear-gradient(170deg,#2b2d32,#141518);color:#eceef0;box-shadow:inset 0 2px 0 rgba(255,255,255,.22),inset 0 0 0 2px rgba(255,255,255,.08),0 4px 0 #0f1012,0 8px 0 #0b0c0d,0 12px 0 #070708,0 40px 50px rgba(0,0,0,.7)}
+.key.on .cap{background:linear-gradient(170deg,#ffffff,#cfd2d6);color:#08090a}
+.stw{position:absolute;left:70px;top:1130px;width:940px;height:520px;perspective:1800px}
+.abt{position:absolute;left:0;top:0;width:420px;height:520px;border-radius:26px;overflow:hidden}
+.abt img{position:absolute;left:0;top:0;width:420px}
+.abt .hl{position:absolute;left:10px;right:10px;height:48px;top:330px;border-radius:10px;box-shadow:0 0 0 3px #f5f6f7}
+.bign{position:absolute;left:470px;top:70px;width:470px;text-align:center;font-weight:900;font-size:170px;letter-spacing:-8px;line-height:1}
+.bign small{display:block;font-family:'JetBrains Mono';font-size:30px;letter-spacing:0;color:var(--mut);font-weight:500;margin-top:18px}
+.starrow{position:absolute;left:470px;top:330px;width:470px;display:flex;justify-content:center;gap:16px}
+.starrow svg{width:64px;height:64px}
+
+</style></head><body>
+<div class="f" id="F">
+ <div id="stage"><div id="world">
+  <!-- S1 hook: slow pip terminal + extruded timer -->
+  <section class="sc" id="s1">
+    <div class="L kick" style="top:250px" data-k="// every python dev, ever"></div>
+    <div class="L h" style="top:304px">
+      <span class="ln" style="font-size:104px"><span class="w" data-t="0.24">Still</span><span class="w" data-t="0.72">staring</span><span class="w" data-t="1.2">at</span></span>
+      <span class="ln" style="font-size:150px;letter-spacing:-3px"><span class="w ser" data-t="1.44">pip install</span><span class="w" data-t="1.9">?</span></span>
+    </div>
+    <div class="c3 trm" id="trm1" style="padding:0">
+      <div class="bar"><i></i><i></i><i></i><span>zsh · ~/project</span></div>
+      <div class="body" id="tb1"></div>
+    </div>
+    <div class="lcdw" id="lcdw">
+      <div class="lcd back" style="transform:translateZ(-36px)"></div><div class="lcd back" style="transform:translateZ(-27px)"></div>
+      <div class="lcd back" style="transform:translateZ(-18px)"></div><div class="lcd back" style="transform:translateZ(-9px)"></div>
+      <div class="lcd face" id="lcd"><span id="lcdn">0.0</span><small>s</small></div>
+    </div>
+    <div class="lcdl lbl" id="lcdl"></div>
+  </section>
+
+  <!-- S2 meet uv: benchmark race -->
+  <section class="sc" id="s2">
+    <div class="L kick" style="top:250px" data-k="// astral-sh/uv"></div>
+    <div class="L h" style="top:304px">
+      <span class="ln" style="font-size:150px"><span class="w ser" data-t="5.92">meet</span><span class="w" data-t="6.32" style="text-transform:none">uv.</span></span>
+      <span class="ln soft" style="font-size:84px;letter-spacing:-3px"><span class="w" data-t="9.36">10–100×</span><span class="w" data-t="10.64">faster</span></span>
+    </div>
+    <div class="trackw"><div class="track" id="track">
+      <div class="lane uvl" style="top:30px"><div class="nm">uv</div><div class="tm" id="rt0">0.00s</div><div class="fill" id="rf0"></div></div>
+      <div class="lane" style="top:196px"><div class="nm">poetry</div><div class="tm" id="rt1">0.00s</div><div class="fill" id="rf1"></div></div>
+      <div class="lane" style="top:362px"><div class="nm">pdm</div><div class="tm" id="rt2">0.00s</div><div class="fill" id="rf2"></div></div>
+      <div class="lane" style="top:528px"><div class="nm">pip-sync</div><div class="tm" id="rt3">0.00s</div><div class="fill" id="rf3"></div></div>
+    </div></div>
+    <div class="c3 src2 in" data-t="10.2" data-rx="10" data-z="40"><span class="real">REAL</span><img class="g" src="media/bench.png"></div>
+    <div class="src2l lbl" id="src2l"></div>
+  </section>
+
+  <!-- S3 our test: twin monoliths -->
+  <section class="sc" id="s3">
+    <div class="L kick" style="top:250px" data-k="// same 41 packages · cold cache"></div>
+    <div class="L h" style="top:304px">
+      <span class="ln" style="font-size:132px"><span class="w" data-t="11.84">We</span><span class="w" data-t="12.0">tested</span><span class="w ser" data-t="12.4">it.</span></span>
+    </div>
+    <div class="c3 mono3 in" style="left:70px" data-t="12.6" data-ry="16" data-rx="6">
+      <div class="hd">pip <span>python -m pip</span></div>
+      <div class="gauge"><b id="g0"></b></div>
+      <div class="tm3" id="tm0">0.0s</div>
+      <div class="out" id="out0"></div>
+    </div>
+    <div class="c3 mono3 in" style="left:570px" data-t="12.8" data-ry="-16" data-rx="6">
+      <div class="hd">uv <span>uv pip install</span></div>
+      <div class="gauge"><b id="g1"></b></div>
+      <div class="tm3" id="tm1">0.0s</div>
+      <div class="out" id="out1"></div>
+    </div>
+    <div class="c3 lite chip3" id="chip3">23× faster</div>
+    <div class="lbl3 lbl" id="lbl3"></div>
+  </section>
+
+  <!-- S4 one tool: cubes merge -->
+  <section class="sc" id="s4">
+    <div class="L kick" style="top:250px" data-k="// uninstall four tools"></div>
+    <div class="L h" style="top:304px">
+      <span class="ln" style="font-size:150px"><span class="w" data-t="17.52">One</span><span class="w" data-t="17.68">tool.</span></span>
+      <span class="ln soft" style="font-size:84px;letter-spacing:-3px"><span class="w" data-t="17.92">replaces</span><span class="w ser" data-t="18.2">four.</span></span>
+    </div>
+    <div class="cubes" id="cubes"></div>
+    <div class="cnt4" id="cnt4"></div>
+    <div class="c3 py4 in" data-t="21.3" data-rx="10" data-z="60"><span id="py4"></span></div>
+  </section>
+
+  <!-- S5 builder -->
+  <section class="sc" id="s5">
+    <div class="L kick" style="top:250px" data-k="// who made it"></div>
+    <div class="L h" style="top:304px">
+      <span class="ln" style="font-size:120px"><span class="w" data-t="23.28">Built</span><span class="w" data-t="23.52">by</span></span>
+      <span class="ln" style="font-size:150px;letter-spacing:-3px"><span class="w ser" data-t="23.68">Astral.</span></span>
+    </div>
+    <div class="c3 ghc in" data-t="23.2" data-ry="-12" data-rx="10"><span class="real">REAL</span><img class="g" src="media/files.png"><div class="scan" id="scan5"></div></div>
+    <div class="c3 lite mk5" id="mk5"><span>the team behind</span><span class="ser">Ruff</span></div>
+  </section>
+
+  <!-- S6 setup + stars -->
+  <section class="sc" id="s6">
+    <div class="L kick" style="top:250px" data-k="// setup"></div>
+    <div class="L h" style="top:304px">
+      <span class="ln" style="font-size:150px"><span class="w" data-t="25.95">One</span><span class="w ser" data-t="26.2">line.</span></span>
+    </div>
+    <div class="c3 cmd6 in" data-t="25.6" data-rx="12" data-z="40"><span style="color:var(--mut)">$ </span><span id="cmd6"></span><span class="cur" id="cur6"></span></div>
+    <div class="keys" id="keys">
+      <div class="key" id="k0" style="left:0"><div class="cap">mac</div></div>
+      <div class="key" id="k1" style="left:315px"><div class="cap">linux</div></div>
+      <div class="key" id="k2" style="left:630px"><div class="cap">windows</div></div>
+    </div>
+    <div class="stw"><div class="c3 abt in" data-t="28.4" data-ry="18" data-rx="6"><span class="real">REAL</span><img class="g" src="media/about.png"><div class="hl" id="hl6"></div></div>
+      <div class="bign" id="bign"><span id="stn6">0</span><small>stars on GitHub</small></div>
+      <div class="starrow" id="starrow"></div></div>
+  </section>
+
+  <!-- S8 comment -->
+  <section class="sc" id="s7">
+    <div class="L kick" style="top:250px" data-k="// want the link?"></div>
+    <div class="L h" style="top:304px">
+      <span class="ln" style="font-size:132px"><span class="w" data-t="30.85">Comment</span></span>
+      <span class="ln soft" style="font-size:190px;letter-spacing:-8px"><span class="w" data-t="31.1">GITMATE</span></span>
+    </div>
+    <div class="c3 cm in" style="left:64px;top:690px;width:952px;height:390px" data-t="30.4" data-ry="-10" data-rx="8">
+      <div class="lbl" style="margin-bottom:22px">comments</div>
+      <div class="rowc"><div class="av2"></div><div class="cin"><span id="t9" style="color:rgba(255,255,255,.4)">Add a comment…</span></div><div class="send" id="snd9">↑</div></div>
+      <div class="posted" id="pst9"><div class="av2" style="width:56px;height:56px"></div><div><div class="u">you <span class="lbl">· now</span></div><div class="c">GITMATE</div></div></div>
+    </div>
+    <div class="c3 lite dm in" style="left:300px;top:1150px;width:560px;height:130px" data-t="31.75" data-z="80"><small>git.mate · message</small>Here's your link, mate 🔗</div>
+  </section>
+
+  <!-- S9 end -->
+  <section class="sc" id="s8">
+    <svg class="erings" viewBox="0 0 500 500"><circle id="er1" cx="250" cy="250" r="226" fill="none" stroke="#f5f6f7" stroke-width="3" stroke-dasharray="1420" stroke-dashoffset="1420" transform="rotate(-90 250 250)"/>
+      <circle id="er2" cx="250" cy="250" r="246" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="2" stroke-dasharray="1546" stroke-dashoffset="1546" transform="rotate(90 250 250)"/></svg>
+    <div class="bead bigmk" id="bigmk">&gt;_</div>
+    <div class="hnd" id="hnd"></div>
+    <div class="L h" style="top:1160px;font-size:84px;letter-spacing:-3px;text-align:center"><span class="ln soft"><span class="w" data-t="33.6">1</span><span class="w" data-t="33.75">repo</span><span class="w" data-t="33.9">every</span><span class="w" data-t="34.05">day.</span></span></div>
+    <div class="fol" id="fol">Follow</div>
+    <div class="fol2" id="fol2">Following ✓</div>
+    <div class="erip" id="erip"></div>
+    <svg class="tap" id="tap10" viewBox="0 0 100 100" style="left:600px;top:1420px"><circle cx="50" cy="50" r="34" fill="rgba(255,255,255,.25)" stroke="#fff" stroke-width="5"/><circle cx="50" cy="50" r="12" fill="#fff"/></svg>
+  </section>
+ </div></div>
+
+ <div class="top"><div class="brand"><div class="bead">&gt;_</div>git.mate</div><div class="tag" id="tag"><b>01</b> / hook</div></div>
+ <div class="prog" id="prog"></div>
+ <div class="vig"></div><div class="grain"></div>
+</div>
+<script>
+(function () {
+  const SPD = 1.0;
+  const S = [0, 5.45, 11.72, 17.4, 23.05, 25.45, 30.62, 32.9];
+  const TOTAL = 35.45; window.__TOTAL = TOTAL / SPD;
+  const LABEL = ['hook', 'meet uv', 'our test', 'one tool', 'builder', 'setup', 'link', 'follow'];
+  const $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)];
+  const tl = gsap.timeline({ paused: true, defaults: { ease: 'power3.out' } });
+  $('#prog').innerHTML = S.map(() => '<i><b></b></i>').join('');
+  const scenes = $$('.sc');
+  const R = 2400, STEP = 28;
+  scenes.forEach((sc, i) => { sc.style.transform = `rotateY(${i * STEP}deg) translateZ(${R}px)`; });
+  const cam = { a: 0, d: 0, rx: 0, rz: 0 };
+  const MOVE = { 1: 'crane', 2: 'roll', 3: 'crane', 4: 'roll', 5: 'crane', 6: 'roll', 7: 'crane' };
+  scenes.forEach((sc, i) => {
+    if (i < scenes.length - 1) tl.set(sc, { visibility: 'hidden' }, S[i + 1] + .45);
+    if (i) {
+      tl.set(sc, { visibility: 'visible' }, Math.max(0, S[i] - .62));
+      const t0 = S[i] - .58, dir = i % 2 ? 1 : -1, mv = MOVE[i];
+      const prx = mv === 'crane' ? -20 : 9 * dir, prz = mv === 'roll' ? -10 * dir : mv === 'crane' ? 0 : 3 * dir, pd = mv === 'crane' ? 1300 : 950;
+      tl.to(cam, { a: i * STEP, duration: 1.0, ease: 'power3.inOut' }, t0);
+      tl.to(cam, { keyframes: [{ d: pd, rx: prx, rz: prz, duration: .5, ease: 'power2.out' }, { d: 0, rx: 0, rz: 0, duration: .5, ease: 'power2.in' }] }, t0);
+    }
+  });
+  $$('.h .w').forEach((w) => { const t = +w.dataset.t; if (!t) return;
+    tl.fromTo(w, { opacity: 0, y: 70, scale: 1.12, filter: 'blur(18px)' }, { opacity: 1, y: 0, scale: 1, filter: 'blur(0px)', duration: .55, ease: 'expo.out' }, t); });
+  scenes.forEach((sc, i) => { const k = $('.kick', sc); if (!k || !k.dataset.k) return; const txt = k.dataset.k, o = { n: 0 }; k.textContent = i ? '' : txt; if (!i) return;
+    tl.fromTo(o, { n: 0 }, { n: txt.length, duration: Math.min(.7, txt.length * .025), ease: 'none', immediateRender: false, onUpdate: () => { k.textContent = txt.slice(0, Math.round(o.n)); } }, S[i] + .05); });
+  $$('.in').forEach((c) => {
+    const t = +c.dataset.t, rx = +(c.dataset.rx || 0), ry = +(c.dataset.ry || 0), z = +(c.dataset.z || 0);
+    const end = { autoAlpha: 1, z, rotationX: rx, rotationY: ry, y: 0, duration: .9, ease: 'expo.out' };
+    if (!t) { gsap.set(c, end); return; }
+    tl.fromTo(c, { autoAlpha: 0, z: -900, rotationX: rx + 40, rotationY: ry * 2, y: 120 }, end, t);
+  });
+  const typer = (el, text, t, d) => { const o = { n: 0 }; tl.fromTo(o, { n: 0 }, { n: text.length, duration: d, ease: 'none', immediateRender: false, onUpdate: () => { el.textContent = text.slice(0, Math.round(o.n)); } }, t); };
+  const sm = (a, b, x) => { const k = Math.min(1, Math.max(0, (x - a) / (b - a))); return k * k * (3 - 2 * k); };
+  const cl = (a, b, x) => Math.min(1, Math.max(0, (x - a) / (b - a)));
+  const twl = (t, a, b, s) => s.slice(0, Math.round(cl(a, b, t) * s.length));
+  const bump = (t, c, w) => Math.max(0, 1 - Math.abs(t - c) / w);
+
+  // S4 cubes
+  const cube = (id, w, d, label, fs, big) => `<div class="cb ${big ? 'big' : ''}" id="${id}" style="width:${w}px;height:${w}px">
+      <div class="fc fr" style="width:${w}px;height:${w}px;font-size:${fs}px;transform:translateZ(${d / 2}px)">${label}</div>
+      <div class="fc sd" style="left:${(w - d) / 2}px;width:${d}px;height:${w}px;transform:rotateY(90deg) translateZ(${w / 2}px)"></div>
+      <div class="fc sd" style="left:${(w - d) / 2}px;width:${d}px;height:${w}px;transform:rotateY(-90deg) translateZ(${w / 2}px)"></div>
+      <div class="fc tp" style="top:${(w - d) / 2}px;width:${w}px;height:${d}px;transform:rotateX(90deg) translateZ(${w / 2}px)"></div></div>`;
+  const TOOLS = [['pip', 18.48], ['virtualenv', 19.16], ['pyenv', 19.88], ['poetry', 20.72]];
+  $('#cubes').innerHTML = cube('cbU', 260, 260, 'uv', 110, true) + TOOLS.map(([n], i) => cube('cb' + i, 190, 190, n, n.length > 6 ? 30 : 44, false)).join('');
+  // home positions for the four tool cubes (2x2 around the big cube)
+  const HOME = [[70, 20], [820, 20], [70, 420], [820, 420]];
+
+  const PIP = '$ pip install flask requests pandas \\\n    rich httpx fastapi numpy matplotlib\nCollecting flask\nCollecting requests\nDownloading pandas (11.4 MB)\n';
+  const OUT0 = 'Collecting flask...\nDownloading pandas...\nInstalling 41 packages...';
+  const OUT1 = 'Resolved 41 packages\nInstalled 41 packages\n✓ done';
+
+  // S7 comment flow (ending shell)
+  const C = 31.25;
+  tl.call(() => { $('#t9').textContent = 'Add a comment…'; $('#t9').style.color = 'rgba(255,255,255,.4)'; }, null, C - .01);
+  tl.call(() => { $('#t9').style.color = '#fff'; }, null, C);
+  typer($('#t9'), 'GITMATE', C, .3);
+  tl.fromTo('#snd9', { scale: 1 }, { scale: .8, duration: .1, yoyo: true, repeat: 1 }, C + .35);
+  tl.fromTo('#pst9', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: .35 }, C + .4);
+  // S8 end
+  const E = 32.95;
+  tl.fromTo('#bigmk', { opacity: 0, scale: .2, rotation: -40 }, { opacity: 1, scale: 1, rotation: 0, duration: .9, ease: 'back.out(1.8)' }, E);
+  tl.fromTo('#er1', { attr: { 'stroke-dashoffset': 1420 } }, { attr: { 'stroke-dashoffset': 0 }, duration: 1.0, ease: 'power2.inOut', immediateRender: false }, E + .15);
+  tl.fromTo('#er2', { attr: { 'stroke-dashoffset': 1546 } }, { attr: { 'stroke-dashoffset': 0 }, duration: 1.2, ease: 'power2.inOut', immediateRender: false }, E + .3);
+  typer($('#hnd'), '@git.mate', E + .4, .5);
+  tl.fromTo('#fol', { opacity: 0, scale: .6 }, { opacity: 1, scale: 1, duration: .5, ease: 'back.out(2)' }, E + .9);
+  tl.fromTo('#tap10', { opacity: 0, x: 160, y: 140 }, { opacity: 1, x: 0, y: 0, duration: .5, ease: 'power2.out' }, E + 1.25);
+  tl.to('#tap10', { scale: .75, duration: .1, yoyo: true, repeat: 1 }, E + 1.8);
+  tl.to('#fol', { scale: .93, duration: .1 }, E + 1.8);
+  tl.set('#fol2', { opacity: 1 }, E + 1.9); tl.set('#fol', { opacity: 0 }, E + 1.9);
+  tl.fromTo('#erip', { opacity: .8, width: 10, height: 10, margin: -5 }, { opacity: 0, width: 640, height: 640, margin: -320, duration: .8, ease: 'power2.out', immediateRender: false }, E + 1.85);
+  tl.to('#tap10', { opacity: 0, duration: .3 }, E + 2.3);
+  tl.to({}, { duration: .01 }, TOTAL);
+
+  const world = $('#world'), tag = $('#tag'), segs = $$('#prog b');
+  const RACE = [0.06, 0.99, 1.90, 4.63], R0 = 7.4, RS = 0.75; // race: 1 benchmark second = 0.75 s of video
+  const tick = (t) => {
+    const a = cam.a + Math.sin(t * .5) * .35, rx = cam.rx + Math.sin(t * .37 + 1) * .7, rz = cam.rz + Math.sin(t * .29) * .25;
+    scenes.forEach((sc, i) => { sc.style.display = t >= S[i] - .7 && t <= (S[i + 1] || 99) + .5 ? '' : 'none'; });
+    world.style.transform = `translateZ(${-cam.d}px) rotateX(${rx}deg) rotateZ(${rz}deg) translateZ(${-R}px) rotateY(${-a}deg)`;
+    // S1 terminal: typed command, slow crawling bar, LCD timer fast-forwarding the real 48.6 s
+    { const k = sm(0.0, 0.7, t), tr = $('#trm1');
+      tr.style.opacity = sm(0, .15, t);
+      tr.style.transform = `perspective(2000px) translate3d(0,${(1 - k) * 200}px,${(1 - k) * -600}px) rotateX(${12 + (1 - k) * 40}deg) rotateY(${-9 + 3 * sm(0, 5.4, t)}deg)`;
+      const cmd = twl(t, 0.25, 1.35, PIP.split('\n').slice(0, 2).join('\n'));
+      const rest = t > 1.6 ? PIP.split('\n').slice(2, 2 + Math.min(3, Math.floor((t - 1.6) / .5) + 1)).join('\n') : '';
+      const pb = 3 + 22 * cl(2.4, 5.4, t) + Math.sin(t * 3) * 1.2;
+      const spin = '⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏'[Math.floor(t * 12) % 10];
+      $('#tb1').innerHTML = `<span class="p">${cmd}</span>\n<span class="d">${rest}</span>` + (t > 2.4 ? `\n<span class="pbar"><b style="width:${pb}%"></b></span>${spin} ${Math.round(pb)}%` : '');
+      const lk = sm(1.0, 1.7, t), lw = $('#lcdw'); lw.style.opacity = sm(.95, 1.1, t);
+      lw.style.transform = `perspective(1600px) translate3d(0,${(1 - lk) * 160}px,${(1 - lk) * -500}px) rotateX(${18 + (1 - lk) * 50}deg) rotateY(${10 - 6 * sm(1, 5.4, t)}deg) scale(${1 + bump(t, 4.35, .15) * .04})`;
+      $('#lcdn').textContent = (48.6 * Math.pow(cl(1.2, 5.3, t), 1.6)).toFixed(1);
+      $('#lcdl').textContent = twl(t, 3.2, 4.0, 'real pip run · fast-forwarded'); }
+    // S2 track tilt + race
+    { const k = sm(6.6, 7.4, t), tk = $('#track');
+      tk.style.opacity = sm(6.55, 6.7, t);
+      tk.style.transform = `rotateX(${40 + (1 - k) * 30}deg) translateZ(${(1 - k) * -400}px) rotateZ(${(1 - k) * 6}deg)`;
+      RACE.forEach((v, i) => { const el = t - R0, done = el >= v * RS, p = Math.min(1, Math.max(0, el / (v * RS)));
+        $('#rf' + i).style.width = (p * 670) + 'px';
+        $('#rt' + i).textContent = (Math.min(v, Math.max(0, el / RS))).toFixed(2) + 's';
+        $('#rt' + i).style.color = done && el > 0 ? '#f5f6f7' : ''; });
+      $('#src2l').textContent = twl(t, 10.9, 11.5, 'official benchmark · docs.astral.sh'); }
+    // S3 twin gauges: pip 48.6 s vs uv 2.1 s (time-compressed)
+    { const pk = cl(13.2, 15.9, t), uk = cl(16.05, 16.55, t);
+      $('#g0').style.height = (pk * 100) + '%'; $('#tm0').textContent = (48.6 * pk).toFixed(1) + 's';
+      $('#g1').style.height = (uk * 4.3) + '%'; $('#tm1').textContent = (2.1 * uk).toFixed(1) + 's';
+      $('#tm1').style.transform = `scale(${1 + bump(t, 16.6, .15) * .15})`;
+      $('#out0').textContent = OUT0.split('\n').slice(0, Math.floor(cl(13.2, 15.9, t) * 3.2)).join('\n');
+      $('#out1').textContent = OUT1.split('\n').slice(0, Math.floor(cl(16.1, 16.7, t) * 3.2)).join('\n');
+      const ck = sm(16.95, 17.25, t); $('#chip3').style.opacity = ck;
+      $('#chip3').style.transform = `perspective(1200px) translateZ(${(1 - ck) * -400 + 60}px) rotateX(${(1 - ck) * 70}deg) scale(${1 + bump(t, 17.3, .12) * .06})`;
+      $('#lbl3').textContent = twl(t, 13.0, 13.8, 'our test · same 41 packages · cold cache'); }
+    // S4 cubes fly into the uv cube
+    { const big = $('#cbU'), bk = sm(17.5, 18.2, t); let n = 0;
+      TOOLS.forEach(([nm, t0], i) => { const e = $('#cb' + i), ap = sm(17.6 + i * .1, 18.1 + i * .1, t), m = sm(t0, t0 + .45, t);
+        const [hx, hy] = HOME[i], cx = 445, cy = 225;
+        const x = hx + (cx - hx) * m, y = hy + (cy - hy) * m, z = (1 - ap) * -900 + m * -60, s = 1 - .8 * m;
+        e.style.opacity = sm(17.55 + i * .1, 17.7 + i * .1, t) * (1 - sm(t0 + .35, t0 + .45, t));
+        e.style.transform = `translate3d(${x}px,${y}px,${z}px) rotateX(-18deg) rotateY(${(i % 2 ? -28 : 28) + m * 180}deg) scale(${s})`;
+        if (t > t0 + .4) n++; });
+      const pulse = TOOLS.reduce((s, [, t0]) => s + bump(t, t0 + .45, .12), 0);
+      big.style.opacity = sm(17.45, 17.6, t);
+      big.style.transform = `translate3d(410px,190px,${(1 - bk) * -900}px) rotateX(-20deg) rotateY(${-24 + Math.sin(t * .9) * 12}deg) scale(${1 + pulse * .1})`;
+      $('#cnt4').textContent = t > 18.4 ? `${4 - n} tools → 1` : '';
+      $('#py4').innerHTML = `<span style="color:var(--mut)">$ </span>${twl(t, 21.45, 22.1, 'uv python install 3.13')}` + (t > 22.55 ? `\n<span style="color:var(--mut)">✓ Installed Python 3.13</span>` : ''); }
+    // S5 scan + maker plate
+    { $('#scan5').style.top = (-140 + 760 * cl(23.6, 25.0, t)) + 'px';
+      const mk = sm(24.4, 24.85, t); $('#mk5').style.opacity = mk;
+      $('#mk5').style.transform = `perspective(1400px) translateZ(${60 + (1 - mk) * -500}px) rotateX(${8 + (1 - mk) * 60}deg) scale(${1 + bump(t, 24.95, .12) * .05})`; }
+    // S6 command, keycaps, stars
+    { const full = 'curl -LsSf https://astral.sh/uv/install.sh | sh';
+      $('#cmd6').textContent = twl(t, 25.9, 26.65, full); $('#cur6').style.opacity = Math.sin(t * 14) > 0 || t < 26.7 ? 1 : 0;
+      [26.88, 27.28, 27.84].forEach((t0, i) => { const e = $('#k' + i), ak = sm(25.7 + i * .1, 26.2 + i * .1, t), pr = bump(t, t0 + .06, .1);
+        e.classList.toggle('on', t > t0);
+        e.style.opacity = ak;
+        e.style.transform = `translate3d(0,${(1 - ak) * 200 + pr * 14}px,${(1 - ak) * -500}px) rotateX(${30 - pr * 8}deg)`; });
+      const sk = cl(28.75, 29.9, t); $('#stn6').textContent = sk >= 1 ? '92.3K' : (92.3 * sk).toFixed(1) + 'K';
+      const bn = $('#bign'); bn.style.opacity = sm(28.6, 28.8, t); bn.style.transform = `perspective(1400px) rotateY(${-16 + (1 - sm(28.6, 29.1, t)) * -60}deg) translateZ(80px) scale(${1 + bump(t, 30.0, .15) * .06})`;
+      $('#hl6').style.opacity = sm(29.0, 29.2, t);
+      $('#starrow').innerHTML = [0, 1, 2, 3, 4].map(j => { const f = sm(29.2 + j * .1, 29.4 + j * .1, t);
+        return `<svg viewBox="0 0 24 24" style="transform:scale(${.4 + .6 * f});opacity:${f}"><path d="M12 2l2.9 6.6 7.1.6-5.4 4.7 1.6 7L12 17.3 5.8 20.9l1.6-7L2 9.2l7.1-.6z" fill="#f5f6f7"/></svg>`; }).join(''); }
+    let si = 0; for (let i = 0; i < S.length; i++) if (t >= S[i] - .3) si = i;
+    tag.innerHTML = `<b>${String(si + 1).padStart(2, '0')}</b> / ${LABEL[si]}`;
+    segs.forEach((b, i) => { const e = i < S.length - 1 ? S[i + 1] : TOTAL - 1.5; b.style.width = Math.min(100, Math.max(0, (t - S[i]) / (e - S[i]) * 100)) + '%'; });
+  };
+  window.__tl = tl;
+  window.__seek = (rt) => { const t = rt * SPD; tl.time(t, false); tick(t); return Promise.all($$('img').map(im => im.decode().catch(() => null))).then(() => null); };
+  window.__seek(0);
+  if (!navigator.webdriver) { const t0 = performance.now(); const loop = () => { window.__seek(((performance.now() - t0) / 1000) % (TOTAL / SPD)); requestAnimationFrame(loop); }; requestAnimationFrame(loop); }
+})();
+</script>
+</body></html>

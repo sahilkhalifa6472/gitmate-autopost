@@ -1,0 +1,9 @@
+{
+ "video": "gitmate_mattpocock-skills.mp4",
+ "title": "Matt Pocock's skills: agent skills for real engineering, not vibe coding",
+ "description": "300K+ stars\u2026 for a folder of markdown files. \ud83e\udd2f\n\nMatt Pocock's \"skills\" = the agent skills he uses every day for real engineering, not vibe coding:\n\u2192 /grill-me: your agent interviews you, question after question, until the plan is actually clear\n\u2192 /tdd: failing test first, then make it pass. Red, green, refactor\n\u2192 /improve-codebase-architecture: finds spots to deepen before your code turns into a ball of mud\n\u2192 Small + composable: hack them, make them your own\n\n\u2705 Free + open source (MIT)\n\u2705 Works with Claude Code, Codex, GitHub Copilot, Cursor and more\n\u2705 Claude Code: claude plugin install mattpocock-skills@claude-plugins-official\n\nComment GITMATE and I'll send you the link \ud83d\udc47\nFollow @git.mate for 1 useful repo every day.\n\n#github #opensource #ai #aiagents #claudecode #codex #copilot #cursor #tdd #softwareengineering #devtools #developer #programming #typescript\n",
+ "repo": "https://github.com/mattpocock/skills",
+ "theme": "dark",
+ "duration": 38.27,
+ "source": "github.com/trending (2026-11-07, +2,070 stars that day)"
+}

@@ -1,0 +1,324 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<title>git.mate plutus</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<style>
+:root{--ink:#0b0b0c;--mut:#8b8d91;--dim:#cfd0d2;--bg:#f7f7f5}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#fff}
+.f{position:relative;width:1080px;height:1920px;overflow:hidden;background:radial-gradient(ellipse 110% 70% at 50% 45%,#ffffff 0%,#f7f7f5 55%,#eeeeec 100%);color:var(--ink);font-family:'Inter',sans-serif}
+#cam{position:absolute;inset:0}
+#stage{position:absolute;inset:0;perspective:1800px;perspective-origin:50% 50%}
+#world{position:absolute;left:0;top:0;width:1080px;height:1920px;transform-style:preserve-3d;transform-origin:540px 960px}
+.sc{position:absolute;left:0;top:0;width:1080px;height:1920px;transform-style:preserve-3d;transform-origin:540px 960px;visibility:hidden}
+.ring{position:absolute;border-radius:50%;border:70px solid rgba(10,10,12,.045);filter:blur(26px)}
+.grain{position:absolute;inset:0;opacity:.05;mix-blend-mode:multiply;z-index:8;pointer-events:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
+.top{position:absolute;left:64px;right:64px;top:84px;height:80px;z-index:6}
+.brand{position:absolute;left:0;top:0;display:flex;align-items:center;gap:16px;font-family:'JetBrains Mono';font-weight:700;font-size:28px}
+.mk{width:58px;height:58px;border-radius:50%;display:grid;place-items:center;font-family:'JetBrains Mono';font-weight:800;font-size:22px;color:#fff;background:radial-gradient(circle at 34% 28%,#5a5c61 0 10%,#1a1b1e 45%,#000 100%);box-shadow:inset 0 2px 3px rgba(255,255,255,.35),0 8px 18px rgba(0,0,0,.25)}
+.tag{position:absolute;right:0;top:14px;font-family:'JetBrains Mono';font-size:24px;color:var(--mut);white-space:nowrap}
+.tag b{color:var(--ink);font-weight:700}
+.C{position:absolute;left:0;right:0;text-align:center;white-space:nowrap}
+.kick{font-family:'JetBrains Mono';font-size:26px;color:var(--mut);letter-spacing:1px}
+.sans{font-weight:600;letter-spacing:-.035em;line-height:1}
+.ser{font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;letter-spacing:-.01em;line-height:1}
+.ch{display:inline-block;white-space:pre}
+.mono{font-family:'JetBrains Mono'}
+.card{position:absolute;background:#fff;border-radius:26px;box-shadow:0 0 0 2px var(--ink),0 8px 0 var(--ink),0 40px 70px rgba(0,0,0,.14);overflow:hidden}
+.bpill{display:inline-block;padding:4px 26px 12px;border-radius:24px;background:var(--ink);color:#fff;font-family:'Inter';font-style:normal;font-weight:600;letter-spacing:-.035em;vertical-align:6px}
+.g{}
+
+
+/* ===== Plutus scene CSS ===== */
+.realb{position:absolute;right:18px;top:18px;z-index:3;padding:7px 16px;border-radius:999px;font-family:'JetBrains Mono';font-weight:800;font-size:17px;background:var(--ink);color:#fff}
+.g img,.gi{filter:grayscale(1) contrast(1.05)}
+/* S1 three scattered money apps */
+.tile{position:absolute;padding:30px 34px;opacity:0}
+.tile .lb{font-family:'JetBrains Mono';font-size:24px;color:var(--mut);display:flex;align-items:center;gap:12px}
+.tile .lb i{width:16px;height:16px;border-radius:50%;background:var(--ink)}
+.tile .v{font-weight:700;font-size:74px;letter-spacing:-.04em;margin-top:10px}
+.tile .s{font-family:'JetBrains Mono';font-size:22px;color:var(--mut);margin-top:6px}
+.sheet{position:absolute;left:64px;top:1170px;width:952px;height:400px;opacity:0}
+.sheet .gr{position:absolute;left:24px;right:24px;top:70px;bottom:24px;display:grid;grid-template-columns:70px repeat(4,1fr);grid-auto-rows:1fr;border:2px solid var(--ink);border-radius:10px;overflow:hidden}
+.sheet .gr b{border-right:1.5px solid #d6d6d4;border-bottom:1.5px solid #d6d6d4;font-family:'JetBrains Mono';font-weight:500;font-size:22px;display:flex;align-items:center;padding:0 12px;white-space:nowrap;overflow:hidden}
+.sheet .gr b.h{background:#efefed;font-weight:700;color:var(--mut)}
+.sheet .tt{position:absolute;left:30px;top:20px;font-family:'JetBrains Mono';font-weight:700;font-size:24px}
+.messy{position:absolute;right:60px;top:1110px;padding:8px 30px 14px;border-radius:20px;background:var(--ink);color:#fff;font-family:'Instrument Serif';font-style:italic;font-size:76px;opacity:0;transform-origin:50% 50%}
+/* S2 real hero + 3D coin */
+.hero{left:64px;top:560px;width:952px;height:411px}
+.hero img{width:100%;height:100%;object-fit:cover;display:block}
+.coin{position:absolute;left:400px;top:1080px;width:280px;height:280px;transform-style:preserve-3d;opacity:0}
+.coin .ds{position:absolute;inset:0;border-radius:50%;background:#1c1c1e;box-shadow:inset 0 0 0 3px #3a3a3d}
+.coin .fc{position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle at 35% 30%,#4a4a4e,#0b0b0c 70%);box-shadow:inset 0 0 0 6px #6a6a6e,inset 0 0 0 14px #0b0b0c,inset 0 0 0 16px #5a5a5e;display:grid;place-items:center;overflow:hidden}
+.coin .fc img{width:62%;height:62%;object-fit:contain;filter:grayscale(1) brightness(1.5) contrast(1.2)}
+.cl2{position:absolute;left:0;right:0;top:1420px;text-align:center;font-family:'JetBrains Mono';font-size:32px;white-space:pre;height:46px}
+/* S3 ledger book + live ticker */
+.ledger{position:absolute;left:64px;top:540px;width:952px;height:690px;padding:30px 36px}
+.ledger .hd{display:flex;justify-content:space-between;font-family:'JetBrains Mono';font-weight:700;font-size:24px;color:var(--mut);padding-bottom:18px;border-bottom:3px solid var(--ink)}
+.lr{position:absolute;left:36px;right:36px;height:104px;display:flex;align-items:center;gap:22px;border-bottom:1.5px dashed #cfd0d2;opacity:0}
+.lr .ic{width:66px;height:66px;border-radius:18px;display:grid;place-items:center;font-family:'JetBrains Mono';font-weight:800;font-size:22px;background:var(--ink);color:#fff;flex:none}
+.lr .nm{flex:1;font-size:38px;font-weight:600;letter-spacing:-.03em}
+.lr .nm small{display:block;font-family:'JetBrains Mono';font-size:20px;font-weight:500;color:var(--mut);letter-spacing:0}
+.lr .am{font-family:'JetBrains Mono';font-weight:700;font-size:34px}
+.tick{left:64px;top:1300px;width:952px;height:122px;padding:16px 20px;display:flex;align-items:center;gap:22px;background:#111214}
+.tick img{height:90px;flex:1;object-fit:contain;object-position:left center}
+.tick .lv{display:flex;align-items:center;gap:10px;font-family:'JetBrains Mono';font-weight:800;font-size:24px;color:#fff;padding:0 8px;flex:none}
+.tick .lv i{width:16px;height:16px;border-radius:50%;background:#fff}
+/* S4 device vault: data stays, wall stops the upload */
+.dlg{left:64px;top:540px;width:470px;height:464px}
+.dlg img{width:100%;height:100%;object-fit:cover;display:block}
+.cloud{position:absolute;left:600px;top:560px;width:376px;height:200px;opacity:0}
+.dev{position:absolute;left:580px;top:840px;width:404px;height:300px;padding:24px;opacity:0}
+.dev .bx{position:absolute;width:120px;height:44px;border-radius:10px;background:var(--ink)}
+.dev .lb{position:absolute;left:24px;bottom:20px;font-family:'JetBrains Mono';font-weight:700;font-size:22px}
+.wall{position:absolute;left:580px;top:775px;width:404px;height:36px;border-radius:12px;background:var(--ink);opacity:0;display:grid;place-items:center;color:#fff;font-family:'JetBrains Mono';font-weight:800;font-size:20px;letter-spacing:2px}
+.pkt{position:absolute;width:60px;height:40px;border-radius:10px;background:var(--ink);opacity:0}
+.feat{left:64px;top:1200px;width:952px;height:172px;background:#111214}
+.feat img{width:100%;height:100%;object-fit:contain;display:block}
+.pv{position:absolute;left:0;right:0;top:1420px;text-align:center;font-family:'JetBrains Mono';font-weight:700;font-size:30px;white-space:pre;height:44px}
+/* S5 github card + commit tiles + browser bar */
+.ghc{left:64px;top:540px;width:952px;height:520px}
+.ghc img{width:100%;height:100%;object-fit:cover;object-position:top;display:block}
+.cmts{position:absolute;left:64px;top:1100px;width:952px;height:250px;padding:26px 30px;opacity:0}
+.cmts .n{font-weight:700;font-size:96px;letter-spacing:-.04em;line-height:1}
+.cmts .n small{font-family:'JetBrains Mono';font-weight:500;font-size:28px;color:var(--mut);letter-spacing:0;margin-left:14px}
+.cgrid{position:absolute;left:30px;right:30px;bottom:26px;height:84px;display:grid;grid-template-columns:repeat(40,1fr);grid-template-rows:repeat(4,1fr);gap:5px}
+.cgrid i{border-radius:3px;background:#e7e7e5}
+.cgrid i.on{background:var(--ink)}
+.brw{position:absolute;left:64px;top:1400px;width:952px;height:120px;border-radius:999px;display:flex;align-items:center;gap:22px;padding:0 30px;opacity:0;background:#fff;box-shadow:0 0 0 2px var(--ink),0 8px 0 var(--ink),0 30px 50px rgba(0,0,0,.14)}
+.brw .dt{display:flex;gap:10px}.brw .dt i{width:18px;height:18px;border-radius:50%;background:#cfd0d2}
+.brw .u{flex:1;font-family:'JetBrains Mono';font-weight:700;font-size:36px;white-space:pre}
+.brw .go{width:76px;height:76px;border-radius:50%;background:var(--ink);color:#fff;display:grid;place-items:center;font-size:36px;font-weight:700}
+
+/* S7 DM thread */
+.th{left:110px;top:640px;width:860px;height:500px;padding:30px 36px}
+.th .hd{display:flex;align-items:center;gap:20px;padding-bottom:24px;border-bottom:2px solid #e3e3e1}
+.th .hd .mk{width:70px;height:70px;font-size:26px}
+.th .hd b{font-family:'JetBrains Mono';font-size:30px}
+.bub{position:absolute;padding:24px 36px;border-radius:40px;font-size:40px;font-weight:600;white-space:nowrap}
+.bub.me{right:36px;background:var(--ink);color:#fff;border-radius:40px 40px 12px 40px}
+.bub.them{left:36px;background:#efefed;border-radius:40px 40px 40px 12px}
+.plane{position:absolute;width:90px;height:90px}
+
+/* ending */
+.cin{display:flex;align-items:center;gap:26px;padding:0 26px 0 30px;background:#fff;box-shadow:0 0 0 2px var(--ink),0 6px 0 var(--ink),0 30px 50px rgba(0,0,0,.12)}
+.cbar{position:absolute}
+.av{width:76px;height:76px;border-radius:50%;background:linear-gradient(135deg,#d9d9d7,#a9aaad);flex:none}
+.cin .tx{flex:1;font-size:46px;font-weight:600;letter-spacing:.02em}
+.send{width:84px;height:84px;border-radius:50%;background:var(--ink);display:grid;place-items:center;color:#fff;font-size:40px;flex:none}
+.dm{position:absolute;padding:30px 44px;border-radius:44px 44px 44px 12px;background:var(--ink);color:#fff;font-size:42px;font-weight:500;white-space:nowrap}
+.dm small{display:block;font-family:'JetBrains Mono';font-size:20px;color:#9a9ca1;margin-bottom:8px}
+.bigmk{position:absolute;left:400px;top:600px;width:280px;height:280px;border-radius:50%;display:grid;place-items:center;font-family:'JetBrains Mono';font-weight:800;font-size:96px;color:#fff;background:radial-gradient(circle at 34% 26%,#6a6c71 0 8%,#1c1d20 42%,#000 100%);box-shadow:inset 0 6px 10px rgba(255,255,255,.3),inset 0 -14px 26px rgba(0,0,0,.6),0 40px 80px rgba(0,0,0,.28)}
+.erings{position:absolute;left:290px;top:490px;width:500px;height:500px}
+.fol{position:absolute;left:300px;top:1390px;width:480px;height:132px;border-radius:999px;display:grid;place-items:center;font-size:50px;font-weight:600;background:var(--ink);color:#fff;box-shadow:0 22px 44px rgba(0,0,0,.22)}
+.fol2{position:absolute;left:300px;top:1390px;width:480px;height:132px;border-radius:999px;display:grid;place-items:center;font-size:50px;font-weight:600;background:#fff;color:var(--ink);border:3px solid var(--ink);opacity:0}
+.tapd{position:absolute;width:90px;height:90px;border-radius:50%;background:rgba(11,11,12,.18);border:3px solid rgba(11,11,12,.55);opacity:0}
+.rip{position:absolute;left:540px;top:1456px;width:10px;height:10px;margin:-5px;border-radius:50%;border:4px solid var(--ink);opacity:0}
+</style></head>
+<body>
+<svg width="0" height="0" style="position:absolute"><defs>
+  <filter id="mb" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur id="mbg" stdDeviation="0 0"/></filter>
+</defs></svg>
+<div class="f" id="F">
+ <div id="cam"><div id="stage"><div id="world">
+  <!-- S1 hook: money scattered over three apps + messy sheet -->
+  <div class="sc" id="s1" data-pose="0,0,0,0,0,0">
+    <div class="ring" style="left:-300px;top:1300px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="C sans ty" style="top:270px;font-size:72px;font-weight:700;letter-spacing:-.05em;transform:translateZ(120px)" data-t="0.2" data-cd=".03">Expenses. Crypto. Stocks.</div>
+    <div class="C ser rv" style="top:390px;font-size:88px;transform:translateZ(120px)" data-t="3.6">all in a <span class="bpill">messy sheet</span></div>
+    <div class="card tile" id="t0" style="left:64px;top:540px;width:600px;height:250px"><div class="lb"><i></i>expenses app</div><div class="v">$1,240.50</div><div class="s">this month · 23 receipts</div></div>
+    <div class="card tile" id="t1" style="left:416px;top:830px;width:600px;height:250px"><div class="lb"><i></i>crypto wallet</div><div class="v">0.05 BTC</div><div class="s">bought at… which price?</div></div>
+    <div class="card sheet" id="sheet"><div class="tt">money_FINAL_v7.xlsx</div><div class="gr"><b class="h" id="sc0"></b><b class="h" id="sc1">A</b><b class="h" id="sc2">B</b><b class="h" id="sc3">C</b><b class="h" id="sc4">D</b><b class="h" id="sc5">1</b><b class="" id="sc6">Rent</b><b class="" id="sc7">1200</b><b class="" id="sc8">#REF!</b><b class="" id="sc9">??</b><b class="h" id="sc10">2</b><b class="" id="sc11">BTC??</b><b class="" id="sc12">0.04</b><b class="" id="sc13">=SUM(</b><b class="" id="sc14">#N/A</b><b class="h" id="sc15">3</b><b class="" id="sc16">AAPL</b><b class="" id="sc17">10</b><b class="" id="sc18">#DIV/0!</b><b class="" id="sc19"></b><b class="h" id="sc20">4</b><b class="" id="sc21">gold?</b><b class="" id="sc22"></b><b class="" id="sc23">#VALUE!</b><b class="" id="sc24"></b></div><div class="messy" id="messy" style="right:24px;top:6px;font-size:52px;padding:2px 22px 8px">mess.</div></div>
+  </div>
+
+  <!-- S2 meet Plutus: real hero + 3D coin -->
+  <div class="sc" id="s2" data-pose="2600,0,-1200,30,0,0">
+    <div class="ring" style="left:640px;top:-200px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="C sans ty" style="top:260px;font-size:96px;font-weight:700;letter-spacing:-.05em;transform:translateZ(120px)" data-t="5.39" data-cd=".04">Mate, meet Plutus.</div>
+    <div class="C ser rv" style="top:400px;font-size:92px;transform:translateZ(120px)" data-t="7.2"><span class="bpill">free</span> &amp; open-source</div>
+    <div class="card hero c3d g" data-t="5.2" data-rx="8" data-ry="-8"><img src="media/hero.jpg"><span class="realb">REAL</span></div>
+    <div class="coin" id="coin"></div>
+    <div class="cl2" id="cl2"></div>
+  </div>
+
+  <!-- S3 ledger rows write in on the voice + real live ticker -->
+  <div class="sc" id="s3" data-pose="2600,2600,-900,0,-24,0">
+    <div class="ring" style="left:-300px;top:1200px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="C sans ty" style="top:260px;font-size:96px;font-weight:700;letter-spacing:-.05em;transform:translateZ(120px)" data-t="9.62" data-cd=".035">Expenses. Income.</div>
+    <div class="C ser rv" style="top:400px;font-size:84px;transform:translateZ(120px)" data-t="11.44">crypto, stocks, even <span class="bpill">gold</span></div>
+    <div class="card ledger c3d" data-t="9.5" data-rx="10" data-ry="6"><div class="hd"><span>LEDGER · ONE PLACE</span><span>avg cost · FIFO</span></div><div class="lr" id="lr0" style="top:96px"><div class="ic">EXP</div><div class="nm">Office rent<small>business expense</small></div><div class="am">−$1,200</div></div><div class="lr" id="lr1" style="top:208px"><div class="ic">INC</div><div class="nm">Client invoice<small>income</small></div><div class="am">+$3,400</div></div><div class="lr" id="lr2" style="top:320px"><div class="ic">BTC</div><div class="nm">Bitcoin<small>crypto · live price</small></div><div class="am">0.05 BTC</div></div><div class="lr" id="lr3" style="top:432px"><div class="ic">ETF</div><div class="nm">S&amp;P 500 ETF<small>stocks · live price</small></div><div class="am">10 sh</div></div><div class="lr" id="lr4" style="top:544px"><div class="ic">XAU</div><div class="nm">Gold<small>metal · live price</small></div><div class="am">1 oz</div></div></div>
+    <div class="card tick c3d g" data-t="13.2" data-rx="10" data-ry="-6"><div class="lv"><i id="lvdot"></i>LIVE</div><img src="media/ticker.jpg"></div>
+  </div>
+
+  <!-- S4 private: real new-account dialog + data blocked from the cloud -->
+  <div class="sc" id="s4" data-pose="0,2600,-1400,-28,0,0">
+    <div class="ring" style="left:620px;top:1300px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="C sans ty" style="top:260px;font-size:96px;font-weight:700;letter-spacing:-.05em;transform:translateZ(120px)" data-t="14.72" data-cd=".04">And it's private.</div>
+    <div class="C ser rv" style="top:400px;font-size:84px;transform:translateZ(120px)" data-t="16.08">no account, no <span class="bpill">sign-up</span></div>
+    <div class="card dlg c3d g" data-t="14.6" data-rx="8" data-ry="12"><img src="media/dialog.jpg"><span class="realb">REAL</span></div>
+    <svg class="cloud" id="cloud" viewBox="0 0 376 200"><path d="M96 170h200a56 56 0 0 0 6-111A82 82 0 0 0 146 50a60 60 0 0 0-50 120z" fill="#fff" stroke="#0b0b0c" stroke-width="7" stroke-linejoin="round"/><text x="188" y="140" text-anchor="middle" font-family="JetBrains Mono" font-weight="700" font-size="26" fill="#8b8d91">cloud</text></svg>
+    <div class="wall" id="wall">BLOCKED</div>
+    <div class="pkt" id="pk0" style="left:640px;top:880px"></div><div class="pkt" id="pk1" style="left:752px;top:880px"></div><div class="pkt" id="pk2" style="left:864px;top:880px"></div>
+    <div class="card dev" id="dev"><div class="bx" style="left:24px;top:30px"></div><div class="bx" style="left:152px;top:30px"></div><div class="bx" style="left:280px;top:30px"></div><div class="bx" style="left:24px;top:88px"></div><div class="bx" style="left:152px;top:88px"></div><div class="bx" style="left:280px;top:88px"></div><div class="bx" style="left:24px;top:146px"></div><div class="bx" style="left:152px;top:146px"></div><div class="bx" style="left:280px;top:146px"></div><div class="lb">this device</div></div>
+    <div class="card feat c3d g" data-t="17.5" data-rx="10"><img src="media/features.jpg"></div>
+    <div class="pv" id="pv"></div>
+  </div>
+
+  <!-- S5 built by Sebastian: real repo + commit wall + browser bar -->
+  <div class="sc" id="s5" data-pose="0,5200,-900,0,26,0">
+    <div class="ring" style="left:-300px;top:-160px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="C sans ty" style="top:260px;font-size:92px;font-weight:700;letter-spacing:-.05em;transform:translateZ(120px)" data-t="19.62" data-cd=".035">Built by Sebastian.</div>
+    <div class="C ser rv" style="top:400px;font-size:88px;transform:translateZ(120px)" data-t="20.8">nearly <span class="bpill">1,000</span> commits</div>
+    <div class="card ghc c3d" data-t="19.5" data-rx="8" data-ry="-8"><img src="media/ghc.jpg"><span class="realb">REAL</span></div>
+    <div class="card cmts" id="cmts"><div class="n"><span id="cn">0</span><small>commits · by @sebaptcd</small></div><div class="cgrid" id="cgrid"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div>
+    <div class="brw" id="brw"><div class="dt"><i></i><i></i><i></i></div><div class="u" id="url"></div><div class="go" id="go">→</div></div>
+  </div>
+
+  <!-- S7 DM FEATURE -->
+  <div class="sc" id="s7" data-pose="2600,5200,-1300,30,0,0">
+    <div class="ring" style="left:-300px;top:-160px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="C sans ty" style="top:260px;font-size:82px;font-weight:700;letter-spacing:-.055em;transform:translateZ(120px)" data-t="23.97" data-cd=".035">Want your repo featured?</div>
+    <div class="C ser rv" style="top:390px;font-size:92px;transform:translateZ(120px)" data-t="25.48">DM us <span class="bpill">FEATURE</span></div>
+    <div class="card th c3d" data-t="24.05" data-rx="8" data-ry="-6"><div class="hd"><div class="mk">&gt;_</div><b>git.mate</b></div>
+      <div class="bub me" id="bm" style="top:170px"><span id="bmt"></span></div>
+      <div class="bub them" id="bt" style="top:330px">Send us your repo 👀</div>
+      </div>
+    <svg class="plane" id="plane" viewBox="0 0 24 24" style="left:780px;top:760px"><path d="M2 21l21-9L2 3v7l15 2-15 2z" fill="#0b0b0c"/></svg>
+  </div>
+
+  <!-- S8 comment -->
+  <div class="sc" id="s8" data-pose="2600,7800,-900,0,-24,0">
+    <div class="ring" style="left:620px;top:1300px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="C sans rv" style="top:380px;font-size:120px;font-weight:500" data-t="26.88">Comment</div>
+    <div class="C sans ty" style="top:510px;font-size:196px;font-weight:700;letter-spacing:-.04em" data-t="27.12" data-cd=".05">GITMATE</div>
+    <div class="cbar cin c3d" style="left:64px;top:860px;width:952px;height:140px;border-radius:999px" data-t="26.45" data-rx="10"><div class="av"></div><div class="tx" id="ctx"></div><div class="send">↑</div></div>
+    <div class="dm pp" style="left:250px;top:1110px" data-t="28.3"><small>git.mate · message</small>Here's your link, mate →</div>
+  </div>
+  <!-- S9 end -->
+  <div class="sc" id="s9" data-pose="0,7800,-1300,-30,0,0">
+    <div class="ring" style="left:-300px;top:-160px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="ring" style="left:640px;top:1400px;width:760px;height:760px;transform:translateZ(-800px)"></div>
+    <svg class="erings" viewBox="0 0 500 500"><circle id="er1" cx="250" cy="250" r="226" fill="none" stroke="#0b0b0c" stroke-width="3" stroke-dasharray="1420" stroke-dashoffset="1420" transform="rotate(-90 250 250)"/>
+      <circle id="er2" cx="250" cy="250" r="246" fill="none" stroke="#c9cacc" stroke-width="2" stroke-dasharray="1546" stroke-dashoffset="1546" transform="rotate(90 250 250)"/></svg>
+    <div class="bigmk" id="bigmk">&gt;_</div>
+    <div class="C sans ty" style="top:1050px;font-size:104px;font-weight:700" data-t="29.35" data-cd=".05">@git.mate</div>
+    <div class="C ser" style="top:1200px;font-size:96px"><span class="rv g" data-t="29.85">1 repo</span> <span class="rv" data-t="30.15">every</span> <span class="rv" data-t="30.4">day.</span></div>
+    <div class="fol pp" id="fol" data-t="29.5">Follow</div>
+    <div class="fol2" id="fol2">Following ✓</div>
+    <div class="rip" id="rip"></div>
+    <div class="tapd" id="tapd" style="left:640px;top:1560px"></div>
+  </div>
+ </div></div></div>
+ <div class="top"><div class="brand"><div class="mk">&gt;_</div>git.mate</div><div class="tag" id="tag"><b>01</b> / 9</div></div>
+ <div class="grain"></div>
+</div>
+<script>
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+const SPD = 1.0, RAWTOTAL = 31.75, TOTAL = RAWTOTAL / SPD; window.__TOTAL = TOTAL;
+const S = [0, 5.1, 9.45, 14.45, 19.45, 23.75, 26.6, 29.0];
+const NS = S.length;
+const sm = (a, b, x) => { const k = Math.min(1, Math.max(0, (x - a) / (b - a))); return k * k * (3 - 2 * k); };
+const cl = (a, b, x) => Math.min(1, Math.max(0, (x - a) / (b - a)));
+const bump = (t, c, w) => Math.max(0, 1 - Math.abs(t - c) / w);
+
+// S2 coin discs
+{ let h=''; for (let i = 0; i < 14; i++) h += `<div class="ds" style="transform:translateZ(${-i * 2.2}px)"></div>`; h += '<div class="fc" style="transform:translateZ(2px)"><img src="media/logo.png"></div><div class="fc" style="transform:translateZ(-31px) rotateY(180deg)"><img src="media/logo.png"></div>'; $('#coin').innerHTML = h; }
+const scenes = $$('.sc');
+const poses = scenes.map(s => s.dataset.pose.split(',').map(Number));
+scenes.forEach((s, i) => { const [x, y, z, ry, rx, rz] = poses[i]; s.style.transform = `translate3d(${x}px,${y}px,${z}px) rotateY(${ry}deg) rotateX(${rx}deg) rotateZ(${rz}deg)`; });
+const tl = gsap.timeline({ paused: true });
+$$('.ty').forEach(el => { const t = +el.dataset.t, cd = +(el.dataset.cd || .045); const txt = el.textContent; el.textContent = '';
+  const chs = [...txt].map(c => { const s = document.createElement('span'); s.className = 'ch'; s.textContent = c; el.appendChild(s); return s; });
+  tl.set(chs, { opacity: 0 }, 0);
+  chs.forEach((c, i) => tl.fromTo(c, { opacity: 0, y: 26, filter: 'blur(14px)' }, { opacity: 1, y: 0, filter: 'blur(0px)', duration: .42, ease: 'power3.out', immediateRender: false }, Math.max(0.001, t + i * cd))); });
+$$('.rv').forEach(el => { const t = +el.dataset.t; if (isNaN(t)) return;
+  tl.set(el, { opacity: 0 }, 0); tl.fromTo(el, { opacity: 0, y: 46, filter: 'blur(16px)' }, { opacity: 1, y: 0, filter: 'blur(0px)', duration: .55, ease: 'power3.out', immediateRender: false }, Math.max(0.001, t)); });
+$$('.pp').forEach(el => { const t = +el.dataset.t;
+  tl.set(el, { opacity: 0 }, 0); tl.fromTo(el, { opacity: 0, scale: .55, filter: 'blur(10px)' }, { opacity: 1, scale: 1, filter: 'blur(0px)', duration: .5, ease: 'back.out(2.2)', immediateRender: false }, t); });
+$$('.c3d').forEach(el => { const t = +el.dataset.t, rx = +(el.dataset.rx || 0), ry = +(el.dataset.ry || 0);
+  tl.set(el, { opacity: 0, transformPerspective: 1500 }, 0);
+  tl.fromTo(el, { opacity: 0, rotationX: rx + 50, rotationY: ry * 2.5, y: 260, z: -500, scale: .9 }, { opacity: 1, rotationX: rx, rotationY: ry, y: 0, z: 0, scale: 1, duration: 1.05, ease: 'expo.out', immediateRender: false }, Math.max(0.001, t));
+  tl.to(el, { rotationX: rx * .4, rotationY: -ry * .5, duration: 3.2, ease: 'sine.inOut' }, Math.max(0.001, t) + 1.05); });
+// comment typing
+const cm = { n: 0 };
+tl.fromTo(cm, { n: 0 }, { n: 7, duration: .45, ease: 'none', immediateRender: false, onUpdate: () => $('#ctx').textContent = 'GITMATE'.slice(0, Math.round(cm.n)) }, 27.3);
+// end
+const E = 29.05;
+tl.set('#bigmk', { opacity: 0, scale: .2 }, 0);
+tl.to('#bigmk', { opacity: 1, scale: 1, duration: .9, ease: 'back.out(1.8)' }, E);
+tl.fromTo('#er1', { attr: { 'stroke-dashoffset': 1420 } }, { attr: { 'stroke-dashoffset': 0 }, duration: 1.0, ease: 'power2.inOut', immediateRender: false }, E + .15);
+tl.fromTo('#er2', { attr: { 'stroke-dashoffset': 1546 } }, { attr: { 'stroke-dashoffset': 0 }, duration: 1.2, ease: 'power2.inOut', immediateRender: false }, E + .3);
+tl.to('#tapd', { opacity: 1, left: 560, top: 1440, duration: .5, ease: 'power2.out' }, E + 1.4);
+tl.to('#tapd', { scale: .7, duration: .1 }, E + 1.9); tl.to('#tapd', { scale: 1, duration: .15 }, E + 2.0);
+tl.to('#fol', { scale: .93, duration: .1 }, E + 1.9); tl.to('#fol', { scale: 1, duration: .2 }, E + 2.0);
+tl.set('#fol2', { opacity: 1 }, E + 2.0); tl.set('#fol', { opacity: 0 }, E + 2.0);
+tl.fromTo('#rip', { opacity: .7, width: 10, height: 10, margin: -5 }, { opacity: 0, width: 640, height: 640, margin: -320, duration: .8, ease: 'power2.out', immediateRender: false }, E + 1.95);
+tl.to('#tapd', { opacity: 0, duration: .3 }, E + 2.35);
+tl.to({}, { duration: .01 }, RAWTOTAL);
+
+const ease = x => x < .5 ? 16 * x ** 5 : 1 - Math.pow(-2 * x + 2, 5) / 2;
+const TD = .8, TPRE = .45;
+function camAt(t) {
+  let i = 0; for (let k = 0; k < S.length; k++) if (t >= S[k] - TPRE) i = k;
+  const ta = S[i] - TPRE; let p = poses[i].slice(), d = 0, rr = 0;
+  if (i > 0 && t < ta + TD) { const u = (t - ta) / TD, e = ease(u), a = poses[i - 1]; p = a.map((v, j) => v + (poses[i][j] - v) * e); d = Math.sin(u * Math.PI) * 700; rr = Math.sin(u * Math.PI) * (i % 2 ? 4 : -4); }
+  const st = Math.max(0, t - (S[i] - TPRE + TD)); const dz = Math.min(st, 6) * 8;
+  return { x: p[0], y: p[1], z: p[2] - dz, ry: p[3] + Math.sin(t * .6) * .6, rx: p[4] + Math.sin(t * .45) * .5, rz: p[5] + rr, d, i };
+}
+function camT(c) { return `translateZ(${-c.d + 60}px) rotateZ(${-c.rz}deg) rotateX(${-c.rx}deg) rotateY(${-c.ry}deg) translate3d(${-c.x}px,${-c.y}px,${-c.z}px)`; }
+const world = $('#world'), mbg = $('#mbg'), cam = $('#cam');
+const typeAt = (t, t0, dur, s) => s.slice(0, Math.max(0, Math.min(s.length, Math.round((t - t0) / dur * s.length))));
+function tick(t) {
+  const c = camAt(t), p = camAt(Math.max(0, t - SPD / 30));
+  world.style.transform = camT(c);
+  const hx = Math.abs(c.x - p.x) * .9 + Math.abs(c.ry - p.ry) * 32, vy = Math.abs(c.y - p.y) * .9 + Math.abs(c.rx - p.rx) * 32, zz = Math.abs(c.z - p.z + (p.d - c.d)) * .25;
+  const bx = Math.min(70, hx * .22 + zz * .05), by = Math.min(70, vy * .22 + zz * .05);
+  if (bx + by > .4) { mbg.setAttribute('stdDeviation', `${bx.toFixed(1)} ${by.toFixed(1)}`); cam.style.filter = 'url(#mb)'; } else cam.style.filter = 'none';
+  scenes.forEach((s, k) => { s.style.visibility = (k === c.i || (k === c.i - 1 && t < S[c.i] - TPRE + TD)) ? 'visible' : 'hidden'; });
+  $('#tag').innerHTML = `<b>${String(c.i + 1).padStart(2, '0')}</b> / ${NS}`;
+  // S1 tiles land on each app word, sheet cells glitch, stamp
+  { [[0.28, 0], [1.8, 1]].forEach(([t0, i]) => { const k = sm(t0 - .15, t0 + .4, t), e = $('#t' + i);
+      e.style.opacity = sm(t0 - .15, t0, t);
+      e.style.transform = `perspective(1500px) translate3d(${(1 - k) * (i ? 300 : -300)}px,0,${(1 - k) * -700 + 30}px) rotateY(${(i ? -1 : 1) * (12 + (1 - k) * 40)}deg) rotateX(8deg) rotateZ(${(i ? 2 : -2) + Math.sin(t * 1.1 + i) * .6}deg)`; });
+    const k = sm(2.8, 3.3, t), sh = $('#sheet'); sh.style.opacity = sm(2.8, 2.95, t);
+    sh.style.transform = `perspective(1600px) translate3d(0,${(1 - k) * 240}px,${(1 - k) * -700 + 20}px) rotateX(${12 + (1 - k) * 40}deg) rotateZ(${-1.5 + Math.sin(t * 9) * .5 * sm(3.6, 3.8, t) * (1 - sm(4.6, 4.9, t))}deg)`;
+    [8, 13, 14, 18, 23].forEach((c, j) => { const e = $('#sc' + c); const on = t > 3.68 + j * .08 && Math.sin(t * 22 + j) > -.2; e.style.background = on ? '#0b0b0c' : ''; e.style.color = on ? '#fff' : ''; });
+    const st = sm(4.2, 4.38, t), m = $('#messy'); m.style.opacity = st; m.style.transform = `rotate(-6deg) scale(${2 - st + bump(t, 4.4, .1) * .08})`; }
+  // S2 coin built from stacked discs spins in, caption types
+  { const k = sm(6.0, 6.9, t), c = $('#coin'); c.style.opacity = sm(5.95, 6.1, t);
+    c.style.transform = `perspective(1400px) translate3d(0,${(1 - k) * 260}px,${(1 - k) * -600 + 60}px) rotateX(${14 + (1 - k) * 30}deg) rotateY(${(1 - k) * 540 + Math.sin(t * 1.2) * 22}deg) scale(${1 + bump(t, 9.12, .15) * .05})`;
+    $('#cl2').textContent = typeAt(t, 8.28, .7, '1 tracker · for all of it'); }
+  // S3 ledger rows write in, live dot pulses
+  { [10.16, 10.8, 11.44, 12.04, 12.92].forEach((t0, i) => { const k = sm(t0 - .12, t0 + .3, t), e = $('#lr' + i);
+      e.style.opacity = sm(t0 - .12, t0, t); e.style.transform = `translate3d(${(1 - k) * 120}px,0,${(1 - k) * 200}px) rotateX(${(1 - k) * -60}deg)`; });
+    $('#lvdot').style.opacity = .35 + .65 * (Math.sin(t * 8) * .5 + .5); }
+  // S4 cloud + device, packets rise, wall slams, packets bounce home
+  { const ck = sm(15.0, 15.4, t), dk = sm(15.3, 15.7, t);
+    $('#cloud').style.opacity = ck * (1 - .5 * sm(18.4, 18.8, t)); $('#cloud').style.transform = `translateZ(${(1 - ck) * -400 + 40}px) translateY(${Math.sin(t * 1.3) * 8}px)`;
+    $('#dev').style.opacity = dk; $('#dev').style.transform = `perspective(1400px) translate3d(0,${(1 - dk) * 160}px,${(1 - dk) * -500 + 40}px) rotateX(${14 + (1 - dk) * 40}deg) rotateY(-4deg)`;
+    const wk = sm(18.3, 18.45, t), w = $('#wall'); w.style.opacity = wk; w.style.transform = `translateZ(80px) translateY(${(1 - wk) * -120}px) scaleX(${1 + bump(t, 18.47, .08) * .04})`;
+    [0, 1, 2].forEach(i => { const t0 = 17.7 + i * .12, up = sm(t0, t0 + .5, t), back = sm(18.45, 18.85, t), e = $('#pk' + i);
+      e.style.opacity = sm(t0, t0 + .05, t) * (1 - sm(18.85, 18.95, t));
+      e.style.transform = `translateZ(90px) translateY(${(-80 * up) * (1 - back) + back * 40}px)`; });
+    $('#pv').textContent = typeAt(t, 18.6, .45, '✓ your data stays on this device'); }
+  // S5 commit counter + grid fill, browser bar types the site
+  { const k = sm(20.3, 20.7, t), c = $('#cmts'); c.style.opacity = sm(20.25, 20.4, t);
+    c.style.transform = `perspective(1500px) translate3d(0,${(1 - k) * 160}px,${(1 - k) * -600 + 30}px) rotateX(${12 + (1 - k) * 40}deg) rotateY(${5 - 2 * Math.sin(t * .7)}deg)`;
+    const n = Math.round(995 * Math.pow(cl(20.8, 21.9, t), .6)); $('#cn').textContent = n.toLocaleString('en-US');
+    const on = Math.round(160 * n / 995); [...$('#cgrid').children].forEach((e, i) => { e.className = ((i * 37) % 160) < on ? 'on' : ''; });
+    const bk = sm(22.3, 22.65, t), b = $('#brw'); b.style.opacity = sm(22.25, 22.4, t);
+    b.style.transform = `perspective(1500px) translate3d(0,${(1 - bk) * 140}px,${(1 - bk) * -500 + 50}px) rotateX(${10 + (1 - bk) * 40}deg)`;
+    $('#url').textContent = typeAt(t, 22.55, .45, 'plutus.inoculens.com') + (Math.sin(t * 14) > 0 && t < 23.05 ? '|' : ' ');
+    $('#go').style.transform = `scale(${1 - bump(t, 23.12, .08) * .15})`; }
+  // S7 type FEATURE, send, plane flies, reply
+  { $('#bmt').textContent = typeAt(t, 25.85, .35, 'FEATURE'); $('#bm').style.opacity = sm(25.75, 25.85, t);
+    const pk = cl(26.2, 26.65, t), pl = $('#plane'); pl.style.opacity = t > 26.2 && t < 26.7 ? 1 : 0;
+    pl.style.transform = `translateZ(140px) translate(${pk * 260}px,${-pk * 480}px) rotate(-30deg) scale(${1 - pk * .5})`;
+    $('#bt').style.opacity = sm(26.45, 26.6, t); $('#bt').style.transform = `translateY(${(1 - sm(26.45, 26.65, t)) * 30}px)`; }
+}
+window.__seek = vt => { const t = vt * SPD; tl.time(t, false); tick(t); const ims = [...document.images].map(i => i.complete ? null : i.decode().catch(() => {})).filter(Boolean); return Promise.all(ims); };
+__seek(0);
+if (!navigator.webdriver) { const t0 = performance.now(); const loop = () => { window.__seek(((performance.now() - t0) / 1000) % TOTAL); requestAnimationFrame(loop); }; requestAnimationFrame(loop); }
+</script>
+</body></html>

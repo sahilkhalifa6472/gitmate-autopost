@@ -1,0 +1,17 @@
+The physics engine a lot of AI robots learn to walk in 🤖
+
+MuJoCo (Multi-Joint dynamics with Contact) is Google DeepMind's open-source physics engine:
+→ Simulates joints, contacts, cloth and soft bodies, fast
+→ Runs right in your browser at mujoco.org, nothing to install
+→ Python: pip install mujoco
+→ MJX runs it on GPUs/TPUs through JAX, so you can run thousands of simulations in parallel
+→ C API, Unity plug-in, prebuilt binaries for Linux, macOS and Windows
+
+It used to be paid software. DeepMind made it free in 2021 and open-sourced the full code in 2022.
+
+✅ Free + open source (Apache 2.0) · 17K+ ★ on GitHub
+
+Comment GITMATE and I'll send you the link 👇
+Follow @git.mate for 1 useful repo every day.
+
+#github #opensource #robotics #physics #simulation #ai #machinelearning #reinforcementlearning #python #jax #deepmind #developer #programming #coding

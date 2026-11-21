@@ -1,0 +1,8 @@
+{
+ "video": "gitmate_auto-ontology.mp4",
+ "title": "NVIDIA Auto Ontology: give your AI agent a map of what your data means",
+ "description": "Your AI agent gave the boss the wrong revenue number\u2026 and sounded 100% sure about it. \ud83d\ude2c\n\nNVIDIA's Auto Ontology (open source) is the fix:\n\u2192 Reads your database metadata and builds an ontology: what every table, metric and join actually means\n\u2192 Ask in plain English: it writes the SQL, runs it and shows every step, so you can check the answer\n\u2192 If your data can't answer the question, it tells you instead of making something up\n\u2192 Plugs into any agent harness through MCP, CLI and API\n\u2192 Comes with a web UI for chat, data catalog and analytics\n\n\u2705 Free + open source (Apache-2.0)\n\u2705 Runs locally with Docker Compose + an NVIDIA API key\n\nComment GITMATE and I'll send you the link \ud83d\udc47\nFollow @git.mate for 1 useful repo every day.\n\n#github #opensource #nvidia #ai #aiagents #sql #database #mcp #dataengineering #llm #devtools #developer #programming\n",
+ "repo": "https://github.com/NVIDIA/auto-ontology",
+ "theme": "light",
+ "duration": 36.0
+}

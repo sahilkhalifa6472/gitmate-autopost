@@ -1,0 +1,15 @@
+Your users keep asking "can I just edit this in Excel?" 📊
+
+Univer is a free, open-source spreadsheet + docs editor you can drop right inside your own web app:
+→ Real formulas, filters, sorting, conditional formatting, comments
+→ Your code (or your AI agent) edits the same cells through the Facade API, and totals recalculate on their own
+→ Save the whole workbook as a JSON snapshot
+→ Quick start: pnpm add @univerjs/presets @univerjs/preset-sheets-core, then a few lines of createUniver()
+
+✅ Open-source core under Apache-2.0 · 26K+ ★ on GitHub
+(Some extras like Slides/PDF and the Server SDK are commercial; the Sheets + Docs core is free.)
+
+Comment GITMATE and I'll send you the link 👇
+Follow @git.mate for 1 useful repo every day.
+
+#github #opensource #spreadsheet #excel #javascript #typescript #webdev #frontend #react #saas #ai #aiagents #developer #programming #coding #devtools

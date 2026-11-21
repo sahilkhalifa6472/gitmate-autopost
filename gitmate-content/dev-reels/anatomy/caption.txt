@@ -1,0 +1,11 @@
+Your AI can now explain an idea by building a machine. 🔩
+
+Anatomy is a free, open-source Claude skill: ask how a cache works and it builds a pin-tumbler lock, with every pin, spring and screw. Rocket engines that come apart, ripple tanks, arcade cabinets. Every number in the figure comes from the same small model that moves its parts.
+
+One command: npx skills add wheresryan22/anatomy -g
+No API keys. Zero dependencies. MIT.
+
+Comment GITMATE and I'll send you the link 🔗
+Follow @git.mate for more repos like this.
+
+#claude #claudecode #aitools #github #opensource #developer #coding #webdev #svg #ai

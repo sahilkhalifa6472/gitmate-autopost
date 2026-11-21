@@ -1,0 +1,92 @@
+
+  <!-- S1 hook: lost screen memories + search with no results -->
+  <div class="sc" id="s1" data-pose="0,0,0,0,0,0">
+    <div class="ring" style="left:-260px;top:-180px;width:720px;height:720px;transform:translateZ(-500px)"></div>
+    <div class="C sans ty" style="top:250px;font-size:140px;font-weight:700;letter-spacing:-.055em;transform:translateZ(120px)" data-t="0.15" data-cd=".045">You saw it</div>
+    <div class="C ser rv" style="top:405px;font-size:112px;transform:translateZ(120px)" data-t="1.3">3 days <span class="bpill">ago.</span></div>
+    <div class="strip" id="strip"></div>
+    <div class="srch c3d" data-t="2.3" data-rx="10"><div class="gl"></div><span id="sq"></span></div>
+    <div class="nores pp" data-t="3.95"><span>0 results</span></div>
+  </div>
+  <!-- S2 meet: laptop plays the real demo, shutter grabs snapshots -->
+  <div class="sc" id="s2" data-pose="2600,0,-800,-28,0,0">
+    <div class="ring" style="left:600px;top:-200px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="C kick ty" style="top:250px;font-size:30px;transform:translateZ(120px)" data-t="4.95" data-cd=".03">mate, meet</div>
+    <div class="C sans ty" style="top:320px;font-size:156px;font-weight:700;letter-spacing:-.06em;transform:translateZ(140px)" data-t="5.9" data-cd=".05">Recall AI</div>
+    <div class="C ser rv" style="top:490px;font-size:96px;transform:translateZ(120px)" data-t="7.6">remembers your <span class="bpill">screen.</span></div>
+    <div class="lap c3d" id="lap" data-t="5.0" data-rx="8" data-ry="-10"><div class="base"><div class="kb"></div><div class="tp"></div></div><div class="lid"><div class="scr"><img id="limg" src="media/seq/d060.jpg"></div><div class="flash" id="flash"></div></div><div class="shut" id="shut"></div></div>
+    <div class="mem" id="mem"></div>
+    <div class="meml rv" data-t="8.1">snapshot → OCR text → memory</div>
+  </div>
+  <!-- S3 just ask -->
+  <div class="sc" id="s3" data-pose="2600,2600,-1400,0,24,0">
+    <div class="ring" style="left:640px;top:1300px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="C sans ty" style="top:250px;font-size:150px;font-weight:700;letter-spacing:-.055em;transform:translateZ(120px)" data-t="10.8" data-cd=".05">Just ask.</div>
+    <div class="C kick rv" style="top:430px;font-size:30px;transform:translateZ(120px)" data-t="11.1">real answer from the repo demo</div>
+    <div class="chat c3d" data-t="10.55" data-rx="10" data-ry="8"><div class="chd"><div class="mk" style="width:48px;height:48px;font-size:18px">AI</div>Recall AI<span class="dv">● on-device</span></div>
+      <div class="q" id="q"><span id="qt"></span></div>
+      <div class="a" id="ans"><small>Recall AI</small><span id="at"></span></div>
+      <div class="src5" id="src5"><span>📸 screenshot · 2:47 pm</span><span>VS Code</span><span>GitHub</span></div></div>
+  </div>
+  <!-- S4 everything stays on your PC -->
+  <div class="sc" id="s4" data-pose="0,2600,-900,30,0,0">
+    <div class="ring" style="left:-300px;top:1200px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="C kick ty" style="top:250px;font-size:30px;transform:translateZ(120px)" data-t="13.75" data-cd=".03">and the best part?</div>
+    <div class="C sans ty" style="top:320px;font-size:140px;font-weight:700;letter-spacing:-.055em;transform:translateZ(140px)" data-t="14.75" data-cd=".04">Everything</div>
+    <div class="C ser rv" style="top:480px;font-size:104px;transform:translateZ(120px)" data-t="15.3">stays on your <span class="bpill">PC.</span></div>
+    <div class="cloud" id="cloud"><b style="left:0;top:40px;width:130px;height:90px"></b><b style="left:80px;top:0;width:150px;height:130px"></b><b style="left:180px;top:40px;width:120px;height:90px"></b><div class="x" id="cx">✕</div></div>
+    <div class="dome c3d" data-t="13.55" data-rx="8" data-ry="10"><div class="pl2"></div><div class="pcw"><img src="media/seq/d258.jpg"></div><div class="gl2"></div></div>
+    <div id="bncs"></div>
+    <div class="dml" id="dml"></div>
+  </div>
+  <!-- S5 privacy pipeline -->
+  <div class="sc" id="s5" data-pose="-2600,2600,-1300,0,-22,0">
+    <div class="ring" style="left:640px;top:-200px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="C sans ty" style="top:250px;font-size:140px;font-weight:700;letter-spacing:-.055em;transform:translateZ(120px)" data-t="16.85" data-cd=".045">Secrets out.</div>
+    <div class="C ser rv" style="top:405px;font-size:104px;transform:translateZ(120px)" data-t="18.7">text <span class="bpill">encrypted.</span></div>
+    <div class="pipe">
+      <div class="stg c3d" style="top:0" data-t="16.7" data-rx="12" data-ry="6"><div class="sh2"><span><b>01</b> · FILTER</span><span id="fst">scanning…</span></div><div class="tx2" id="tx1"></div></div>
+      <div class="chev" style="top:258px" id="cv1"></div>
+      <div class="stg c3d" style="top:310px" data-t="18.45" data-rx="12" data-ry="-6"><div class="sh2"><span><b>02</b> · ENCRYPT</span><span>AES</span></div><div class="tx2" id="tx2"></div></div>
+      <div class="chev" style="top:568px" id="cv2"></div>
+      <div class="stg c3d" style="top:620px" data-t="19.8" data-rx="12" data-ry="6"><div class="sh2"><span><b>03</b> · LOCAL AI</span><span>no cloud</span></div><div class="tx2" style="margin-top:30px"><span class="olla" id="olla"><i></i>Ollama · on-device</span></div><div class="tx2" id="tx3" style="font-size:26px;margin-top:14px;color:#8b8d91"></div></div>
+    </div>
+  </div>
+  <!-- S6 free + builder -->
+  <div class="sc" id="s6" data-pose="-2600,5200,-800,-30,0,0">
+    <div class="ring" style="left:600px;top:1300px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="C sans ty" style="top:250px;font-size:140px;font-weight:700;letter-spacing:-.055em;transform:translateZ(120px)" data-t="22.3" data-cd=".05">Free.</div>
+    <div class="C ser rv" style="top:405px;font-size:104px;transform:translateZ(120px)" data-t="23.7">built by a <span class="bpill">solo dev.</span></div>
+    <div class="card ghc c3d" data-t="22.15" data-rx="12" data-ry="10"><img src="media/gh_g.jpg"></div>
+    <div class="cg c3d" data-t="23.2" data-rx="10" data-ry="-6"><div class="ch2"><span>MIT · OPEN-SOURCE</span><b>@madhur_772005</b></div><div class="cgg" id="cgg"></div></div>
+  </div>
+  <!-- S7 DM FEATURE envelope -->
+  <div class="sc" id="s7" data-pose="0,5200,-1400,0,24,0">
+    <div class="ring" style="left:-300px;top:-160px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="C sans rv" style="top:250px;font-size:112px;font-weight:700;letter-spacing:-.05em;transform:translateZ(140px)" data-t="25.7">Want your repo</div>
+    <div class="C ser rv" style="top:380px;font-size:116px;transform:translateZ(140px)" data-t="26.35">featured <span class="bpill">too?</span></div>
+    <div class="env2 c3d" data-t="25.6" data-rx="14"><div class="bk"></div><div class="lt" id="lt"><small>git.mate · DM us</small><div class="tiles" id="tiles"></div></div><div class="fr"></div><div class="fl" id="efl"></div></div>
+    <div class="dmus pp" data-t="27.4"><span>DM us “FEATURE”</span></div>
+  </div>
+  <!-- S8 comment -->
+  <div class="sc" id="s8" data-pose="2600,5200,-900,28,0,0">
+    <div class="ring" style="left:620px;top:1300px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="C sans rv" style="top:380px;font-size:120px;font-weight:500" data-t="28.7">Comment</div>
+    <div class="C sans ty" style="top:510px;font-size:196px;font-weight:700;letter-spacing:-.04em" data-t="29.0" data-cd=".05">GITMATE</div>
+    <div class="cbar cin c3d" style="left:64px;top:860px;width:952px;height:140px;border-radius:999px" data-t="28.6" data-rx="10"><div class="av"></div><div class="tx" id="ctx"></div><div class="send">↑</div></div>
+    <div class="dm pp" style="left:250px;top:1110px" data-t="29.9"><small>git.mate · message</small>Here's your link, mate →</div>
+  </div>
+  <!-- S9 end -->
+  <div class="sc" id="s9" data-pose="2600,7800,-1300,0,-24,0">
+    <div class="ring" style="left:-300px;top:-160px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="ring" style="left:640px;top:1400px;width:760px;height:760px;transform:translateZ(-800px)"></div>
+    <svg class="erings" viewBox="0 0 500 500"><circle id="er1" cx="250" cy="250" r="226" fill="none" stroke="#0b0b0c" stroke-width="3" stroke-dasharray="1420" stroke-dashoffset="1420" transform="rotate(-90 250 250)"/>
+      <circle id="er2" cx="250" cy="250" r="246" fill="none" stroke="#c9cacc" stroke-width="2" stroke-dasharray="1546" stroke-dashoffset="1546" transform="rotate(90 250 250)"/></svg>
+    <div class="bigmk" id="bigmk">&gt;_</div>
+    <div class="C sans ty" style="top:1050px;font-size:104px;font-weight:700" data-t="31.3" data-cd=".05">@git.mate</div>
+    <div class="C ser" style="top:1200px;font-size:96px"><span class="rv g" data-t="31.8">1 repo</span> <span class="rv" data-t="32.1">every</span> <span class="rv" data-t="32.35">day.</span></div>
+    <div class="fol pp" id="fol" data-t="31.45">Follow</div>
+    <div class="fol2" id="fol2">Following ✓</div>
+    <div class="rip" id="rip"></div>
+    <div class="tapd" id="tapd" style="left:640px;top:1560px"></div>
+  </div>

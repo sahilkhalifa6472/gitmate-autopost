@@ -1,0 +1,12 @@
+This one honestly blew my mind 🤯
+
+Those viral AI videos you keep seeing (games, 3D scenes, motion graphics)? Someone put them all in one free GitHub repo, with the exact prompt each creator used.
+
+✅ 703 prompts, all free
+✅ Copy one, paste into Claude Opus 5.5, it writes the animation as code
+✅ Watch each original next to a live remake
+
+💬 Comment GITMATE and I'll send you the link
+👉 Follow @git.mate for a new repo every day
+
+#opensource #github #ai #claude #aivideo #motiondesign #promptengineering #creativecoding #webdev #developer #coding #threejs #gsap #devtools #aitools

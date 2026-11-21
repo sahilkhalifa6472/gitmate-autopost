@@ -1,0 +1,22 @@
+{
+ "account": "git.mate",
+ "n": 33,
+ "slug": "personal-erp",
+ "title": "Personal ERP: a free self-hosted ERP for small businesses (by @madhur_772005)",
+ "video": {
+  "file": "33.mp4",
+  "duration_sec": 35.3,
+  "source": "/mnt/project-files/dev-reels/personal-erp/gitmate_personal-erp.mp4"
+ },
+ "instagram": {
+  "caption": "Still paying every month just to look at your own business's books? \ud83e\uddfe\n\nPersonal ERP, built by solo dev @madhur_772005, is a free, self-hosted ERP for small businesses:\n\u2192 Billing: money in / money out that posts real double-entry\n\u2192 Accounting: chart of accounts, journals, trial balance, P&L, balance sheet, cash flow\n\u2192 Sales: quotations, orders, GST invoices, receivables\n\u2192 Purchasing + inventory with stock valuation\n\u2192 Invoice scanning: upload a bill, fields get extracted for you\n\u2192 Web app + desktop app (Windows, macOS, Linux)\n\nRuns on your own server, your data stays in your own PostgreSQL. No seat count, no renewal email.\nStart: git clone \u2192 make setup \u2192 make up (one Docker Compose stack)\n\nMIT licence \u00b7 built by @madhur_772005 \ud83d\ude4c\n\nWant your repo featured too? DM us FEATURE \ud83d\udce9\nComment GITMATE and I'll send you the link \ud83d\udc47\nFollow @git.mate for 1 useful repo every day.\n\n#github #opensource #erp #smallbusiness #selfhosted #accounting #bookkeeping #invoice #python #fastapi #react #flutter #docker #developer #programming #coding\n",
+  "hashtags": [],
+  "cover_offset_ms": 3500,
+  "share_to_feed": true
+ },
+ "posting": {
+  "audience": "US",
+  "timezone": "America/New_York"
+ },
+ "link": "https://github.com/Madhur-Prakash/Personal-ERP"
+}

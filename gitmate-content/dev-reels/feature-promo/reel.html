@@ -1,0 +1,431 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<title>git.mate feature promo</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter+Tight:wght@400;500;600;700;800;900&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<style>
+:root{--ink:#f5f6f7;--mut:rgba(235,238,242,.58);--dim:rgba(235,238,242,.32)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#000}
+.f{position:relative;width:1080px;height:1920px;overflow:hidden;background:radial-gradient(ellipse 120% 80% at 50% 40%,#0d0e11 0%,#040405 60%,#000 100%);color:var(--ink);font-family:'Inter Tight',sans-serif}
+.vig{position:absolute;inset:0;z-index:5;pointer-events:none;background:radial-gradient(ellipse 90% 70% at 50% 50%,transparent 50%,rgba(0,0,0,.7) 100%)}
+.grain{position:absolute;inset:0;opacity:.08;mix-blend-mode:overlay;z-index:8;pointer-events:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
+#stage{position:absolute;inset:0;perspective:2200px;perspective-origin:50% 46%;z-index:2}
+#world{position:absolute;left:0;top:0;width:1080px;height:1920px;transform-style:preserve-3d}
+.sc{position:absolute;left:0;top:0;width:1080px;height:1920px;transform-style:preserve-3d;backface-visibility:hidden;visibility:hidden}
+#s1{visibility:visible}
+.c3{position:absolute;border-radius:34px;overflow:hidden;background:linear-gradient(160deg,#1d1e22 0%,#121316 45%,#0b0c0e 100%);
+  box-shadow:inset 0 1.5px 0 rgba(255,255,255,.2),inset 0 0 0 1.5px rgba(255,255,255,.07),0 3px 0 #1b1c1f,0 6px 0 #16171a,0 9px 0 #111214,0 12px 0 #0c0d0f,0 60px 90px rgba(0,0,0,.75)}
+.c3.lite{background:linear-gradient(160deg,#f7f8f9,#d9dce0);color:#08090a;box-shadow:inset 0 2px 0 #fff,0 3px 0 #c3c6cb,0 6px 0 #aeb2b8,0 9px 0 #9a9ea4,0 12px 0 #868a90,0 60px 90px rgba(0,0,0,.7)}
+.bead{width:62px;height:62px;border-radius:50%;display:grid;place-items:center;font-family:'JetBrains Mono';font-weight:800;font-size:24px;color:#050505;flex:none;
+  background:radial-gradient(circle at 35% 28%,#fff 0 18%,#e4e6ea 45%,#9da1a8 100%);box-shadow:inset 0 -5px 10px rgba(0,0,0,.25),inset 0 3px 4px #fff,0 10px 24px rgba(0,0,0,.6)}
+.top{position:absolute;left:64px;right:64px;top:88px;height:90px;z-index:6}
+.brand{position:absolute;left:0;top:0;display:flex;align-items:center;gap:18px;padding:14px 30px 14px 14px;font-family:'JetBrains Mono';font-weight:700;font-size:30px;border-radius:999px;background:#0e0f11;box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 0 0 1.5px rgba(255,255,255,.1)}
+.tag{position:absolute;right:0;top:12px;padding:18px 30px;font-family:'JetBrains Mono';font-size:24px;color:var(--mut);white-space:nowrap;border-radius:999px;background:#0e0f11;box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 0 0 1.5px rgba(255,255,255,.08)}
+.tag b{color:var(--ink)}
+.prog{position:absolute;left:64px;right:64px;bottom:96px;display:flex;gap:10px;z-index:6}
+.prog i{flex:1;height:8px;border-radius:4px;background:rgba(255,255,255,.14);position:relative;overflow:hidden}
+.prog i b{position:absolute;left:0;top:0;bottom:0;width:0;background:#f2f3f5;border-radius:4px}
+.L{position:absolute;left:64px;right:64px}
+.kick{font-family:'JetBrains Mono';font-size:28px;color:var(--mut);letter-spacing:1px;white-space:pre;height:40px}
+.h{font-weight:900;letter-spacing:-5px;line-height:.92;text-transform:uppercase}
+.h .ln{display:block;white-space:nowrap}
+.h .w{display:inline-block;padding-bottom:.05em;margin-right:.2em;background-image:linear-gradient(180deg,#ffffff 0%,#f1f2f4 50%,#b4b8be 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.h .w:last-child{margin-right:0}
+.h .soft .w{background-image:linear-gradient(180deg,rgba(255,255,255,.62),rgba(255,255,255,.24))}
+.h .ser{font-family:'Instrument Serif';font-style:italic;font-weight:400;text-transform:none;letter-spacing:-2px}
+.lbl{font-family:'JetBrains Mono';font-size:22px;color:var(--mut)}
+.g{filter:grayscale(1) contrast(1.12)}
+.real{position:absolute;right:20px;top:18px;z-index:3;padding:7px 16px;border-radius:999px;font-family:'JetBrains Mono';font-weight:800;font-size:17px;background:#f2f3f5;color:#08090a}
+.tap{position:absolute;width:96px;height:96px;opacity:0;z-index:4}
+/* end */
+.erings{position:absolute;left:290px;top:420px;width:500px;height:500px}
+.bigmk{position:absolute;left:390px;top:520px;width:300px;height:300px;font-size:110px;letter-spacing:-6px}
+.hnd{position:absolute;left:0;right:0;top:1000px;text-align:center;font-family:'JetBrains Mono';font-weight:800;font-size:92px;white-space:pre;height:120px}
+.fol{position:absolute;left:280px;top:1390px;width:520px;height:132px;border-radius:999px;display:grid;place-items:center;font-size:52px;font-weight:900;background:linear-gradient(180deg,#fbfbfc,#d4d7db);color:#08090a;box-shadow:0 6px 0 #9a9ea4,0 20px 60px rgba(255,255,255,.16)}
+.fol2{position:absolute;left:280px;top:1390px;width:520px;height:132px;border-radius:999px;display:grid;place-items:center;font-size:52px;font-weight:900;background:#101114;color:#f5f6f7;box-shadow:inset 0 0 0 3px rgba(255,255,255,.7);opacity:0}
+.erip{position:absolute;left:540px;top:1456px;border-radius:50%;border:4px solid rgba(255,255,255,.8);opacity:0}
+.mono{font-family:'JetBrains Mono'}
+.chip{position:absolute;height:112px;padding:0 38px;border-radius:999px;display:flex;align-items:center;gap:18px;font-family:'JetBrains Mono';font-weight:800;font-size:34px;white-space:nowrap;background:#0e0f11;box-shadow:inset 0 1px 0 rgba(255,255,255,.16),inset 0 0 0 1.5px rgba(255,255,255,.12),0 30px 50px rgba(0,0,0,.6)}
+.chip small{font-weight:500;font-size:28px;color:var(--mut)}
+.chip.lt{background:linear-gradient(180deg,#fbfbfc,#d4d7db);color:#08090a;box-shadow:0 6px 0 #9a9ea4,0 30px 60px rgba(0,0,0,.6);min-width:620px}
+/* S1 contribution grid */
+.cal{left:64px;top:640px;width:952px;height:500px;padding:34px 34px}
+.calh{display:flex;justify-content:space-between;align-items:baseline;font-family:'JetBrains Mono';font-size:24px;color:var(--mut)}
+.calh b{font-family:'Inter Tight';font-weight:900;font-size:64px;letter-spacing:-2px;color:var(--ink)}
+.grid{position:absolute;left:34px;top:150px;width:884px;height:238px}
+.grid i{position:absolute;width:28px;height:28px;border-radius:7px;background:rgba(255,255,255,.07)}
+.calf{position:absolute;left:34px;right:34px;bottom:30px;display:flex;justify-content:space-between;font-family:'JetBrains Mono';font-size:22px;color:var(--mut)}
+.moon{width:44px;height:44px;border-radius:50%;background:#f2f3f5;box-shadow:inset -14px -4px 0 #0e0f11;flex:none}
+.wk{display:flex;gap:8px}.wk span{width:44px;height:44px;border-radius:12px;display:grid;place-items:center;font-size:20px;background:rgba(255,255,255,.1)}.wk span.on{background:#f2f3f5;color:#08090a}
+/* S2 repo card */
+.repo{left:64px;top:640px;width:952px;height:520px;padding:38px 40px}
+.rph{display:flex;align-items:center;gap:20px}
+.rpi{width:64px;height:64px;border-radius:16px;background:rgba(255,255,255,.1);display:grid;place-items:center;flex:none}
+.rpn{font-family:'JetBrains Mono';font-weight:800;font-size:38px;white-space:nowrap}
+.rpn span{color:var(--mut);font-weight:500}
+.pub{margin-left:auto;padding:8px 20px;border-radius:999px;font-family:'JetBrains Mono';font-size:20px;color:var(--mut);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.25)}
+.rpd{margin-top:28px;display:grid;gap:14px}
+.rpd i{display:block;height:16px;border-radius:8px;background:rgba(255,255,255,.12)}
+.rps{position:absolute;left:40px;right:40px;bottom:38px;display:flex;gap:20px}
+.st{flex:1;height:190px;border-radius:26px;background:rgba(255,255,255,.05);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.1);padding:22px 26px}
+.st span{font-family:'JetBrains Mono';font-weight:700;font-size:22px;letter-spacing:2px;color:var(--mut)}
+.st b{display:block;font-weight:900;font-size:104px;letter-spacing:-4px;line-height:1.05}
+.traf{left:64px;top:1220px;width:952px;height:300px;padding:30px 36px}
+.traf .th{display:flex;justify-content:space-between;font-family:'JetBrains Mono';font-size:23px;color:var(--mut)}
+.traf svg{position:absolute;left:36px;top:84px;width:880px;height:130px}
+.traf .tn{position:absolute;left:36px;right:36px;bottom:28px;font-family:'JetBrains Mono';font-weight:800;font-size:27px;white-space:pre;height:38px}
+/* S3 the DM + real app */
+.dmc{left:64px;top:640px;width:952px;height:330px;padding:30px 34px}
+.dmh{display:flex;align-items:center;gap:18px;padding-bottom:22px;box-shadow:inset 0 -1.5px 0 rgba(255,255,255,.1)}
+.dmh .bead,.dmh .av2{width:70px;height:70px}
+.av2{border-radius:50%;flex:none;background:radial-gradient(circle at 35% 28%,#5a5e64,#1b1d20);box-shadow:inset 0 0 0 2px rgba(255,255,255,.2)}
+.dmh b{font-family:'JetBrains Mono';font-size:30px}
+.dmh span{display:block;font-family:'JetBrains Mono';font-size:20px;color:var(--mut);margin-top:4px}
+.bin{position:absolute;left:34px;padding:22px 28px;border-radius:30px 30px 30px 10px;background:rgba(255,255,255,.08);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.14);font-family:'JetBrains Mono';font-weight:800;font-size:27px;white-space:nowrap;opacity:0}
+.bout{position:absolute;right:34px;padding:22px 30px;border-radius:30px 30px 10px 30px;background:#f2f3f5;color:#08090a;font-family:'JetBrains Mono';font-weight:800;font-size:30px;white-space:nowrap;opacity:0}
+.app{left:64px;top:1030px;width:952px;height:536px;background:#000}
+.app img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+/* S4 the reel + numbers */
+.big{font-variant-numeric:tabular-nums}
+.rph4{left:64px;top:650px;width:400px;height:712px;border-radius:56px;background:#000}
+.rph4 img{position:absolute;inset:10px;width:380px;height:692px;object-fit:cover;border-radius:46px}
+.rph4 .pl{position:absolute;left:150px;top:306px;width:100px;height:100px;border-radius:50%;background:rgba(0,0,0,.55);box-shadow:inset 0 0 0 3px #fff;display:grid;place-items:center}
+.rph4 .pl:after{content:"";border-left:30px solid #fff;border-top:19px solid transparent;border-bottom:19px solid transparent;margin-left:8px}
+.tile{position:absolute;left:504px;width:512px;height:212px;border-radius:30px;padding:26px 34px}
+.tile b{display:block;font-weight:900;font-size:108px;letter-spacing:-4px;line-height:1}
+.tile span{display:block;margin-top:10px;font-family:'JetBrains Mono';font-weight:800;font-size:24px;letter-spacing:3px;opacity:.6}
+.src{position:absolute;left:64px;right:64px;top:1420px;text-align:center;font-family:'JetBrains Mono';font-size:24px;color:var(--mut);white-space:pre;height:36px}
+/* S5 invisible -> spotlight */
+.ghost{position:absolute;left:64px;top:700px;width:952px;height:520px}
+.ghost .repo{left:0;top:0}
+#gh0{opacity:.07}
+#gh0 .repo{background:none;box-shadow:inset 0 0 0 2px rgba(255,255,255,.9)}
+.cone{position:absolute;left:0;top:0;width:1080px;height:1920px;pointer-events:none}
+.lamp{position:absolute;top:596px;width:120px;height:44px;margin-left:-60px;border-radius:10px 10px 30px 30px;background:linear-gradient(180deg,#2a2c30,#0e0f11);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.25)}
+.s5n{position:absolute;left:64px;right:64px;top:1290px;text-align:center;font-family:'JetBrains Mono';font-weight:800;font-size:30px;white-space:pre;height:44px}
+/* S6 DM FEATURE */
+.dm6{left:64px;top:700px;width:952px;height:640px;padding:30px 34px}
+.cmp{position:absolute;left:34px;right:34px;bottom:30px;height:104px;border-radius:999px;display:flex;align-items:center;gap:16px;padding:0 14px 0 34px;background:rgba(255,255,255,.06);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.16)}
+.cmp .ty{flex:1;font-family:'JetBrains Mono';font-weight:800;font-size:32px;white-space:pre}
+.send{width:78px;height:78px;border-radius:50%;display:grid;place-items:center;background:#f2f3f5;color:#000;font-size:36px;font-weight:900;flex:none}
+.caret{display:inline-block;width:4px;height:36px;background:#f2f3f5;vertical-align:-6px;margin-left:4px}
+/* S7 repo -> reel -> world */
+.mini{left:64px;top:640px;width:400px;height:330px;padding:26px 28px}
+.mini .rpn{font-size:25px}.mini .rpi{width:46px;height:46px;border-radius:12px}
+.mini .rpd{margin-top:20px;gap:11px}.mini .rpd i{height:12px}
+.mini .ms{position:absolute;left:28px;bottom:24px;font-family:'JetBrains Mono';font-weight:800;font-size:24px}
+.arr{position:absolute;left:494px;top:770px;width:140px;height:80px}
+.rl7{left:660px;top:610px;width:230px;height:400px;border-radius:38px;background:linear-gradient(160deg,#f7f8f9,#d9dce0);color:#08090a}
+.rl7 .scr{position:absolute;inset:10px;border-radius:30px;background:#08090a;overflow:hidden}
+.rl7 .scr b{position:absolute;left:18px;right:18px;top:60px;font-weight:900;font-size:30px;line-height:.95;letter-spacing:-1px;color:#f5f6f7;text-transform:uppercase}
+.rl7 .scr i{position:absolute;left:18px;right:18px;height:10px;border-radius:5px;background:rgba(255,255,255,.2)}
+.rl7 .scr u{position:absolute;left:18px;bottom:22px;height:8px;border-radius:4px;background:#f5f6f7;width:0}
+.globe{position:absolute;left:240px;top:1010px;width:600px;height:600px}
+.globe i{position:absolute;border-radius:50%;background:#f2f3f5}
+.gring{position:absolute;left:226px;top:996px;width:628px;height:628px;border-radius:50%;box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.14),inset 0 0 120px rgba(255,255,255,.05)}
+.vw{position:absolute;left:64px;right:64px;top:1650px;text-align:center;font-family:'JetBrains Mono';font-weight:800;font-size:28px;white-space:pre;height:40px}
+/* S8 end */
+.e8{position:absolute;left:0;right:0;text-align:center}
+.fol,.fol2{left:230px;width:620px;top:1420px}
+.erip{top:1486px}
+.hnd{top:960px;font-size:80px}
+/* S8 v2 we handle it all */
+.dmpill{position:absolute;left:64px;top:650px;width:952px;height:150px;border-radius:999px;display:grid;place-items:center;font-size:66px;font-weight:900;letter-spacing:-2px;background:linear-gradient(180deg,#fbfbfc,#d4d7db);color:#08090a;box-shadow:0 8px 0 #9a9ea4,0 30px 80px rgba(255,255,255,.14);opacity:0}
+.dmpill b{font-family:'JetBrains Mono';font-weight:800;letter-spacing:-1px;margin-left:26px}
+.dmpill{display:flex;align-items:center;justify-content:center}
+.todo{left:64px;top:870px;width:952px;height:610px;padding:34px 40px}
+.tr{display:flex;align-items:center;gap:26px;height:122px;font-weight:800;font-size:50px;letter-spacing:-1px;box-shadow:inset 0 1.5px 0 rgba(255,255,255,.08);opacity:.35}
+.tr i{width:62px;height:62px;border-radius:18px;flex:none;box-shadow:inset 0 0 0 3px rgba(255,255,255,.35);display:grid;place-items:center;font-style:normal;font-size:40px;font-weight:900;color:#08090a}
+.tr.on{opacity:1}.tr.on i{background:#f2f3f5;box-shadow:none}.tr.on i:after{content:"✓"}
+</style></head><body>
+<div class="f" id="F">
+ <div id="stage"><div id="world">
+
+  <!-- S1 hook: zero stars, zero views (visible from frame 0) -->
+  <section class="sc" id="s1">
+    <div class="L kick" style="top:250px" data-k="// your project on GitHub"></div>
+    <div class="L h" style="top:296px">
+      <span class="ln" style="font-size:150px;letter-spacing:-7px"><span class="w">Zero</span><span class="w">stars.</span></span>
+      <span class="ln" style="font-size:150px;letter-spacing:-7px"><span class="w" data-t="2.72">Zero</span><span class="w" data-t="3.1">views.</span></span>
+    </div>
+    <div class="c3 repo in" data-rx="10" data-ry="8" style="top:680px">
+      <div class="rph"><div class="rpi"><svg width="34" height="34" viewBox="0 0 34 34"><path d="M7 4h16a4 4 0 0 1 4 4v22H9a4 4 0 0 1-4-4V6a2 2 0 0 1 2-2zm0 20h20" fill="none" stroke="#f2f3f5" stroke-width="3"/></svg></div><div class="rpn"><span>you / </span>your-project</div><div class="pub">Public</div></div>
+      <div class="rpd"><i style="width:82%"></i><i style="width:58%"></i></div>
+      <div class="rps"><div class="st"><span>STARS</span><b id="z0">0</b></div><div class="st"><span>VIEWS</span><b id="z1">0</b></div><div class="st"><span>FORKS</span><b id="z2">0</b></div></div>
+    </div>
+    <div class="c3 traf in" data-t="2.75" data-rx="8" data-ry="-6" style="top:1260px">
+      <div class="th"><span>visitors · last 14 days</span><span id="tv">–</span></div>
+      <svg viewBox="0 0 880 130"><line x1="0" y1="118" x2="880" y2="118" stroke="rgba(255,255,255,.14)" stroke-width="2"/><path id="flat" d="M0 112 H880" fill="none" stroke="#f2f3f5" stroke-width="5" stroke-linecap="round" stroke-dasharray="880" stroke-dashoffset="880"/></svg>
+      <div class="tn" id="tn"></div>
+    </div>
+  </section>
+
+  <!-- S2 after months of work: commits, nights, weekends -->
+  <section class="sc" id="s2">
+    <div class="L kick" style="top:250px" data-k="// after all this?"></div>
+    <div class="L h" style="top:304px">
+      <span class="ln" style="font-size:106px"><span class="w" data-t="4.27">Months</span><span class="w" data-t="4.56">of</span><span class="w" data-t="4.71">work.</span></span>
+      <span class="ln soft" style="font-size:118px"><span class="w ser" data-t="6.85">nobody even saw it.</span></span>
+    </div>
+    <div class="c3 cal in" data-t="4.1" data-rx="12" data-ry="-6">
+      <div class="calh"><div><b id="cmt">0</b> commits</div><div id="mon">month 1</div></div>
+      <div class="grid" id="grid"></div>
+      <div class="calf"><span>Mon</span><span>your-project · main</span><span>Sun</span></div>
+    </div>
+    <div class="chip" id="ch1" style="left:64px;top:1210px"><div class="moon"></div>02:47 AM <small>still coding</small></div>
+    <div class="chip" id="ch2" style="left:64px;top:1350px"><div class="wk"><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span class="on">S</span><span class="on">S</span></div>weekends too</div>
+    <div class="chip lt" id="ch3" style="left:64px;top:1490px"><span style="opacity:.5">$</span><span id="push" style="white-space:pre"></span><b id="pok" style="margin-left:14px">✓ shipped</b></div>
+  </section>
+
+  <!-- S3 a solo dev sent us his project -->
+  <section class="sc" id="s3">
+    <div class="L kick" style="top:250px" data-k="// true story"></div>
+    <div class="L h" style="top:304px">
+      <span class="ln" style="font-size:118px"><span class="w" data-t="8.48">One</span><span class="w" data-t="8.64">solo</span><span class="w" data-t="8.8">dev.</span></span>
+      <span class="ln soft" style="font-size:124px"><span class="w ser" data-t="9.2">one DM to us.</span></span>
+    </div>
+    <div class="c3 dmc in" data-t="8.3" data-rx="10" data-ry="-8">
+      <div class="dmh"><div class="av2"></div><div><b>a solo dev</b><span>new message · git.mate inbox</span></div></div>
+      <div class="bin" id="b3" style="top:170px">github.com/neondeex/atlas-filemanager</div>
+    </div>
+    <div class="c3 app in" data-t="10.4" data-rx="14" data-ry="6"><img src="media/hero.jpg"><div class="real">REAL APP</div></div>
+  </section>
+
+  <!-- S4 one reel, 111,733 views -->
+  <section class="sc" id="s4">
+    <div class="L kick" style="top:250px" data-k="// we made one reel"></div>
+    <div class="L h" style="top:296px">
+      <span class="ln" style="font-size:216px;letter-spacing:-9px"><span class="w big" id="cnt" data-t="14.15">0</span></span>
+      <span class="ln soft" style="font-size:112px"><span class="w ser" data-t="15.84">people watched it.</span></span>
+    </div>
+    <div class="c3 rph4 in" data-t="12.8" data-rx="8" data-ry="14"><img src="media/atlascover.jpg"><div class="pl"></div><div class="real">THE REEL</div></div>
+    <div class="c3 tile" id="t40" style="top:650px"><b id="v40">0</b><span>SAVES</span></div>
+    <div class="c3 tile lite" id="t41" style="top:900px"><b id="v41">0</b><span>SHARES</span></div>
+    <div class="c3 tile" id="t42" style="top:1150px"><b id="v42">0</b><span>NEW FOLLOWERS</span></div>
+    <div class="src" id="src"></div>
+  </section>
+
+  <!-- S5 not bad, just invisible -->
+  <section class="sc" id="s5">
+    <div class="L kick" style="top:250px" data-k="// mate, listen"></div>
+    <div class="L h" style="top:304px">
+      <span class="ln" style="font-size:132px"><span class="w" data-t="18.2">Not</span><span class="w" data-t="18.84">bad.</span></span>
+      <span class="ln soft" style="font-size:132px"><span class="w ser" data-t="19.5">just invisible.</span></span>
+    </div>
+    <svg class="cone" viewBox="0 0 1080 1920"><defs><linearGradient id="cg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".34"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient></defs><polygon id="cone" points="0,0 0,0 0,0" fill="url(#cg)"/></svg>
+    <div class="lamp" id="lamp"></div>
+    <div class="ghost" id="gh0"></div>
+    <div class="ghost" id="gh1"></div>
+    <div class="s5n" id="s5n"></div>
+  </section>
+
+  <!-- S6 DM us one word -->
+  <section class="sc" id="s6">
+    <div class="L kick" style="top:250px" data-k="// one word"></div>
+    <div class="L h" style="top:296px">
+      <span class="ln" style="font-size:120px"><span class="w" data-t="21.12">DM</span><span class="w" data-t="21.48">us</span></span>
+      <span class="ln" style="font-size:204px;letter-spacing:-9px"><span class="w" data-t="22.48">FEATURE</span></span>
+    </div>
+    <div class="c3 dm6 in" data-t="21.0" data-rx="10" data-ry="8">
+      <div class="dmh"><div class="bead">&gt;_</div><div><b>git.mate</b><span>GitHub Repos Daily</span></div></div>
+      <div class="bout" id="o1" style="top:160px;font-size:44px;padding:24px 38px">FEATURE</div>
+      <div class="bout" id="o2" style="top:296px">github.com/you/your-project</div>
+      <div class="bin" id="o3" style="top:404px;font-family:'Inter Tight';font-size:32px">Got it, mate. Your reel is coming.</div>
+      <div class="cmp"><div class="ty"><span id="ty6"></span><span class="caret" id="car6"></span></div><div class="send" id="snd6">↑</div></div>
+    </div>
+  </section>
+
+  <!-- S7 repo -> reel -> the world -->
+  <section class="sc" id="s7">
+    <div class="L kick" style="top:250px" data-k="// repo → reel → world"></div>
+    <div class="L h" style="top:304px">
+      <span class="ln" style="font-size:118px"><span class="w" data-t="24.4">Your</span><span class="w" data-t="24.64">repo,</span></span>
+      <span class="ln soft" style="font-size:124px"><span class="w ser" data-t="27.04">all over the world.</span></span>
+    </div>
+    <div class="c3 mini in" data-t="24.3" data-rx="10" data-ry="12">
+      <div class="rph"><div class="rpi"><svg width="26" height="26" viewBox="0 0 34 34"><path d="M7 4h16a4 4 0 0 1 4 4v22H9a4 4 0 0 1-4-4V6a2 2 0 0 1 2-2zm0 20h20" fill="none" stroke="#f2f3f5" stroke-width="3"/></svg></div><div class="rpn">your-project</div></div>
+      <div class="rpd"><i style="width:90%"></i><i style="width:64%"></i><i style="width:76%"></i></div>
+      <div class="ms">★ <span id="ms7">0</span></div>
+    </div>
+    <svg class="arr" viewBox="0 0 140 80"><path id="ar7" d="M6 40 H118 M92 14 L122 40 L92 66" fill="none" stroke="#f2f3f5" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="200" stroke-dashoffset="200"/></svg>
+    <div class="c3 rl7" id="rl7"><div class="scr"><b>Your<br>repo.</b><i style="top:150px;width:70%"></i><i style="top:174px;width:48%"></i><i style="top:230px;height:110px;border-radius:14px;width:auto"></i><u id="rp7"></u></div></div>
+    <div class="gring" id="gring"></div>
+    <div class="globe" id="globe"></div>
+    <div class="vw" id="vw"></div>
+  </section>
+
+  <!-- S8 don't overthink it, we handle it all -->
+  <section class="sc" id="s8">
+    <div class="L kick" style="top:250px" data-k="// don't overthink it"></div>
+    <div class="L h" style="top:304px">
+      <span class="ln" style="font-size:98px"><span class="w" data-t="28.49">Don't</span><span class="w" data-t="28.73">overthink.</span></span>
+      <span class="ln soft" style="font-size:124px"><span class="w ser" data-t="30.89">we handle it all.</span></span>
+    </div>
+    <div class="dmpill" id="dmp"><span>DM us</span><b>“FEATURE”</b></div>
+    <div class="c3 todo in" data-t="28.4" data-rx="10" data-ry="-8">
+      <div class="lbl" style="margin-bottom:8px">you send the repo · we do the rest</div>
+      <div class="tr" id="tr0"><i></i>Script &amp; story</div>
+      <div class="tr" id="tr1"><i></i>Voiceover</div>
+      <div class="tr" id="tr2"><i></i>Motion design</div>
+      <div class="tr" id="tr3"><i></i>Posted on @git.mate</div>
+    </div>
+  </section>
+
+  <!-- S9 end: months of work, finally worth it -->
+  <section class="sc" id="s9">
+    <svg class="erings" viewBox="0 0 500 500"><circle id="er1" cx="250" cy="250" r="226" fill="none" stroke="#f5f6f7" stroke-width="3" stroke-dasharray="1420" stroke-dashoffset="1420" transform="rotate(-90 250 250)"/>
+      <circle id="er2" cx="250" cy="250" r="246" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="2" stroke-dasharray="1546" stroke-dashoffset="1546" transform="rotate(90 250 250)"/></svg>
+    <div class="bead bigmk" id="bigmk">&gt;_</div>
+    <div class="hnd" id="hnd"></div>
+    <div class="L h" style="top:1110px;text-align:center">
+      <span class="ln" style="font-size:80px;letter-spacing:-3px"><span class="w" data-t="32.33">Your</span><span class="w" data-t="32.53">months</span><span class="w" data-t="32.69">of</span><span class="w" data-t="32.81">work,</span></span>
+      <span class="ln soft" style="font-size:124px"><span class="w ser" data-t="33.53">finally worth it.</span></span>
+    </div>
+    <div class="fol" id="fol">DM “FEATURE”</div>
+    <div class="fol2" id="fol2">FEATURE sent ✓</div>
+    <div class="erip" id="erip"></div>
+    <svg class="tap" id="tap10" viewBox="0 0 100 100" style="left:640px;top:1450px"><circle cx="50" cy="50" r="34" fill="rgba(255,255,255,.25)" stroke="#fff" stroke-width="5"/><circle cx="50" cy="50" r="12" fill="#fff"/></svg>
+  </section>
+ </div></div>
+
+ <div class="top"><div class="brand"><div class="bead">&gt;_</div>git.mate</div><div class="tag" id="tag"><b>01</b> / hook</div></div>
+ <div class="prog" id="prog"></div>
+ <div class="vig"></div><div class="grain"></div>
+</div>
+<script>
+(function () {
+  const SPD = 1.0;
+  const OFF = 1.6;
+  const S = [1.6, 4.05, 8.2, 12.6, 17.1, 21.05, 24.35, 28.15, 32.1];
+  const TOTAL = 36.9; window.__TOTAL = TOTAL - OFF;
+  const LABEL = ['hook', 'months', 'true story', 'one reel', 'the truth', 'one word', 'the world', 'easy', 'your turn'];
+  const $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)];
+  const tl = gsap.timeline({ paused: true, defaults: { ease: 'power3.out' } });
+  $('#prog').innerHTML = S.map(() => '<i><b></b></i>').join('');
+  // S5 ghost + lit copies of the repo card (before .in / .w setup)
+  { const card = $('#s1 .repo').outerHTML.replace(/ in"/, '"').replace(/style="top:680px"/, '').replace(/id="z\d"/g, '').replace(/data-\w+="[^"]*"/g, '');
+    $('#gh0').innerHTML = card; $('#gh1').innerHTML = card; }
+  const scenes = $$('.sc');
+  const R = 2400, STEP = 30;
+  scenes.forEach((sc, i) => { sc.style.transform = `rotateY(${i * STEP}deg) translateZ(${R}px)`; });
+  const cam = { a: 0, d: 0, rx: 0, rz: 0 };
+  const MOVE = { 2: 'crane', 3: 'roll', 5: 'crane', 6: 'roll', 8: 'crane' };
+  scenes.forEach((sc, i) => {
+    tl.set(sc, { visibility: 'visible' }, Math.max(0, S[i] - .62));
+    if (i < scenes.length - 1) tl.set(sc, { visibility: 'hidden' }, S[i + 1] + .45);
+    if (i) {
+      const t0 = S[i] - .58, dir = i % 2 ? 1 : -1, mv = MOVE[i];
+      const prx = mv === 'crane' ? 22 : 9 * dir, prz = mv === 'roll' ? 9 * dir : mv === 'crane' ? 0 : 3 * dir, pd = mv === 'crane' ? 1250 : 900;
+      tl.to(cam, { a: i * STEP, duration: 1.0, ease: 'power3.inOut' }, t0);
+      tl.to(cam, { keyframes: [{ d: pd, rx: prx, rz: prz, duration: .5, ease: 'power2.out' }, { d: 0, rx: 0, rz: 0, duration: .5, ease: 'power2.in' }] }, t0);
+    }
+  });
+  tl.set(scenes[0], { visibility: 'visible' }, 0);
+  $$('.h .w').forEach((w) => { const t = +w.dataset.t; if (!t) return;
+    tl.fromTo(w, { opacity: 0, y: 70, scale: 1.12, filter: 'blur(18px)' }, { opacity: 1, y: 0, scale: 1, filter: 'blur(0px)', duration: .55, ease: 'expo.out' }, t); });
+  scenes.forEach((sc, i) => { const k = $('.kick', sc); if (!k || !k.dataset.k) return; const txt = k.dataset.k, o = { n: 0 }; k.textContent = i ? '' : txt; if (!i) return;
+    tl.fromTo(o, { n: 0 }, { n: txt.length, duration: Math.min(.7, txt.length * .025), ease: 'none', immediateRender: false, onUpdate: () => { k.textContent = txt.slice(0, Math.round(o.n)); } }, S[i] + .05); });
+  $$('.in').forEach((c) => {
+    const t = +c.dataset.t, rx = +(c.dataset.rx || 0), ry = +(c.dataset.ry || 0), z = +(c.dataset.z || 0);
+    const end = { autoAlpha: 1, z, rotationX: rx, rotationY: ry, y: 0, duration: .9, ease: 'expo.out' };
+    if (!t) { gsap.set(c, end); return; }
+    tl.fromTo(c, { autoAlpha: 0, z: -900, rotationX: rx + 40, rotationY: ry * 2, y: 120 }, end, t);
+  });
+  const typer = (el, text, t, d) => { const o = { n: 0 }; tl.fromTo(o, { n: 0 }, { n: text.length, duration: d, ease: 'none', immediateRender: false, onUpdate: () => { el.textContent = text.slice(0, Math.round(o.n)); } }, t); };
+  const sm = (a, b, x) => { const k = Math.min(1, Math.max(0, (x - a) / (b - a))); return k * k * (3 - 2 * k); };
+  const cl = (a, b, x) => Math.min(1, Math.max(0, (x - a) / (b - a)));
+  const twl = (t, a, b, s) => s.slice(0, Math.round(cl(a, b, t) * s.length));
+  const rnd = (i) => { const x = Math.sin(i * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };
+  const fmt = (n) => Math.round(n).toLocaleString('en-US');
+  const pop = (e, k, y = 40) => { e.style.opacity = k; e.style.transform = `translateY(${(1 - k) * y}px) scale(${.85 + .15 * k})`; };
+
+  // S1 grid cells
+  const COLS = 26, ROWS = 7;
+  $('#grid').innerHTML = Array.from({ length: COLS * ROWS }, (_, i) => `<i id="g${i}" style="left:${Math.floor(i / ROWS) * 34}px;top:${(i % ROWS) * 34}px"></i>`).join('');
+  const GC = $$('#grid i'), LV = GC.map((_, i) => { const r = rnd(i); return r < .14 ? 0 : r < .45 ? .28 : r < .75 ? .55 : 1; });
+  // S7 globe points (fibonacci sphere)
+  const NP = 380, GP = Array.from({ length: NP }, (_, i) => { const y = 1 - (i + .5) / NP * 2, r = Math.sqrt(1 - y * y), a = i * 2.399963; return [Math.cos(a) * r, y, Math.sin(a) * r]; });
+  $('#globe').innerHTML = GP.map((_, i) => `<i id="gp${i}"></i>`).join('');
+  const GE = $$('#globe i'), PING = GP.map((_, i) => (i % 27 === 5 ? Math.floor(i / 27) : -1));
+
+  // S8 end
+  const E = 32.15;
+  tl.fromTo('#bigmk', { opacity: 0, scale: .2, rotation: -40 }, { opacity: 1, scale: 1, rotation: 0, duration: .9, ease: 'back.out(1.8)' }, E);
+  tl.fromTo('#er1', { attr: { 'stroke-dashoffset': 1420 } }, { attr: { 'stroke-dashoffset': 0 }, duration: 1.0, ease: 'power2.inOut', immediateRender: false }, E + .15);
+  tl.fromTo('#er2', { attr: { 'stroke-dashoffset': 1546 } }, { attr: { 'stroke-dashoffset': 0 }, duration: 1.2, ease: 'power2.inOut', immediateRender: false }, E + .3);
+  typer($('#hnd'), '@git.mate', E + .5, .5);
+  tl.fromTo('#fol', { opacity: 0, scale: .6 }, { opacity: 1, scale: 1, duration: .5, ease: 'back.out(2)' }, E + 2.1);
+  tl.fromTo('#tap10', { opacity: 0, x: 160, y: 140 }, { opacity: 1, x: 0, y: 0, duration: .5, ease: 'power2.out' }, E + 2.6);
+  tl.to('#tap10', { scale: .75, duration: .1, yoyo: true, repeat: 1 }, E + 3.15);
+  tl.to('#fol', { scale: .93, duration: .1 }, E + 3.15);
+  tl.set('#fol2', { opacity: 1 }, E + 3.25); tl.set('#fol', { opacity: 0 }, E + 3.25);
+  tl.fromTo('#erip', { opacity: .8, width: 10, height: 10, margin: -5 }, { opacity: 0, width: 760, height: 760, margin: -380, duration: .8, ease: 'power2.out', immediateRender: false }, E + 3.15);
+  tl.to('#tap10', { opacity: 0, duration: .3 }, E + 3.6);
+  tl.to({}, { duration: .01 }, TOTAL);
+
+  const world = $('#world'), tag = $('#tag'), segs = $$('#prog b');
+  const tick = (t) => {
+    const a = cam.a + Math.sin(t * .5) * .35, rx = cam.rx + Math.sin(t * .37 + 1) * .7, rz = cam.rz + Math.sin(t * .29) * .25;
+    scenes.forEach((sc, i) => { sc.style.display = t >= S[i] - .7 && t <= (S[i + 1] || 99) + .5 ? '' : 'none'; });
+    world.style.transform = `translateZ(${-cam.d}px) rotateX(${rx}deg) rotateZ(${rz}deg) translateZ(${-R}px) rotateY(${-a}deg)`;
+    // S1 counters slam to zero, flat traffic line
+    if (t < 5) { [2.12, 3.16, 3.4].forEach((t0, i) => { const e = $('#z' + i); const spin = t < t0;
+        e.textContent = spin ? Math.floor(rnd(Math.floor(t * 16) + i * 7) * 10) : 0; e.style.opacity = spin ? .45 : 1;
+        e.style.transform = `scale(${1 + Math.max(0, 1 - Math.abs(t - t0 - .06) / .12) * .28})`; });
+      $('#flat').setAttribute('stroke-dashoffset', 880 * (1 - sm(2.95, 3.6, t)));
+      $('#tv').textContent = t > 3.4 ? '1 total' : '–'; $('#tn').textContent = twl(t, 3.3, 3.8, '1 unique visitor · it was you'); }
+    // S2 months of commits fill in, nights, weekends, shipped
+    if (t > 3.3 && t < 9.5) { const k = sm(4.1, 6.5, t), wk = sm(5.95, 6.3, t);
+      GC.forEach((e, i) => { const col = Math.floor(i / ROWS), row = i % ROWS, on = cl(col / COLS, (col + 1.5) / COLS, k * 1.06);
+        let lv = LV[i]; if (row >= 5) lv = Math.max(lv, .55) * (1 - wk) + wk * 1;
+        e.style.background = `rgba(242,243,245,${.07 + on * lv * .93})`; e.style.transform = `scale(${1 + Math.max(0, 1 - Math.abs(on - .5) * 2) * .25 + (row >= 5 ? wk * (1 - sm(6.3, 6.8, t)) * .3 : 0)})`; });
+      $('#cmt').textContent = Math.round(412 * k); $('#mon').textContent = 'month ' + Math.min(7, 1 + Math.floor(k * 6.99));
+      pop($('#ch1'), sm(5.35, 5.6, t)); pop($('#ch2'), sm(5.95, 6.2, t)); pop($('#ch3'), sm(6.4, 6.6, t)); $('#push').textContent = twl(t, 6.45, 6.85, 'git push origin main'); $('#pok').style.opacity = sm(6.9, 7.05, t); }
+    // S3 the DM lands
+    if (t > 7.5 && t < 14) pop($('#b3'), sm(9.25, 9.55, t), 60);
+    // S4 the real numbers
+    if (t > 11.5 && t < 18.5) { const k = cl(14.2, 16.5, t), ek = 1 - Math.pow(1 - k, 3); $('#cnt').textContent = fmt(111733 * ek);
+      [[5719, 15.0], [2204, 15.5], [1221, 16.0]].forEach(([v, t0], i) => { const q = sm(t0 - .1, t0 + .3, t), e = $('#t4' + i);
+        e.style.opacity = q; e.style.transform = `perspective(1100px) rotateX(${(1 - q) * -95}deg) rotateY(-8deg) translateZ(${Math.max(0, 1 - Math.abs(t - t0 - .3) / .3) * 50}px)`;
+        $('#v4' + i).textContent = fmt(v * sm(t0, t0 + .7, t)); });
+      $('#src').textContent = twl(t, 16.3, 16.9, 'real Instagram insights · one reel'); }
+    // S5 spotlight finds the invisible repo
+    if (t > 16 && t < 22.5) { const on = sm(19.0, 19.3, t), k = sm(19.1, 20.0, t), cx = 150 + 326 * k, r = 230 + 620 * sm(19.85, 20.4, t), cy = 260;
+      const m = `radial-gradient(circle ${r}px at ${cx}px ${cy}px,#000 55%,transparent 100%)`;
+      const g1 = $('#gh1'); g1.style.opacity = on; g1.style.webkitMaskImage = m; g1.style.maskImage = m;
+      const X = 64 + cx, w = Math.min(520, r * .9);
+      $('#cone').setAttribute('points', `${X - 44},640 ${X + 44},640 ${X + w},1240 ${X - w},1240`); $('#cone').style.opacity = on * (1 - sm(20.1, 20.5, t) * .5);
+      $('#lamp').style.left = X + 'px'; $('#lamp').style.opacity = sm(18.7, 19.0, t);
+      $('#s5n').textContent = twl(t, 19.7, 20.2, 'it just needs a spotlight.'); }
+    // S6 type FEATURE, send, send repo, reply
+    if (t > 20 && t < 25.5) { const a1 = twl(t, 21.9, 22.42, 'FEATURE'), a2 = twl(t, 22.75, 23.2, 'github.com/you/your-project');
+      $('#ty6').textContent = t < 22.5 ? a1 : t < 23.25 ? a2 : ''; $('#car6').style.opacity = Math.floor(t * 3) % 2 ? 1 : .15;
+      $('#snd6').style.transform = `scale(${1 - Math.max(0, 1 - Math.abs(t - 22.5) / .08, 1 - Math.abs(t - 23.25) / .08) * .22})`;
+      pop($('#o1'), sm(22.5, 22.72, t), 330); pop($('#o2'), sm(23.25, 23.45, t), 200); pop($('#o3'), sm(23.55, 23.8, t), 30); }
+    // S7 repo becomes a reel, the reel lights up the globe
+    if (t > 23.5 && t < 29.5) { $('#ar7').setAttribute('stroke-dashoffset', 200 * (1 - sm(24.95, 25.25, t)));
+      const q = sm(25.1, 25.55, t), e = $('#rl7'); e.style.opacity = q; e.style.transform = `perspective(1200px) rotateY(${-14 - (1 - q) * 80}deg) rotateX(6deg) scale(${.5 + .5 * q})`;
+      $('#rp7').style.width = cl(25.4, 28.6, t) * 174 + 'px';
+      const ga = sm(25.7, 26.3, t), rot = t * .55, tilt = .38; $('#gring').style.opacity = ga;
+      GP.forEach((p, i) => { const x = p[0] * Math.cos(rot) + p[2] * Math.sin(rot), z0 = -p[0] * Math.sin(rot) + p[2] * Math.cos(rot);
+        const y = p[1] * Math.cos(tilt) - z0 * Math.sin(tilt), z = p[1] * Math.sin(tilt) + z0 * Math.cos(tilt);
+        const pi = PING[i], lit = pi >= 0 ? sm(26.2 + pi * .13, 26.45 + pi * .13, t) : 0, pulse = lit ? .5 + .5 * Math.sin(t * 7 + pi) : 0;
+        const s = (z > 0 ? 6 : 3.5) + lit * (12 + pulse * 6), el = GE[i];
+        el.style.left = 300 + x * 286 - s / 2 + 'px'; el.style.top = 300 + y * 286 - s / 2 + 'px'; el.style.width = el.style.height = s + 'px';
+        el.style.opacity = ga * (lit > .05 ? (z > 0 ? 1 : .2) : (z > 0 ? .5 + .5 * z : .16));
+        el.style.boxShadow = lit && z > 0 ? `0 0 ${14 + pulse * 18}px ${2 + pulse * 5}px rgba(255,255,255,.55)` : 'none'; });
+      $('#vw').textContent = twl(t, 27.1, 27.7, 'in front of developers · everywhere'); }
+    // S8 DM pill + checklist ticks
+    if (t > 27.4 && t < 33.5) { const q = sm(29.65, 29.95, t), e = $('#dmp'); e.style.opacity = q; e.style.transform = `scale(${.7 + .3 * q + Math.max(0, 1 - Math.abs(t - 30.25) / .15) * .06})`;
+      [30.95, 31.15, 31.35, 31.55].forEach((t0, i) => $('#tr' + i).classList.toggle('on', t >= t0)); }
+    let si = 0; for (let i = 0; i < S.length; i++) if (t >= S[i] - .3) si = i;
+    tag.innerHTML = `<b>${String(si + 1).padStart(2, '0')}</b> / ${LABEL[si]}`;
+    segs.forEach((b, i) => { const e = i < S.length - 1 ? S[i + 1] : TOTAL - 1.5; b.style.width = Math.min(100, Math.max(0, (t - S[i]) / (e - S[i]) * 100)) + '%'; });
+  };
+  window.__tl = tl;
+  window.__seek = (rt) => { const t = rt * SPD + OFF; tl.time(t, false); tick(t); return Promise.all($$('img').map(im => im.decode().catch(() => null))).then(() => null); };
+  window.__seek(0);
+  if (!navigator.webdriver) { const t0 = performance.now(); const loop = () => { window.__seek(((performance.now() - t0) / 1000) % (TOTAL - OFF)); requestAnimationFrame(loop); }; requestAnimationFrame(loop); }
+})();
+</script></body></html>

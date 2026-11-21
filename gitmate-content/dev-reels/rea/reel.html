@@ -1,0 +1,384 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<title>git.mate REA</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter+Tight:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<style>
+:root{--ink:#f5f6f7;--mut:rgba(235,238,242,.58);--dim:rgba(235,238,242,.32)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#000}
+.f{position:relative;width:1080px;height:1920px;overflow:hidden;background:radial-gradient(ellipse 120% 80% at 50% 40%,#0d0e11 0%,#040405 60%,#000 100%);color:var(--ink);font-family:'Inter Tight',sans-serif}
+.vig{position:absolute;inset:0;z-index:5;pointer-events:none;background:radial-gradient(ellipse 90% 70% at 50% 50%,transparent 50%,rgba(0,0,0,.7) 100%)}
+.grain{position:absolute;inset:0;opacity:.08;mix-blend-mode:overlay;z-index:8;pointer-events:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
+
+/* 3D camera rig */
+#stage{position:absolute;inset:0;perspective:2200px;perspective-origin:50% 46%;z-index:2}
+#world{position:absolute;left:0;top:0;width:1080px;height:1920px;transform-style:preserve-3d}
+#floor{position:absolute;left:-3960px;top:-2540px;width:9000px;height:9000px;transform:translateY(1150px) rotateX(90deg);
+  background-image:linear-gradient(rgba(255,255,255,.09) 2px,transparent 2px),linear-gradient(90deg,rgba(255,255,255,.09) 2px,transparent 2px);background-size:150px 150px;
+  -webkit-mask:radial-gradient(circle at 50% 50%,#000 0%,rgba(0,0,0,.6) 28%,transparent 55%);mask:radial-gradient(circle at 50% 50%,#000 0%,rgba(0,0,0,.6) 28%,transparent 55%)}
+.sc{position:absolute;left:0;top:0;width:1080px;height:1920px;transform-style:preserve-3d;backface-visibility:hidden;visibility:hidden}
+#s1{visibility:visible}
+
+/* 3D slab card: thickness from stacked edge shadows */
+.c3{position:absolute;border-radius:34px;overflow:hidden;background:linear-gradient(160deg,#1d1e22 0%,#121316 45%,#0b0c0e 100%);
+  box-shadow:inset 0 1.5px 0 rgba(255,255,255,.2),inset 0 0 0 1.5px rgba(255,255,255,.07),0 3px 0 #1b1c1f,0 6px 0 #16171a,0 9px 0 #111214,0 12px 0 #0c0d0f,0 60px 90px rgba(0,0,0,.75)}
+.c3::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:linear-gradient(115deg,rgba(255,255,255,.1) 0%,rgba(255,255,255,0) 35%,rgba(255,255,255,0) 70%,rgba(255,255,255,.05) 100%)}
+.c3.lite{background:linear-gradient(160deg,#f7f8f9,#d9dce0);color:#08090a;box-shadow:inset 0 2px 0 #fff,0 3px 0 #c3c6cb,0 6px 0 #aeb2b8,0 9px 0 #9a9ea4,0 12px 0 #868a90,0 60px 90px rgba(0,0,0,.7)}
+.bead{width:62px;height:62px;border-radius:50%;display:grid;place-items:center;font-family:'JetBrains Mono';font-weight:800;font-size:24px;color:#050505;flex:none;
+  background:radial-gradient(circle at 35% 28%,#fff 0 18%,#e4e6ea 45%,#9da1a8 100%);box-shadow:inset 0 -5px 10px rgba(0,0,0,.25),inset 0 3px 4px #fff,0 10px 24px rgba(0,0,0,.6)}
+
+.top{position:absolute;left:64px;right:64px;top:88px;height:90px;z-index:6}
+.brand{position:absolute;left:0;top:0;display:flex;align-items:center;gap:18px;padding:14px 30px 14px 14px;font-family:'JetBrains Mono';font-weight:700;font-size:30px;border-radius:999px;background:#0e0f11;box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 0 0 1.5px rgba(255,255,255,.1)}
+.tag{position:absolute;right:0;top:12px;padding:18px 30px;font-family:'JetBrains Mono';font-size:24px;color:var(--mut);white-space:nowrap;border-radius:999px;background:#0e0f11;box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 0 0 1.5px rgba(255,255,255,.08)}
+.tag b{color:var(--ink)}
+.prog{position:absolute;left:64px;right:64px;bottom:96px;display:flex;gap:10px;z-index:6}
+.prog i{flex:1;height:8px;border-radius:4px;background:rgba(255,255,255,.14);position:relative;overflow:hidden}
+.prog i b{position:absolute;left:0;top:0;bottom:0;width:0;background:#f2f3f5;border-radius:4px}
+
+.L{position:absolute;left:64px;right:64px}
+.kick{font-family:'JetBrains Mono';font-size:28px;color:var(--mut);letter-spacing:1px;white-space:pre;height:40px}
+.h{font-weight:900;letter-spacing:-5px;line-height:.92;text-transform:uppercase}
+.h .ln{display:block;white-space:nowrap}
+.h .w{display:inline-block;padding-bottom:.05em;margin-right:.2em;background-image:linear-gradient(180deg,#ffffff 0%,#f1f2f4 50%,#b4b8be 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.h .w:last-child{margin-right:0}
+.h .soft .w{background-image:linear-gradient(180deg,rgba(255,255,255,.62),rgba(255,255,255,.24))}
+.lbl{font-family:'JetBrains Mono';font-size:22px;color:var(--mut)}
+.mono{font-family:'JetBrains Mono'}
+.chip{display:inline-block;font-family:'JetBrains Mono';font-size:22px;padding:10px 20px;border-radius:999px;color:rgba(255,255,255,.85);background:rgba(255,255,255,.06);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.12);white-space:nowrap}
+.chip.solid{background:#f2f3f5;color:#050505;font-weight:800;box-shadow:none}
+.chrome{display:flex;align-items:center;gap:14px;padding:24px 30px 16px}
+.chrome i{width:18px;height:18px;border-radius:50%;background:rgba(255,255,255,.3)}
+.url{margin-left:14px;flex:1;font-family:'JetBrains Mono';font-size:22px;color:var(--mut);padding:10px 22px;border-radius:999px;background:rgba(0,0,0,.3);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.08)}
+
+/* s1 trending rows */
+.tr{display:flex;align-items:center;gap:26px;padding:0 34px}
+.tr .n{font-family:'JetBrains Mono';font-weight:800;font-size:34px;width:60px;color:var(--mut)}
+.tr .nm{font-family:'JetBrains Mono';font-size:30px;font-weight:700;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tr .nm span{color:var(--mut);font-weight:500}
+.tr.one .n{color:#050505}
+.tr .st{font-family:'JetBrains Mono';font-size:22px;color:var(--mut);white-space:nowrap}
+/* s2 repo */
+.rp{padding:10px 44px 40px}
+.rname{font-family:'JetBrains Mono';font-size:46px;font-weight:800}
+.rname span{color:var(--mut);font-weight:500}
+.rdesc{margin-top:22px;font-size:36px;line-height:1.3;font-weight:500;color:rgba(255,255,255,.88)}
+.cmd{margin-top:26px;padding:20px 26px;border-radius:20px;background:rgba(0,0,0,.4);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.1);font-family:'JetBrains Mono';font-size:28px}
+/* s3 app */
+.app{display:flex;height:calc(100% - 66px)}
+.side{width:250px;padding:20px 22px;border-right:1.5px solid rgba(255,255,255,.08);display:flex;flex-direction:column;gap:16px}
+.side i{display:block;height:20px;border-radius:6px;background:rgba(255,255,255,.1)}
+.main{flex:1;padding:26px 30px;display:flex;flex-direction:column;gap:20px}
+.feat{position:relative;padding:22px 26px;border-radius:22px;background:#f2f3f5;color:#060607;font-size:32px;font-weight:800;display:flex;align-items:center;gap:16px}
+.ring{position:absolute;inset:-12px;border-radius:30px;border:4px solid rgba(255,255,255,.85)}
+.line{height:22px;border-radius:7px;background:rgba(255,255,255,.08)}
+.q{padding:26px 34px;font-size:36px;font-weight:800;border-radius:34px 34px 34px 10px}
+/* s4 */
+.shot{margin:0 18px;height:542px;border-radius:16px;background-size:cover;background-position:center;position:relative;overflow:hidden}
+.scan{position:absolute;left:0;right:0;height:5px;background:#fff;box-shadow:0 0 30px 10px rgba(255,255,255,.45)}
+.ev{display:flex;flex-direction:column;justify-content:center;padding:0 26px}
+.ev .t{font-size:32px;font-weight:800}
+.ev .s{font-family:'JetBrains Mono';font-size:19px;color:var(--mut);margin-top:6px}
+/* s5 tiles */
+.ag{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;text-align:center}
+.ag .gl{width:150px;height:150px;border-radius:40px;display:grid;place-items:center;font-size:74px;font-weight:900;background:linear-gradient(160deg,#f7f8f9,#bfc3c9);color:#060607;box-shadow:inset 0 -6px 12px rgba(0,0,0,.2),0 20px 40px rgba(0,0,0,.6)}
+.ag .t{font-size:40px;font-weight:900;letter-spacing:-1px}
+/* s6 layers */
+.lay{display:flex;align-items:center;gap:30px;padding:0 40px}
+.lay .k{font-family:'JetBrains Mono';font-size:24px;color:var(--mut);width:150px}
+.lay .body{flex:1;height:200px;border-radius:20px;background:rgba(0,0,0,.35);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.08);overflow:hidden;padding:18px 22px}
+.hex{font-family:'JetBrains Mono';font-size:21px;line-height:1.5;color:rgba(255,255,255,.75);white-space:pre}
+/* s7 flow */
+.node{padding:30px 32px}
+.node .n{font-family:'JetBrains Mono';font-size:22px;color:var(--mut)}
+.node .t{font-size:38px;font-weight:900;margin-top:8px;letter-spacing:-1px}
+.node .s{font-family:'JetBrains Mono';font-size:20px;color:var(--mut);margin-top:8px}
+.node.hl{background:linear-gradient(160deg,#f7f8f9,#d0d3d8);color:#060607}
+.node.hl .n,.node.hl .s{color:#4a4e55}
+.case{background-size:cover;background-position:center}
+.cap{position:absolute;left:14px;bottom:14px;padding:8px 14px;border-radius:999px;font-family:'JetBrains Mono';font-size:18px;font-weight:700;color:#fff;background:rgba(0,0,0,.75)}
+/* s8 terminal */
+.term{font-family:'JetBrains Mono';font-size:28px;line-height:1.8;padding:8px 40px 34px;white-space:pre}
+.term .p{color:var(--dim)}
+.term .ok{font-weight:800}
+.tc{display:inline-block;width:15px;height:30px;border-radius:3px;background:#e8eaed;vertical-align:-5px;margin-left:3px}
+/* s9 */
+.cm{padding:30px 34px}
+.rowc{display:flex;align-items:center;gap:20px}
+.av2{width:70px;height:70px;border-radius:50%;flex:none;background:radial-gradient(circle at 35% 28%,#5a5e64,#1b1d20);box-shadow:inset 0 0 0 2px rgba(255,255,255,.2)}
+.cin{flex:1;padding:20px 26px;border-radius:999px;font-size:32px;font-weight:700;background:rgba(255,255,255,.06);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.14)}
+.send{width:76px;height:76px;border-radius:50%;display:grid;place-items:center;background:#f2f3f5;color:#000;font-size:34px;font-weight:900;flex:none}
+.posted{display:flex;gap:20px;align-items:flex-start;margin-top:30px}
+.posted .u{font-weight:800;font-size:28px}
+.posted .c{font-size:34px;font-weight:800;margin-top:4px}
+.dm{padding:24px 30px;border-radius:32px 32px 32px 10px;font-size:32px;font-weight:700}
+.dm small{display:block;font-family:'JetBrains Mono';font-size:20px;color:#55595f;font-weight:500;margin-bottom:6px}
+/* s10 */
+.prof{padding:56px 54px 50px;text-align:center}
+.pfp{width:220px;height:220px;margin:0 auto;font-size:84px;letter-spacing:-4px}
+.pn{font-family:'JetBrains Mono';font-size:54px;font-weight:800;margin-top:30px}
+.pnm{font-size:30px;font-weight:600;color:var(--mut);margin-top:8px}
+.pbio{font-size:31px;line-height:1.45;margin-top:28px;color:rgba(255,255,255,.88)}
+.pst{display:flex;justify-content:center;gap:16px;margin-top:34px}
+.fbtn{position:relative;margin:44px auto 0;width:560px;height:110px;border-radius:999px;display:grid;place-items:center;font-size:44px;font-weight:900;background:#f2f3f5;color:#050505;box-shadow:0 6px 0 #a9adb3,0 18px 50px rgba(255,255,255,.18);overflow:hidden}
+.fbtn span{position:absolute}
+.ripple{position:absolute;width:160px;height:160px;border-radius:50%;background:rgba(0,0,0,.18);opacity:0}
+.hand{position:absolute;width:110px;height:110px;opacity:0}
+</style></head><body>
+<div class="f" id="F">
+  <div id="stage"><div id="world">
+    <div id="floor"></div>
+
+  <!-- S1 trending -->
+  <section class="sc" id="s1">
+    <div class="L kick" style="top:250px" data-k="// github trending · this week"></div>
+    <div class="L h" style="top:304px;font-size:150px">
+      <span class="ln"><span class="w" data-t="0">#1</span><span class="w" data-t="1.78">trending</span></span>
+      <span class="ln soft"><span class="w" data-t="2.46">on</span><span class="w" data-t="2.82">github.</span></span>
+    </div>
+    <div class="c3 tr one in lite" style="left:64px;width:952px;top:640px;height:150px" data-t="0" data-z="90"><div class="n">01</div><div class="nm" style="font-size:36px"><span style="color:#55595f">morluto /</span> rea</div><div class="st" style="color:#33363b;font-weight:800">★ top repo</div></div>
+    <div class="c3 tr in" style="left:64px;width:952px;top:822px;height:120px" data-t=".1"><div class="n">02</div><div class="nm"><span>anthropics /</span> claude-plugins-official</div></div>
+    <div class="c3 tr in" style="left:64px;width:952px;top:964px;height:120px" data-t=".2"><div class="n">03</div><div class="nm"><span>ruvnet /</span> ruflo</div></div>
+    <div class="c3 tr in" style="left:64px;width:952px;top:1106px;height:120px" data-t=".3"><div class="n">04</div><div class="nm"><span>android /</span> skills</div></div>
+    <div class="c3 tr in" style="left:64px;width:952px;top:1248px;height:120px" data-t=".4"><div class="n">05</div><div class="nm"><span>anomalyco /</span> opencode</div></div>
+  </section>
+
+  <!-- S2 REA -->
+  <section class="sc" id="s2">
+    <div class="L kick" style="top:250px" data-k="// it's called"></div>
+    <div class="L h" style="top:290px">
+      <span class="ln" style="font-size:300px;letter-spacing:-12px"><span class="w" data-t="4.54">REA.</span></span>
+      <span class="ln soft" style="font-size:96px;letter-spacing:-3px"><span class="w" data-t="5.58">reverse</span><span class="w" data-t="6.06">engineer</span></span>
+      <span class="ln" style="font-size:96px;letter-spacing:-3px"><span class="w" data-t="6.7">anything.</span></span>
+    </div>
+    <div class="c3 in" style="left:64px;width:952px;top:830px;height:640px" data-t="4.2" data-ry="-8" data-rx="6">
+      <div class="chrome"><i></i><i></i><i></i><div class="url">github.com / morluto / rea</div></div>
+      <div class="rp">
+        <div class="rname"><span>morluto /</span> rea</div>
+        <div class="rdesc">One MCP for reverse engineering across binaries, applications, and runtime behavior.</div>
+        <div style="margin-top:26px;display:flex;gap:12px;flex-wrap:wrap"><span class="chip solid">MIT</span><span class="chip">MCP</span><span class="chip">npm · rea-agents</span><span class="chip">runs locally</span></div>
+        <div class="cmd"><span style="color:var(--dim)">$ </span>npx rea-agents setup</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- S3 how did they build that -->
+  <section class="sc" id="s3">
+    <div class="L kick" style="top:250px" data-k="// you see a cool feature…"></div>
+    <div class="L h" style="top:304px;font-size:124px">
+      <span class="ln"><span class="w" data-t="9.66">How</span><span class="w" data-t="9.78">did</span><span class="w" data-t="9.9">they</span></span>
+      <span class="ln soft"><span class="w" data-t="10.26">build</span><span class="w" data-t="10.46">that?</span></span>
+    </div>
+    <div class="c3 in" style="left:64px;width:952px;top:610px;height:720px" data-t="7.8" data-ry="12" data-rx="5">
+      <div class="chrome"><i></i><i></i><i></i><div class="url">Notes.app</div></div>
+      <div class="app">
+        <div class="side"><i style="width:80%"></i><i style="width:60%"></i><i style="width:70%"></i><i style="width:50%"></i><i style="width:75%"></i><i style="width:55%"></i></div>
+        <div class="main">
+          <div class="feat" id="ft3"><span>✨</span>Smart search<div class="ring" id="rg3"></div></div>
+          <div class="line" style="width:90%"></div><div class="line" style="width:70%"></div><div class="line" style="width:80%"></div><div class="line" style="width:55%"></div><div class="line" style="width:75%"></div><div class="line" style="width:62%"></div><div class="line" style="width:84%"></div>
+        </div>
+      </div>
+    </div>
+    <div class="c3 lite q in" style="left:420px;top:1390px;width:540px;height:120px" data-t="9.4" data-z="60">how does this work? 🤔</div>
+  </section>
+
+  <!-- S4 hopper -->
+  <section class="sc" id="s4">
+    <div class="L kick" style="top:250px" data-k="// REA lets your agent"></div>
+    <div class="L h" style="top:304px">
+      <span class="ln" style="font-size:104px"><span class="w" data-t="11.9">your</span><span class="w" data-t="12.06">AI</span><span class="w" data-t="12.38">agent</span></span>
+      <span class="ln" style="font-size:104px"><span class="w" data-t="12.82">finds</span><span class="w" data-t="13.02">out.</span></span>
+      <span class="ln soft" style="font-size:92px;letter-spacing:-3px"><span class="w" data-t="13.64">no</span><span class="w" data-t="13.9">source</span><span class="w" data-t="14.46">code.</span></span>
+    </div>
+    <div class="c3 in" style="left:64px;width:952px;top:640px;height:640px" data-t="11.4" data-ry="-12" data-rx="4">
+      <div class="chrome"><i></i><i></i><i></i><div class="url">REA × Hopper · native binary</div></div>
+      <div class="shot" style="background-image:url(hopper.jpg)"><div class="scan" id="sc4"></div></div>
+    </div>
+    <div class="c3 ev in" style="left:64px;width:300px;top:1330px;height:150px" data-t="13.7"><div class="t">Pseudocode</div><div class="s">+ assembly</div></div>
+    <div class="c3 ev in" style="left:390px;width:300px;top:1330px;height:150px" data-t="13.9"><div class="t">Strings</div><div class="s">+ symbols</div></div>
+    <div class="c3 ev in" style="left:716px;width:300px;top:1330px;height:150px" data-t="14.1"><div class="t">Calls</div><div class="s">+ references</div></div>
+  </section>
+
+  <!-- S5 agents -->
+  <section class="sc" id="s5">
+    <div class="L kick" style="top:250px" data-k="// works with"></div>
+    <div class="L h" style="top:304px;font-size:132px">
+      <span class="ln"><span class="w" data-t="14.98">plugs</span><span class="w" data-t="15.3">into</span></span>
+      <span class="ln soft"><span class="w" data-t="15.5">your</span><span class="w" data-t="15.6">agent.</span></span>
+    </div>
+    <div class="c3 ag in" style="left:64px;width:296px;top:680px;height:440px" data-t="15.5" data-ry="22" data-z="-40"><div class="gl">✳</div><div class="t">Claude<br>Code</div></div>
+    <div class="c3 ag in" style="left:392px;width:296px;top:680px;height:440px" data-t="16.22" data-z="40"><div class="gl">◆</div><div class="t">Cursor</div></div>
+    <div class="c3 ag in" style="left:720px;width:296px;top:680px;height:440px" data-t="16.86" data-ry="-22" data-z="-40"><div class="gl" style="font-size:56px">&gt;_</div><div class="t">Codex</div></div>
+    <div class="c3 in" style="left:64px;width:952px;top:1180px;height:120px;display:flex;align-items:center;justify-content:center" data-t="17.1"><div class="mono" style="font-size:28px">+ Gemini CLI, Grok Build &amp; more</div></div>
+  </section>
+
+  <!-- S6 layers -->
+  <section class="sc" id="s6">
+    <div class="L kick" style="top:250px" data-k="// it looks inside"></div>
+    <div class="L h" style="top:304px;font-size:124px">
+      <span class="ln"><span class="w" data-t="18.22">apps.</span></span>
+      <span class="ln"><span class="w" data-t="18.78">websites.</span></span>
+      <span class="ln soft"><span class="w" data-t="19.82">binaries.</span></span>
+    </div>
+    <div class="c3 lay in" style="left:64px;width:952px;top:700px;height:260px" data-t="18.22" data-rx="22"><div class="k">apps</div><div class="body"><div style="display:flex;gap:14px"><div style="width:120px;height:160px;border-radius:14px;background:rgba(255,255,255,.08)"></div><div style="flex:1;display:flex;flex-direction:column;gap:14px"><div class="line" style="width:80%"></div><div class="line" style="width:60%"></div><div class="feat" style="font-size:24px;padding:12px 18px">Electron · .NET · APK</div></div></div></div></div>
+    <div class="c3 lay in" style="left:64px;width:952px;top:990px;height:260px" data-t="18.78" data-rx="22"><div class="k">web</div><div class="body"><div class="url" style="margin:0 0 16px">https://example.app</div><div class="hex" style="font-size:20px">GET /api/search?q=…   200  12ms
+&lt;script src="bundle.js"&gt;  · source map found</div></div></div>
+    <div class="c3 lay in" style="left:64px;width:952px;top:1280px;height:260px" data-t="19.82" data-rx="22"><div class="k">binary</div><div class="body"><div class="hex">0x100000368  mov  w0, #0x0
+0x10000036c  ret
+48 89 e5 41 57 41 56 53  H..AWAVS
+e8 2a 01 00 00 85 c0 74  .*.....t</div></div></div>
+  </section>
+
+  <!-- S7 flow -->
+  <section class="sc" id="s7">
+    <div class="L kick" style="top:250px" data-k="// how REA works"></div>
+    <div class="L h" style="top:304px;font-size:124px">
+      <span class="ln"><span class="w" data-t="21.1">trace.</span></span>
+      <span class="ln"><span class="w" data-t="22.66">evidence.</span></span>
+      <span class="ln soft"><span class="w" data-t="23.58">build.</span></span>
+    </div>
+    <svg style="position:absolute;left:0;top:0;width:1080px;height:1920px;pointer-events:none" viewBox="0 0 1080 1920"><path id="fl7" d="M296 880 C296 960 784 900 784 990 M784 1170 C784 1250 296 1180 296 1260 M296 1440 C296 1520 784 1460 784 1530" fill="none" stroke="rgba(255,255,255,.5)" stroke-width="4" stroke-dasharray="10 12"/></svg>
+    <div class="c3 node in" style="left:64px;width:464px;top:690px;height:190px" data-t="20.95" data-ry="10"><div class="n">01</div><div class="t">Ask</div><div class="s">your agent + an app</div></div>
+    <div class="c3 node hl in" style="left:552px;width:464px;top:990px;height:180px" data-t="21.12" data-ry="-10"><div class="n">02 · REA</div><div class="t">Inspect &amp; trace</div><div class="s">CLI / MCP</div></div>
+    <div class="c3 node in" style="left:64px;width:464px;top:1260px;height:180px" data-t="22.66" data-ry="10"><div class="n">03</div><div class="t">Read evidence</div><div class="s">code · refs · unknowns</div></div>
+    <div class="c3 node in" style="left:552px;width:464px;top:1530px;height:180px" data-t="23.58" data-ry="-10"><div class="n">04</div><div class="t">Build it</div><div class="s">explain · implement · test</div></div>
+    <div class="c3 lite case in" style="left:552px;width:464px;top:690px;height:250px;background-image:url(sc0.jpg)" data-t="24.0" data-ry="-10"><div class="cap">case study · DX-Ball</div></div>
+    <div class="c3 lite case in" style="left:64px;width:464px;top:1500px;height:210px;background-image:url(sc1.jpg)" data-t="24.3" data-ry="10"><div class="cap">case study · Notion</div></div>
+  </section>
+
+  <!-- S8 one command -->
+  <section class="sc" id="s8">
+    <div class="L kick" style="top:250px" data-k="// set it up"></div>
+    <div class="L h" style="top:304px;font-size:118px">
+      <span class="ln"><span class="w" data-t="25.66">one</span><span class="w" data-t="25.98">command.</span></span>
+      <span class="ln soft"><span class="w" data-t="27.94">free.</span></span>
+      <span class="ln soft"><span class="w" data-t="28.3">open</span><span class="w" data-t="28.6">source.</span></span>
+    </div>
+    <div class="c3 in" style="left:64px;width:952px;top:690px;height:500px" data-t="25.5" data-ry="10" data-rx="6">
+      <div class="chrome"><i></i><i></i><i></i><div class="url">~ — zsh</div></div>
+      <div class="term"><div><span class="p">$ </span><span id="t8"></span><span class="tc" id="tc8"></span></div><div id="o8a" style="color:var(--mut)">? choose your agents</div><div id="o8b">  ✓ Claude Code   ✓ Cursor   ✓ Codex</div><div class="ok" id="o8c">✓ REA MCP server added</div><div id="o8d" style="color:var(--mut)">restart your agent. done.</div></div>
+    </div>
+    <div class="c3 in" style="left:64px;width:300px;top:1240px;height:130px;display:grid;place-items:center" data-t="27.96"><div style="font-size:40px;font-weight:900">$0</div></div>
+    <div class="c3 in" style="left:390px;width:300px;top:1240px;height:130px;display:grid;place-items:center" data-t="28.2"><div style="font-size:36px;font-weight:900">MIT</div></div>
+    <div class="c3 in" style="left:716px;width:300px;top:1240px;height:130px;display:grid;place-items:center" data-t="28.45"><div class="mono" style="font-size:28px;font-weight:800">local-first</div></div>
+  </section>
+
+  <!-- S9 comment -->
+  <section class="sc" id="s9">
+    <div class="L kick" style="top:250px" data-k="// want the link?"></div>
+    <div class="L h" style="top:304px">
+      <span class="ln" style="font-size:132px"><span class="w" data-t="29.34">Comment</span></span>
+      <span class="ln soft" style="font-size:190px;letter-spacing:-8px"><span class="w" data-t="29.74">GITMATE</span></span>
+    </div>
+    <div class="c3 cm in" style="left:64px;width:952px;top:690px;height:390px" data-t="29.3" data-ry="-10" data-rx="8">
+      <div class="lbl" style="margin-bottom:22px">comments</div>
+      <div class="rowc"><div class="av2"></div><div class="cin"><span id="t9" style="color:rgba(255,255,255,.4)">Add a comment…</span></div><div class="send" id="snd9">↑</div></div>
+      <div class="posted" id="pst9"><div class="av2" style="width:56px;height:56px"></div><div><div class="u">you <span class="lbl">· now</span></div><div class="c">GITMATE</div></div></div>
+    </div>
+    <div class="c3 lite dm in" style="left:300px;top:1150px;width:560px;height:130px" data-t="30.56" data-z="80"><small>git.mate · message</small>Here's your link, mate 🔗</div>
+  </section>
+
+  <!-- S10 profile -->
+  <section class="sc" id="s10">
+    <div class="L kick" style="top:250px" data-k="// see you tomorrow, mate"></div>
+    <div class="L h" style="top:304px;font-size:132px">
+      <span class="ln"><span class="w" data-t="31.86">Follow</span></span>
+      <span class="ln soft" style="font-size:92px;letter-spacing:-3px"><span class="w" data-t="32.3">1 repo</span><span class="w" data-t="32.86">every</span><span class="w" data-t="33.18">day.</span></span>
+    </div>
+    <div class="c3 prof in" style="left:64px;width:952px;top:600px;height:1000px" data-t="31.6" data-rx="6">
+      <div class="bead pfp">&gt;_</div>
+      <div class="pn">@git.mate</div>
+      <div class="pnm">git.mate | GitHub Repos Daily</div>
+      <div class="pbio">Your daily open-source mate 🤝<br>1 useful GitHub repo, every day</div>
+      <div class="pst"><span class="chip">open-source</span><span class="chip">free tools</span><span class="chip">daily</span></div>
+      <div class="fbtn" id="fb"><div class="ripple" id="rp"></div><span id="f1">Follow</span><span id="f2" style="opacity:0">Following ✓</span></div>
+    </div>
+    <svg class="hand" id="hand" viewBox="0 0 100 100" style="left:560px;top:1460px"><circle cx="50" cy="50" r="34" fill="rgba(255,255,255,.25)" stroke="#fff" stroke-width="5"/><circle cx="50" cy="50" r="12" fill="#fff"/></svg>
+  </section>
+  </div></div>
+
+  <div class="top"><div class="brand"><div class="bead">&gt;_</div>git.mate</div><div class="tag" id="tag"><b>01</b> / trending</div></div>
+  <div class="prog" id="prog"><i><b></b></i><i><b></b></i><i><b></b></i><i><b></b></i><i><b></b></i><i><b></b></i><i><b></b></i><i><b></b></i><i><b></b></i><i><b></b></i></div>
+  <div class="vig"></div><div class="grain"></div>
+</div>
+
+<script>
+(function () {
+  const S = [0, 3.8, 7.65, 11.2, 14.85, 17.5, 20.95, 25.66, 29.3, 31.55];
+  const TOTAL = 35.9; window.__TOTAL = TOTAL;
+  const LABEL = ['trending', 'meet rea', 'the idea', 'no source', 'agents', 'targets', 'workflow', 'setup', 'link', 'follow'];
+  const $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)];
+  const tl = gsap.timeline({ paused: true, defaults: { ease: 'power3.out' } });
+  const scenes = $$('.sc');
+  const R = 2400, STEP = 36;
+  // scenes sit on a ring; the camera orbits from one to the next
+  scenes.forEach((sc, i) => { sc.style.transform = `rotateY(${i * STEP}deg) translateZ(${R}px)`; });
+  const cam = { a: 0, d: 0, rx: 0, rz: 0 };
+  scenes.forEach((sc, i) => {
+    tl.set(sc, { visibility: 'visible' }, Math.max(0, S[i] - .62));
+    if (i < scenes.length - 1) tl.set(sc, { visibility: 'hidden' }, S[i + 1] + .45);
+    if (i) {
+      const t0 = S[i] - .58, dir = i % 2 ? 1 : -1;
+      tl.to(cam, { a: i * STEP, duration: 1.0, ease: 'power3.inOut' }, t0);
+      tl.to(cam, { keyframes: [{ d: 900, rx: 9 * dir, rz: 3 * dir, duration: .5, ease: 'power2.out' }, { d: 0, rx: 0, rz: 0, duration: .5, ease: 'power2.in' }] }, t0);
+    }
+  });
+  tl.set(scenes[0], { visibility: 'visible' }, 0);
+
+  $$('.h .w').forEach((w) => { const t = +w.dataset.t; if (!t) return;
+    tl.fromTo(w, { opacity: 0, y: 70, scale: 1.12, filter: 'blur(18px)' }, { opacity: 1, y: 0, scale: 1, filter: 'blur(0px)', duration: .55, ease: 'expo.out' }, t); });
+  scenes.forEach((sc, i) => { const k = $('.kick', sc), txt = k.dataset.k, o = { n: 0 }; k.textContent = i ? '' : txt; if (!i) return;
+    tl.fromTo(o, { n: 0 }, { n: txt.length, duration: Math.min(.7, txt.length * .025), ease: 'none', immediateRender: false, onUpdate: () => { k.textContent = txt.slice(0, Math.round(o.n)); } }, S[i] + .05); });
+  // 3D slabs fly in from depth and settle at their tilt
+  $$('.in').forEach((c) => {
+    const t = +c.dataset.t, rx = +(c.dataset.rx || 0), ry = +(c.dataset.ry || 0), z = +(c.dataset.z || 0);
+    const end = { opacity: 1, z, rotationX: rx, rotationY: ry, y: 0, duration: .9, ease: 'expo.out' };
+    if (!t) { gsap.set(c, end); return; }
+    tl.fromTo(c, { opacity: 0, z: -900, rotationX: rx + 40, rotationY: ry * 2, y: 120 }, end, t);
+  });
+  const typer = (el, text, t, d) => { const o = { n: 0 }; tl.fromTo(o, { n: 0 }, { n: text.length, duration: d, ease: 'none', immediateRender: false, onUpdate: () => { el.textContent = text.slice(0, Math.round(o.n)); } }, t); };
+  const pop = (sel, t) => tl.fromTo(sel, { opacity: 0, x: -20 }, { opacity: 1, x: 0, duration: .3 }, t);
+
+  // S1: #1 row lifts toward camera
+  tl.fromTo('#s1 .one', { z: 90 }, { z: 170, duration: .6, yoyo: true, repeat: 1, ease: 'sine.inOut' }, 1.3);
+  // S3: feature ring pulse
+  tl.fromTo('#rg3', { opacity: 0, scale: 1.2 }, { opacity: 1, scale: 1, duration: .4 }, 8.3);
+  tl.to('#rg3', { scale: 1.06, duration: .35, yoyo: true, repeat: 5, ease: 'sine.inOut' }, 8.7);
+  // S8 terminal
+  typer($('#t8'), 'npx rea-agents setup', 26.0, .6);
+  tl.set('#tc8', { opacity: 0 }, 26.65);
+  pop('#o8a', 26.75); pop('#o8b', 26.95); pop('#o8c', 27.25); pop('#o8d', 27.5);
+  // S9 comment flow
+  tl.call(() => { $('#t9').textContent = 'Add a comment…'; $('#t9').style.color = 'rgba(255,255,255,.4)'; }, null, 29.79);
+  tl.call(() => { $('#t9').style.color = '#fff'; }, null, 29.8);
+  typer($('#t9'), 'GITMATE', 29.8, .4);
+  tl.fromTo('#snd9', { scale: 1 }, { scale: .8, duration: .1, yoyo: true, repeat: 1 }, 30.25);
+  tl.fromTo('#pst9', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: .4 }, 30.35);
+  // S10 follow tap
+  tl.fromTo('#hand', { opacity: 0, x: 200, y: 160 }, { opacity: 1, x: 0, y: 0, duration: .5, ease: 'power2.out' }, 31.85);
+  tl.to('#hand', { scale: .82, duration: .1, yoyo: true, repeat: 1 }, 32.35);
+  tl.fromTo('#rp', { opacity: .9, scale: .2 }, { opacity: 0, scale: 5, duration: .6, ease: 'power2.out' }, 32.4);
+  tl.to('#f1', { opacity: 0, y: -30, duration: .2 }, 32.45);
+  tl.fromTo('#f2', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: .3 }, 32.5);
+  tl.to('#fb', { backgroundColor: '#1a1b1e', color: '#f5f6f7', boxShadow: '0 6px 0 #0b0c0e,0 0 0 2px rgba(255,255,255,.4)', duration: .3 }, 32.48);
+  tl.to('#hand', { opacity: 0, duration: .4 }, 33.0);
+  tl.to({}, { duration: .01 }, TOTAL);
+
+  const world = $('#world'), tag = $('#tag'), segs = $$('#prog b');
+  const tick = (t) => {
+    // slow handheld drift keeps the 3D alive between moves
+    const a = cam.a + Math.sin(t * .5) * .35, rx = cam.rx + Math.sin(t * .37 + 1) * .7, rz = cam.rz + Math.sin(t * .29) * .25;
+    world.style.transform = `translateZ(${-cam.d}px) rotateX(${rx}deg) rotateZ(${rz}deg) translateZ(${-R}px) rotateY(${-a}deg)`;
+    $('#sc4').style.top = (((t - 11.2) * 260) % 560 + 560) % 560 - 10 + 'px';
+    $('#tc8').style.visibility = (Math.floor(t * 3) % 2) ? 'hidden' : 'visible';
+    let si = 0; for (let i = 0; i < S.length; i++) if (t >= S[i] - .3) si = i;
+    tag.innerHTML = `<b>${String(si + 1).padStart(2, '0')}</b> / ${LABEL[si]}`;
+    segs.forEach((b, i) => { const e = i < S.length - 1 ? S[i + 1] : TOTAL - 2; b.style.width = Math.min(100, Math.max(0, (t - S[i]) / (e - S[i]) * 100)) + '%'; });
+  };
+  window.__tl = tl;
+  window.__seek = (t) => { tl.time(t, false); tick(t); };
+  window.__seek(0);
+  if (!navigator.webdriver) { const t0 = performance.now(); const loop = () => { window.__seek(((performance.now() - t0) / 1000) % TOTAL); requestAnimationFrame(loop); }; requestAnimationFrame(loop); }
+})();
+</script>
+</body></html>

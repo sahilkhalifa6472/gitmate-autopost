@@ -1,0 +1,545 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<title>git.mate sure</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter+Tight:wght@400;500;600;700;800;900&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<style>
+:root{--ink:#f5f6f7;--mut:rgba(235,238,242,.58);--dim:rgba(235,238,242,.32)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#000}
+.f{position:relative;width:1080px;height:1920px;overflow:hidden;background:radial-gradient(ellipse 120% 80% at 50% 40%,#0d0e11 0%,#040405 60%,#000 100%);color:var(--ink);font-family:'Inter Tight',sans-serif}
+.vig{position:absolute;inset:0;z-index:5;pointer-events:none;background:radial-gradient(ellipse 90% 70% at 50% 50%,transparent 50%,rgba(0,0,0,.7) 100%)}
+.grain{position:absolute;inset:0;opacity:.08;mix-blend-mode:overlay;z-index:8;pointer-events:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
+#stage{position:absolute;inset:0;perspective:2200px;perspective-origin:50% 46%;z-index:2}
+#world{position:absolute;left:0;top:0;width:1080px;height:1920px;transform-style:preserve-3d}
+.sc{position:absolute;left:0;top:0;width:1080px;height:1920px;transform-style:preserve-3d;backface-visibility:hidden;visibility:hidden}
+#s1{visibility:visible}
+.c3{position:absolute;border-radius:34px;overflow:hidden;background:linear-gradient(160deg,#1d1e22 0%,#121316 45%,#0b0c0e 100%);
+  box-shadow:inset 0 1.5px 0 rgba(255,255,255,.2),inset 0 0 0 1.5px rgba(255,255,255,.07),0 3px 0 #1b1c1f,0 6px 0 #16171a,0 9px 0 #111214,0 12px 0 #0c0d0f,0 60px 90px rgba(0,0,0,.75)}
+.c3.lite{background:linear-gradient(160deg,#f7f8f9,#d9dce0);color:#08090a;box-shadow:inset 0 2px 0 #fff,0 3px 0 #c3c6cb,0 6px 0 #aeb2b8,0 9px 0 #9a9ea4,0 12px 0 #868a90,0 60px 90px rgba(0,0,0,.7)}
+.bead{width:62px;height:62px;border-radius:50%;display:grid;place-items:center;font-family:'JetBrains Mono';font-weight:800;font-size:24px;color:#050505;flex:none;
+  background:radial-gradient(circle at 35% 28%,#fff 0 18%,#e4e6ea 45%,#9da1a8 100%);box-shadow:inset 0 -5px 10px rgba(0,0,0,.25),inset 0 3px 4px #fff,0 10px 24px rgba(0,0,0,.6)}
+.top{position:absolute;left:64px;right:64px;top:88px;height:90px;z-index:6}
+.brand{position:absolute;left:0;top:0;display:flex;align-items:center;gap:18px;padding:14px 30px 14px 14px;font-family:'JetBrains Mono';font-weight:700;font-size:30px;border-radius:999px;background:#0e0f11;box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 0 0 1.5px rgba(255,255,255,.1)}
+.tag{position:absolute;right:0;top:12px;padding:18px 30px;font-family:'JetBrains Mono';font-size:24px;color:var(--mut);white-space:nowrap;border-radius:999px;background:#0e0f11;box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 0 0 1.5px rgba(255,255,255,.08)}
+.tag b{color:var(--ink)}
+.prog{position:absolute;left:64px;right:64px;bottom:96px;display:flex;gap:10px;z-index:6}
+.prog i{flex:1;height:8px;border-radius:4px;background:rgba(255,255,255,.14);position:relative;overflow:hidden}
+.prog i b{position:absolute;left:0;top:0;bottom:0;width:0;background:#f2f3f5;border-radius:4px}
+.L{position:absolute;left:64px;right:64px}
+.kick{font-family:'JetBrains Mono';font-size:28px;color:var(--mut);letter-spacing:1px;white-space:pre;height:40px}
+.h{font-weight:900;letter-spacing:-5px;line-height:.92;text-transform:uppercase}
+.h .ln{display:block;white-space:nowrap}
+.h .w{display:inline-block;padding-bottom:.05em;margin-right:.2em;background-image:linear-gradient(180deg,#ffffff 0%,#f1f2f4 50%,#b4b8be 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.h .w:last-child{margin-right:0}
+.h .soft .w{background-image:linear-gradient(180deg,rgba(255,255,255,.62),rgba(255,255,255,.24))}
+.h .ser{font-family:'Instrument Serif';font-style:italic;font-weight:400;text-transform:none;letter-spacing:-2px}
+.lbl{font-family:'JetBrains Mono';font-size:22px;color:var(--mut)}
+.g{filter:grayscale(1) contrast(1.12)}
+.real{position:absolute;right:20px;top:18px;z-index:3;padding:7px 16px;border-radius:999px;font-family:'JetBrains Mono';font-weight:800;font-size:17px;background:#f2f3f5;color:#08090a}
+
+
+/* comment */
+.cm{padding:30px 34px}
+.rowc{display:flex;align-items:center;gap:20px}
+.av2{width:70px;height:70px;border-radius:50%;flex:none;background:radial-gradient(circle at 35% 28%,#5a5e64,#1b1d20);box-shadow:inset 0 0 0 2px rgba(255,255,255,.2)}
+.cin{flex:1;padding:20px 26px;border-radius:999px;font-size:32px;font-weight:700;background:rgba(255,255,255,.06);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.14)}
+.send{width:76px;height:76px;border-radius:50%;display:grid;place-items:center;background:#f2f3f5;color:#000;font-size:34px;font-weight:900;flex:none}
+.posted{display:flex;gap:20px;align-items:flex-start;margin-top:30px}
+.posted .u{font-weight:800;font-size:28px}
+.posted .c{font-size:34px;font-weight:800;margin-top:4px}
+.dm{padding:24px 30px;border-radius:32px 32px 32px 10px;font-size:32px;font-weight:700}
+.dm small{display:block;font-family:'JetBrains Mono';font-size:20px;color:#55595f;font-weight:500;margin-bottom:6px}
+.tap{position:absolute;width:96px;height:96px;opacity:0;z-index:4}
+/* end */
+.erings{position:absolute;left:290px;top:420px;width:500px;height:500px}
+.bigmk{position:absolute;left:390px;top:520px;width:300px;height:300px;font-size:110px;letter-spacing:-6px}
+.hnd{position:absolute;left:0;right:0;top:1000px;text-align:center;font-family:'JetBrains Mono';font-weight:800;font-size:92px;white-space:pre;height:120px}
+.fol{position:absolute;left:280px;top:1390px;width:520px;height:132px;border-radius:999px;display:grid;place-items:center;font-size:52px;font-weight:900;background:linear-gradient(180deg,#fbfbfc,#d4d7db);color:#08090a;box-shadow:0 6px 0 #9a9ea4,0 20px 60px rgba(255,255,255,.16)}
+.fol2{position:absolute;left:280px;top:1390px;width:520px;height:132px;border-radius:999px;display:grid;place-items:center;font-size:52px;font-weight:900;background:#101114;color:#f5f6f7;box-shadow:inset 0 0 0 3px rgba(255,255,255,.7);opacity:0}
+.erip{position:absolute;left:540px;top:1456px;border-radius:50%;border:4px solid rgba(255,255,255,.8);opacity:0}
+
+/* S1 tombstone + statement */
+.ground{position:absolute;left:140px;top:1118px;width:800px;height:60px;border-radius:50%;background:radial-gradient(ellipse at 50% 50%,rgba(255,255,255,.14),transparent 70%)}
+.tomb{position:absolute;left:330px;top:600px;width:420px;height:520px;border-radius:210px 210px 22px 22px;transform-origin:50% 100%;
+  background:linear-gradient(170deg,#3b3e43 0%,#24262a 40%,#141518 100%);
+  box-shadow:inset 0 2px 0 rgba(255,255,255,.25),inset 0 0 0 2px rgba(255,255,255,.08),4px 4px 0 #1c1d20,8px 8px 0 #17181b,12px 12px 0 #121315,16px 16px 0 #0d0e10,0 60px 90px rgba(0,0,0,.8)}
+.tomb .ml{position:absolute;left:135px;top:70px;width:150px;height:150px;border-radius:34px;overflow:hidden;box-shadow:0 0 0 3px rgba(255,255,255,.25)}
+.tomb .ml img{width:100%;height:100%;display:block}
+.tomb .rip{position:absolute;left:0;right:0;top:250px;text-align:center;font-family:'Instrument Serif';font-style:italic;font-size:96px;color:#d8dadd;text-shadow:0 -2px 0 #000,0 2px 0 rgba(255,255,255,.18)}
+.tomb .nm{position:absolute;left:0;right:0;top:380px;text-align:center;font-family:'JetBrains Mono';font-weight:800;font-size:30px;letter-spacing:8px;color:#9da1a8}
+.crack{position:absolute;left:0;top:0;width:420px;height:520px}
+.stm{left:64px;top:1200px;width:952px;height:430px;padding:22px 30px}
+.stm .sh{display:flex;justify-content:space-between;font-family:'JetBrains Mono';font-weight:800;font-size:20px;color:var(--mut);letter-spacing:2px;height:40px;border-bottom:1.5px solid rgba(255,255,255,.1)}
+.srow{position:absolute;left:30px;right:30px;height:74px;display:flex;align-items:center;font-family:'JetBrains Mono';font-weight:700;font-size:27px;white-space:nowrap;border-bottom:1.5px dashed rgba(255,255,255,.09)}
+.srow .am{margin-left:auto;font-weight:800}
+.srow .rc{margin-left:18px;padding:5px 12px;border-radius:8px;font-size:17px;font-weight:800;color:#08090a;background:#e9ebee}
+.stot{position:absolute;right:30px;bottom:22px;font-weight:900;font-size:40px;letter-spacing:-1px;white-space:nowrap}
+.stot small{font-family:'JetBrains Mono';font-size:20px;color:var(--mut);font-weight:700;letter-spacing:1px;margin-right:14px}
+
+/* S2 coin + price strike */
+.coinw{position:absolute;left:340px;top:600px;width:400px;height:400px;perspective:1800px}
+.coin{position:absolute;left:0;top:0;width:400px;height:400px;transform-style:preserve-3d}
+.coin .ly{position:absolute;inset:0;border-radius:50%;background:linear-gradient(160deg,#6c7077,#3a3d42);backface-visibility:visible}
+.coin .face{position:absolute;inset:0;border-radius:50%;display:grid;place-items:center;
+  background:radial-gradient(circle at 34% 26%,#ffffff 0 14%,#e3e5e9 40%,#a3a7ad 100%);box-shadow:inset 0 0 0 14px rgba(0,0,0,.08),inset 0 0 0 18px rgba(255,255,255,.5),inset 0 -10px 24px rgba(0,0,0,.25)}
+.coin .face.bk{background:radial-gradient(circle at 34% 26%,#f4f5f7 0 14%,#cfd2d6 40%,#8e9298 100%)}
+.coin .face .zz{font-family:'Inter Tight';font-weight:900;font-size:120px;color:#0b0c0e;letter-spacing:-6px}
+.cshadow{position:absolute;left:390px;top:1030px;width:300px;height:40px;border-radius:50%;background:radial-gradient(ellipse,rgba(255,255,255,.16),transparent 70%)}
+.price{position:absolute;left:64px;top:1110px;width:952px;height:200px;display:flex;align-items:center;justify-content:center;gap:56px}
+.old{position:relative;font-weight:900;font-size:96px;letter-spacing:-3px;color:#6b6f75;white-space:nowrap}
+.old small{font-size:44px;letter-spacing:-1px}
+.old svg{position:absolute;left:-14px;top:10px;width:calc(100% + 28px);height:100px;overflow:visible}
+.zero{position:relative;width:300px;height:170px;border-radius:30px;display:grid;place-items:center;font-weight:900;font-size:110px;letter-spacing:-4px}
+.chips{position:absolute;left:64px;right:64px;top:1390px;height:60px;text-align:center;font-family:'JetBrains Mono';font-weight:800;font-size:28px;color:var(--mut);white-space:pre}
+
+/* S3 exploded dashboard */
+.slab{position:absolute;left:64px;top:600px;width:952px;height:617px;transform-style:preserve-3d}
+.slab .base{position:absolute;inset:0;border-radius:20px;overflow:hidden;box-shadow:0 0 0 1.5px rgba(255,255,255,.22),0 4px 0 #3a3c40,0 8px 0 #2a2c30,0 12px 0 #1d1f22,0 60px 90px rgba(0,0,0,.8)}
+.slab .base img{width:100%;height:100%;display:block}
+.slab .dim{position:absolute;inset:0;background:#000;opacity:0;border-radius:20px}
+.pp{position:absolute;border-radius:12px;overflow:hidden;box-shadow:0 0 0 2px rgba(255,255,255,.55),0 30px 50px rgba(0,0,0,.85)}
+.pp img{width:100%;height:100%;display:block}
+.pp b{position:absolute;left:10px;top:10px;padding:4px 10px;border-radius:8px;background:#f2f3f5;color:#08090a;font-family:'JetBrains Mono';font-size:14px;font-weight:800}
+.nwn{position:absolute;left:64px;right:64px;top:1300px;height:130px;text-align:center;font-weight:900;font-size:120px;letter-spacing:-4px;white-space:nowrap}
+.nwl{position:absolute;left:64px;right:64px;top:1450px;height:40px;text-align:center;font-family:'JetBrains Mono';font-weight:800;font-size:24px;color:var(--mut);white-space:pre}
+
+/* S4 cards + budget bars */
+.accs{position:absolute;left:64px;top:600px;width:952px;height:300px;perspective:1800px}
+.acc{position:absolute;top:30px;width:290px;height:182px;border-radius:22px;padding:22px 24px;transform-origin:50% 100%;font-family:'JetBrains Mono';font-weight:800}
+.acc .an{font-size:22px;letter-spacing:2px}
+.acc .ab{position:absolute;left:24px;bottom:20px;font-family:'Inter Tight';font-weight:900;font-size:40px;letter-spacing:-1px}
+.acc .chip{position:absolute;right:24px;top:22px;width:46px;height:34px;border-radius:7px;background:linear-gradient(135deg,#d9dce0,#8e9298)}
+.acc .num{position:absolute;left:24px;top:64px;font-size:20px;color:var(--mut)}
+.acc.lite .num{color:#55595f}
+.sync{position:absolute;left:64px;right:64px;top:880px;height:40px;text-align:center;font-family:'JetBrains Mono';font-weight:800;font-size:24px;color:var(--mut);white-space:pre}
+.bars{position:absolute;left:64px;top:950px;width:952px;height:560px;perspective:1600px;perspective-origin:50% 0%}
+.bar{position:absolute;bottom:90px;width:150px;transform-style:preserve-3d;transform:rotateX(-14deg) rotateY(-24deg)}
+.bar .fc{position:absolute;left:0;top:0;backface-visibility:hidden}
+.bar .fr{background:linear-gradient(180deg,#e9ebee,#9ea2a8)}
+.bar .sd{background:linear-gradient(180deg,#6b6f75,#3a3d42)}
+.bar .tp{background:#ffffff}
+.bar.dk .fr{background:linear-gradient(180deg,#3a3d42,#1c1d20);box-shadow:inset 0 0 0 2px rgba(255,255,255,.2)}
+.bar.dk .sd{background:#141518}
+.bar.dk .tp{background:#55595f}
+.blb{position:absolute;bottom:20px;width:200px;text-align:center;font-family:'JetBrains Mono';font-weight:800;font-size:22px;color:var(--mut);white-space:nowrap}
+.bpc{position:absolute;width:200px;text-align:center;font-weight:900;font-size:40px;white-space:nowrap}
+.inv{position:absolute;left:0;top:0;width:952px;height:470px;overflow:visible}
+
+/* S5 csv import + AI */
+.csv{left:64px;top:610px;width:380px;height:300px;padding:26px 28px;clip-path:polygon(0 0,80% 0,100% 20%,100% 100%,0 100%)}
+.csv .fn{font-family:'JetBrains Mono';font-weight:800;font-size:24px}
+.csv .cl{font-family:'JetBrains Mono';font-size:18px;line-height:30px;color:#55595f;margin-top:16px;white-space:pre}
+.dog{position:absolute;left:368px;top:610px;width:76px;height:60px;background:linear-gradient(225deg,transparent 50%,#9da1a8 50%);border-radius:0 0 0 10px}
+.beam{position:absolute;left:470px;top:740px;width:120px;height:40px}
+.txs{position:absolute;left:600px;top:600px;width:416px;height:330px}
+.tx{position:absolute;left:0;width:416px;height:66px;border-radius:16px;display:flex;align-items:center;gap:14px;padding:0 20px;font-family:'JetBrains Mono';font-weight:700;font-size:22px;white-space:nowrap}
+.tx .dt{color:var(--mut);font-size:18px}
+.tx .am{margin-left:auto;font-weight:800}
+.aiw{position:absolute;left:290px;top:990px;width:500px;height:717px;transform-style:preserve-3d}
+.aiw .pnl{position:absolute;left:0;top:0;width:500px;height:717px;border-radius:24px;overflow:hidden;box-shadow:0 0 0 1.5px rgba(255,255,255,.25),0 4px 0 #3a3c40,0 8px 0 #2a2c30,0 50px 80px rgba(0,0,0,.85)}
+.aiw .pnl img{width:100%;height:100%;display:block}
+.aiw .scan{position:absolute;left:0;right:0;height:140px;background:linear-gradient(180deg,transparent,rgba(255,255,255,.18),transparent)}
+
+/* S6 vault */
+.cnt6{position:absolute;left:64px;right:64px;top:590px;height:140px;text-align:center;font-weight:900;font-size:128px;letter-spacing:-5px;white-space:nowrap}
+.alm{position:absolute;left:64px;right:64px;top:740px;height:40px;text-align:center;font-family:'JetBrains Mono';font-weight:800;font-size:24px;color:var(--mut);white-space:pre}
+.vaultw{position:absolute;left:250px;top:820px;width:580px;height:580px;transform-style:preserve-3d}
+.frame6{position:absolute;inset:-22px;border-radius:50%;background:linear-gradient(160deg,#2a2c30,#0b0c0e);box-shadow:inset 0 0 0 3px rgba(255,255,255,.14),inset 0 30px 60px rgba(0,0,0,.9)}
+.behind{position:absolute;inset:30px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;background:radial-gradient(circle,#f5f6f7 0%,#c9ccd1 70%,#8e9298 100%);color:#08090a}
+.behind .oc{font-family:'JetBrains Mono';font-weight:800;font-size:76px;letter-spacing:-2px}
+.behind .os{font-weight:900;font-size:50px;letter-spacing:-1px}
+.behind .ou{font-family:'JetBrains Mono';font-size:20px;font-weight:700;color:#3a3d42}
+.door{position:absolute;inset:0;border-radius:50%;transform-origin:0% 50%;transform-style:preserve-3d;
+  background:radial-gradient(circle at 38% 30%,#4a4d53 0%,#2a2c30 45%,#16171a 100%);
+  box-shadow:inset 0 2px 0 rgba(255,255,255,.3),inset 0 0 0 10px rgba(255,255,255,.05),inset 0 0 0 12px rgba(0,0,0,.6),inset 0 0 0 40px rgba(255,255,255,.03)}
+.door .bolt{position:absolute;width:30px;height:30px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#e9ebee,#6b6f75);box-shadow:0 3px 0 #111}
+.door .wheel{position:absolute;left:150px;top:150px;width:280px;height:280px}
+.door .lk{position:absolute;left:236px;top:236px;width:108px;height:108px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#f5f6f7,#8e9298);box-shadow:0 6px 0 #222}
+.door .thick{position:absolute;inset:0;border-radius:50%;background:#0b0c0e;transform:translateZ(-26px)}
+.story{position:absolute;left:64px;right:64px;top:1470px;height:40px;text-align:center;font-family:'JetBrains Mono';font-weight:800;font-size:26px;color:var(--mut);white-space:pre}
+
+/* S7 setup: yaml + terminal + server box */
+.yw{left:64px;top:600px;width:952px;height:470px;padding:22px 30px}
+.yw .yh{display:flex;align-items:center;gap:12px;height:40px;font-family:'JetBrains Mono';font-weight:800;font-size:22px;color:#55595f}
+.yw .yh i{width:14px;height:14px;border-radius:50%;background:#b9bcc1}
+.yl{font-family:'JetBrains Mono';font-weight:700;font-size:28px;color:#08090a;height:46px;white-space:pre;display:flex;align-items:center}
+.yl .n{width:44px;color:#9a9ea4;font-size:19px}
+.yl .k{color:#6b6f75}
+.tm7{left:64px;top:1110px;width:952px;height:110px;display:flex;align-items:center;gap:20px;padding:0 32px;font-family:'JetBrains Mono';font-size:40px;font-weight:800}
+.tm7 .pr{color:var(--mut)}
+.srv{position:absolute;left:330px;top:1290px;width:420px;height:300px;perspective:1600px}
+.cub{position:absolute;left:0;top:0;transform-style:preserve-3d}
+.cub .fc{position:absolute;left:0;top:0;backface-visibility:hidden}
+.srv .fr{background:linear-gradient(180deg,#2a2c30,#141518);box-shadow:inset 0 0 0 2px rgba(255,255,255,.18)}
+.srv .sd{background:linear-gradient(180deg,#141518,#0a0b0c);box-shadow:inset 0 0 0 2px rgba(255,255,255,.08)}
+.srv .tp{background:linear-gradient(180deg,#4a4d53,#2a2c30);box-shadow:inset 0 0 0 2px rgba(255,255,255,.2)}
+.slot7{position:absolute;left:24px;right:24px;height:26px;border-radius:6px;background:#0a0b0c;box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.12);display:flex;align-items:center;gap:8px;padding:0 10px}
+.slot7 i{width:9px;height:9px;border-radius:50%;background:#55595f}
+.pad{position:absolute;left:470px;top:1230px;width:140px;height:170px}
+.lbl7{position:absolute;left:64px;right:64px;top:1650px;height:40px;text-align:center;font-family:'JetBrains Mono';font-weight:800;font-size:26px;color:var(--mut);white-space:pre}
+
+/* S8 stars */
+.ghs{position:absolute;left:64px;top:600px;width:952px;height:614px;border-radius:22px;overflow:hidden;box-shadow:0 0 0 1.5px rgba(255,255,255,.22),0 4px 0 #3a3c40,0 8px 0 #2a2c30,0 12px 0 #1d1f22,0 60px 90px rgba(0,0,0,.8)}
+.ghs img{width:100%;height:100%;display:block}
+.ring8{position:absolute;left:838px;top:101px;width:98px;height:38px;border-radius:14px;box-shadow:0 0 0 4px #fff,0 0 30px 6px rgba(255,255,255,.4);opacity:0}
+.starw{position:absolute;left:64px;top:1290px;width:952px;height:300px;display:flex;align-items:center;justify-content:center;gap:40px}
+.starw svg{width:230px;height:230px;flex:none;overflow:visible}
+.stn{font-weight:900;font-size:150px;letter-spacing:-6px;white-space:nowrap;width:470px}
+.stl{position:absolute;left:64px;right:64px;top:1620px;height:40px;text-align:center;font-family:'JetBrains Mono';font-weight:800;font-size:26px;color:var(--mut);white-space:pre}
+
+</style></head><body>
+<div id="LOGO" style="display:none"><svg xmlns="http://www.w3.org/2000/svg" width="190" height="172" viewBox="0 0 160 145" fill="none" xmlns:c2pa="http://c2pa.org/manifest"><path d="M116.51 119.37C120.062 119.37 122.809 118.751 124.752 117.513C126.696 116.274 127.701 114.58 127.768 112.429L158.828 122.303C157.621 126.409 155.042 130.156 151.088 133.545C147.201 136.869 142.276 139.509 136.312 141.464C130.348 143.419 123.68 144.397 116.309 144.397C110.01 144.397 104.113 143.712 98.6179 142.344C93.19 140.975 88.3986 138.922 84.2439 136.185C80.1562 133.382 76.9397 129.896 74.5943 125.725C72.2489 121.553 71.0762 116.698 71.0762 111.158C71.0762 105.618 72.2489 100.763 74.5943 96.5919C76.9397 92.4208 80.1562 88.9666 84.2439 86.2293C88.3986 83.4268 93.2234 81.3412 98.7184 79.9726C104.213 78.6039 110.077 77.9196 116.309 77.9196C122.675 77.9196 128.505 78.6039 133.799 79.9726C139.16 81.3412 143.75 83.4594 147.57 86.327C151.456 89.1295 154.438 92.714 156.516 97.0807C158.66 101.382 159.732 106.498 159.732 112.429H104.95C104.95 112.429 104.917 112.429 104.85 112.429C104.85 112.429 104.85 112.462 104.85 112.527C104.85 113.504 105.118 114.417 105.654 115.264C106.19 116.111 106.927 116.861 107.865 117.513C108.871 118.099 110.077 118.555 111.484 118.881C112.958 119.207 114.634 119.37 116.51 119.37ZM116.309 102.653C113.025 102.653 110.311 103.24 108.167 104.413C106.023 105.521 104.95 107.117 104.95 109.203C104.95 109.268 104.95 109.333 104.95 109.399C105.017 109.399 105.051 109.399 105.051 109.399H127.466C127.533 109.399 127.567 109.399 127.567 109.399C127.567 109.333 127.567 109.268 127.567 109.203C127.567 108.16 127.265 107.248 126.662 106.466C126.126 105.618 125.355 104.934 124.35 104.413C123.345 103.826 122.139 103.403 120.732 103.142C119.391 102.816 117.917 102.653 116.309 102.653Z" fill="#0b0c0e"/><path d="M37.5666 81.9011C37.5666 85.8115 37.5666 89.7546 37.5666 93.7301C37.5666 97.6406 37.5666 101.584 37.5666 105.559C37.5666 109.47 37.5666 113.413 37.5666 117.388C37.5666 121.559 37.5666 125.73 37.5666 129.902C37.5666 134.073 37.5666 138.276 37.5666 142.513H2.74774C2.74774 136.06 2.74774 129.608 2.74774 123.156C2.74774 116.704 2.74774 110.252 2.74774 103.799C2.74774 100.15 2.74774 96.5 2.74774 92.8503C2.74774 89.2006 2.74774 85.5508 2.74774 81.9011H37.5666ZM37.466 119.246L42.9001 92.9481C43.5039 90.1456 44.678 87.8319 46.4222 86.0071C48.2336 84.117 50.3469 82.6832 52.7621 81.7056C55.1773 80.728 57.6596 80.1414 60.2089 79.9459C62.7583 79.6852 65.1063 79.783 67.2532 80.2392C69.4 80.6302 71.1108 81.3146 72.3854 82.2922L64.7374 118.659C62.7918 117.095 60.4102 116.02 57.5925 115.433C54.8418 114.846 52.0577 114.651 49.24 114.846C46.4223 114.977 43.94 115.433 41.7932 116.215C39.6463 116.997 38.2039 118.007 37.466 119.246Z" fill="#0b0c0e"/><path d="M155.301 0.291725C155.301 4.65836 155.301 20.0576 155.301 24.4894C155.301 28.9212 155.301 33.353 155.301 37.7848C155.301 41.5649 155.301 45.3776 155.301 49.2228C155.301 53.0029 155.301 56.783 155.301 60.563C155.301 64.3431 155.301 68.1232 155.301 71.9033H121.476C121.476 69.166 121.476 66.3961 121.476 63.5936C121.476 60.7912 121.476 57.9887 121.476 55.1862C121.476 52.3186 121.476 49.5487 121.476 46.8766C121.476 40.8154 121.476 34.8846 121.476 29.0841C121.476 23.2185 121.476 6.28771 121.476 0.291725H155.301ZM111.113 5.29173C111.113 8.74593 111.113 18.2327 111.113 21.7521C111.113 25.2063 111.113 28.6605 111.113 32.1147C111.113 35.5689 111.113 39.0557 111.113 42.5751C111.113 44.0089 111.341 45.182 111.798 46.0945C112.319 46.9417 112.971 47.5609 113.753 47.9519C114.6 48.2778 115.48 48.4407 116.392 48.4407C117.305 48.4407 118.217 48.2778 119.13 47.9519C120.107 47.6261 120.889 47.235 121.476 46.7788L113.655 70.9257C111.83 71.8381 109.582 72.5876 106.909 73.1742C104.303 73.7607 101.565 74.054 98.6976 74.054C96.0906 74.054 93.5163 73.7281 90.9745 73.0764C88.4327 72.4898 86.1191 71.4796 84.0335 70.0458C82.0131 68.612 80.3838 66.722 79.1455 64.3757C77.9072 62.0295 77.288 59.0966 77.288 55.5773C77.288 50.8848 77.288 46.1922 77.288 41.4997C77.288 36.8072 77.288 32.1147 77.288 27.4222C77.288 24.7501 77.288 22.078 77.288 19.4058C77.288 16.6686 77.288 7.96384 77.288 5.29173H111.113Z" fill="#0b0c0e"/><path d="M0.698853 30.6484C0.698853 26.9335 1.74163 23.7074 3.82719 20.9701C5.97792 18.2328 8.87815 15.9517 12.5279 14.1269C16.1776 12.2368 20.3161 10.8356 24.9435 9.92315C29.5708 9.01072 34.3937 8.5545 39.412 8.5545C45.6035 8.5545 51.3388 9.10848 56.6179 10.2164C61.9621 11.3244 66.785 12.7908 71.0864 14.6157V37.2961C69.2616 35.9275 66.8502 34.7543 63.8522 33.7767C60.9194 32.7991 57.791 32.0496 54.4672 31.5282C51.2085 31.0068 48.1127 30.7461 45.1799 30.7461C43.2247 30.7461 41.4324 30.8765 39.8031 31.1372C38.2389 31.3327 36.968 31.6586 35.9904 32.1148C35.078 32.571 34.6218 33.1576 34.6218 33.8745C34.6218 34.2655 34.7521 34.5588 35.0128 34.7543C35.3387 34.9499 35.7949 35.0802 36.3815 35.1454C36.968 35.2105 37.7175 35.2431 38.63 35.2431C40.1289 35.2431 41.465 35.2431 42.6381 35.2431C43.8113 35.2431 45.1147 35.2431 46.5486 35.2431C49.8072 35.2431 53.0659 35.4712 56.3246 35.9275C59.6485 36.3185 62.6465 37.1332 65.3186 38.3715C68.0559 39.6098 70.2392 41.402 71.8685 43.7483C73.4979 46.0294 74.3125 49.06 74.3125 52.84C74.3125 56.8156 73.2046 60.2047 70.9887 63.0071C68.838 65.7444 65.8726 67.9929 62.0925 69.7526C58.3776 71.4471 54.1739 72.6854 49.4814 73.4675C44.854 74.2496 40.0312 74.6406 35.0128 74.6406C29.082 74.6406 23.2164 74.0867 17.4159 72.9787C11.6806 71.8708 6.76001 70.2414 2.65406 68.0907V44.2371C4.28341 45.9968 6.59707 47.4632 9.59506 48.6363C12.6582 49.7443 15.9495 50.5915 19.4689 51.1781C23.0534 51.6995 26.4099 51.9602 29.5382 51.9602C31.5586 51.9602 33.3835 51.8624 35.0128 51.6669C36.6421 51.4062 37.913 51.0478 38.8255 50.5915C39.8031 50.0701 40.2919 49.4184 40.2919 48.6363C40.2919 48.3105 40.1941 48.0823 39.9986 47.952C39.8031 47.8217 39.4772 47.7239 39.021 47.6587C38.63 47.5936 38.076 47.561 37.3591 47.561C36.3815 47.561 35.3713 47.561 34.3285 47.561C33.2857 47.561 32.3407 47.561 31.4934 47.561C29.2123 47.561 26.6706 47.4958 23.8681 47.3654C21.1308 47.1699 18.3935 46.8115 15.6562 46.2901C12.9189 45.7035 10.4097 44.8237 8.12865 43.6505C5.91275 42.4122 4.12047 40.7503 2.75182 38.6648C1.38318 36.514 0.698853 33.8419 0.698853 30.6484Z" fill="#0b0c0e"/><metadata><c2pa:manifest>AAAWgmp1bWIAAAAeanVtZGMycGEAEQAQgAAAqgA4m3EDYzJwYQAAABZcanVtYgAAAEdqdW1kYzJtYQARABCAAACqADibcQN1cm46YzJwYToxZjAxZjQ3Yi0wYTkyLTRhZGQtOGQ4ZC1jM2RlM2FlYjUyNTMAAAADl2p1bWIAAAApanVtZGMyYXMAEQAQgAAAqgA4m3EDYzJwYS5hc3NlcnRpb25zAAAAALxqdW1iAAAARGp1bWRjYm9yABEAEIAAAKoAOJtxE2MycGEuaW5ncmVkaWVudC52MwAAAAAYYzJzaJluxXKae5TdXJ8Csr9bBYgAAABwY2JvcqNpZGM6Zm9ybWF0bWltYWdlL3N2Zyt4bWxqaW5zdGFuY2VJRHgseG1wOmlpZDoxMDVhNzU1Yi1kMTkwLTQzMzgtYTcwNy1lYzc3ZmIzZmEwZWFscmVsYXRpb25zaGlwaHBhcmVudE9mAAAB4mp1bWIAAABBanVtZGNib3IAEQAQgAAAqgA4m3ETYzJwYS5hY3Rpb25zLnYyAAAAABhjMnNoQ9gsM/k0nYZ7ba1EBfzg3QAAAZljYm9yomdhY3Rpb25zgqJmYWN0aW9ua2MycGEub3BlbmVkanBhcmFtZXRlcnOha2luZ3JlZGllbnRzgaJjdXJseC1zZWxmI2p1bWJmPWMycGEuYXNzZXJ0aW9ucy9jMnBhLmluZ3JlZGllbnQudjNkaGFzaFggzjwuIjkqhnVnkKes4UlIF571LWV2li4xTrQoLZJ1WBakZmFjdGlvbngdY29tLmFudGhyb3BpYy5jbGF1ZGUucHJvdmlkZWRqcGFyYW1ldGVyc6F4H2NvbS5hbnRocm9waWMub3JpZ2luLWNvbmZpZGVuY2VndW5rbm93bmtkZXNjcmlwdGlvbnhmQ2xhdWRlIHByb3ZpZGVkIHRoaXMgZmlsZSBhdCB0aGUgcmVxdWVzdCBvZiBhIHVzZXIgYW5kIG1heSBoYXZlIGNyZWF0ZWQgb3IgbW9kaWZpZWQgdGhlIGZpbGUgY29udGVudHMubXNvZnR3YXJlQWdlbnShZG5hbWVmQ2xhdWRlcmFsbEFjdGlvbnNJbmNsdWRlZPUAAADIanVtYgAAAEBqdW1kY2JvcgARABCAAACqADibcRNjMnBhLmhhc2guZGF0YQAAAAAYYzJzaPQ2MXTHJfnptD57Wlg5VkQAAACAY2JvcqVjYWxnZnNoYTI1NmNwYWRMAAAAAAAAAAAAAAAAZGhhc2hYIBqXfcl5ayRGyv6vh4CgdxJDxcWm/KuFKzNq01rBUGhkZG5hbWVuanVtYmYgbWFuaWZlc3RqZXhjbHVzaW9uc4GiZXN0YXJ0GRh5Zmxlbmd0aBkeBAAAAj5qdW1iAAAAJ2p1bWRjMmNsABEAEIAAAKoAOJtxA2MycGEuY2xhaW0udjIAAAACD2Nib3KlY2FsZ2ZzaGEyNTZpc2lnbmF0dXJleE1zZWxmI2p1bWJmPS9jMnBhL3VybjpjMnBhOjFmMDFmNDdiLTBhOTItNGFkZC04ZDhkLWMzZGUzYWViNTI1My9jMnBhLnNpZ25hdHVyZWppbnN0YW5jZUlEeCx4bXA6aWlkOjQ5MzQ3NWU4LWJiMGQtNDVlYi04MjJhLTU5OGUzMTljYmM1OXJjcmVhdGVkX2Fzc2VydGlvbnODomN1cmx4LXNlbGYjanVtYmY9YzJwYS5hc3NlcnRpb25zL2MycGEuaW5ncmVkaWVudC52M2RoYXNoWCDOPC4iOSqGdWeQp6zhSUgXnvUtZXaWLjFOtCgtknVYFqJjdXJseCpzZWxmI2p1bWJmPWMycGEuYXNzZXJ0aW9ucy9jMnBhLmFjdGlvbnMudjJkaGFzaFggZMBkmFamNQhmd6NkD1J/H05Goa0zvx0KLF8E8/OXomCiY3VybHgpc2VsZiNqdW1iZj1jMnBhLmFzc2VydGlvbnMvYzJwYS5oYXNoLmRhdGFkaGFzaFggMr729XhfjBLJJ3byFx/4n6OaCbk4D2/rEyK1EsPjPD90Y2xhaW1fZ2VuZXJhdG9yX2luZm+jZG5hbWVvQW50aHJvcGljIEZpbGVzZ3ZlcnNpb25lMS4wLjBrc3BlY1ZlcnNpb25lMi40LjAAABA4anVtYgAAAChqdW1kYzJjcwARABCAAACqADibcQNjMnBhLnNpZ25hdHVyZQAAABAIY2JvctKEWQISogEmGCFZAgowggIGMIIBjaADAgECAhRA5aAK7sI50L64g/oGQgU9Z1UTADAKBggqhkjOPQQDAzBJMRcwFQYDVQQKEw5BbnRocm9waWMsIFBCQzEuMCwGA1UEAxMlQW50aHJvcGljIENvbnRlbnQgQ3JlZGVudGlhbHMgUm9vdCBDQTAeFw0yNjA4MDcxODQzNTZaFw0yODA4MDYxOTQzNTZaMEQxFzAVBgNVBAoTDkFudGhyb3BpYywgUEJDMSkwJwYDVQQDEyBBbnRocm9waWMgQ2xhdWRlIENvbnRlbnQgU2lnbmluZzBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABJh6CmvLUBgFFNU0vUKlOVtE6djd17L5SuwX0LemFisBM3dkd/3cyjxFA3Qo5S46fX0/ihY0VZ7mfb9KF703t5OjWDBWMA4GA1UdDwEB/wQEAwIHgDAVBgNVHSUEDjAMBgorBgEEAYPoXgIBMAwGA1UdEwEB/wQCMAAwHwYDVR0jBBgwFoAUzlHiBIFOZFsj+OPEz5o+nMHXXMIwCgYIKoZIzj0EAwMDZwAwZAIwMXMdFJ4BetLLVY7ORuE9noqbbAZOZn/aArXyTwFAZfKrPzxF2vPoJNf1+UCdg1XGAjBwX1zd9WGqYkqmL5SFqw1QySjr1zJfpJM9+1rdDwSPLMOPOjKuiXjoU/pUUeG9RwmhY3BhZFkNngAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPZYQCxKMFb4xXSQ1dXw504HFgz9FEmZ2kgjC7rYzGUu/xGBCxJ74ir4CRIX4rtg/mDrChL6LojD3M5BaAUAFwN9tyQ=</c2pa:manifest></metadata></svg></div>
+<div class="f" id="F">
+ <div id="stage"><div id="world">
+
+  <!-- S1 hook: tombstone + subscription statement -->
+  <section class="sc" id="s1">
+    <div class="L kick" style="top:250px" data-k="// budgeting in 2026"></div>
+    <div class="L h" style="top:304px">
+      <span class="ln" style="font-size:100px"><span class="w" data-t="0.16">Mint</span><span class="w" data-t="0.48">shut</span><span class="w" data-t="0.8">down.</span></span>
+      <span class="ln soft" style="font-size:118px"><span class="w ser" data-t="2.9">now pay monthly?</span></span>
+    </div>
+    <div class="ground"></div>
+    <div class="tomb" id="tomb"><div class="ml"><img class="g" src="media/mint_g.png"></div><div class="rip">R.I.P.</div><div class="nm">MINT</div>
+      <svg class="crack" viewBox="0 0 420 520"><path id="crk" d="M300 60 L270 130 L300 175 L250 250 L275 300 L230 380" fill="none" stroke="#050505" stroke-width="5" stroke-linecap="round" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1"/></svg></div>
+    <div class="c3 stm in" data-t="1.6" data-rx="12">
+      <div class="sh"><span>BANK STATEMENT · CARD ••4021</span><span>MONTHLY</span></div>
+      <div id="srows"></div>
+      <div class="stot" id="stot"><small>EVERY MONTH</small>−$0.00</div>
+    </div>
+  </section>
+
+  <!-- S2 meet: coin + price strike -->
+  <section class="sc" id="s2">
+    <div class="L kick" style="top:250px" data-k="// mate, meet sure"></div>
+    <div class="L h" style="top:304px">
+      <span class="ln" style="font-size:112px"><span class="w" data-t="5.07">Meet</span><span class="w" data-t="5.76">Sure.</span></span>
+      <span class="ln soft" style="font-size:124px"><span class="w ser" data-t="6.64">free. yours.</span></span>
+    </div>
+    <div class="coinw"><div class="coin" id="coin"></div></div>
+    <div class="cshadow" id="cshd"></div>
+    <div class="price">
+      <div class="old" id="old">$14.99<small>/mo</small><svg viewBox="0 0 400 100" preserveAspectRatio="none"><path id="strk" d="M0 60 C80 40 160 70 230 48 S350 40 400 52" fill="none" stroke="#f5f6f7" stroke-width="10" stroke-linecap="round" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1"/></svg></div>
+      <div class="c3 lite zero" id="zero">$0</div>
+    </div>
+    <div class="chips" id="chips2"></div>
+  </section>
+
+  <!-- S3 exploded dashboard -->
+  <section class="sc" id="s3">
+    <div class="L kick" style="top:250px" data-k="// one clean dashboard"></div>
+    <div class="L h" style="top:304px">
+      <span class="ln" style="font-size:112px"><span class="w" data-t="10.24">Net</span><span class="w" data-t="10.4">worth.</span></span>
+      <span class="ln soft" style="font-size:104px"><span class="w ser" data-t="11.0">cash flow. spending.</span></span>
+    </div>
+    <div class="slab" id="slab">
+      <div class="base"><img class="g" src="media/win_g.jpg"><div class="real">REAL · REPO SCREENSHOT</div></div>
+      <div class="dim" id="dim3"></div>
+      <div class="pp" id="pp0"><img src="media/nw_g.jpg"><b>NET WORTH</b></div>
+      <div class="pp" id="pp1"><img src="media/cash_g.jpg"><b>CASH FLOW</b></div>
+      <div class="pp" id="pp2"><img src="media/spend_g.jpg"><b>SPENDING</b></div>
+      <div class="pp" id="pp3"><img src="media/out_g.jpg"><b>OUTFLOWS</b></div>
+    </div>
+    <div class="nwn" id="nwn">$0</div>
+    <div class="nwl" id="nwl"></div>
+  </section>
+
+  <!-- S4 accounts + budgets + investments -->
+  <section class="sc" id="s4">
+    <div class="L kick" style="top:250px" data-k="// accounts · budgets · investing"></div>
+    <div class="L h" style="top:304px">
+      <span class="ln" style="font-size:92px"><span class="w" data-t="14.52">Connect.</span><span class="w" data-t="15.72">Budget.</span></span>
+      <span class="ln soft" style="font-size:124px"><span class="w ser" data-t="16.68">invest.</span></span>
+    </div>
+    <div class="accs" id="accs">
+      <div class="c3 acc" id="ac0"><div class="an">CHECKING</div><div class="num">•••• 4021</div><div class="chip"></div><div class="ab">$4,210</div></div>
+      <div class="c3 lite acc" id="ac1"><div class="an">SAVINGS</div><div class="num">•••• 7730</div><div class="chip"></div><div class="ab">$18,400</div></div>
+      <div class="c3 acc" id="ac2"><div class="an">BROKERAGE</div><div class="num">•••• 1188</div><div class="chip"></div><div class="ab">$61,950</div></div>
+    </div>
+    <div class="sync" id="sync4"></div>
+    <div class="bars" id="bars"></div>
+  </section>
+
+  <!-- S5 mint import + AI -->
+  <section class="sc" id="s5">
+    <div class="L kick" style="top:250px" data-k="// leaving mint? bring it."></div>
+    <div class="L h" style="top:304px">
+      <span class="ln" style="font-size:92px"><span class="w" data-t="18.56">Bring</span><span class="w" data-t="19.12">Mint</span><span class="w" data-t="19.6">over.</span></span>
+      <span class="ln soft" style="font-size:124px"><span class="w ser" data-t="20.32">ask the AI.</span></span>
+    </div>
+    <div class="c3 lite csv in" data-t="17.7" data-ry="16" data-rx="6" id="csv"><div class="fn">mint_export.csv</div><div class="cl">date,merchant,amount
+10/02,Grocery,-62.40
+10/03,Coffee,-4.50
+10/05,Salary,+3200
+10/07,Rent,-1450</div></div>
+    <svg class="beam" viewBox="0 0 120 40"><path id="bm" d="M4 20 H104 M90 6 L108 20 L90 34" fill="none" stroke="#f5f6f7" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1"/></svg>
+    <div class="txs" id="txs"></div>
+    <div class="aiw" id="aiw"><div class="pnl"><img class="g" src="media/ai_g.jpg"><div class="scan" id="scan5"></div><div class="real" style="left:20px;right:auto">REAL · AI ASSISTANT</div></div></div>
+  </section>
+
+  <!-- S6 vault backstory -->
+  <section class="sc" id="s6">
+    <div class="L kick" style="top:250px" data-k="// the backstory"></div>
+    <div class="L h" style="top:304px">
+      <span class="ln" style="font-size:100px"><span class="w" data-t="22.64">A</span><span class="w" data-t="22.7">startup</span><span class="w" data-t="23.12">spent</span></span>
+      <span class="ln soft" style="font-size:124px"><span class="w ser" data-t="25.84">then gave it away.</span></span>
+    </div>
+    <div class="cnt6" id="cnt6">$0</div>
+    <div class="alm" id="alm"></div>
+    <div class="vaultw" id="vaultw">
+      <div class="frame6"></div>
+      <div class="behind"><div class="oc">&lt;/&gt;</div><div class="os">open source</div><div class="ou">github.com/we-promise/sure</div></div>
+      <div class="door" id="door"><div class="thick"></div><div id="bolts"></div>
+        <svg class="wheel" id="wheel" viewBox="0 0 280 280"><circle cx="140" cy="140" r="118" fill="none" stroke="#c9ccd1" stroke-width="12"/><g stroke="#c9ccd1" stroke-width="14" stroke-linecap="round"><path d="M140 22 V258"/><path d="M38 81 L242 199"/><path d="M38 199 L242 81"/></g></svg>
+        <div class="lk"></div></div>
+    </div>
+    <div class="story" id="story"></div>
+  </section>
+
+  <!-- S7 setup -->
+  <section class="sc" id="s7">
+    <div class="L kick" style="top:250px" data-k="// setup"></div>
+    <div class="L h" style="top:304px">
+      <span class="ln" style="font-size:112px"><span class="w" data-t="26.88">One</span><span class="w" data-t="27.36">file.</span></span>
+      <span class="ln soft" style="font-size:118px"><span class="w ser" data-t="29.04">stays with you.</span></span>
+    </div>
+    <div class="c3 lite yw in" data-t="26.5" data-rx="10" data-ry="-6">
+      <div class="yh"><i></i><i></i><i></i><span style="margin-left:10px">compose.yml</span></div>
+      <div id="yml"></div>
+    </div>
+    <div class="c3 tm7 in" data-t="27.9" data-rx="8"><span class="pr">$</span><span id="trm7"></span></div>
+    <div class="srv" id="srv"></div>
+    <svg class="pad" id="pad" viewBox="0 0 140 170"><path id="shk" d="M34 80 V52 a36 36 0 0 1 72 0 V80" fill="none" stroke="#f5f6f7" stroke-width="14" stroke-linecap="round"/><rect x="14" y="76" width="112" height="86" rx="18" fill="#f5f6f7"/><circle cx="70" cy="112" r="11" fill="#0b0c0e"/><rect x="65" y="114" width="10" height="26" rx="4" fill="#0b0c0e"/></svg>
+    <div class="lbl7" id="lbl7"></div>
+  </section>
+
+  <!-- S8 stars -->
+  <section class="sc" id="s8">
+    <div class="L kick" style="top:250px" data-k="// we-promise/sure"></div>
+    <div class="L h" style="top:304px">
+      <span class="ln" style="font-size:120px"><span class="w" data-t="30.48">16K</span><span class="w" data-t="30.85">stars.</span></span>
+      <span class="ln soft" style="font-size:124px"><span class="w ser" data-t="31.2">free forever.</span></span>
+    </div>
+    <div class="ghs" id="ghs"><img class="g" src="media/gh_g.jpg"><div class="real" style="left:20px;right:auto;top:auto;bottom:18px">REAL · GITHUB</div><div class="ring8" id="ring8"></div></div>
+    <div class="starw"><svg viewBox="0 0 230 230"><path id="star" d="M115 12 L141 82 L216 84 L157 130 L178 202 L115 160 L52 202 L73 130 L14 84 L89 82 Z" fill="#f5f6f7" fill-opacity="0" stroke="#f5f6f7" stroke-width="7" stroke-linejoin="round" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1"/></svg><div class="stn" id="stn">0</div></div>
+    <div class="stl" id="stl"></div>
+  </section>
+
+  <!-- S8 comment -->
+  <section class="sc" id="s9">
+    <div class="L kick" style="top:250px" data-k="// want the link?"></div>
+    <div class="L h" style="top:304px">
+      <span class="ln" style="font-size:132px"><span class="w" data-t="32.45">Comment</span></span>
+      <span class="ln soft" style="font-size:190px;letter-spacing:-8px"><span class="w" data-t="32.7">GITMATE</span></span>
+    </div>
+    <div class="c3 cm in" style="left:64px;top:690px;width:952px;height:390px" data-t="32.0" data-ry="-10" data-rx="8">
+      <div class="lbl" style="margin-bottom:22px">comments</div>
+      <div class="rowc"><div class="av2"></div><div class="cin"><span id="t9" style="color:rgba(255,255,255,.4)">Add a comment…</span></div><div class="send" id="snd9">↑</div></div>
+      <div class="posted" id="pst9"><div class="av2" style="width:56px;height:56px"></div><div><div class="u">you <span class="lbl">· now</span></div><div class="c">GITMATE</div></div></div>
+    </div>
+    <div class="c3 lite dm in" style="left:300px;top:1150px;width:560px;height:130px" data-t="33.55" data-z="80"><small>git.mate · message</small>Here's your link, mate 🔗</div>
+  </section>
+
+  <!-- S9 end -->
+  <section class="sc" id="s10">
+    <svg class="erings" viewBox="0 0 500 500"><circle id="er1" cx="250" cy="250" r="226" fill="none" stroke="#f5f6f7" stroke-width="3" stroke-dasharray="1420" stroke-dashoffset="1420" transform="rotate(-90 250 250)"/>
+      <circle id="er2" cx="250" cy="250" r="246" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="2" stroke-dasharray="1546" stroke-dashoffset="1546" transform="rotate(90 250 250)"/></svg>
+    <div class="bead bigmk" id="bigmk">&gt;_</div>
+    <div class="hnd" id="hnd"></div>
+    <div class="L h" style="top:1160px;font-size:84px;letter-spacing:-3px;text-align:center"><span class="ln soft"><span class="w" data-t="35.1">1</span><span class="w" data-t="35.25">repo</span><span class="w" data-t="35.4">every</span><span class="w" data-t="35.55">day.</span></span></div>
+    <div class="fol" id="fol">Follow</div>
+    <div class="fol2" id="fol2">Following ✓</div>
+    <div class="erip" id="erip"></div>
+    <svg class="tap" id="tap10" viewBox="0 0 100 100" style="left:600px;top:1420px"><circle cx="50" cy="50" r="34" fill="rgba(255,255,255,.25)" stroke="#fff" stroke-width="5"/><circle cx="50" cy="50" r="12" fill="#fff"/></svg>
+  </section>
+ </div></div>
+
+ <div class="top"><div class="brand"><div class="bead">&gt;_</div>git.mate</div><div class="tag" id="tag"><b>01</b> / hook</div></div>
+ <div class="prog" id="prog"></div>
+ <div class="vig"></div><div class="grain"></div>
+</div>
+<script>
+(function () {
+  const SPD = 1.06;
+  const S = [0, 4.75, 9.95, 14.25, 17.6, 22.3, 26.6, 30.05, 32.2, 34.4];
+  const TOTAL = 37.4; window.__TOTAL = TOTAL / SPD;
+  const LABEL = ['hook', 'meet', 'dashboard', 'budgets', 'import + ai', 'backstory', 'setup', 'stars', 'link', 'follow'];
+  const $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)];
+  const tl = gsap.timeline({ paused: true, defaults: { ease: 'power3.out' } });
+  $('#prog').innerHTML = S.map(() => '<i><b></b></i>').join('');
+  const scenes = $$('.sc');
+  const R = 2400, STEP = 28;
+  scenes.forEach((sc, i) => { sc.style.transform = `rotateY(${i * STEP}deg) translateZ(${R}px)`; });
+  const cam = { a: 0, d: 0, rx: 0, rz: 0 };
+  const MOVE = { 1: 'crane', 2: 'roll', 4: 'crane', 5: 'roll', 7: 'crane', 8: 'roll', 9: 'crane' };
+  scenes.forEach((sc, i) => {
+    if (i < scenes.length - 1) tl.set(sc, { visibility: 'hidden' }, S[i + 1] + .45);
+    if (i) {
+      tl.set(sc, { visibility: 'visible' }, Math.max(0, S[i] - .62));
+      const t0 = S[i] - .58, dir = i % 2 ? 1 : -1, mv = MOVE[i];
+      const prx = mv === 'crane' ? -20 : 9 * dir, prz = mv === 'roll' ? -10 * dir : mv === 'crane' ? 0 : 3 * dir, pd = mv === 'crane' ? 1300 : 950;
+      tl.to(cam, { a: i * STEP, duration: 1.0, ease: 'power3.inOut' }, t0);
+      tl.to(cam, { keyframes: [{ d: pd, rx: prx, rz: prz, duration: .5, ease: 'power2.out' }, { d: 0, rx: 0, rz: 0, duration: .5, ease: 'power2.in' }] }, t0);
+    }
+  });
+  $$('.h .w').forEach((w) => { const t = +w.dataset.t; if (!t) return;
+    tl.fromTo(w, { opacity: 0, y: 70, scale: 1.12, filter: 'blur(18px)' }, { opacity: 1, y: 0, scale: 1, filter: 'blur(0px)', duration: .55, ease: 'expo.out' }, t); });
+  scenes.forEach((sc, i) => { const k = $('.kick', sc); if (!k || !k.dataset.k) return; const txt = k.dataset.k, o = { n: 0 }; k.textContent = i ? '' : txt; if (!i) return;
+    tl.fromTo(o, { n: 0 }, { n: txt.length, duration: Math.min(.7, txt.length * .025), ease: 'none', immediateRender: false, onUpdate: () => { k.textContent = txt.slice(0, Math.round(o.n)); } }, S[i] + .05); });
+  $$('.in').forEach((c) => {
+    const t = +c.dataset.t, rx = +(c.dataset.rx || 0), ry = +(c.dataset.ry || 0), z = +(c.dataset.z || 0);
+    const end = { autoAlpha: 1, z, rotationX: rx, rotationY: ry, y: 0, duration: .9, ease: 'expo.out' };
+    if (!t) { gsap.set(c, end); return; }
+    tl.fromTo(c, { autoAlpha: 0, z: -900, rotationX: rx + 40, rotationY: ry * 2, y: 120 }, end, t);
+  });
+  const typer = (el, text, t, d) => { const o = { n: 0 }; tl.fromTo(o, { n: 0 }, { n: text.length, duration: d, ease: 'none', immediateRender: false, onUpdate: () => { el.textContent = text.slice(0, Math.round(o.n)); } }, t); };
+  const sm = (a, b, x) => { const k = Math.min(1, Math.max(0, (x - a) / (b - a))); return k * k * (3 - 2 * k); };
+  const cl = (a, b, x) => Math.min(1, Math.max(0, (x - a) / (b - a)));
+  const twl = (t, a, b, s) => s.slice(0, Math.round(cl(a, b, t) * s.length));
+  const bump = (t, c, w) => Math.max(0, 1 - Math.abs(t - c) / w);
+  const money = (v, dec) => '$' + v.toLocaleString('en-US', { minimumFractionDigits: dec, maximumFractionDigits: dec });
+
+  // S1 statement rows
+  const ROWS = [['BUDGET APP · PREMIUM', '−$14.99'], ['SPENDING TRACKER · PLUS', '−$12.99'], ['NET WORTH APP · PRO', '−$9.99'], ['BILLS APP · MONTHLY', '−$14.99']];
+  const RT = [2.2, 2.55, 2.9, 3.25];
+  $('#srows').innerHTML = ROWS.map(([n, a], i) => `<div class="srow" id="sr${i}" style="top:${58 + i * 72}px"><span>${n}</span><span class="rc">AUTO</span><span class="am">${a}</span></div>`).join('');
+  // S2 coin
+  { let h = ''; for (let i = -6; i <= 6; i++) h += `<div class="ly" style="transform:translateZ(${i * 2}px)"></div>`;
+    h += `<div class="face" style="transform:translateZ(13px)">${document.getElementById('LOGO').innerHTML}</div><div class="face bk" style="transform:rotateY(180deg) translateZ(13px)"><span class="zz">$0</span></div>`;
+    $('#coin').innerHTML = h; }
+  // S4 bars
+  const BARS = [['Groceries', 62], ['Rent', 100], ['Dining', 38], ['Travel', 20]];
+  const BW = 150, BD = 80, BH = 240;
+  $('#bars').innerHTML = BARS.map(([n, p], i) => { const h = BH * p / 100, x = 40 + i * 230, dk = i % 2 ? '' : 'dk';
+    return `<div class="bar ${dk}" id="br${i}" style="left:${x}px;width:${BW}px;height:${h}px;transform-origin:50% 100%">
+      <div class="fc fr" style="width:${BW}px;height:${h}px;transform:translateZ(${BD / 2}px)"></div>
+      <div class="fc sd" style="left:${(BW - BD) / 2}px;width:${BD}px;height:${h}px;transform:rotateY(90deg) translateZ(${BW / 2}px)"></div>
+      <div class="fc sd" style="left:${(BW - BD) / 2}px;width:${BD}px;height:${h}px;transform:rotateY(-90deg) translateZ(${BW / 2}px)"></div>
+      <div class="fc tp" style="top:${(h - BD) / 2}px;width:${BW}px;height:${BD}px;transform:rotateX(90deg) translateZ(${h / 2}px)"></div></div>
+      <div class="blb" style="left:${x - 25}px">${n}</div><div class="bpc" id="bp${i}" style="left:${x - 25}px;top:${470 - h - 70}px">0%</div>`; }).join('')
+    + `<svg class="inv" viewBox="0 0 952 470"><path id="invl" d="M20 150 L120 138 L200 146 L290 118 L380 124 L470 96 L560 104 L650 76 L740 82 L830 50 L930 34" fill="none" stroke="#f5f6f7" stroke-width="6" stroke-linejoin="round" stroke-linecap="round" pathLength="1" stroke-dasharray="1" stroke-dashoffset="1"/><circle id="invd" cx="930" cy="34" r="12" fill="#f5f6f7" opacity="0"/><text id="invt" x="925" y="0" text-anchor="end" font-family="JetBrains Mono" font-weight="800" font-size="26" fill="#f5f6f7" opacity="0">↑ 9.5% this quarter</text></svg>`;
+  // S5 transactions
+  const TX = [['10/02', 'Grocery', '−$62.40', ''], ['10/03', 'Coffee', '−$4.50', ''], ['10/05', 'Salary', '+$3,200', 'lite'], ['10/07', 'Rent', '−$1,450', '']];
+  $('#txs').innerHTML = TX.map(([d, m, a, k], i) => `<div class="c3 ${k} tx" id="tx${i}" style="top:${i * 80}px"><span class="dt">${d}</span><span>${m}</span><span class="am">${a}</span></div>`).join('');
+  // S6 bolts
+  $('#bolts').innerHTML = Array.from({ length: 12 }, (_, i) => { const a = i / 12 * Math.PI * 2; return `<div class="bolt" id="bo${i}" style="left:${290 + 238 * Math.cos(a) - 15}px;top:${290 + 238 * Math.sin(a) - 15}px"></div>`; }).join('');
+  // S7 yaml + server cuboid
+  const YML = [['services:', ''], ['  web:', ''], ['    image: ', 'ghcr.io/we-promise/sure:stable'], ['    ports: ', '["3000:3000"]'], ['  db:', ''], ['    image: ', 'postgres:16'], ['  redis:', ''], ['    image: ', 'redis:latest']];
+  $('#yml').innerHTML = YML.map(([k, v], i) => `<div class="yl" id="yl${i}"><span class="n">${i + 1}</span><span class="${v ? 'k' : ''}">${k}</span>${v}</div>`).join('');
+  { const w = 360, h = 200, d = 220;
+    $('#srv').innerHTML = `<div class="cub" id="cub" style="left:30px;top:40px;width:${w}px;height:${h}px">
+      <div class="fc fr" style="width:${w}px;height:${h}px;transform:translateZ(${d / 2}px)">${[0, 1, 2, 3].map(j => `<div class="slot7" style="top:${24 + j * 42}px"><i id="led${j}"></i><i></i><i></i></div>`).join('')}</div>
+      <div class="fc sd" style="left:${(w - d) / 2}px;width:${d}px;height:${h}px;transform:rotateY(90deg) translateZ(${w / 2}px)"></div>
+      <div class="fc sd" style="left:${(w - d) / 2}px;width:${d}px;height:${h}px;transform:rotateY(-90deg) translateZ(${w / 2}px)"></div>
+      <div class="fc tp" style="top:${(h - d) / 2}px;width:${w}px;height:${d}px;transform:rotateX(90deg) translateZ(${h / 2}px)"></div></div>`; }
+
+  // S9 comment flow
+  tl.call(() => { $('#t9').textContent = 'Add a comment…'; $('#t9').style.color = 'rgba(255,255,255,.4)'; }, null, 32.94);
+  tl.call(() => { $('#t9').style.color = '#fff'; }, null, 32.95);
+  typer($('#t9'), 'GITMATE', 32.95, .3);
+  tl.fromTo('#snd9', { scale: 1 }, { scale: .8, duration: .1, yoyo: true, repeat: 1 }, 33.3);
+  tl.fromTo('#pst9', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: .35 }, 33.35);
+  // S10 end
+  const E = 34.45;
+  tl.fromTo('#bigmk', { opacity: 0, scale: .2, rotation: -40 }, { opacity: 1, scale: 1, rotation: 0, duration: .9, ease: 'back.out(1.8)' }, E);
+  tl.fromTo('#er1', { attr: { 'stroke-dashoffset': 1420 } }, { attr: { 'stroke-dashoffset': 0 }, duration: 1.0, ease: 'power2.inOut', immediateRender: false }, E + .15);
+  tl.fromTo('#er2', { attr: { 'stroke-dashoffset': 1546 } }, { attr: { 'stroke-dashoffset': 0 }, duration: 1.2, ease: 'power2.inOut', immediateRender: false }, E + .3);
+  typer($('#hnd'), '@git.mate', E + .4, .5);
+  tl.fromTo('#fol', { opacity: 0, scale: .6 }, { opacity: 1, scale: 1, duration: .5, ease: 'back.out(2)' }, E + .9);
+  tl.fromTo('#tap10', { opacity: 0, x: 160, y: 140 }, { opacity: 1, x: 0, y: 0, duration: .5, ease: 'power2.out' }, E + 1.25);
+  tl.to('#tap10', { scale: .75, duration: .1, yoyo: true, repeat: 1 }, E + 1.8);
+  tl.to('#fol', { scale: .93, duration: .1 }, E + 1.8);
+  tl.set('#fol2', { opacity: 1 }, E + 1.9); tl.set('#fol', { opacity: 0 }, E + 1.9);
+  tl.fromTo('#erip', { opacity: .8, width: 10, height: 10, margin: -5 }, { opacity: 0, width: 640, height: 640, margin: -320, duration: .8, ease: 'power2.out', immediateRender: false }, E + 1.85);
+  tl.to('#tap10', { opacity: 0, duration: .3 }, E + 2.3);
+  tl.to({}, { duration: .01 }, TOTAL);
+
+  const world = $('#world'), tag = $('#tag'), segs = $$('#prog b');
+  const PP = [[404.6, 141.2, 329, 210, 10.3], [61.9, 141.2, 330.8, 226, 11.0], [61.9, 379.2, 330.8, 238, 11.68], [404.6, 363.3, 329, 188, 12.4]];
+  const tick = (t) => {
+    const a = cam.a + Math.sin(t * .5) * .35, rx = cam.rx + Math.sin(t * .37 + 1) * .7, rz = cam.rz + Math.sin(t * .29) * .25;
+    scenes.forEach((sc, i) => { sc.style.display = t >= S[i] - .7 && t <= (S[i + 1] || 99) + .5 ? '' : 'none'; });
+    world.style.transform = `translateZ(${-cam.d}px) rotateX(${rx}deg) rotateZ(${rz}deg) translateZ(${-R}px) rotateY(${-a}deg)`;
+    // S1 tombstone rise + crack, statement rows
+    { const k = sm(0.05, 0.75, t), sh = bump(t, 1.0, .12);
+      $('#tomb').style.transform = `perspective(1600px) translateY(${(1 - k) * 120}px) rotateX(${(1 - k) * -85 + 6}deg) rotateY(${-8 + 4 * sm(0, 4.6, t)}deg) translateX(${Math.sin(t * 60) * sh * 6}px)`;
+      $('#tomb').style.opacity = sm(0, .2, t);
+      $('#crk').setAttribute('stroke-dashoffset', 1 - sm(0.85, 1.35, t));
+      ROWS.forEach((_, i) => { const k2 = sm(RT[i], RT[i] + .3, t), e = $('#sr' + i); e.style.opacity = k2; e.style.transform = `translate3d(${(1 - k2) * 160}px,0,${(1 - k2) * 200}px) rotateX(${(1 - k2) * -60}deg)`; });
+      const tk = sm(3.3, 3.9, t); $('#stot').innerHTML = `<small>EVERY MONTH</small>−${money(52.96 * tk, 2)}`;
+      $('#stot').style.transform = `scale(${1 + bump(t, 3.95, .15) * .08})`; $('#stot').style.opacity = sm(3.2, 3.35, t); }
+    // S2 coin drop + spin, price strike
+    { const k = sm(4.7, 5.9, t), land = bump(t, 5.92, .12);
+      $('#coin').style.transform = `translateY(${(1 - k) * -700 + land * 8}px) rotateX(${-10 + Math.sin(t * 1.4) * 4}deg) rotateY(${(1 - k) * 900 + Math.sin(t * 1.1) * 18 + (t > 8.6 ? 180 * sm(8.6, 9.2, t) : 0)}deg)`;
+      $('#coin').style.opacity = sm(4.6, 4.75, t); $('#cshd').style.opacity = sm(5.4, 5.9, t); $('#cshd').style.transform = `scale(${.6 + .4 * k})`;
+      const ok = sm(6.5, 6.8, t); $('#old').style.opacity = ok; $('#old').style.transform = `perspective(1200px) translateZ(${(1 - ok) * -300}px) rotateY(12deg)`;
+      $('#strk').setAttribute('stroke-dashoffset', 1 - sm(7.05, 7.45, t));
+      const zk = sm(7.4, 7.75, t); $('#zero').style.opacity = zk; $('#zero').style.transform = `perspective(1200px) rotateY(${-14 + (1 - zk) * -70}deg) scale(${.7 + .3 * zk + bump(t, 7.8, .12) * .06})`;
+      $('#chips2').textContent = twl(t, 8.0, 8.9, 'open-source · self-hosted · AGPL-3.0'); }
+    // S3 exploded dashboard
+    { const k = sm(9.55, 10.35, t), sl = $('#slab');
+      sl.style.opacity = sm(9.5, 9.65, t);
+      sl.style.transform = `perspective(2400px) translate3d(0,${(1 - k) * 260}px,${(1 - k) * -800}px) rotateX(${14 + (1 - k) * 45}deg) rotateY(${-10 + 6 * sm(10, 14, t)}deg)`;
+      $('#dim3').style.opacity = .55 * sm(10.2, 10.6, t);
+      PP.forEach(([x, y, w, h, t0], i) => { const pk = sm(t0, t0 + .45, t), e = $('#pp' + i);
+        e.style.left = x + 'px'; e.style.top = y + 'px'; e.style.width = w + 'px'; e.style.height = h + 'px'; e.style.opacity = sm(t0 - .05, t0 + .05, t);
+        e.style.transform = `translateZ(${pk * 150 + bump(t, t0 + .48, .12) * 12}px) scale(${1 + pk * .04})`; });
+      const nk = sm(10.3, 11.5, t); $('#nwn').textContent = money(855419.82 * nk, 2); $('#nwn').style.opacity = sm(10.2, 10.35, t);
+      $('#nwn').style.transform = `perspective(1400px) rotateX(${(1 - sm(10.2, 10.8, t)) * 70}deg)`;
+      $('#nwl').textContent = twl(t, 11.7, 12.5, 'net worth · real demo data from the repo'); }
+    // S4 account cards, bars, investment line
+    { [0, 1, 2].forEach(i => { const t0 = 14.45 + i * .17, k = sm(t0, t0 + .45, t), e = $('#ac' + i);
+        e.style.left = (i * 331) + 'px'; e.style.opacity = sm(t0 - .02, t0 + .1, t);
+        e.style.transform = `translate3d(0,${(1 - k) * -200}px,${(1 - k) * -700}px) rotateX(${14 + (1 - k) * 70}deg) rotateY(${(i - 1) * -12}deg) translateY(${bump(t, 15.1 + i * .08, .12) * -12}px)`; });
+      $('#sync4').textContent = twl(t, 15.0, 15.55, '✓ 3 accounts synced');
+      BARS.forEach(([n, p], i) => { const t0 = 15.75 + i * .12, k = sm(t0, t0 + .55, t);
+        $('#br' + i).style.transform = `rotateX(-14deg) rotateY(-24deg) scaleY(${Math.max(.001, k)})`; $('#br' + i).style.opacity = sm(t0 - .05, t0 + .05, t);
+        $('#bp' + i).textContent = Math.round(p * k) + '%'; $('#bp' + i).style.opacity = sm(t0, t0 + .2, t); });
+      $('#invl').setAttribute('stroke-dashoffset', 1 - sm(16.6, 17.3, t));
+      $('#invd').setAttribute('opacity', sm(17.25, 17.35, t)); $('#invt').setAttribute('opacity', sm(17.3, 17.45, t)); $('#invt').setAttribute('y', 18); }
+    // S5 csv -> transactions, AI panel
+    { $('#bm').setAttribute('stroke-dashoffset', 1 - sm(18.55, 18.9, t));
+      TX.forEach((_, i) => { const t0 = 18.85 + i * .2, k = sm(t0, t0 + .3, t), e = $('#tx' + i); e.style.opacity = k; e.style.transform = `translate3d(${(1 - k) * -140}px,0,${(1 - k) * -200}px) rotateY(${-10 + (1 - k) * -40}deg)`; });
+      const ak = sm(19.95, 20.75, t), aw = $('#aiw'); aw.style.opacity = sm(19.9, 20.05, t);
+      aw.style.transform = `perspective(2200px) translate3d(0,${(1 - ak) * 300}px,${(1 - ak) * -800}px) rotateX(${10 + (1 - ak) * 55}deg) rotateY(${8 - 4 * sm(20, 22.3, t)}deg)`;
+      $('#scan5').style.top = (-140 + 860 * cl(20.7, 21.9, t)) + 'px'; $('#scan5').style.opacity = sm(20.6, 20.75, t) * (1 - sm(21.8, 21.95, t)); }
+    // S6 vault: counter, wheel, bolts, door
+    { const v = sm(23.3, 24.6, t); $('#cnt6').textContent = v >= 1 ? '~$1,000,000' : money(Math.round(1000000 * v / 1000) * 1000, 0);
+      $('#cnt6').style.transform = `scale(${1 + bump(t, 24.65, .15) * .06})`; $('#cnt6').style.opacity = sm(23.2, 23.35, t);
+      $('#alm').textContent = twl(t, 24.0, 24.7, 'nearly $1M · then the startup stopped');
+      const vk = sm(22.1, 22.9, t); $('#vaultw').style.opacity = sm(22.05, 22.2, t);
+      $('#vaultw').style.transform = `perspective(2000px) translate3d(0,${(1 - vk) * 200}px,${(1 - vk) * -700}px) rotateX(${8 + (1 - vk) * 40}deg) rotateY(${-14}deg)`;
+      $('#wheel').style.transform = `rotate(${200 * sm(24.7, 25.35, t)}deg)`;
+      for (let i = 0; i < 12; i++) $('#bo' + i).style.transform = `scale(${1 - .6 * sm(25.0 + i * .02, 25.3 + i * .02, t)})`;
+      document.querySelector('#vaultw .behind').style.opacity = sm(25.3, 25.4, t); $('#door').style.transform = `translateZ(30px) rotateY(${-108 * sm(25.35, 26.0, t)}deg)`;
+      $('#story').textContent = twl(t, 24.9, 25.5, 'Maybe Finance → community fork: Sure'); }
+    // S7 yaml lines, terminal, server + lock
+    { YML.forEach((_, i) => { const t0 = 26.85 + i * .11, k = sm(t0, t0 + .2, t), e = $('#yl' + i); e.style.opacity = k; e.style.transform = `translateX(${(1 - k) * 40}px)`; });
+      $('#trm7').textContent = twl(t, 28.0, 28.6, 'docker compose up -d');
+      const sk = sm(28.4, 29.0, t); $('#srv').style.opacity = sm(28.35, 28.5, t);
+      $('#cub').style.transform = `translate3d(0,${(1 - sk) * 200}px,${(1 - sk) * -500}px) rotateX(-22deg) rotateY(${-28 + (1 - sk) * 60 + Math.sin(t) * 3}deg)`;
+      for (let j = 0; j < 4; j++) $('#led' + j).style.background = t > 28.9 && Math.sin(t * 9 + j * 2) > 0 ? '#f5f6f7' : '#55595f';
+      const pk = sm(29.0, 29.35, t), lock = sm(29.4, 29.55, t); $('#pad').style.opacity = pk;
+      $('#pad').style.transform = `translate3d(0,${(1 - pk) * -260}px,60px) scale(${1 + bump(t, 29.56, .1) * .1})`;
+      $('#shk').setAttribute('transform', `translate(0 ${-18 * (1 - lock)})`);
+      $('#lbl7').textContent = twl(t, 29.4, 29.95, 'your server · your data'); }
+    // S8 github + star
+    { const gk = sm(29.85, 30.6, t), g = $('#ghs'); g.style.opacity = sm(29.8, 29.95, t);
+      g.style.transform = `perspective(2200px) translate3d(0,${(1 - gk) * 260}px,${(1 - gk) * -800}px) rotateX(${10 + (1 - gk) * 50}deg) rotateY(${8}deg)`;
+      $('#ring8').style.opacity = sm(30.5, 30.65, t); $('#ring8').style.transform = `scale(${1 + bump(t, 30.7, .15) * .3})`;
+      $('#star').setAttribute('stroke-dashoffset', 1 - sm(30.45, 31.0, t)); $('#star').setAttribute('fill-opacity', sm(30.9, 31.2, t));
+      $('#star').parentNode.style.transform = `rotate(${(1 - sm(30.45, 31.1, t)) * -90}deg) scale(${1 + bump(t, 31.25, .15) * .12})`;
+      const sc = sm(30.5, 31.3, t); $('#stn').textContent = sc >= 1 ? '16.3K' : (16.3 * sc).toFixed(1) + 'K';
+      $('#stl').textContent = twl(t, 31.25, 31.75, '1.4K forks · 494 contributors'); }
+    let si = 0; for (let i = 0; i < S.length; i++) if (t >= S[i] - .3) si = i;
+    tag.innerHTML = `<b>${String(si + 1).padStart(2, '0')}</b> / ${LABEL[si]}`;
+    segs.forEach((b, i) => { const e = i < S.length - 1 ? S[i + 1] : TOTAL - 1.5; b.style.width = Math.min(100, Math.max(0, (t - S[i]) / (e - S[i]) * 100)) + '%'; });
+  };
+  window.__tl = tl;
+  window.__seek = (rt) => { const t = rt * SPD; tl.time(t, false); tick(t); return Promise.all($$('img').map(im => im.decode().catch(() => null))).then(() => null); };
+  window.__seek(0);
+  if (!navigator.webdriver) { const t0 = performance.now(); const loop = () => { window.__seek(((performance.now() - t0) / 1000) % (TOTAL / SPD)); requestAnimationFrame(loop); }; requestAnimationFrame(loop); }
+})();
+</script>
+</body></html>

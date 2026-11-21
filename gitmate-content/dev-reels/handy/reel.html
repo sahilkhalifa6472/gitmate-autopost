@@ -1,0 +1,511 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<title>git.mate handy</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter+Tight:wght@400;500;600;700;800;900&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<style>
+:root{--ink:#f5f6f7;--mut:rgba(235,238,242,.58);--dim:rgba(235,238,242,.32)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#000}
+.f{position:relative;width:1080px;height:1920px;overflow:hidden;background:radial-gradient(ellipse 120% 80% at 50% 40%,#0d0e11 0%,#040405 60%,#000 100%);color:var(--ink);font-family:'Inter Tight',sans-serif}
+.vig{position:absolute;inset:0;z-index:5;pointer-events:none;background:radial-gradient(ellipse 90% 70% at 50% 50%,transparent 50%,rgba(0,0,0,.7) 100%)}
+.grain{position:absolute;inset:0;opacity:.08;mix-blend-mode:overlay;z-index:8;pointer-events:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
+#stage{position:absolute;inset:0;perspective:2200px;perspective-origin:50% 46%;z-index:2}
+#world{position:absolute;left:0;top:0;width:1080px;height:1920px;transform-style:preserve-3d}
+.sc{position:absolute;left:0;top:0;width:1080px;height:1920px;transform-style:preserve-3d;backface-visibility:hidden;visibility:hidden}
+#s1{visibility:visible}
+.c3{position:absolute;border-radius:34px;overflow:hidden;background:linear-gradient(160deg,#1d1e22 0%,#121316 45%,#0b0c0e 100%);
+  box-shadow:inset 0 1.5px 0 rgba(255,255,255,.2),inset 0 0 0 1.5px rgba(255,255,255,.07),0 3px 0 #1b1c1f,0 6px 0 #16171a,0 9px 0 #111214,0 12px 0 #0c0d0f,0 60px 90px rgba(0,0,0,.75)}
+.c3.lite{background:linear-gradient(160deg,#f7f8f9,#d9dce0);color:#08090a;box-shadow:inset 0 2px 0 #fff,0 3px 0 #c3c6cb,0 6px 0 #aeb2b8,0 9px 0 #9a9ea4,0 12px 0 #868a90,0 60px 90px rgba(0,0,0,.7)}
+.bead{width:62px;height:62px;border-radius:50%;display:grid;place-items:center;font-family:'JetBrains Mono';font-weight:800;font-size:24px;color:#050505;flex:none;
+  background:radial-gradient(circle at 35% 28%,#fff 0 18%,#e4e6ea 45%,#9da1a8 100%);box-shadow:inset 0 -5px 10px rgba(0,0,0,.25),inset 0 3px 4px #fff,0 10px 24px rgba(0,0,0,.6)}
+.top{position:absolute;left:64px;right:64px;top:88px;height:90px;z-index:6}
+.brand{position:absolute;left:0;top:0;display:flex;align-items:center;gap:18px;padding:14px 30px 14px 14px;font-family:'JetBrains Mono';font-weight:700;font-size:30px;border-radius:999px;background:#0e0f11;box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 0 0 1.5px rgba(255,255,255,.1)}
+.tag{position:absolute;right:0;top:12px;padding:18px 30px;font-family:'JetBrains Mono';font-size:24px;color:var(--mut);white-space:nowrap;border-radius:999px;background:#0e0f11;box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 0 0 1.5px rgba(255,255,255,.08)}
+.tag b{color:var(--ink)}
+.prog{position:absolute;left:64px;right:64px;bottom:96px;display:flex;gap:10px;z-index:6}
+.prog i{flex:1;height:8px;border-radius:4px;background:rgba(255,255,255,.14);position:relative;overflow:hidden}
+.prog i b{position:absolute;left:0;top:0;bottom:0;width:0;background:#f2f3f5;border-radius:4px}
+.L{position:absolute;left:64px;right:64px}
+.kick{font-family:'JetBrains Mono';font-size:28px;color:var(--mut);letter-spacing:1px;white-space:pre;height:40px}
+.h{font-weight:900;letter-spacing:-5px;line-height:.92;text-transform:uppercase}
+.h .ln{display:block;white-space:nowrap}
+.h .w{display:inline-block;padding-bottom:.05em;margin-right:.2em;background-image:linear-gradient(180deg,#ffffff 0%,#f1f2f4 50%,#b4b8be 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.h .w:last-child{margin-right:0}
+.h .soft .w{background-image:linear-gradient(180deg,rgba(255,255,255,.62),rgba(255,255,255,.24))}
+.h .ser{font-family:'Instrument Serif';font-style:italic;font-weight:400;text-transform:none;letter-spacing:-2px}
+.lbl{font-family:'JetBrains Mono';font-size:22px;color:var(--mut)}
+.mono{font-family:'JetBrains Mono'}
+.chrome{display:flex;align-items:center;gap:14px;padding:22px 26px 14px}
+.chrome i{width:16px;height:16px;border-radius:50%;background:rgba(255,255,255,.3)}
+.url{margin-left:10px;flex:1;font-family:'JetBrains Mono';font-size:20px;color:var(--mut);padding:9px 18px;border-radius:999px;background:rgba(0,0,0,.3);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.08);white-space:nowrap;overflow:hidden}
+.lite .url{color:#4a4e55;background:rgba(0,0,0,.06);box-shadow:inset 0 0 0 1.5px rgba(0,0,0,.1)}
+.lite .chrome i{background:rgba(0,0,0,.25)}
+.tc{display:inline-block;width:5px;height:40px;border-radius:2px;background:#e8eaed;vertical-align:-8px;margin-left:4px}
+.lite .tc{background:#08090a}
+
+/* S1 keyboard that falls away + studio mic + text field */
+.kbd{position:absolute;left:90px;top:700px;width:900px;height:380px;border-radius:40px;padding:34px 34px;background:linear-gradient(170deg,#2a2b30,#111215);
+  box-shadow:inset 0 2px 0 rgba(255,255,255,.2),0 6px 0 #1b1c1f,0 12px 0 #141518,0 18px 0 #0d0e10,0 24px 0 #08090a,0 80px 90px rgba(0,0,0,.8);transform-style:preserve-3d}
+.kc{position:absolute;width:70px;height:64px;border-radius:12px;display:grid;place-items:center;font-family:'JetBrains Mono';font-weight:800;font-size:22px;color:#08090a;
+  background:linear-gradient(170deg,#fbfbfc,#c9ccd1);box-shadow:inset 0 2px 0 #fff,0 4px 0 #9a9ea4,0 8px 0 #7d8187,0 14px 18px rgba(0,0,0,.6)}
+.mic{position:absolute;left:400px;top:690px;width:280px;height:480px}
+.mic .cap{position:absolute;left:30px;top:0;width:220px;height:320px;border-radius:110px;
+  background:radial-gradient(circle,#0b0c0e 0 3px,transparent 3.5px) 0 0/18px 18px,linear-gradient(90deg,#8d9197,#f3f4f6 38%,#d4d7db 55%,#6b6f75);
+  box-shadow:inset 0 0 0 6px #e4e6ea,inset 0 0 0 9px #6b6f75,0 30px 60px rgba(0,0,0,.7)}
+.mic .band{position:absolute;left:24px;top:190px;width:232px;height:40px;border-radius:10px;background:linear-gradient(180deg,#f3f4f6,#7d8187);box-shadow:0 4px 0 #4a4e55}
+.mic .yoke{position:absolute;left:0;top:120px;width:280px;height:250px;border:14px solid #b4b8be;border-top:none;border-radius:0 0 140px 140px}
+.mic .neck{position:absolute;left:126px;top:368px;width:28px;height:80px;background:linear-gradient(90deg,#6b6f75,#e9ebee,#6b6f75)}
+.mic .foot{position:absolute;left:50px;top:446px;width:180px;height:30px;border-radius:15px;background:linear-gradient(180deg,#e9ebee,#7d8187)}
+.ring{position:absolute;left:540px;top:850px;border-radius:50%;border:3px solid rgba(255,255,255,.55);width:0;height:0}
+.wave{position:absolute;left:90px;top:1220px;width:900px;height:120px;display:flex;align-items:center;justify-content:space-between}
+.wave i{display:block;width:12px;border-radius:6px;background:linear-gradient(180deg,#fff,#9da1a8);height:6px}
+.fld{padding:26px 36px}
+.fld .hd{display:flex;justify-content:space-between;font-family:'JetBrains Mono';font-weight:800;font-size:22px;color:#4a4e55}
+.fld .in2{margin-top:22px;padding:22px 28px;border-radius:20px;background:#fff;box-shadow:inset 0 0 0 2.5px #08090a;font-size:40px;font-weight:800;letter-spacing:-1px;white-space:nowrap;height:96px}
+
+/* S2 extruded icon tile + converter + LED star meter */
+.itile{position:absolute;left:90px;top:640px;width:340px;height:340px;border-radius:78px;overflow:hidden;
+  box-shadow:0 4px 0 #c2869f,0 8px 0 #b07790,0 12px 0 #9d6880,0 16px 0 #8a5a70,0 20px 0 #774c60,0 70px 90px rgba(0,0,0,.8)}
+.itile img{width:100%;height:100%;display:block;transform:scale(1.13)}
+.conv{padding:30px 34px}
+.conv .r{display:flex;align-items:center;gap:20px;height:120px}
+.conv .wv{display:flex;align-items:center;gap:7px;width:190px;height:100px}
+.conv .wv i{width:10px;border-radius:5px;background:#f2f3f5}
+.conv .ar{font-size:60px;font-weight:900;color:var(--mut)}
+.conv .tx{font-family:'Instrument Serif';font-style:italic;font-size:92px;line-height:1}
+.conv .tg{display:flex;gap:12px;margin-top:22px}
+.conv .tg span{padding:10px 18px;border-radius:999px;font-family:'JetBrains Mono';font-weight:800;font-size:20px;background:#f2f3f5;color:#08090a;opacity:0}
+.led{padding:34px 40px}
+.led .hd{display:flex;justify-content:space-between;align-items:center;font-family:'JetBrains Mono';font-weight:800;font-size:24px;color:var(--mut)}
+.led .num{font-size:150px;font-weight:900;letter-spacing:-7px;line-height:1;margin-top:10px}
+.led .num small{font-size:56px;letter-spacing:-2px;color:var(--mut)}
+.cols{position:absolute;left:40px;right:40px;bottom:36px;height:190px;display:flex;gap:10px;align-items:flex-end}
+.cols .col{flex:1;height:100%;display:flex;flex-direction:column-reverse;gap:6px}
+.cols .col i{flex:1;border-radius:4px;background:rgba(255,255,255,.07)}
+.cols .col i.on{background:linear-gradient(180deg,#ffffff,#c9ccd1);box-shadow:0 0 12px rgba(255,255,255,.35)}
+
+/* S3 chord keys + REC strip + real demo */
+.key{position:absolute;top:640px;height:170px;border-radius:30px;display:flex;flex-direction:column;justify-content:space-between;padding:22px 30px;
+  background:linear-gradient(170deg,#fbfbfc,#c9ccd1);color:#08090a;box-shadow:inset 0 3px 0 #fff,0 6px 0 #a3a7ad,0 12px 0 #8d9197,0 18px 0 #777b81,0 24px 0 #62666c,0 50px 60px rgba(0,0,0,.75)}
+.key b{font-size:54px;font-weight:900;letter-spacing:-1px;line-height:1}
+.key small{font-family:'JetBrains Mono';font-weight:800;font-size:24px;color:#4a4e55;text-align:right}
+.plus{position:absolute;left:432px;top:686px;font-size:80px;font-weight:900;color:var(--mut)}
+.rec{position:absolute;left:90px;top:880px;width:900px;height:120px;border-radius:60px;display:flex;align-items:center;gap:24px;padding:0 34px;background:#0e0f11;box-shadow:inset 0 0 0 2px rgba(255,255,255,.14)}
+.rec .dot{width:30px;height:30px;border-radius:50%;background:#fff;box-shadow:0 0 20px #fff;flex:none}
+.rec .lab{font-family:'JetBrains Mono';font-weight:800;font-size:26px;width:150px;flex:none}
+.rec .bars{flex:1;height:80px;display:flex;align-items:center;gap:6px}
+.rec .bars i{flex:1;border-radius:4px;background:#e9ebee;height:4px}
+.rec .tm{font-family:'JetBrains Mono';font-weight:700;font-size:24px;color:var(--mut);width:90px;text-align:right;flex:none}
+.demo img{position:absolute;left:0;top:66px;width:860px;height:765px;object-fit:cover;object-position:50% 0}
+.demo .chrome{position:absolute;left:0;right:0;top:0;height:66px;padding:22px 26px;z-index:2;background:#e9ebee}
+.real{position:absolute;right:24px;top:14px;z-index:3;padding:8px 16px;border-radius:999px;font-family:'JetBrains Mono';font-weight:800;font-size:18px;background:#08090a;color:#f5f6f7}
+
+/* S4 app turntable */
+.tt{position:absolute;left:540px;top:1040px;width:0;height:0;transform-style:preserve-3d}
+.win{position:absolute;left:-320px;top:-260px;width:640px;height:520px;border-radius:30px;overflow:hidden;backface-visibility:hidden;
+  background:linear-gradient(160deg,#1d1e22,#0d0e10);box-shadow:inset 0 0 0 2px rgba(255,255,255,.12)}
+.win.lite{background:linear-gradient(160deg,#fbfbfc,#d9dce0);color:#08090a;box-shadow:inset 0 0 0 2px rgba(0,0,0,.08)}
+.win .nm{font-family:'JetBrains Mono';font-weight:800;font-size:22px;color:var(--mut);padding:0 30px}
+.win.lite .nm{color:#4a4e55}
+.win .body{padding:18px 30px;font-size:26px;font-weight:600}
+.msg{display:flex;gap:14px;align-items:flex-start;margin-bottom:16px}
+.msg i{width:46px;height:46px;border-radius:12px;background:#3a3e45;flex:none}
+.msg span{color:var(--mut)}
+.code{font-family:'JetBrains Mono';font-size:23px;line-height:1.7;white-space:pre;color:var(--mut)}
+.code b{color:var(--ink)}
+.line{height:16px;border-radius:8px;background:rgba(0,0,0,.12);margin-bottom:16px}
+.box{position:absolute;left:24px;right:24px;bottom:24px;height:84px;border-radius:18px;padding:0 22px;display:flex;align-items:center;font-size:28px;font-weight:800;white-space:nowrap;overflow:hidden;
+  background:rgba(255,255,255,.07);box-shadow:inset 0 0 0 2px rgba(255,255,255,.2)}
+.win.lite .box{background:#fff;box-shadow:inset 0 0 0 2.5px #08090a}
+.flr{position:absolute;left:190px;top:1440px;width:700px;height:90px;border-radius:50%;background:radial-gradient(ellipse,rgba(255,255,255,.14),transparent 70%)}
+.apl{position:absolute;top:1600px;font-family:'JetBrains Mono';font-weight:800;font-size:28px;padding:16px 28px;border-radius:999px;background:#0e0f11;box-shadow:inset 0 0 0 2px rgba(255,255,255,.14);opacity:.35}
+.apl.on{opacity:1;background:#f2f3f5;color:#08090a}
+
+/* S5 cloud cut + network switch */
+.cloud{position:absolute;left:300px;top:680px;width:480px;height:280px}
+.cloud svg{width:100%;height:100%}
+.cut{position:absolute;left:520px;width:40px;top:990px;height:230px}
+.cut i{position:absolute;left:17px;width:6px;height:110px;background:repeating-linear-gradient(180deg,#f2f3f5 0 18px,transparent 18px 32px)}
+.spark{position:absolute;left:510px;top:1085px;width:60px;height:60px;border-radius:50%;background:radial-gradient(circle,#fff,rgba(255,255,255,0) 70%);opacity:0}
+.sw{padding:0 46px;display:flex;align-items:center;justify-content:space-between}
+.sw .t b{display:block;font-size:56px;font-weight:900;letter-spacing:-1.5px}
+.sw .t small{font-family:'JetBrains Mono';font-weight:700;font-size:24px;color:var(--mut)}
+.tog{position:relative;width:250px;height:130px;border-radius:65px;background:#f2f3f5;box-shadow:inset 0 4px 10px rgba(0,0,0,.35)}
+.tog .kn{position:absolute;top:12px;left:12px;width:106px;height:106px;border-radius:50%;background:radial-gradient(circle at 35% 28%,#fff,#c9ccd1);box-shadow:0 8px 16px rgba(0,0,0,.5),inset 0 -4px 8px rgba(0,0,0,.2)}
+.stat{position:absolute;left:90px;top:1580px;width:900px;text-align:center;font-family:'JetBrains Mono';font-weight:800;font-size:30px;white-space:nowrap}
+
+/* S6 cartridges + laptop + zero-bytes meter */
+.cart{position:absolute;top:640px;width:420px;height:250px;border-radius:24px 24px 10px 10px;padding:22px 26px;background:linear-gradient(170deg,#2a2b30,#111215);
+  box-shadow:inset 0 2px 0 rgba(255,255,255,.2),0 6px 0 #1b1c1f,0 12px 0 #0d0e10,0 40px 60px rgba(0,0,0,.8)}
+.cart .lb{height:150px;border-radius:14px;padding:18px 22px;background:linear-gradient(170deg,#fbfbfc,#c9ccd1);color:#08090a}
+.cart .lb b{display:block;font-size:46px;font-weight:900;letter-spacing:-1.5px}
+.cart .lb small{font-family:'JetBrains Mono';font-weight:700;font-size:19px;color:#4a4e55}
+.cart .pins{display:flex;gap:8px;margin-top:16px;padding:0 10px}
+.cart .pins i{flex:1;height:22px;border-radius:3px;background:linear-gradient(180deg,#d4d7db,#7d8187)}
+.lap{position:absolute;left:150px;top:960px;width:780px;height:560px;transform-style:preserve-3d}
+.lid{position:absolute;left:0;top:0;width:780px;height:470px;border-radius:30px 30px 8px 8px;padding:20px;background:linear-gradient(180deg,#2a2b30,#141518);box-shadow:inset 0 0 0 2px rgba(255,255,255,.14);transform-origin:50% 100%}
+.scr{width:100%;height:100%;border-radius:14px;overflow:hidden;background:#000;position:relative}
+.scr img{width:100%;height:100%;object-fit:cover}
+.deck{position:absolute;left:-40px;top:470px;width:860px;height:90px;border-radius:0 0 40px 40px;background:linear-gradient(180deg,#d4d7db,#6b6f75);box-shadow:0 30px 60px rgba(0,0,0,.8)}
+.deck i{position:absolute;left:340px;top:0;width:180px;height:16px;border-radius:0 0 12px 12px;background:#4a4e55}
+.slotL{position:absolute;left:140px;top:910px;width:800px;height:24px;border-radius:12px;background:#000;box-shadow:inset 0 3px 6px #000,0 0 0 2px rgba(255,255,255,.12)}
+.zb{padding:0 40px;display:flex;align-items:center;gap:30px}
+.zb .lk{width:96px;height:96px;border-radius:24px;display:grid;place-items:center;background:#08090a;color:#f5f6f7;font-size:46px;flex:none}
+.zb .tx b{display:block;font-size:44px;font-weight:900;letter-spacing:-1px}
+.zb .tx small{font-family:'JetBrains Mono';font-weight:700;font-size:22px;color:#4a4e55}
+.zb .n{margin-left:auto;font-size:110px;font-weight:900;letter-spacing:-5px}
+
+/* S7 OS pillars + license sheet + bill */
+.pil{position:absolute;top:400px;width:290px;height:440px;transform-origin:50% 100%}
+.pil .blk{position:absolute;left:0;right:0;bottom:0;border-radius:30px;display:flex;flex-direction:column;justify-content:space-between;padding:28px;
+  background:linear-gradient(170deg,#fbfbfc,#c9ccd1);color:#08090a;box-shadow:inset 0 3px 0 #fff,0 5px 0 #a3a7ad,0 10px 0 #8d9197,0 15px 0 #777b81,0 20px 0 #62666c,0 50px 60px rgba(0,0,0,.75)}
+.pil .blk.dk{background:linear-gradient(170deg,#2a2b30,#111215);color:#f5f6f7;box-shadow:inset 0 2px 0 rgba(255,255,255,.2),inset 0 0 0 2px rgba(255,255,255,.08),0 5px 0 #1b1c1f,0 10px 0 #141518,0 15px 0 #0d0e10,0 20px 0 #08090a,0 50px 60px rgba(0,0,0,.75)}
+.pil .gl{font-family:'JetBrains Mono';font-weight:800;font-size:30px;opacity:.6}
+.pil b{font-size:58px;font-weight:900;letter-spacing:-2px;line-height:1}
+.lic{padding:34px 44px;font-family:'JetBrains Mono'}
+.lic .t{font-family:'Inter Tight';font-size:58px;font-weight:900;letter-spacing:-2px}
+.lic p{max-width:560px;font-size:22px;line-height:1.6;color:#4a4e55;margin-top:14px}
+.stamp{position:absolute;right:40px;top:40px;width:200px;height:200px;border-radius:50%;border:8px solid #08090a;display:grid;place-items:center;text-align:center;font-family:'Inter Tight';font-weight:900;font-size:40px;line-height:.95;color:#08090a;transform:rotate(-14deg);opacity:0}
+.bill{padding:0 44px;display:flex;align-items:center;justify-content:space-between}
+.bill .l small{font-family:'JetBrains Mono';font-weight:700;font-size:22px;color:var(--mut)}
+.bill .l b{display:block;font-size:46px;font-weight:900;letter-spacing:-1px;position:relative}
+.bill .strk{position:absolute;left:-6px;top:52%;height:6px;width:0;background:#f2f3f5;border-radius:3px}
+.bill .p{font-size:104px;font-weight:900;letter-spacing:-5px}
+.bill .p small{font-size:34px;color:var(--mut);letter-spacing:0}
+
+/* S8 comment */
+.cm{padding:30px 34px}
+.rowc{display:flex;align-items:center;gap:20px}
+.av2{width:70px;height:70px;border-radius:50%;flex:none;background:radial-gradient(circle at 35% 28%,#5a5e64,#1b1d20);box-shadow:inset 0 0 0 2px rgba(255,255,255,.2)}
+.cin{flex:1;padding:20px 26px;border-radius:999px;font-size:32px;font-weight:700;background:rgba(255,255,255,.06);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.14)}
+.send{width:76px;height:76px;border-radius:50%;display:grid;place-items:center;background:#f2f3f5;color:#000;font-size:34px;font-weight:900;flex:none}
+.posted{display:flex;gap:20px;align-items:flex-start;margin-top:30px}
+.posted .u{font-weight:800;font-size:28px}
+.posted .c{font-size:34px;font-weight:800;margin-top:4px}
+.dm{padding:24px 30px;border-radius:32px 32px 32px 10px;font-size:32px;font-weight:700}
+.dm small{display:block;font-family:'JetBrains Mono';font-size:20px;color:#55595f;font-weight:500;margin-bottom:6px}
+.tap{position:absolute;width:96px;height:96px;opacity:0;z-index:4}
+
+/* S9 end */
+.erings{position:absolute;left:290px;top:420px;width:500px;height:500px}
+.bigmk{position:absolute;left:390px;top:520px;width:300px;height:300px;font-size:110px;letter-spacing:-6px}
+.hnd{position:absolute;left:0;right:0;top:1000px;text-align:center;font-family:'JetBrains Mono';font-weight:800;font-size:92px;white-space:pre;height:120px}
+.fol{position:absolute;left:280px;top:1390px;width:520px;height:132px;border-radius:999px;display:grid;place-items:center;font-size:52px;font-weight:900;background:linear-gradient(180deg,#fbfbfc,#d4d7db);color:#08090a;box-shadow:0 6px 0 #9a9ea4,0 20px 60px rgba(255,255,255,.16)}
+.fol2{position:absolute;left:280px;top:1390px;width:520px;height:132px;border-radius:999px;display:grid;place-items:center;font-size:52px;font-weight:900;background:#101114;color:#f5f6f7;box-shadow:inset 0 0 0 3px rgba(255,255,255,.7);opacity:0}
+.erip{position:absolute;left:540px;top:1456px;border-radius:50%;border:4px solid rgba(255,255,255,.8);opacity:0}
+</style></head><body>
+<div class="f" id="F">
+ <div id="stage"><div id="world">
+
+  <!-- S1 hook: the keyboard falls away, a mic rises, words land in a text field -->
+  <section class="sc" id="s1">
+    <div class="L kick" style="top:250px" data-k="// mate, real talk"></div>
+    <div class="L h" style="top:300px;font-size:150px;letter-spacing:-7px">
+      <span class="ln"><span class="w" data-t="0">stop</span><span class="w" data-t="0">typing.</span></span>
+      <span class="ln" style="font-size:132px"><span class="w ser" data-t="1.7" style="font-size:150px">just</span><span class="w" data-t="1.94">talk.</span></span>
+    </div>
+    <div class="kbd in" id="kbd" data-t="0" data-rx="34"></div>
+    <div class="mic" id="mic"><div class="yoke"></div><div class="cap"></div><div class="band"></div><div class="neck"></div><div class="foot"></div></div>
+    <div class="ring" id="rg1"></div><div class="ring" id="rg2"></div><div class="ring" id="rg3"></div>
+    <div class="wave" id="wave1"></div>
+    <div class="c3 lite fld in" style="left:90px;top:1390px;width:900px;height:220px" data-t="2.7" data-rx="12">
+      <div class="hd"><span id="appn">any app ▾</span><span>text field</span></div>
+      <div class="in2"><span id="ft1"></span><span class="tc" id="tc1"></span></div>
+    </div>
+  </section>
+
+  <!-- S2 meet Handy: extruded real icon, voice -> text converter, LED star meter -->
+  <section class="sc" id="s2">
+    <div class="L kick" style="top:250px" data-k="// meet handy"></div>
+    <div class="L h" style="top:300px;font-size:200px;letter-spacing:-9px"><span class="ln"><span class="w" data-t="5.3">handy.</span></span></div>
+    <div class="itile in" data-t="5.2" data-ry="16" data-rx="6"><img src="media/icon.png"></div>
+    <div class="c3 conv in" style="left:470px;top:650px;width:520px;height:330px" data-t="6.0" data-ry="-12" data-rx="6">
+      <div class="lbl">speech → text</div>
+      <div class="r"><div class="wv" id="cwv"></div><div class="ar">→</div><div class="tx" id="ctx">Aa</div></div>
+      <div class="tg"><span id="tg1">FREE</span><span id="tg2">OPEN SOURCE</span></div>
+    </div>
+    <div class="c3 led in" style="left:90px;top:1080px;width:900px;height:620px" data-t="8.3" data-rx="14">
+      <div class="hd"><span>★ stars on github</span><span>cjpais/Handy</span></div>
+      <div class="num" id="snum">0</div>
+      <div class="cols" id="cols"></div>
+    </div>
+  </section>
+
+  <!-- S3 how: hold the chord, speak, let go, real demo pastes the text -->
+  <section class="sc" id="s3">
+    <div class="L kick" style="top:250px" data-k="// how it works"></div>
+    <div class="L h" style="top:300px;font-size:120px">
+      <span class="ln"><span class="w" data-t="11.1">hold.</span><span class="w" data-t="12.26">speak.</span></span>
+      <span class="ln soft"><span class="w" data-t="12.94">let go.</span></span>
+    </div>
+    <div class="key" id="k1" style="left:90px;width:320px"><b>⌥</b><small>option</small></div>
+    <div class="plus">+</div>
+    <div class="key" id="k2" style="left:520px;width:470px"><b>&nbsp;</b><small>space</small></div>
+    <div class="rec" id="rec"><div class="dot" id="rdot"></div><div class="lab" id="rlab">READY</div><div class="bars" id="rbars"></div><div class="tm" id="rtm">0:00</div></div>
+    <div class="c3 lite demo in" style="left:110px;top:1060px;width:860px;height:640px" data-t="13.0" data-rx="10" data-ry="-6">
+      <div class="chrome"><i></i><i></i><i></i><div class="url">docs · cursor here</div></div>
+      <img id="dimg" src="media/doc/d040.jpg"><div class="real">real demo · handy.computer</div>
+    </div>
+  </section>
+
+  <!-- S4 anywhere: turntable of app windows -->
+  <section class="sc" id="s4">
+    <div class="L kick" style="top:250px" data-k="// any text field"></div>
+    <div class="L h" style="top:300px;font-size:166px;letter-spacing:-8px"><span class="ln soft" style="font-size:84px;letter-spacing:-3px"><span class="w" data-t="16.52">slack.</span><span class="w" data-t="17.26">editor.</span><span class="w" data-t="18.08">docs.</span></span><span class="ln"><span class="w" data-t="19.02">anywhere.</span></span></div>
+    <div class="flr"></div>
+    <div class="tt" id="tt">
+      <div class="win" id="wa"><div class="chrome"><i></i><i></i><i></i></div><div class="nm"># team-chat</div>
+        <div class="body"><div class="msg"><i></i><div>Sam<br><span>can you review the PR?</span></div></div><div class="msg"><i></i><div>Ana<br><span>deploy is green ✓</span></div></div></div>
+        <div class="box"><span id="xa"></span></div></div>
+      <div class="win" id="wb"><div class="chrome"><i></i><i></i><i></i></div><div class="nm">auth.ts</div>
+        <div class="body code"><b>export</b> function refresh() {
+  const t = getToken()
+  <b>if</b> (!t) return null
+}</div>
+        <div class="box mono" style="font-size:24px"><span id="xb"></span></div></div>
+      <div class="win lite" id="wc"><div class="chrome"><i></i><i></i><i></i></div><div class="nm">meeting notes · doc</div>
+        <div class="body"><div class="line" style="width:90%"></div><div class="line" style="width:70%"></div><div class="line" style="width:80%"></div></div>
+        <div class="box"><span id="xc"></span></div></div>
+    </div>
+    <div class="apl" id="p1" style="left:110px">slack</div>
+    <div class="apl" id="p2" style="left:330px">code editor</div>
+    <div class="apl" id="p3" style="left:660px">google docs</div>
+  </section>
+
+  <!-- S5 best part: cable to the cloud gets cut, network switch flips off -->
+  <section class="sc" id="s5">
+    <div class="L kick" style="top:250px" data-k="// the best part"></div>
+    <div class="L h" style="top:300px;font-size:150px;letter-spacing:-7px">
+      <span class="ln soft" style="font-size:96px;letter-spacing:-4px"><span class="w" data-t="21.42">runs</span><span class="w" data-t="21.84">completely</span></span>
+      <span class="ln"><span class="w" data-t="22.6">offline.</span></span>
+    </div>
+    <div class="cloud" id="cld"><svg viewBox="0 0 480 280"><path id="cpath" d="M120 250 H370 A90 90 0 0 0 360 72 A120 120 0 0 0 140 90 A80 80 0 0 0 120 250 Z" fill="none" stroke="#f5f6f7" stroke-width="10" stroke-linejoin="round"/></svg></div>
+    <div class="cut"><i id="cu1" style="top:0"></i><i id="cu2" style="top:120px"></i></div>
+    <div class="spark" id="spk"></div>
+    <div class="c3 sw in" style="left:90px;top:1270px;width:900px;height:250px" data-t="20.0" data-rx="16">
+      <div class="t"><small>network</small><b id="nst">connected</b></div>
+      <div class="tog" id="tog"><div class="kn" id="kn"></div></div>
+    </div>
+    <div class="stat" id="stat"></div>
+  </section>
+
+  <!-- S6 local models: cartridges load into a laptop running the real app -->
+  <section class="sc" id="s6">
+    <div class="L kick" style="top:250px" data-k="// on your own machine"></div>
+    <div class="L h" style="top:300px;font-size:120px">
+      <span class="ln"><span class="w" data-t="23.56">whisper</span><span class="w ser" data-t="23.98" style="font-size:110px">or</span></span>
+      <span class="ln"><span class="w" data-t="24.12">parakeet.</span></span>
+    </div>
+    <div class="cart" id="ca1" style="left:90px"><div class="lb"><b>Whisper</b><small>small · medium · turbo · large</small></div><div class="pins"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div>
+    <div class="cart" id="ca2" style="left:570px"><div class="lb"><b>Parakeet V3</b><small>CPU-optimized · auto language</small></div><div class="pins"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div></div>
+    <div class="lap in" data-t="23.4" data-rx="8" style="top:990px"><div class="lid" id="lid"><div class="scr"><img id="aimg" src="media/app/a001.jpg"></div></div><div class="deck"><i></i></div></div>
+    <div class="c3 lite zb in" style="left:90px;top:1580px;width:900px;height:160px" data-t="26.6" data-rx="10">
+      <div class="lk">☁</div><div class="tx"><b>sent to the cloud</b><small>your voice stays on your machine</small></div><div class="n" id="zbn">0 B</div>
+    </div>
+  </section>
+
+  <!-- S7 yours: OS pillars rise, MIT sheet gets stamped, subscription crossed out -->
+  <section class="sc" id="s7">
+    <div class="L kick" style="top:250px" data-k="// runs everywhere"></div>
+    <div class="pil" id="pl1" style="left:64px"><div class="blk" style="height:320px"><span class="gl">01</span><b>Mac</b></div></div>
+    <div class="pil" id="pl2" style="left:395px"><div class="blk dk" style="height:400px"><span class="gl">02</span><b>Windows</b></div></div>
+    <div class="pil" id="pl3" style="left:726px"><div class="blk" style="height:360px"><span class="gl">03</span><b>Linux</b></div></div>
+    <div class="c3 lite lic in" style="left:90px;top:960px;width:900px;height:360px" data-t="30.5" data-rx="12" data-ry="-6">
+      <div class="t">MIT License</div>
+      <p>Copyright (c) 2025 CJ Pais<br>Permission is hereby granted, free of charge,<br>to any person obtaining a copy of this software…</p>
+      <div class="stamp" id="stp">FREE<br>TO USE</div>
+    </div>
+    <div class="c3 bill in" style="left:90px;top:1420px;width:900px;height:250px" data-t="31.8" data-rx="12">
+      <div class="l"><small>monthly</small><b>subscription<span class="strk" id="strk"></span></b></div>
+      <div class="p">$0<small> /mo</small></div>
+    </div>
+  </section>
+
+  <!-- S8 comment -->
+  <section class="sc" id="s8">
+    <div class="L kick" style="top:250px" data-k="// want the link?"></div>
+    <div class="L h" style="top:304px">
+      <span class="ln" style="font-size:132px"><span class="w" data-t="33.12">Comment</span></span>
+      <span class="ln soft" style="font-size:190px;letter-spacing:-8px"><span class="w" data-t="33.54">GITMATE</span></span>
+    </div>
+    <div class="c3 cm in" style="left:64px;top:690px;width:952px;height:390px" data-t="33.0" data-ry="-10" data-rx="8">
+      <div class="lbl" style="margin-bottom:22px">comments</div>
+      <div class="rowc"><div class="av2"></div><div class="cin"><span id="t9" style="color:rgba(255,255,255,.4)">Add a comment…</span></div><div class="send" id="snd9">↑</div></div>
+      <div class="posted" id="pst9"><div class="av2" style="width:56px;height:56px"></div><div><div class="u">you <span class="lbl">· now</span></div><div class="c">GITMATE</div></div></div>
+    </div>
+    <div class="c3 lite dm in" style="left:300px;top:1150px;width:560px;height:130px" data-t="34.3" data-z="80"><small>git.mate · message</small>Here's your link, mate 🔗</div>
+  </section>
+
+  <!-- S9 end -->
+  <section class="sc" id="s9">
+    <svg class="erings" viewBox="0 0 500 500"><circle id="er1" cx="250" cy="250" r="226" fill="none" stroke="#f5f6f7" stroke-width="3" stroke-dasharray="1420" stroke-dashoffset="1420" transform="rotate(-90 250 250)"/>
+      <circle id="er2" cx="250" cy="250" r="246" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="2" stroke-dasharray="1546" stroke-dashoffset="1546" transform="rotate(90 250 250)"/></svg>
+    <div class="bead bigmk" id="bigmk">&gt;_</div>
+    <div class="hnd" id="hnd"></div>
+    <div class="L h" style="top:1160px;font-size:84px;letter-spacing:-3px;text-align:center"><span class="ln soft"><span class="w" data-t="35.9">1</span><span class="w" data-t="36.1">repo</span><span class="w" data-t="36.3">every</span><span class="w" data-t="36.5">day.</span></span></div>
+    <div class="fol" id="fol">Follow</div>
+    <div class="fol2" id="fol2">Following ✓</div>
+    <div class="erip" id="erip"></div>
+    <svg class="tap" id="tap10" viewBox="0 0 100 100" style="left:600px;top:1420px"><circle cx="50" cy="50" r="34" fill="rgba(255,255,255,.25)" stroke="#fff" stroke-width="5"/><circle cx="50" cy="50" r="12" fill="#fff"/></svg>
+  </section>
+ </div></div>
+
+ <div class="top"><div class="brand"><div class="bead">&gt;_</div>git.mate</div><div class="tag" id="tag"><b>01</b> / hook</div></div>
+ <div class="prog" id="prog"></div>
+ <div class="vig"></div><div class="grain"></div>
+</div>
+
+<script>
+(function () {
+  // times are voice-take seconds; the voice is sped up 1.07x, so the page runs at SPD
+  const SPD = 1.07;
+  const S = [0, 4.85, 10.85, 16.3, 19.7, 23.3, 28.55, 32.9, 35.1];
+  const TOTAL = 39.0; window.__TOTAL = TOTAL / SPD;
+  const LABEL = ['hook', 'meet it', 'how', 'anywhere', 'offline', 'models', 'yours', 'link', 'follow'];
+  const $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)];
+  const tl = gsap.timeline({ paused: true, defaults: { ease: 'power3.out' } });
+  $('#prog').innerHTML = S.map(() => '<i><b></b></i>').join('');
+  const scenes = $$('.sc');
+  const R = 2400, STEP = 30;
+  scenes.forEach((sc, i) => { sc.style.transform = `rotateY(${i * STEP}deg) translateZ(${R}px)`; });
+  const cam = { a: 0, d: 0, rx: 0, rz: 0 };
+  const MOVE = { 2: 'roll', 4: 'crane', 6: 'roll', 7: 'crane', 8: 'crane' };
+  scenes.forEach((sc, i) => {
+    tl.set(sc, { visibility: 'visible' }, Math.max(0, S[i] - .62));
+    if (i < scenes.length - 1) tl.set(sc, { visibility: 'hidden' }, S[i + 1] + .45);
+    if (i) {
+      const t0 = S[i] - .58, dir = i % 2 ? 1 : -1, mv = MOVE[i];
+      const prx = mv === 'crane' ? 22 : 9 * dir, prz = mv === 'roll' ? 9 * dir : mv === 'crane' ? 0 : 3 * dir, pd = mv === 'crane' ? 1250 : 900;
+      tl.to(cam, { a: i * STEP, duration: 1.0, ease: 'power3.inOut' }, t0);
+      tl.to(cam, { keyframes: [{ d: pd, rx: prx, rz: prz, duration: .5, ease: 'power2.out' }, { d: 0, rx: 0, rz: 0, duration: .5, ease: 'power2.in' }] }, t0);
+    }
+  });
+  tl.set(scenes[0], { visibility: 'visible' }, 0);
+  $$('.h .w').forEach((w) => { const t = +w.dataset.t; if (!t) return;
+    tl.fromTo(w, { opacity: 0, y: 70, scale: 1.12, filter: 'blur(18px)' }, { opacity: 1, y: 0, scale: 1, filter: 'blur(0px)', duration: .55, ease: 'expo.out' }, t); });
+  scenes.forEach((sc, i) => { const k = $('.kick', sc); if (!k) return; const txt = k.dataset.k, o = { n: 0 }; k.textContent = i ? '' : txt; if (!i) return;
+    tl.fromTo(o, { n: 0 }, { n: txt.length, duration: Math.min(.7, txt.length * .025), ease: 'none', immediateRender: false, onUpdate: () => { k.textContent = txt.slice(0, Math.round(o.n)); } }, S[i] + .05); });
+  $$('.in').forEach((c) => {
+    const t = +c.dataset.t, rx = +(c.dataset.rx || 0), ry = +(c.dataset.ry || 0), z = +(c.dataset.z || 0);
+    const end = { autoAlpha: 1, z, rotationX: rx, rotationY: ry, y: 0, duration: .9, ease: 'expo.out' };
+    if (!t) { gsap.set(c, end); return; }
+    tl.fromTo(c, { autoAlpha: 0, z: -900, rotationX: rx + 40, rotationY: ry * 2, y: 120 }, end, t);
+  });
+  const typer = (el, text, t, d) => { const o = { n: 0 }; tl.fromTo(o, { n: 0 }, { n: text.length, duration: d, ease: 'none', immediateRender: false, onUpdate: () => { el.textContent = text.slice(0, Math.round(o.n)); } }, t); };
+  const sm = (a, b, x) => { const k = Math.min(1, Math.max(0, (x - a) / (b - a))); return k * k * (3 - 2 * k); };
+  const lerp = (a, b, k) => a + (b - a) * k;
+  const tw = (t, a, b, s) => s.slice(0, Math.round(sm(a, b, t) * s.length));
+  const noise = (i, t) => Math.abs(Math.sin(i * 1.7 + t * 9) * Math.sin(i * .63 + t * 5.3));
+
+  // S1 keyboard keys
+  const kbd = $('#kbd'), KEYS = [];
+  const ROWS = ['QWERTYUIOP', 'ASDFGHJKL;', 'ZXCVBNM,./'];
+  ROWS.forEach((r, ri) => r.split('').forEach((ch, ci) => { const k = document.createElement('div'); k.className = 'kc'; k.textContent = ch;
+    k.style.left = (40 + ri * 22 + ci * 80) + 'px'; k.style.top = (34 + ri * 80) + 'px'; kbd.appendChild(k); KEYS.push([k, ri, ci]); }));
+  const sp = document.createElement('div'); sp.className = 'kc'; sp.style.cssText = 'left:220px;top:274px;width:420px'; kbd.appendChild(sp); KEYS.push([sp, 3, 4]);
+  const W1 = $('#wave1'); for (let i = 0; i < 44; i++) W1.insertAdjacentHTML('beforeend', '<i></i>'); const W1b = $$('i', W1);
+  // S2 converter + LED columns
+  const CW = $('#cwv'); for (let i = 0; i < 12; i++) CW.insertAdjacentHTML('beforeend', '<i></i>'); const CWb = $$('i', CW);
+  const COLS = $('#cols'), LEDS = [];
+  for (let c = 0; c < 22; c++) { const col = document.createElement('div'); col.className = 'col'; const arr = [];
+    for (let r = 0; r < 12; r++) { const i = document.createElement('i'); col.appendChild(i); arr.push(i); } COLS.appendChild(col); LEDS.push(arr); }
+  // S3 rec bars
+  const RB = $('#rbars'); for (let i = 0; i < 40; i++) RB.insertAdjacentHTML('beforeend', '<i></i>'); const RBb = $$('i', RB);
+  // S4 turntable
+  const WINS = [$('#wa'), $('#wb'), $('#wc')];
+  const tt = $('#tt'); const TT = [16.45, 17.2, 18.0];
+  // S8 comment flow
+  tl.call(() => { $('#t9').textContent = 'Add a comment…'; $('#t9').style.color = 'rgba(255,255,255,.4)'; }, null, 33.59);
+  tl.call(() => { $('#t9').style.color = '#fff'; }, null, 33.6);
+  typer($('#t9'), 'GITMATE', 33.6, .3);
+  tl.fromTo('#snd9', { scale: 1 }, { scale: .8, duration: .1, yoyo: true, repeat: 1 }, 33.95);
+  tl.fromTo('#pst9', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: .35 }, 34.02);
+  // S9 end
+  tl.fromTo('#bigmk', { opacity: 0, scale: .2, rotation: -40 }, { opacity: 1, scale: 1, rotation: 0, duration: .9, ease: 'back.out(1.8)' }, 35.15);
+  tl.fromTo('#er1', { attr: { 'stroke-dashoffset': 1420 } }, { attr: { 'stroke-dashoffset': 0 }, duration: 1.0, ease: 'power2.inOut', immediateRender: false }, 35.3);
+  tl.fromTo('#er2', { attr: { 'stroke-dashoffset': 1546 } }, { attr: { 'stroke-dashoffset': 0 }, duration: 1.2, ease: 'power2.inOut', immediateRender: false }, 35.45);
+  typer($('#hnd'), '@git.mate', 35.55, .5);
+  tl.fromTo('#fol', { opacity: 0, scale: .6 }, { opacity: 1, scale: 1, duration: .5, ease: 'back.out(2)' }, 36.1);
+  tl.fromTo('#tap10', { opacity: 0, x: 160, y: 140 }, { opacity: 1, x: 0, y: 0, duration: .5, ease: 'power2.out' }, 36.7);
+  tl.to('#tap10', { scale: .75, duration: .1, yoyo: true, repeat: 1 }, 37.3);
+  tl.to('#fol', { scale: .93, duration: .1 }, 37.3);
+  tl.set('#fol2', { opacity: 1 }, 37.4); tl.set('#fol', { opacity: 0 }, 37.4);
+  tl.fromTo('#erip', { opacity: .8, width: 10, height: 10, margin: -5 }, { opacity: 0, width: 640, height: 640, margin: -320, duration: .8, ease: 'power2.out', immediateRender: false }, 37.35);
+  tl.to('#tap10', { opacity: 0, duration: .3 }, 37.9);
+  tl.to({}, { duration: .01 }, TOTAL);
+
+  const world = $('#world'), tag = $('#tag'), segs = $$('#prog b'), dimg = $('#dimg'), aimg = $('#aimg');
+  let dIdx = 40, aIdx = 1;
+  const tick = (t) => {
+    const a = cam.a + Math.sin(t * .5) * .35, rx = cam.rx + Math.sin(t * .37 + 1) * .7, rz = cam.rz + Math.sin(t * .29) * .25;
+    scenes.forEach((sc, i) => { sc.style.display = t >= S[i] - .7 && t <= (S[i + 1] || 99) + .5 ? '' : 'none'; });
+    world.style.transform = `translateZ(${-cam.d}px) rotateX(${rx}deg) rotateZ(${rz}deg) translateZ(${-R}px) rotateY(${-a}deg)`;
+    // S1: keys bounce off at "stop typing", keyboard drops away, mic rises, words land in the field
+    { KEYS.forEach(([k, ri, ci]) => { const d = (ci * .035 + ri * .05), u = sm(.62 + d, .95 + d, t), f = sm(1.0 + d, 1.6 + d, t);
+        k.style.transform = `translate3d(${(ci - 5) * 30 * f}px,${-u * 30 + f * 520}px,${u * 60}px) rotate(${(ci - 5) * 9 * f}deg)`; k.style.opacity = 1 - sm(1.3 + d, 1.7 + d, t); });
+      const kd = sm(1.25, 1.9, t); kbd.style.opacity = t < .02 ? 1 : 1 - kd; kbd.style.marginTop = (kd * 300) + 'px';
+      const mu = sm(1.55, 2.2, t); $('#mic').style.opacity = mu; $('#mic').style.transform = `translateY(${(1 - mu) * 260}px) scale(${.8 + .2 * mu})`;
+      [['#rg1', 1.9], ['#rg2', 2.35], ['#rg3', 2.8]].forEach(([id, t0]) => { const k = ((t - t0) % 1.35) / 1.35, on = t > t0 && t < 4.6; const s = 260 + k * 520; const e = $(id);
+        e.style.width = e.style.height = s + 'px'; e.style.margin = `${-s / 2}px 0 0 ${-s / 2}px`; e.style.opacity = on ? (1 - k) * .6 * mu : 0; });
+      const wv = sm(2.0, 2.4, t) * (1 - sm(4.6, 4.9, t)), spk = (t > 1.7 && t < 2.4) || (t > 2.74 && t < 4.5);
+      W1b.forEach((b, i) => { b.style.height = (6 + wv * (spk ? 100 : 18) * noise(i, t) * Math.sin(Math.PI * (i + .5) / 44)) + 'px'; });
+      $('#ft1').textContent = tw(t, 2.95, 4.4, 'just talk, mate. it types for you.');
+      const apps = ['any app ▾', 'slack ▾', 'vs code ▾', 'docs ▾', 'any app ▾']; $('#appn').textContent = apps[Math.min(4, Math.max(0, Math.floor((t - 2.9) / .4)))];
+      $('#tc1').style.visibility = Math.floor(t * 3) % 2 ? 'hidden' : 'visible'; }
+    // S2: converter bars talk, tags pop, LED meter fills while stars count up
+    { const on = t > 6.2 && t < 10.6; CWb.forEach((b, i) => { b.style.height = (10 + (on ? 80 * noise(i, t) : 4)) + 'px'; });
+      $('#ctx').textContent = tw(t, 7.34, 7.96, 'Hello') || 'Aa';
+      [['#tg1', 6.24], ['#tg2', 6.7]].forEach(([id, t0]) => { const k = sm(t0, t0 + .25, t); $(id).style.opacity = k; $(id).style.transform = `scale(${.6 + .4 * k})`; });
+      const k = sm(8.62, 10.2, t), n = Math.round(k * 36700); $('#snum').innerHTML = n >= 1000 ? (n / 1000).toFixed(1) + '<small>k+</small>' : n;
+      LEDS.forEach((arr, c) => { const hgt = k * (5 + 7 * Math.abs(Math.sin(c * .9 + 1.3)) ) + (t > 10.2 ? noise(c, t) * 1.5 : 0); arr.forEach((i, r) => i.classList.toggle('on', r < hgt)); }); }
+    // S3: chord pressed 11.1-12.94, REC strip live while speaking, real doc pastes
+    { const pr = sm(11.05, 11.2, t) * (1 - sm(12.94, 13.1, t)), lift = sm(10.9, 11.3, t);
+      ['#k1', '#k2'].forEach((id, i) => { const e = $(id); e.style.opacity = lift; e.style.transform = `perspective(1400px) rotateX(${30 - pr * 4}deg) translateY(${pr * 20 + (1 - lift) * 200}px)`;
+        e.style.boxShadow = pr > .5 ? 'inset 0 3px 0 #fff,0 4px 0 #a3a7ad,0 6px 0 #8d9197,0 20px 30px rgba(0,0,0,.75)' : ''; });
+      $('.plus').style.opacity = lift;
+      const recOn = t > 11.15 && t < 12.94; $('#rlab').textContent = t < 11.15 ? 'READY' : recOn ? 'REC' : 'PASTED ✓';
+      $('#rdot').style.opacity = recOn ? (Math.floor(t * 4) % 2 ? .35 : 1) : .3;
+      const sec = Math.max(0, Math.min(t, 12.94) - 11.15); $('#rtm').textContent = '0:' + String(Math.floor(sec / SPD * 1)).padStart(2, '0');
+      RBb.forEach((b, i) => { b.style.height = (4 + (recOn && t > 12.2 ? 64 * noise(i, t) : recOn ? 10 * noise(i, t) : 0)) + 'px'; });
+      $('#rec').style.opacity = sm(11.0, 11.3, t);
+      const di = Math.max(40, Math.min(100, 40 + Math.floor((t - 13.0) / SPD * 10))); if (di !== dIdx) { dIdx = di; dimg.src = `media/doc/d${String(di).padStart(3, '0')}.jpg`; } }
+    // S4: turntable spins each app window to the front and drops the same words into it
+    { let ang = 0; TT.forEach((t0, i) => { ang = lerp(ang, i * 120, sm(t0 - .25, t0 + .2, t)); });
+      tt.style.transform = `rotateX(-8deg) rotateY(${-ang}deg)`;
+      WINS.forEach((w, i) => { w.style.transform = `rotateY(${i * 120}deg) translateZ(430px)`; });
+      $('#xa').textContent = tw(t, 16.6, 17.1, 'sounds good, ship it!');
+      $('#xb').textContent = tw(t, 17.35, 17.9, '// TODO: retry on 401');
+      $('#xc').textContent = tw(t, 18.15, 18.75, 'Action items: launch Friday');
+      [['#p1', 16.45], ['#p2', 17.2], ['#p3', 18.0]].forEach(([id, t0], i) => $(id).classList.toggle('on', t >= t0 && (i === 2 || t < TT[i + 1]))); }
+    // S5: cable to the cloud snaps at "offline", switch flips
+    { const cut = sm(22.6, 22.95, t);
+      $('#cu1').style.transform = `translateY(${-cut * 40}px) rotate(${-cut * 18}deg)`; $('#cu2').style.transform = `translateY(${cut * 60}px) rotate(${cut * 24}deg)`;
+      $('#cu1').style.opacity = $('#cu2').style.opacity = 1 - cut * .6;
+      $('#spk').style.opacity = sm(22.58, 22.68, t) * (1 - sm(22.7, 23.0, t)); $('#spk').style.transform = `scale(${1 + sm(22.58, 23.0, t) * 2})`;
+      $('#cld').style.opacity = 1 - cut * .65; $('#cld').style.transform = `translateY(${-cut * 30}px)`;
+      $('#kn').style.left = (12 + 120 * (1 - sm(22.55, 22.8, t))) + 'px';
+      $('#tog').style.background = t < 22.7 ? '#f2f3f5' : '#2a2b30'; $('#nst').textContent = t < 22.7 ? 'connected' : 'offline';
+      $('#stat').textContent = t > 22.9 ? tw(t, 22.9, 23.25, '✓ handy still works') : ''; }
+    // S6: cartridges drop into the slot, laptop shows the real app, cloud counter stays at 0 B
+    { [['#ca1', 23.5], ['#ca2', 24.1]].forEach(([id, t0], i) => { const k = sm(t0, t0 + .45, t), ins = sm(25.2, 25.7, t);
+        $(id).style.opacity = k * (1 - ins); $(id).style.transform = `perspective(1400px) translate3d(${(1 - k) * (i ? 500 : -500)}px,${ins * 150}px,0) rotateY(${(1 - k) * (i ? -40 : 40)}deg) rotateX(${12 + ins * 30}deg) scaleY(${1 - ins * .35})`; });
+      $('#lid').style.transform = `rotateX(${-lerp(70, 6, sm(23.4, 24.3, t))}deg)`;
+      const ai = Math.max(1, Math.min(80, 1 + Math.floor((t - 24.2) / SPD * 10))); if (ai !== aIdx) { aIdx = ai; aimg.src = `media/app/a${String(ai).padStart(3, '0')}.jpg`; }
+      $('#zbn').textContent = t > 26.7 ? '0 B' : '—'; }
+    // S7: pillars rise one by one, stamp, strike
+    { [['#pl1', 28.82], ['#pl2', 29.32], ['#pl3', 29.92]].forEach(([id, t0]) => { const k = sm(t0 - .1, t0 + .3, t), b = Math.sin(sm(t0 + .2, t0 + .6, t) * Math.PI) * .04;
+        $(id).style.opacity = k; $(id).style.transform = `perspective(1600px) rotateX(10deg) scaleY(${k + b}) translateY(${(1 - k) * 80}px)`; });
+      const st = sm(30.95, 31.15, t); $('#stp').style.opacity = st; $('#stp').style.transform = `rotate(-14deg) scale(${2.2 - 1.2 * st})`;
+      $('#strk').style.width = sm(31.95, 32.4, t) * 104 + '%'; }
+    let si = 0; for (let i = 0; i < S.length; i++) if (t >= S[i] - .3) si = i;
+    tag.innerHTML = `<b>${String(si + 1).padStart(2, '0')}</b> / ${LABEL[si]}`;
+    segs.forEach((b, i) => { const e = i < S.length - 1 ? S[i + 1] : TOTAL - 2; b.style.width = Math.min(100, Math.max(0, (t - S[i]) / (e - S[i]) * 100)) + '%'; });
+  };
+  window.__tl = tl;
+  window.__seek = (rt) => { const t = rt * SPD; tl.time(t, false); tick(t); return Promise.all([dimg, aimg].map(i => i.complete ? null : i.decode().catch(() => {}))); };
+  window.__seek(0);
+  if (!navigator.webdriver) { const t0 = performance.now(); const loop = () => { window.__seek(((performance.now() - t0) / 1000) % (TOTAL / SPD)); requestAnimationFrame(loop); }; requestAnimationFrame(loop); }
+})();
+</script>
+</body></html>

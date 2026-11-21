@@ -1,0 +1,13 @@
+The network is down. No internet, no signal. How do you text your family? 📵
+
+DarkProof by @is4wiz is a messaging app for when there's no internet and no mobile network:
+→ Phones talk to each other directly over Bluetooth, Wi-Fi or a LoRa radio
+→ Every phone passes messages along (up to 16 hops), so they reach people way out of range
+→ End-to-end encrypted (AES-256-GCM) and signed: the phones in between can't read a word
+→ "I need help" in one tap, check-ins with battery + position, offline street maps
+→ An AI that runs right on your phone, no internet needed
+→ No servers, no accounts. Android and iPhone, same format
+
+Built something too? DM us your repo 📩
+Comment GITMATE and I'll send you the link 👇
+Follow @git.mate for 1 useful repo every day.

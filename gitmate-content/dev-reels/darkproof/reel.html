@@ -1,0 +1,448 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<title>git.mate darkproof</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<style>
+:root{--ink:#0b0b0c;--mut:#8b8d91;--dim:#cfd0d2}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#fff}
+.f{position:relative;width:1080px;height:1920px;overflow:hidden;background:radial-gradient(ellipse 110% 70% at 50% 45%,#ffffff 0%,#f7f7f5 55%,#eeeeec 100%);color:var(--ink);font-family:'Inter',sans-serif}
+.grain{position:absolute;inset:0;opacity:.05;mix-blend-mode:multiply;z-index:8;pointer-events:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
+#blk{position:absolute;inset:0;background:#000;z-index:7;opacity:0;pointer-events:none}
+#stage{position:absolute;inset:0;perspective:2200px;perspective-origin:50% 46%;z-index:2}
+#world{position:absolute;left:0;top:0;width:1080px;height:1920px;transform-style:preserve-3d}
+.sc{position:absolute;left:0;top:0;width:1080px;height:1920px;transform-style:preserve-3d;backface-visibility:hidden;visibility:hidden}
+#s1{visibility:visible}
+.c3{position:absolute;border-radius:30px;overflow:hidden;background:#fff;box-shadow:0 0 0 3px var(--ink),0 10px 0 var(--ink),0 50px 80px rgba(0,0,0,.16)}
+.c3.dk{background:var(--ink);color:#fff;box-shadow:0 0 0 3px var(--ink),0 10px 0 #3a3b3e,0 50px 80px rgba(0,0,0,.25)}
+.mk{width:58px;height:58px;border-radius:50%;display:grid;place-items:center;font-family:'JetBrains Mono';font-weight:800;font-size:22px;color:#fff;flex:none;background:radial-gradient(circle at 34% 28%,#5a5c61 0 10%,#1a1b1e 45%,#000 100%);box-shadow:inset 0 2px 3px rgba(255,255,255,.35),0 8px 18px rgba(0,0,0,.25)}
+.top{position:absolute;left:64px;right:64px;top:84px;height:80px;z-index:6}
+.brand{position:absolute;left:0;top:0;display:flex;align-items:center;gap:16px;font-family:'JetBrains Mono';font-weight:700;font-size:28px}
+.tag{position:absolute;right:0;top:14px;font-family:'JetBrains Mono';font-size:24px;color:var(--mut);white-space:nowrap}
+.tag b{color:var(--ink);font-weight:700}
+.prog{position:absolute;left:64px;right:64px;bottom:96px;display:flex;gap:10px;z-index:6}
+.prog i{flex:1;height:8px;border-radius:4px;background:rgba(0,0,0,.1);position:relative;overflow:hidden}
+.prog i b{position:absolute;left:0;top:0;bottom:0;width:0;background:var(--ink);border-radius:4px}
+.L{position:absolute;left:64px;right:64px}
+.kick{font-family:'JetBrains Mono';font-size:26px;color:var(--mut);letter-spacing:1px;white-space:pre;height:38px}
+.h{line-height:.98}
+.h .ln{display:block;white-space:nowrap}
+.h .w{display:inline-block;margin-right:.22em;font-weight:600;letter-spacing:-.04em}
+.h .w:last-child{margin-right:0}
+.h .ser{font-family:'Instrument Serif';font-style:italic;font-weight:400;letter-spacing:-.01em}
+.h .ch{display:inline-block;white-space:pre}
+.lbl{font-family:'JetBrains Mono';font-size:22px;color:var(--mut)}
+.real{position:absolute;right:20px;top:18px;z-index:3;padding:7px 16px;border-radius:999px;font-family:'JetBrains Mono';font-weight:800;font-size:17px;background:#fff;color:var(--ink);box-shadow:0 0 0 2px var(--ink)}
+/* phone */
+.ph{position:absolute;width:300px;height:600px;border-radius:52px;background:#fff;box-shadow:0 0 0 4px var(--ink),0 14px 0 var(--ink),0 60px 90px rgba(0,0,0,.2);overflow:hidden}
+.ph .isl{position:absolute;left:100px;top:18px;width:100px;height:28px;border-radius:14px;background:var(--ink)}
+.ph .sb{position:absolute;left:28px;right:28px;top:62px;display:flex;justify-content:space-between;font-family:'JetBrains Mono';font-weight:800;font-size:20px}
+/* S1 */
+.p1{left:190px;top:640px;width:700px;height:860px;border-radius:70px}
+.p1 .isl{left:280px;width:140px;height:40px;top:24px;border-radius:20px}
+.p1 .sb{top:84px;left:50px;right:50px;font-size:28px}
+.p1 .chat{position:absolute;left:40px;right:40px;top:170px}
+.p1 .who{display:flex;align-items:center;gap:18px;padding-bottom:22px;border-bottom:2px solid #eee}
+.p1 .who .av{width:72px;height:72px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#d9d9d7,#9a9ca1)}
+.p1 .who b{font-size:34px}
+.p1 .who span{display:block;font-family:'JetBrains Mono';font-size:20px;color:var(--mut)}
+.bme{position:absolute;right:0;padding:22px 30px;border-radius:34px 34px 10px 34px;background:var(--ink);color:#fff;font-size:34px;font-weight:600;white-space:nowrap}
+.nd{position:absolute;right:6px;font-family:'JetBrains Mono';font-weight:800;font-size:22px;white-space:nowrap;display:flex;align-items:center;gap:10px}
+.nd i{width:30px;height:30px;border-radius:50%;border:3px solid var(--ink);display:grid;place-items:center;font-style:normal;font-size:18px}
+.sig{display:flex;gap:6px;align-items:flex-end}
+.sig i{width:8px;background:var(--ink);border-radius:2px}
+.nosvc{position:absolute;left:40px;right:40px;bottom:50px;height:110px;border-radius:30px;background:#f1f1ef;display:flex;align-items:center;justify-content:center;gap:16px;font-family:'JetBrains Mono';font-weight:800;font-size:28px;white-space:pre}
+/* S2 */
+.icon{position:absolute;left:390px;top:640px;width:300px;height:300px;border-radius:70px;overflow:hidden;box-shadow:0 0 0 4px var(--ink),0 16px 0 #3a3b3e,0 60px 90px rgba(0,0,0,.25)}
+.icon img{width:100%;height:100%}
+.dpn{position:absolute;left:0;right:0;top:1030px;text-align:center;font-family:'Instrument Serif';font-size:200px;line-height:1;letter-spacing:-4px}
+.dps{position:absolute;left:0;right:0;top:1270px;text-align:center;font-family:'JetBrains Mono';font-size:28px;color:var(--mut);white-space:pre}
+/* S3 two phones + beam */
+.pa{left:70px;top:720px;transform:rotateY(18deg)}
+.pb{left:710px;top:720px;transform:rotateY(-18deg)}
+.ph .mid{position:absolute;left:24px;right:24px;top:140px;font-weight:700;font-size:26px;line-height:1.25}
+.ph .bb{position:absolute;padding:14px 18px;border-radius:22px;font-size:22px;font-weight:600;white-space:nowrap}
+.beam{position:absolute;left:370px;top:900px;width:340px;height:240px}
+.tchips{position:absolute;left:64px;right:64px;top:1440px;display:flex;justify-content:center;gap:18px}
+.tc{padding:20px 30px;border-radius:999px;font-family:'JetBrains Mono';font-weight:800;font-size:28px;white-space:nowrap;background:#fff;box-shadow:0 0 0 3px var(--ink),0 7px 0 var(--ink)}
+.tc.on{background:var(--ink);color:#fff;box-shadow:0 0 0 3px var(--ink),0 7px 0 #3a3b3e}
+/* S4 mesh */
+.mesh{position:absolute;left:0;top:560px;width:1080px;height:980px}
+.nd2{position:absolute;width:76px;height:130px;margin:-65px 0 0 -38px;border-radius:18px;background:#fff;box-shadow:0 0 0 3px var(--ink),0 6px 0 var(--ink)}
+.nd2:after{content:'';position:absolute;left:24px;top:8px;width:28px;height:8px;border-radius:4px;background:var(--ink)}
+.nd2.on{background:var(--ink)}
+.nd2.on:after{background:#fff}
+.rng{position:absolute;border-radius:50%;border:3px dashed rgba(11,11,12,.35)}
+.pkt{position:absolute;width:56px;height:40px;margin:-20px 0 0 -28px;border-radius:10px;background:var(--ink);box-shadow:0 8px 20px rgba(0,0,0,.3);display:grid;place-items:center;color:#fff;font-size:20px}
+.hop{position:absolute;left:290px;top:1560px;width:500px;height:110px;display:flex;align-items:center;justify-content:center;gap:18px;font-family:'JetBrains Mono';font-weight:800;font-size:34px;white-space:pre}
+.hop b{font-family:'Instrument Serif';font-style:italic;font-weight:400;font-size:70px}
+/* S5 encrypted */
+.erow{position:absolute;left:40px;top:700px;width:1000px;height:560px}
+.ep{position:absolute;top:0;width:290px;height:520px;border-radius:46px}
+.ep .t{position:absolute;left:22px;right:22px;top:110px;font-family:'JetBrains Mono';font-weight:800;font-size:20px;color:var(--mut);letter-spacing:2px}
+.ep .msg{position:absolute;left:22px;right:22px;top:160px;padding:20px;border-radius:22px;font-size:30px;font-weight:700;line-height:1.2}
+.ep .msg.enc{font-family:'JetBrains Mono';font-size:24px;letter-spacing:1px;word-break:break-all;background:#f1f1ef}
+.lockb{position:absolute;left:105px;top:360px;width:80px;height:100px}
+.aes{position:absolute;left:90px;top:1340px;width:900px;height:110px;border-radius:999px;display:flex;align-items:center;justify-content:center;gap:16px;font-family:'JetBrains Mono';font-weight:800;font-size:30px;white-space:nowrap}
+/* S6 features */
+.help{left:64px;top:640px;width:952px;height:330px;padding:32px 36px}
+.hb{position:absolute;right:40px;top:50px;width:300px;height:230px;border-radius:40px;background:var(--ink);color:#fff;display:grid;place-items:center;text-align:center;font-weight:700;font-size:40px;line-height:1.05;box-shadow:0 12px 0 #3a3b3e}
+.help .ht{font-family:'JetBrains Mono';font-weight:800;font-size:22px;letter-spacing:2px;color:var(--mut)}
+.needs{position:absolute;left:36px;top:96px;width:520px;display:flex;flex-wrap:wrap;gap:12px}
+.needs span{padding:12px 20px;border-radius:999px;font-family:'JetBrains Mono';font-weight:800;font-size:22px;box-shadow:0 0 0 2.5px var(--ink);white-space:nowrap}
+.needs span.on{background:var(--ink);color:#fff}
+.mapc{left:64px;top:1010px;width:452px;height:470px}
+.mapc svg{position:absolute;inset:0}
+.aic{left:564px;top:1010px;width:452px;height:470px;padding:28px}
+.aic .q{margin-left:auto;width:fit-content;max-width:100%;padding:16px 20px;border-radius:22px 22px 8px 22px;background:var(--ink);color:#fff;font-size:24px;font-weight:600;white-space:nowrap}
+.aic .a{margin-top:18px;padding:18px 20px;border-radius:22px 22px 22px 8px;background:#f1f1ef;font-size:23px;line-height:1.3;height:210px}
+.aic .ft{position:absolute;left:28px;bottom:24px;font-family:'JetBrains Mono';font-weight:800;font-size:19px;white-space:nowrap}
+.fl{position:absolute;left:30px;bottom:26px;padding:10px 16px;border-radius:12px;background:#fff;font-family:'JetBrains Mono';font-weight:800;font-size:20px;box-shadow:0 0 0 2.5px var(--ink);white-space:nowrap}
+/* S7 no servers */
+.hero{left:64px;top:620px;width:952px;height:357px}
+.hero img{position:absolute;inset:0;width:100%;height:100%}
+.nos{position:absolute;left:64px;right:64px;top:1030px;height:300px}
+.srv{position:absolute;top:0;width:440px;height:280px;padding:30px}
+.srv .big{font-family:'Instrument Serif';font-style:italic;font-size:110px;line-height:1;margin-top:30px}
+.srv .sm{font-family:'JetBrains Mono';font-weight:800;font-size:22px;letter-spacing:2px;color:var(--mut)}
+.strike{position:absolute;left:24px;top:150px;height:8px;background:var(--ink);border-radius:4px;width:0}
+.plat{position:absolute;left:64px;right:64px;top:1390px;display:flex;justify-content:center;gap:18px}
+.plat span{padding:18px 30px;border-radius:999px;font-family:'JetBrains Mono';font-weight:800;font-size:28px;box-shadow:0 0 0 3px var(--ink),0 7px 0 var(--ink);background:#fff;white-space:nowrap}
+.cred{position:absolute;left:64px;right:64px;top:1520px;text-align:center;font-family:'JetBrains Mono';font-weight:700;font-size:26px;color:var(--mut);white-space:pre;height:40px}
+/* S8 dm */
+.dmc{left:64px;top:640px;width:952px;height:560px;padding:30px 34px}
+.dmh{display:flex;align-items:center;gap:18px;padding-bottom:22px;border-bottom:2px solid #eee}
+.dmh .mk{width:70px;height:70px}
+.dmh b{font-family:'JetBrains Mono';font-size:30px}
+.dmh span{display:block;font-family:'JetBrains Mono';font-size:20px;color:var(--mut);margin-top:4px}
+.bub{position:absolute;right:34px;top:200px;padding:22px 28px;border-radius:30px 30px 10px 30px;background:var(--ink);color:#fff;font-family:'JetBrains Mono';font-weight:800;font-size:28px;white-space:nowrap;opacity:0}
+.bub2{position:absolute;left:34px;top:310px;padding:22px 28px;border-radius:30px 30px 30px 10px;background:#f1f1ef;font-weight:700;font-size:30px;white-space:nowrap;opacity:0}
+.cmp{position:absolute;left:34px;right:34px;bottom:30px;height:96px;border-radius:999px;display:flex;align-items:center;gap:16px;padding:0 12px 0 32px;box-shadow:inset 0 0 0 2.5px var(--ink)}
+.cmp .ty{flex:1;font-family:'JetBrains Mono';font-weight:700;font-size:28px;white-space:pre}
+.send{width:76px;height:76px;border-radius:50%;display:grid;place-items:center;background:var(--ink);color:#fff;font-size:34px;font-weight:900;flex:none}
+.inbox{position:absolute;left:64px;top:1260px;width:952px;height:300px}
+.ib{position:absolute;left:0;right:0;height:86px;border-radius:22px;display:flex;align-items:center;gap:18px;padding:0 24px;background:#fff;box-shadow:0 0 0 2.5px var(--ink),0 6px 0 var(--ink)}
+.av2{width:54px;height:54px;border-radius:50%;flex:none;background:radial-gradient(circle at 35% 30%,#d9d9d7,#8b8d91)}
+.ib .il{flex:1;font-family:'JetBrains Mono';font-size:22px;color:var(--mut);white-space:nowrap;overflow:hidden}
+.ib .il b{color:var(--ink);margin-right:10px}
+.ib .nw{width:16px;height:16px;border-radius:50%;background:var(--ink)}
+/* S9 comment */
+.cm{padding:30px 34px}
+.rowc{display:flex;align-items:center;gap:20px}
+.cin{flex:1;padding:20px 26px;border-radius:999px;font-size:32px;font-weight:700;box-shadow:inset 0 0 0 2.5px var(--ink)}
+.posted{display:flex;gap:20px;align-items:flex-start;margin-top:30px}
+.posted .u{font-weight:800;font-size:28px}
+.posted .c{font-size:34px;font-weight:800;margin-top:4px}
+.dm{padding:24px 30px;border-radius:32px 32px 32px 10px;font-size:32px;font-weight:700}
+.dm small{display:block;font-family:'JetBrains Mono';font-size:20px;color:#9a9ca1;font-weight:500;margin-bottom:6px}
+.tap{position:absolute;width:96px;height:96px;opacity:0;z-index:4}
+/* end */
+.erings{position:absolute;left:290px;top:420px;width:500px;height:500px}
+.bigmk{position:absolute;left:390px;top:520px;width:300px;height:300px;font-size:110px;letter-spacing:-6px}
+.hnd{position:absolute;left:0;right:0;top:1000px;text-align:center;font-family:'JetBrains Mono';font-weight:800;font-size:92px;white-space:pre;height:120px}
+.fol{position:absolute;left:280px;top:1390px;width:520px;height:132px;border-radius:999px;display:grid;place-items:center;font-size:52px;font-weight:700;background:var(--ink);color:#fff;box-shadow:0 8px 0 #3a3b3e,0 30px 60px rgba(0,0,0,.2)}
+.fol2{position:absolute;left:280px;top:1390px;width:520px;height:132px;border-radius:999px;display:grid;place-items:center;font-size:52px;font-weight:700;background:#fff;color:var(--ink);box-shadow:inset 0 0 0 4px var(--ink);opacity:0}
+.erip{position:absolute;left:540px;top:1456px;border-radius:50%;border:4px solid rgba(0,0,0,.6);opacity:0}
+</style></head><body>
+<div class="f" id="F">
+ <div id="stage"><div id="world">
+
+  <!-- S1 hook: phone, no service, message not delivered -->
+  <section class="sc" id="s1">
+    <div class="L kick" style="top:250px" data-k="// the network is down"></div>
+    <div class="L h" style="top:300px">
+      <span class="ln" style="font-size:118px"><span class="w" data-t="2.32">No</span><span class="w" data-t="2.48">internet.</span></span>
+      <span class="ln" style="font-size:124px"><span class="w ser" data-t="3.44">no signal.</span></span>
+    </div>
+    <div class="ph p1 in" data-t="0.05" data-rx="10" data-ry="-8">
+      <div class="isl"></div>
+      <div class="sb"><span id="clk">9:41</span><span id="svc"></span></div>
+      <div class="chat">
+        <div class="who"><div class="av"></div><div><b>Mom</b><span>family</span></div></div>
+        <div class="bme" id="bme1" style="top:150px">Are you okay? ❤️</div>
+        <div class="bme" id="bme2" style="top:270px">I'm safe. Battery 12%</div>
+        <div class="nd" id="nd" style="top:370px"><i>!</i><span id="ndt"></span></div>
+      </div>
+      <div class="nosvc" id="nosvc"></div>
+    </div>
+  </section>
+
+  <!-- S2 meet -->
+  <section class="sc" id="s2">
+    <div class="L kick" style="top:250px" data-k="// meet"></div>
+    <div class="icon" id="icon"><img src="media/logo.png"></div>
+    <div class="dpn" id="dpn"></div>
+    <div class="dps" id="dps"></div>
+  </section>
+
+  <!-- S3 phone to phone, transports switch -->
+  <section class="sc" id="s3">
+    <div class="L kick" style="top:250px" data-k="// no towers needed"></div>
+    <div class="L h" style="top:300px">
+      <span class="ln" style="font-size:120px"><span class="w" data-t="7.76">Phone</span><span class="w" data-t="8.2">to</span><span class="w" data-t="8.36">phone.</span></span>
+      <span class="ln" style="font-size:124px"><span class="w ser" data-t="8.8">directly.</span></span>
+    </div>
+    <div class="ph pa"><div class="isl"></div><div class="sb"><span>you</span><span>✕ SOS</span></div><div class="bb" id="pab" style="right:20px;top:170px;background:var(--ink);color:#fff">I'm safe 🙏</div></div>
+    <div class="ph pb"><div class="isl"></div><div class="sb"><span>mom</span><span>✕ SOS</span></div><div class="bb" id="pbb" style="left:20px;top:170px;background:#f1f1ef">I'm safe 🙏</div></div>
+    <svg class="beam" viewBox="0 0 340 240"><g id="bm"></g></svg>
+    <div class="tchips"><div class="tc" id="tc0">Bluetooth</div><div class="tc" id="tc1">Wi-Fi</div><div class="tc" id="tc2">LoRa radio</div></div>
+  </section>
+
+  <!-- S4 mesh hops -->
+  <section class="sc" id="s4">
+    <div class="L kick" style="top:250px" data-k="// mesh forwarding"></div>
+    <div class="L h" style="top:300px">
+      <span class="ln" style="font-size:112px"><span class="w" data-t="13.12">Every</span><span class="w" data-t="13.44">phone</span></span>
+      <span class="ln" style="font-size:118px"><span class="w ser" data-t="13.76">passes it on.</span></span>
+    </div>
+    <div class="mesh" id="mesh"><svg id="mlines" style="position:absolute;inset:0" width="1080" height="980"></svg></div>
+    <div class="c3 hop in" data-t="15.2" data-rx="10" data-z="30"><span>HOP</span><b id="hopn">01</b><span>/ 16</span></div>
+  </section>
+
+  <!-- S5 encrypted -->
+  <section class="sc" id="s5">
+    <div class="L kick" style="top:250px" data-k="// sealed on your phone"></div>
+    <div class="L h" style="top:300px">
+      <span class="ln" style="font-size:118px"><span class="w" data-t="19.32">End-to-end</span></span>
+      <span class="ln" style="font-size:124px"><span class="w ser" data-t="20.12">encrypted.</span></span>
+    </div>
+    <div class="erow">
+      <div class="ph ep in" data-t="19.0" data-ry="16" style="left:0"><div class="isl"></div><div class="t">YOU</div><div class="msg" style="background:var(--ink);color:#fff">I'm safe. At the school gym.</div></div>
+      <div class="ph ep in" data-t="19.15" style="left:355px"><div class="isl"></div><div class="t">STRANGER · RELAY</div><div class="msg enc" id="encm"></div>
+        <svg class="lockb" viewBox="0 0 80 100"><path id="shk" d="M18 46 V30 a22 22 0 0 1 44 0 V46" fill="none" stroke="#0b0b0c" stroke-width="9" stroke-linecap="round"/><rect x="6" y="44" width="68" height="54" rx="12" fill="#0b0b0c"/><circle cx="40" cy="68" r="7" fill="#fff"/></svg></div>
+      <div class="ph ep in" data-t="19.3" data-ry="-16" style="left:710px"><div class="isl"></div><div class="t">MOM</div><div class="msg" id="momm" style="background:#f1f1ef">I'm safe. At the school gym.</div></div>
+    </div>
+    <div class="c3 dk aes in" data-t="21.0" data-rx="10" data-z="30"><span>AES-256-GCM</span><span style="opacity:.5">·</span><span>signed</span><span style="opacity:.5">·</span><span id="cant"></span></div>
+  </section>
+
+  <!-- S6 features -->
+  <section class="sc" id="s6">
+    <div class="L kick" style="top:250px" data-k="// built for emergencies"></div>
+    <div class="L h" style="top:300px">
+      <span class="ln" style="font-size:118px"><span class="w" data-t="23.2">One</span><span class="w" data-t="23.44">tap.</span></span>
+      <span class="ln" style="font-size:118px"><span class="w ser" data-t="24.4">"I need help."</span></span>
+    </div>
+    <div class="c3 help in" data-t="23.1" data-rx="10" data-ry="-6">
+      <div class="ht">NEED HELP · 3 PEOPLE</div>
+      <div class="needs" id="needs"><span>injured</span><span>trapped</span><span>water</span><span>food</span><span>medicine</span><span>shelter</span></div>
+      <div class="hb" id="hbtn">I NEED<br>HELP</div>
+    </div>
+    <div class="c3 mapc in" data-t="25.4" data-rx="12" data-ry="8"><svg viewBox="0 0 452 470" id="map"></svg><div class="fl">offline map · 10 km</div></div>
+    <div class="c3 aic in" data-t="26.7" data-rx="12" data-ry="-8"><div class="q">How do I purify water?</div><div class="a" id="aia"></div><div class="ft" id="aif"></div></div>
+  </section>
+
+  <!-- S7 no servers, real hero, platforms, credit -->
+  <section class="sc" id="s7">
+    <div class="L kick" style="top:250px" data-k="// DEV-ENT/DarkProof"></div>
+    <div class="L h" style="top:300px">
+      <span class="ln" style="font-size:118px"><span class="w" data-t="28.88">No</span><span class="w" data-t="29.12">servers.</span></span>
+      <span class="ln" style="font-size:118px"><span class="w ser" data-t="29.84">no accounts.</span></span>
+    </div>
+    <div class="c3 hero in" data-t="28.6" data-rx="10" data-ry="-8"><img src="media/hero.png"><div class="real">REAL · REPO</div></div>
+    <div class="nos">
+      <div class="c3 srv in" data-t="29.0" data-rx="10" style="left:0"><div class="sm">SERVERS</div><div class="big">ours</div><div class="strike" id="stk1"></div></div>
+      <div class="c3 srv in" data-t="29.7" data-rx="10" style="left:512px"><div class="sm">ACCOUNTS</div><div class="big">sign-up</div><div class="strike" id="stk2"></div></div>
+    </div>
+    <div class="plat" id="plat"><span>Android · Kotlin</span><span>iPhone · SwiftUI</span></div>
+    <div class="cred" id="cred"></div>
+  </section>
+
+  <!-- S8 dm your repo -->
+  <section class="sc" id="s8">
+    <div class="L kick" style="top:250px" data-k="// built something too?"></div>
+    <div class="L h" style="top:300px">
+      <span class="ln" style="font-size:132px"><span class="w" data-t="33.84">DM</span><span class="w" data-t="34.08">us</span></span>
+      <span class="ln" style="font-size:132px"><span class="w ser" data-t="34.24">your repo.</span></span>
+    </div>
+    <div class="c3 dmc in" data-t="32.75" data-rx="10" data-ry="-8">
+      <div class="dmh"><div class="mk">&gt;_</div><div><b>git.mate</b><span>GitHub Repos Daily</span></div></div>
+      <div class="bub" id="bub">github.com/you/your-repo</div>
+      <div class="bub2" id="bub2">🔥 love it, mate</div>
+      <div class="cmp"><div class="ty" id="cty"></div><div class="send" id="dsend">↑</div></div>
+    </div>
+    <div class="inbox" id="inbox"></div>
+  </section>
+
+  <!-- S9 comment -->
+  <section class="sc" id="s9">
+    <div class="L kick" style="top:250px" data-k="// want the link?"></div>
+    <div class="L h" style="top:300px">
+      <span class="ln" style="font-size:132px"><span class="w" data-t="35.04">Comment</span></span>
+      <span class="ln" style="font-size:180px"><span class="w" data-t="35.52">GITMATE</span></span>
+    </div>
+    <div class="c3 cm in" style="left:64px;top:700px;width:952px;height:390px" data-t="34.95" data-ry="-10" data-rx="8">
+      <div class="lbl" style="margin-bottom:22px">comments</div>
+      <div class="rowc"><div class="av2" style="width:70px;height:70px"></div><div class="cin"><span id="t9" style="color:#9a9ca1">Add a comment…</span></div><div class="send" id="snd9">↑</div></div>
+      <div class="posted" id="pst9"><div class="av2"></div><div><div class="u">you <span class="lbl">· now</span></div><div class="c">GITMATE</div></div></div>
+    </div>
+    <div class="c3 dk dm in" style="left:300px;top:1160px;width:560px;height:130px" data-t="36.4" data-z="80"><small>git.mate · message</small>Here's your link, mate 🔗</div>
+  </section>
+
+  <!-- S10 end -->
+  <section class="sc" id="s10">
+    <svg class="erings" viewBox="0 0 500 500"><circle id="er1" cx="250" cy="250" r="226" fill="none" stroke="#0b0b0c" stroke-width="3" stroke-dasharray="1420" stroke-dashoffset="1420" transform="rotate(-90 250 250)"/>
+      <circle id="er2" cx="250" cy="250" r="246" fill="none" stroke="rgba(0,0,0,.25)" stroke-width="2" stroke-dasharray="1546" stroke-dashoffset="1546" transform="rotate(90 250 250)"/></svg>
+    <div class="mk bigmk" id="bigmk">&gt;_</div>
+    <div class="hnd" id="hnd"></div>
+    <div class="L h" style="top:1160px;font-size:84px;text-align:center"><span class="ln"><span class="w ser" data-t="38.45">1 repo every day.</span></span></div>
+    <div class="fol" id="fol">Follow</div>
+    <div class="fol2" id="fol2">Following ✓</div>
+    <div class="erip" id="erip"></div>
+    <svg class="tap" id="tap10" viewBox="0 0 100 100" style="left:600px;top:1420px"><circle cx="50" cy="50" r="34" fill="rgba(0,0,0,.18)" stroke="#0b0b0c" stroke-width="5"/><circle cx="50" cy="50" r="12" fill="#0b0b0c"/></svg>
+  </section>
+ </div></div>
+
+ <div class="top"><div class="brand"><div class="mk">&gt;_</div>git.mate</div><div class="tag" id="tag"><b>01</b> / hook</div></div>
+ <div class="prog" id="prog"></div>
+ <div id="blk"></div><div class="grain"></div>
+</div>
+<script>
+(function () {
+  const SPD = 1.1;
+  const S = [0, 5.95, 7.45, 12.75, 18.75, 22.95, 28.6, 32.6, 34.9, 37.4];
+  const TOTAL = 40.3; window.__TOTAL = TOTAL / SPD;
+  const LABEL = ['hook', 'meet', 'direct', 'mesh', 'sealed', 'sos', 'no servers', 'your turn', 'link', 'follow'];
+  const $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)];
+  const tl = gsap.timeline({ paused: true, defaults: { ease: 'power3.out' } });
+  $('#prog').innerHTML = S.map(() => '<i><b></b></i>').join('');
+  const scenes = $$('.sc');
+  const R = 2400, STEP = 30;
+  scenes.forEach((sc, i) => { sc.style.transform = `rotateY(${i * STEP}deg) translateZ(${R}px)`; });
+  const cam = { a: 0, d: 0, rx: 0, rz: 0 };
+  const MOVE = { 2: 'crane', 3: 'roll', 5: 'crane', 6: 'roll', 8: 'crane', 9: 'roll' };
+  scenes.forEach((sc, i) => {
+    tl.set(sc, { visibility: 'visible' }, Math.max(0, S[i] - .62));
+    if (i < scenes.length - 1) tl.set(sc, { visibility: 'hidden' }, S[i + 1] + .45);
+    if (i) {
+      const t0 = S[i] - .5, dir = i % 2 ? 1 : -1, mv = MOVE[i];
+      const prx = mv === 'crane' ? 22 : 9 * dir, prz = mv === 'roll' ? 11 * dir : mv === 'crane' ? 0 : 3 * dir, pd = mv === 'crane' ? 1250 : 900;
+      tl.to(cam, { a: i * STEP, duration: .85, ease: 'expo.inOut' }, t0);
+      tl.to(cam, { keyframes: [{ d: pd, rx: prx, rz: prz, duration: .42, ease: 'power2.out' }, { d: 0, rx: 0, rz: 0, duration: .43, ease: 'power2.in' }] }, t0);
+    }
+  });
+  tl.set(scenes[0], { visibility: 'visible' }, 0);
+  // light style: letter-by-letter blur typing
+  $$('.h .w').forEach((w) => { const t = +w.dataset.t; if (!t) return;
+    const txt = w.textContent; w.innerHTML = [...txt].map(c => `<span class="ch">${c}</span>`).join('');
+    const chs = $$('.ch', w), cd = Math.min(.035, .4 / chs.length);
+    chs.forEach((c, i) => tl.fromTo(c, { opacity: 0, y: 26, filter: 'blur(14px)' }, { opacity: 1, y: 0, filter: 'blur(0px)', duration: .42, ease: 'power3.out', immediateRender: false }, t + i * cd));
+    tl.set(chs, { opacity: 0 }, 0); });
+  scenes.forEach((sc, i) => { const k = $('.kick', sc); if (!k || !k.dataset.k) return; const txt = k.dataset.k, o = { n: 0 }; k.textContent = i ? '' : txt; if (!i) return;
+    tl.fromTo(o, { n: 0 }, { n: txt.length, duration: Math.min(.7, txt.length * .025), ease: 'none', immediateRender: false, onUpdate: () => { k.textContent = txt.slice(0, Math.round(o.n)); } }, S[i] + .05); });
+  $$('.in').forEach((c) => {
+    const t = +c.dataset.t, rx = +(c.dataset.rx || 0), ry = +(c.dataset.ry || 0), z = +(c.dataset.z || 0);
+    const end = { autoAlpha: 1, z, rotationX: rx, rotationY: ry, y: 0, duration: .9, ease: 'expo.out' };
+    if (!t) { gsap.set(c, end); return; }
+    tl.fromTo(c, { autoAlpha: 0, z: -900, rotationX: rx + 40, rotationY: ry * 2, y: 120 }, end, t);
+  });
+  const typer = (el, text, t, d) => { const o = { n: 0 }; tl.fromTo(o, { n: 0 }, { n: text.length, duration: d, ease: 'none', immediateRender: false, onUpdate: () => { el.textContent = text.slice(0, Math.round(o.n)); } }, t); };
+  const sm = (a, b, x) => { const k = Math.min(1, Math.max(0, (x - a) / (b - a))); return k * k * (3 - 2 * k); };
+  const cl = (a, b, x) => Math.min(1, Math.max(0, (x - a) / (b - a)));
+  const twl = (t, a, b, s) => s.slice(0, Math.round(cl(a, b, t) * s.length));
+
+  // S4 mesh layout: sender left, receiver far right, relays between
+  const NODES = [[110, 520], [270, 330], [300, 700], [450, 480], [590, 280], [620, 760], [760, 520], [900, 330], [960, 700]];
+  const PATH = [0, 1, 3, 4, 6, 7, 8];
+  $('#mesh').insertAdjacentHTML('beforeend', `<div class="rng" id="rng" style="left:${110 - 230}px;top:${520 - 230}px;width:460px;height:460px"></div>` +
+    NODES.map(([x, y], i) => `<div class="nd2" id="n${i}" style="left:${x}px;top:${y}px"></div>`).join('') + '<div class="pkt" id="pkt">✉</div>');
+  const EDGES = [[0, 1], [0, 2], [1, 3], [2, 3], [3, 4], [3, 5], [4, 6], [5, 6], [6, 7], [6, 8], [7, 8], [2, 5], [1, 4]];
+  $('#mlines').innerHTML = EDGES.map(([a, b]) => `<line x1="${NODES[a][0]}" y1="${NODES[a][1]}" x2="${NODES[b][0]}" y2="${NODES[b][1]}" stroke="rgba(11,11,12,.25)" stroke-width="3" stroke-dasharray="8 10"/>`).join('') +
+    PATH.slice(1).map((b, k) => { const a = PATH[k]; return `<line id="pe${k}" x1="${NODES[a][0]}" y1="${NODES[a][1]}" x2="${NODES[b][0]}" y2="${NODES[b][1]}" stroke="#0b0b0c" stroke-width="6" stroke-linecap="round" stroke-dasharray="400" stroke-dashoffset="400"/>`; }).join('');
+  const HT = (k) => 14.0 + k * .62; // hop k start
+  // S6 map
+  { let m = '<rect width="452" height="470" fill="#f4f4f2"/>';
+    for (let i = 0; i < 12; i++) m += `<line x1="${-40 + i * 50}" y1="0" x2="${i * 50 + 60}" y2="470" stroke="#d6d6d3" stroke-width="${i % 4 ? 3 : 9}"/>`;
+    for (let i = 0; i < 10; i++) m += `<line x1="0" y1="${i * 52}" x2="452" y2="${i * 52 - 30}" stroke="#d6d6d3" stroke-width="${i % 3 ? 3 : 8}"/>`;
+    m += '<path d="M40 380 C140 320 200 360 260 250 S380 140 420 90" fill="none" stroke="#0b0b0c" stroke-width="6" stroke-dasharray="12 10"/>';
+    m += '<g id="pins"><g transform="translate(260 250)"><circle r="16" fill="#0b0b0c"/><circle r="6" fill="#fff"/></g><g transform="translate(150 150)"><rect x="-22" y="-22" width="44" height="44" rx="10" fill="#fff" stroke="#0b0b0c" stroke-width="4"/><text y="9" text-anchor="middle" font-size="26">💧</text></g><g transform="translate(350 330)"><rect x="-22" y="-22" width="44" height="44" rx="10" fill="#fff" stroke="#0b0b0c" stroke-width="4"/><text y="9" text-anchor="middle" font-size="24">⛑</text></g></g>';
+    $('#map').innerHTML = m; }
+  // S8 inbox
+  const IB = [['dev_maya', 'github.com/maya/tinyqueue'], ['rustacean.k', 'check my CLI 🦀 github.com/…'], ['ana.builds', 'made a local-first notes app']];
+  $('#inbox').innerHTML = IB.map((r, i) => `<div class="ib" id="ib${i}" style="top:${i * 100}px"><div class="av2"></div><div class="il"><b>${r[0]}</b>${r[1]}</div><div class="nw"></div></div>`).join('');
+
+  // S9 comment flow
+  tl.call(() => { $('#t9').textContent = 'Add a comment…'; $('#t9').style.color = '#9a9ca1'; }, null, 35.69);
+  tl.call(() => { $('#t9').style.color = '#0b0b0c'; }, null, 35.7);
+  typer($('#t9'), 'GITMATE', 35.7, .3);
+  tl.fromTo('#snd9', { scale: 1 }, { scale: .8, duration: .1, yoyo: true, repeat: 1 }, 36.05);
+  tl.fromTo('#pst9', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: .35 }, 36.1);
+  // S10 end
+  const E = 37.45;
+  tl.fromTo('#bigmk', { opacity: 0, scale: .2, rotation: -40 }, { opacity: 1, scale: 1, rotation: 0, duration: .9, ease: 'back.out(1.8)' }, E);
+  tl.fromTo('#er1', { attr: { 'stroke-dashoffset': 1420 } }, { attr: { 'stroke-dashoffset': 0 }, duration: 1.0, ease: 'power2.inOut', immediateRender: false }, E + .15);
+  tl.fromTo('#er2', { attr: { 'stroke-dashoffset': 1546 } }, { attr: { 'stroke-dashoffset': 0 }, duration: 1.2, ease: 'power2.inOut', immediateRender: false }, E + .3);
+  typer($('#hnd'), '@git.mate', E + .4, .5);
+  tl.fromTo('#fol', { opacity: 0, scale: .6 }, { opacity: 1, scale: 1, duration: .5, ease: 'back.out(2)' }, E + .9);
+  tl.fromTo('#tap10', { opacity: 0, x: 160, y: 140 }, { opacity: 1, x: 0, y: 0, duration: .5, ease: 'power2.out' }, E + 1.25);
+  tl.to('#tap10', { scale: .75, duration: .1, yoyo: true, repeat: 1 }, E + 1.8);
+  tl.to('#fol', { scale: .93, duration: .1 }, E + 1.8);
+  tl.set('#fol2', { opacity: 1 }, E + 1.9); tl.set('#fol', { opacity: 0 }, E + 1.9);
+  tl.fromTo('#erip', { opacity: .8, width: 10, height: 10, margin: -5 }, { opacity: 0, width: 640, height: 640, margin: -320, duration: .8, ease: 'power2.out', immediateRender: false }, E + 1.85);
+  tl.to('#tap10', { opacity: 0, duration: .3 }, E + 2.3);
+  tl.to({}, { duration: .01 }, TOTAL);
+
+  const world = $('#world'), tag = $('#tag'), segs = $$('#prog b');
+  const ENC = 'x9Qf/2Lk+Ra7Vw0e3NcZpT8m4Hs1JuYb6GdKoE5i';
+  const tick = (t) => {
+    const a = cam.a + Math.sin(t * .5) * .35, rx = cam.rx + Math.sin(t * .37 + 1) * .7, rz = cam.rz + Math.sin(t * .29) * .25;
+    scenes.forEach((sc, i) => { sc.style.display = t >= S[i] - .7 && t <= (S[i + 1] || 99) + .5 ? '' : 'none'; });
+    world.style.transform = `translateZ(${-cam.d}px) rotateX(${rx}deg) rotateZ(${rz}deg) translateZ(${-R}px) rotateY(${-a}deg)`;
+    // S1: blackout flash on "down", status goes to No Service, bubbles fail
+    { const f = Math.max(0, 1 - Math.abs(t - 1.7) / .35); $('#blk').style.opacity = f * .92;
+      $('#svc').textContent = t < 1.75 ? '▂▄▆█  5G' : t < 3.4 ? 'No Wi-Fi' : 'No Service';
+      $('#nosvc').textContent = t < 1.75 ? '' : twl(t, 2.3, 3.9, '⚠  no internet · no signal');
+      const b1 = sm(.3, .7, t), b2 = sm(4.3, 4.7, t); $('#bme1').style.opacity = b1; $('#bme1').style.transform = `translateY(${(1 - b1) * 30}px)`;
+      $('#bme2').style.opacity = b2; $('#bme2').style.transform = `translateY(${(1 - b2) * 30}px)`;
+      $('#nd').style.opacity = sm(5.0, 5.2, t); $('#ndt').textContent = twl(t, 5.05, 5.5, 'Not Delivered');
+      $('#bme2').style.background = t > 5.0 ? '#8b8d91' : ''; }
+    // S2 icon + name
+    { const k = sm(6.0, 6.75, t); $('#icon').style.transform = `perspective(1400px) translateZ(${(1 - k) * -900}px) rotateY(${(1 - k) * -160 + Math.sin(t * 1.3) * 10}deg) rotateX(${6 + Math.sin(t) * 3}deg)`; $('#icon').style.opacity = sm(5.9, 6.1, t);
+      $('#dpn').textContent = twl(t, 6.72, 7.1, 'DarkProof'); $('#dps').textContent = twl(t, 7.0, 7.4, 'messaging when the network is gone'); }
+    // S3 beam style per transport
+    { const mode = t >= 11.56 ? 2 : t >= 10.72 ? 1 : t >= 9.92 ? 0 : -1; [0, 1, 2].forEach(i => $('#tc' + i).classList.toggle('on', i === mode));
+      let g = ''; const on = sm(9.0, 9.4, t);
+      if (on > 0) {
+        if (mode <= 0) for (let i = 0; i < 9; i++) { const x = ((t * 1.4 + i / 9) % 1) * 340; g += `<circle cx="${x}" cy="120" r="${8}" fill="#0b0b0c" opacity="${on * Math.sin(Math.PI * x / 340)}"/>`; }
+        else if (mode === 1) for (let i = 0; i < 4; i++) { const r = ((t * .9 + i / 4) % 1) * 160; g += `<path d="M${40 + r} ${120 - r * .6} A${r} ${r} 0 0 1 ${40 + r} ${120 + r * .6}" fill="none" stroke="#0b0b0c" stroke-width="6" stroke-linecap="round" opacity="${1 - r / 160}"/>`; }
+        else { let d = 'M0 120'; for (let x = 0; x <= 340; x += 6) d += ` L${x} ${120 + Math.sin(x / 18 - t * 9) * 40 * Math.sin(Math.PI * x / 340)}`; g += `<path d="${d}" fill="none" stroke="#0b0b0c" stroke-width="6"/>`; }
+      } $('#bm').innerHTML = g;
+      const p = sm(9.4, 9.9, t); $('#pab').style.opacity = sm(8.6, 8.9, t); $('#pbb').style.opacity = p; $('#pbb').style.transform = `scale(${.7 + .3 * p})`; }
+    // S4 packet hops along PATH; ring shows sender range; hop counter
+    { const k = Math.max(0, Math.min(PATH.length - 1, (t - 14.0) / .62)); const seg = Math.min(PATH.length - 2, Math.floor(k)), f = sm(0, 1, k - seg);
+      const A = NODES[PATH[seg]], B = NODES[PATH[seg + 1]]; const px = A[0] + (B[0] - A[0]) * f, py = A[1] + (B[1] - A[1]) * f - Math.sin(Math.PI * f) * 40;
+      $('#pkt').style.left = px + 'px'; $('#pkt').style.top = py + 'px'; $('#pkt').style.opacity = sm(13.6, 13.9, t);
+      PATH.forEach((n, i) => $('#n' + n).classList.toggle('on', t >= HT(Math.max(0, i - 1)) + (i ? .62 : 0) - .01));
+      for (let i = 0; i < PATH.length - 1; i++) $('#pe' + i).setAttribute('stroke-dashoffset', 400 * (1 - sm(HT(i), HT(i) + .62, t)));
+      $('#rng').style.opacity = sm(13.0, 13.3, t) * (1 - .5 * sm(17.2, 17.6, t)); $('#rng').style.transform = `scale(${.8 + .2 * sm(13.0, 13.4, t)})`;
+      $('#hopn').textContent = String(Math.max(1, Math.min(PATH.length - 1, Math.ceil(k)))).padStart(2, '0'); }
+    // S5 ciphertext scrolls, lock closes, mom reads
+    { const sh = Math.floor(t * 14) % ENC.length; $('#encm').textContent = (ENC.slice(sh) + ENC.slice(0, sh)).slice(0, 34);
+      $('#shk').setAttribute('transform', `translate(0 ${-14 * (1 - sm(20.3, 20.55, t))})`);
+      $('#momm').style.opacity = sm(21.2, 21.5, t); $('#cant').textContent = twl(t, 21.7, 22.4, "relays can't read it"); }
+    // S6 help button pressed, needs toggle, AI answers
+    { const pr = Math.max(0, 1 - Math.abs(t - 24.5) / .12); $('#hbtn').style.transform = `translateY(${pr * 10}px)`; $('#hbtn').style.boxShadow = `0 ${12 - pr * 10}px 0 #3a3b3e`;
+      $$('#needs span').forEach((e, i) => e.classList.toggle('on', [0, 2, 4].includes(i) && t > 24.6 + i * .1));
+      $('#aia').textContent = twl(t, 27.3, 28.4, 'Boil it for 1 minute. No fuel? Use a cloth filter, then 2 drops of bleach per litre…');
+      $('#aif').textContent = twl(t, 27.9, 28.3, '◉ on-device AI · offline'); }
+    // S7 strikes, platforms, credit
+    { $('#stk1').style.width = sm(29.2, 29.45, t) * 300 + 'px'; $('#stk2').style.width = sm(30.0, 30.25, t) * 380 + 'px';
+      $$('#plat span').forEach((e, i) => { const k = sm(30.88 + i * .5, 31.2 + i * .5, t); e.style.opacity = k; e.style.transform = `translateY(${(1 - k) * 30}px)`; });
+      $('#cred').textContent = twl(t, 31.6, 32.2, 'by @is4wiz · DEV-ENT'); }
+    // S8 composer
+    { $('#cty').textContent = t < 33.85 ? twl(t, 33.0, 33.8, 'github.com/you/your-repo') : '';
+      $('#dsend').style.transform = `scale(${1 - Math.max(0, 1 - Math.abs(t - 33.85) / .08) * .2})`;
+      const b = sm(33.85, 34.1, t); $('#bub').style.opacity = b; $('#bub').style.transform = `translateY(${(1 - b) * 120}px) scale(${.8 + .2 * b})`;
+      const b2 = sm(34.45, 34.7, t); $('#bub2').style.opacity = b2; $('#bub2').style.transform = `translateY(${(1 - b2) * 30}px)`;
+      IB.forEach((r, i) => { const k = sm(33.1 + i * .25, 33.4 + i * .25, t); const e = $('#ib' + i); e.style.opacity = k; e.style.transform = `perspective(900px) rotateX(${(1 - k) * 70}deg) translateY(${(1 - k) * 40}px)`; }); }
+    let si = 0; for (let i = 0; i < S.length; i++) if (t >= S[i] - .3) si = i;
+    tag.innerHTML = `<b>${String(si + 1).padStart(2, '0')}</b> / ${LABEL[si]}`;
+    segs.forEach((b, i) => { const e = i < S.length - 1 ? S[i + 1] : TOTAL - 1.5; b.style.width = Math.min(100, Math.max(0, (t - S[i]) / (e - S[i]) * 100)) + '%'; });
+  };
+  window.__tl = tl;
+  window.__seek = (rt) => { const t = rt * SPD; tl.time(t, false); tick(t); return Promise.all($$('img').map(im => im.decode().catch(() => null))).then(() => null); };
+  window.__seek(0);
+  if (!navigator.webdriver) { const t0 = performance.now(); const loop = () => { window.__seek(((performance.now() - t0) / 1000) % (TOTAL / SPD)); requestAnimationFrame(loop); }; requestAnimationFrame(loop); }
+})();
+</script>
+</body></html>

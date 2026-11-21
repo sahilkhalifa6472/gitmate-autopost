@@ -1,0 +1,363 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<title>git.mate awesome-opus5-5-videos</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter+Tight:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<style>
+:root{--ink:#f5f6f7;--mut:rgba(235,238,242,.58);--dim:rgba(235,238,242,.32)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#000}
+.f{position:relative;width:1080px;height:1920px;overflow:hidden;background:#040405;color:var(--ink);font-family:'Inter Tight',sans-serif;isolation:isolate}
+.bg{position:absolute;inset:0;z-index:0}
+.dots{position:absolute;inset:-40px;background-image:radial-gradient(rgba(255,255,255,.07) 1.6px,transparent 1.6px);background-size:40px 40px}
+.orb{position:absolute;border-radius:50%;filter:blur(80px)}
+.vig{position:absolute;inset:0;background:radial-gradient(ellipse 90% 70% at 50% 50%,transparent 45%,rgba(0,0,0,.8) 100%)}
+.grain{position:absolute;inset:0;opacity:.08;mix-blend-mode:overlay;z-index:8;pointer-events:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
+
+/* flat card (default) */
+.card{position:absolute;border-radius:36px;overflow:hidden;background:linear-gradient(180deg,#121316,#0b0c0e);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 0 0 1.5px rgba(255,255,255,.09),0 30px 70px rgba(0,0,0,.6)}
+/* liquid glass, only for a few hero cards */
+.glass{position:absolute;border-radius:44px;overflow:hidden;
+  background:linear-gradient(160deg,rgba(255,255,255,.15),rgba(255,255,255,.05) 38%,rgba(255,255,255,.03) 62%,rgba(255,255,255,.08)),rgba(8,9,11,.5);
+  -webkit-backdrop-filter:blur(26px) saturate(1.5);backdrop-filter:blur(26px) saturate(1.5);
+  box-shadow:inset 0 2px 1px rgba(255,255,255,.5),inset 0 -2px 1px rgba(255,255,255,.1),0 40px 90px rgba(0,0,0,.65)}
+.glass::before{content:"";position:absolute;inset:0;border-radius:inherit;padding:1.6px;z-index:2;background:linear-gradient(150deg,rgba(255,255,255,.85),rgba(255,255,255,.1) 30%,rgba(255,255,255,.04) 55%,rgba(255,255,255,.35) 85%,rgba(255,255,255,.7));
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none}
+.glass > *, .card > *{position:relative;z-index:1}
+.sw{position:absolute!important;top:-20%;bottom:-20%;left:0;width:30%;z-index:3!important;pointer-events:none;transform:translateX(-160%) skewX(-18deg);background:linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,.14) 50%,rgba(255,255,255,0))}
+.pill{border-radius:999px}
+.bead{width:62px;height:62px;border-radius:50%;display:grid;place-items:center;font-family:'JetBrains Mono';font-weight:800;font-size:24px;color:#050505;flex:none;
+  background:radial-gradient(circle at 35% 28%,#fff 0 18%,#e4e6ea 45%,#9da1a8 100%);box-shadow:inset 0 -5px 10px rgba(0,0,0,.25),inset 0 3px 4px #fff,0 10px 24px rgba(0,0,0,.6)}
+
+.top{position:absolute;left:64px;right:64px;top:88px;height:90px;z-index:6}
+.brand{position:absolute;left:0;top:0;display:flex;align-items:center;gap:18px;padding:14px 30px 14px 14px;font-family:'JetBrains Mono';font-weight:700;font-size:30px;border-radius:999px;background:#0e0f11;box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 0 0 1.5px rgba(255,255,255,.1)}
+.tag{position:absolute;right:0;top:12px;padding:18px 30px;font-family:'JetBrains Mono';font-size:24px;color:var(--mut);white-space:nowrap;border-radius:999px;background:#0e0f11;box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 0 0 1.5px rgba(255,255,255,.08)}
+.tag b{color:var(--ink)}
+.prog{position:absolute;left:64px;right:64px;bottom:96px;display:flex;gap:10px;z-index:6}
+.prog i{flex:1;height:8px;border-radius:4px;background:rgba(255,255,255,.14);position:relative;overflow:hidden}
+.prog i b{position:absolute;left:0;top:0;bottom:0;width:0;background:#f2f3f5;border-radius:4px}
+
+.sc{position:absolute;inset:0;z-index:3;visibility:hidden}
+#s1{visibility:visible}
+.L{position:absolute;left:64px;right:64px}
+.kick{font-family:'JetBrains Mono';font-size:28px;color:var(--mut);letter-spacing:1px;white-space:pre;height:40px}
+.h{font-weight:900;letter-spacing:-5px;line-height:.92;text-transform:uppercase}
+.h .ln{display:block;white-space:nowrap}
+.h .w{display:inline-block;padding-bottom:.05em;margin-right:.2em;background-image:linear-gradient(180deg,#ffffff 0%,#f1f2f4 50%,#b4b8be 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.h .w:last-child{margin-right:0}
+.h .soft .w{background-image:linear-gradient(180deg,rgba(255,255,255,.62),rgba(255,255,255,.24))}
+.lbl{font-family:'JetBrains Mono';font-size:22px;color:var(--mut)}
+.chip{display:inline-block;font-family:'JetBrains Mono';font-size:22px;padding:10px 20px;border-radius:999px;color:rgba(255,255,255,.85);background:rgba(255,255,255,.06);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.12);white-space:nowrap}
+.chip.solid{background:#f2f3f5;color:#050505;font-weight:800;box-shadow:none}
+
+/* real media */
+.vid{position:relative;overflow:hidden;background-color:#111;background-repeat:no-repeat;background-size:100% 3500%;border-radius:22px}
+.img{background-size:cover;background-position:center;border-radius:22px}
+.cap{position:absolute;left:14px;bottom:14px;padding:8px 14px;border-radius:999px;font-family:'JetBrains Mono';font-size:18px;font-weight:700;color:#fff;background:rgba(0,0,0,.6);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+
+/* s2 rows */
+.row{display:flex;align-items:center;gap:34px;padding:18px}
+.row .vid{width:500px;height:283px;flex:none}
+.row .rt .n{font-family:'JetBrains Mono';font-size:22px;color:var(--mut)}
+.row .rt .t{font-size:54px;font-weight:900;letter-spacing:-2px;line-height:1;margin-top:10px;text-transform:uppercase}
+/* s3 repo */
+.chrome{display:flex;align-items:center;gap:14px;padding:26px 32px 18px}
+.chrome i{width:18px;height:18px;border-radius:50%;background:rgba(255,255,255,.3)}
+.url{margin-left:14px;flex:1;font-family:'JetBrains Mono';font-size:22px;color:var(--mut);padding:11px 22px;border-radius:999px;background:rgba(0,0,0,.3);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.08)}
+.rp{padding:8px 40px 40px}
+.rname{font-family:'JetBrains Mono';font-size:38px;font-weight:800}
+.rname span{color:var(--mut);font-weight:500}
+/* s4 prompt */
+.pr{padding:30px 36px}
+.pr .code{font-family:'JetBrains Mono';font-size:32px;line-height:1.5;color:#f2f3f5;margin-top:16px;min-height:144px}
+.tc{display:inline-block;width:15px;height:32px;border-radius:3px;background:#e8eaed;vertical-align:-5px;margin-left:3px}
+/* s5 wall */
+.wall{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.wall .vid{height:170px;border-radius:18px}
+/* s6 */
+.chat{padding:26px 30px}
+.chat .who{display:flex;align-items:center;gap:14px;font-weight:800;font-size:28px}
+.chat .who i{width:40px;height:40px;border-radius:12px;background:linear-gradient(160deg,#f2f3f5,#a9adb4);display:grid;place-items:center;font-style:normal;color:#000;font-size:22px}
+.inp{margin-top:18px;padding:22px 26px;border-radius:24px;background:rgba(255,255,255,.05);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.1);font-family:'JetBrains Mono';font-size:26px;line-height:1.45;min-height:120px}
+.ed{padding:20px 30px;font-family:'JetBrains Mono';font-size:24px;line-height:1.6;white-space:pre;color:rgba(255,255,255,.88)}
+.ed .k{color:rgba(255,255,255,.45)}
+/* s9 comment */
+.cm{padding:30px 34px}
+.cm .rowc{display:flex;align-items:center;gap:20px}
+.av2{width:70px;height:70px;border-radius:50%;flex:none;background:radial-gradient(circle at 35% 28%,#5a5e64,#1b1d20);box-shadow:inset 0 0 0 2px rgba(255,255,255,.2)}
+.cin{flex:1;padding:20px 26px;border-radius:999px;font-size:32px;font-weight:700;background:rgba(255,255,255,.06);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.14)}
+.send{width:76px;height:76px;border-radius:50%;display:grid;place-items:center;background:#f2f3f5;color:#000;font-size:34px;font-weight:900;flex:none}
+.posted{display:flex;gap:20px;align-items:flex-start;margin-top:30px}
+.posted .u{font-weight:800;font-size:28px}
+.posted .c{font-size:34px;font-weight:800;margin-top:4px}
+.dm{position:absolute;padding:24px 30px;border-radius:32px 32px 32px 10px;font-size:32px;font-weight:700;background:#f2f3f5;color:#060607}
+.dm small{display:block;font-family:'JetBrains Mono';font-size:20px;color:#55595f;font-weight:500;margin-bottom:6px}
+/* s10 profile */
+.prof{padding:56px 54px 50px;text-align:center}
+.pfp{width:220px;height:220px;margin:0 auto;font-size:84px;letter-spacing:-4px}
+.pn{font-family:'JetBrains Mono';font-size:54px;font-weight:800;margin-top:30px}
+.pnm{font-size:30px;font-weight:600;color:var(--mut);margin-top:8px}
+.pbio{font-size:31px;line-height:1.45;margin-top:28px;color:rgba(255,255,255,.88)}
+.pst{display:flex;justify-content:center;gap:16px;margin-top:34px}
+.fbtn{position:relative;margin:44px auto 0;width:560px;height:110px;border-radius:999px;display:grid;place-items:center;font-size:44px;font-weight:900;background:#f2f3f5;color:#050505;box-shadow:0 18px 50px rgba(255,255,255,.18);overflow:hidden}
+.fbtn span{position:absolute}
+.ripple{position:absolute;width:160px;height:160px;border-radius:50%;background:rgba(0,0,0,.18);opacity:0}
+.hand{position:absolute;width:110px;height:110px;z-index:7;opacity:0}
+</style></head><body>
+<div class="f" id="F">
+  <div class="bg"><div class="dots" id="dg"></div>
+    <div class="orb" id="o1" style="width:820px;height:820px;left:-300px;top:900px;background:radial-gradient(circle,rgba(255,255,255,.2),rgba(255,255,255,0) 65%)"></div>
+    <div class="orb" id="o2" style="width:700px;height:700px;left:640px;top:300px;background:radial-gradient(circle,rgba(255,255,255,.12),rgba(255,255,255,0) 65%)"></div>
+    <div class="vig"></div></div>
+  <div class="top"><div class="brand"><div class="bead">&gt;_</div>git.mate</div><div class="tag" id="tag"><b>01</b> / wow</div></div>
+
+  <!-- S1 -->
+  <section class="sc" id="s1">
+    <div class="L kick x" style="top:250px" data-k="// trending on github · today"></div>
+    <div class="L h x" style="top:304px;font-size:150px">
+      <span class="ln"><span class="w" data-t="0">This</span><span class="w" data-t="1.0">one</span></span>
+      <span class="ln"><span class="w" data-t="1.9">blew</span><span class="w" data-t="2.3">my</span></span>
+      <span class="ln soft"><span class="w" data-t="2.6">mind.</span></span>
+    </div>
+    <div class="L card x in" style="top:790px;height:560px;padding:16px" data-t="0"><div class="img" id="mos" style="width:100%;height:100%;background-image:url(mosaic.jpg)"></div></div>
+    <div class="L lbl x in" style="top:1390px;text-align:center" data-t="0">418 AI videos · every one made with code</div>
+  </section>
+
+  <!-- S2 -->
+  <section class="sc" id="s2">
+    <div class="L kick x" style="top:250px" data-k="// you've seen these"></div>
+    <div class="L h x" style="top:304px;font-size:132px">
+      <span class="ln"><span class="w" data-t="4.3">AI</span><span class="w" data-t="4.54">videos</span></span>
+      <span class="ln soft"><span class="w" data-t="4.98">going</span><span class="w" data-t="5.14">viral.</span></span>
+    </div>
+    <div class="L card x in row" style="top:600px;height:319px" data-t="5.8"><div class="vid" data-s="20" data-o="0"></div><div class="rt"><div class="n">01</div><div class="t">Games</div></div></div>
+    <div class="L card x in row" style="top:945px;height:319px" data-t="6.38"><div class="vid" data-s="25" data-o="9"></div><div class="rt"><div class="n">02</div><div class="t">3D<br>scenes</div></div></div>
+    <div class="L card x in row" style="top:1290px;height:319px" data-t="7.55"><div class="vid" data-s="12" data-o="17"></div><div class="rt"><div class="n">03</div><div class="t">Motion<br>graphics</div></div></div>
+  </section>
+
+  <!-- S3 -->
+  <section class="sc" id="s3">
+    <div class="L kick x" style="top:250px" data-k="// someone collected them"></div>
+    <div class="L h x" style="top:304px;font-size:132px">
+      <span class="ln"><span class="w" data-t="9.66">All</span><span class="w" data-t="9.98">in</span><span class="w" data-t="10.3">one</span></span>
+      <span class="ln soft"><span class="w" data-t="10.62">free</span><span class="w" data-t="11.0">repo.</span></span>
+    </div>
+    <div class="L glass x in" style="top:600px;height:860px" data-t="9.0">
+      <div class="chrome"><i></i><i></i><i></i><div class="url">github.com / yihui-dev</div></div>
+      <div class="rp">
+        <div class="rname"><span>yihui-dev /</span><br>awesome-opus5-5-videos</div>
+        <div class="img" style="height:430px;margin-top:26px;background-image:url(mosaic.jpg)"></div>
+        <div style="margin-top:26px;display:flex;gap:12px;flex-wrap:wrap"><span class="chip solid" id="c3a">free</span><span class="chip">MIT license</span><span class="chip">703 prompts</span><span class="chip">418 remakes</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- S4 -->
+  <section class="sc" id="s4">
+    <div class="L kick x" style="top:250px" data-k="// the best part"></div>
+    <div class="L h x" style="top:304px;font-size:140px">
+      <span class="ln"><span class="w" data-t="14.3">The</span><span class="w" data-t="14.32">exact</span></span>
+      <span class="ln soft"><span class="w" data-t="14.86">prompt.</span></span>
+    </div>
+    <div class="card x in" style="left:64px;right:64px;top:610px;height:560px;padding:16px" data-t="12.3"><div class="vid" data-s="15" data-o="0" style="width:100%;height:100%"><div class="cap">@pankajkumar_dev · Canvas</div></div></div>
+    <div class="L card x in pr" style="top:1200px;height:300px" data-t="13.3">
+      <div style="display:flex;justify-content:space-between"><div class="lbl" style="color:#fff;font-weight:700">Prompt</div><div class="lbl">prompts/pankajkumar-dev-718609.md</div></div>
+      <div class="code"><span id="t4"></span><span class="tc" id="tc4"></span></div>
+    </div>
+  </section>
+
+  <!-- S5 -->
+  <section class="sc" id="s5">
+    <div class="L kick x" style="top:250px" data-k="// count them"></div>
+    <div class="L h x" style="top:290px">
+      <span class="ln" style="font-size:230px;letter-spacing:-10px"><span class="w" data-t="16.46"><span id="n5">0</span></span></span>
+      <span class="ln soft" style="font-size:100px"><span class="w" data-t="17.74">prompts.</span></span><span class="ln" style="font-size:100px"><span class="w" data-t="18.54">all</span><span class="w" data-t="19.06">free.</span></span>
+    </div>
+    <div class="L wall" style="top:730px;height:914px">
+      <div class="vid x in" data-t="16.6" data-s="1" data-o="3"></div><div class="vid x in" data-t="16.68" data-s="8" data-o="11"></div><div class="vid x in" data-t="16.76" data-s="9" data-o="5"></div>
+      <div class="vid x in" data-t="16.84" data-s="13" data-o="20"></div><div class="vid x in" data-t="16.92" data-s="17" data-o="1"></div><div class="vid x in" data-t="17.0" data-s="18" data-o="14"></div>
+      <div class="vid x in" data-t="17.08" data-s="19" data-o="7"></div><div class="vid x in" data-t="17.16" data-s="21" data-o="25"></div><div class="vid x in" data-t="17.24" data-s="24" data-o="2"></div>
+      <div class="vid x in" data-t="17.32" data-s="28" data-o="30"></div><div class="vid x in" data-t="17.4" data-s="31" data-o="8"></div><div class="vid x in" data-t="17.48" data-s="40" data-o="16"></div>
+      <div class="vid x in" data-t="17.56" data-s="36" data-o="4"></div><div class="vid x in" data-t="17.64" data-s="16" data-o="22"></div><div class="vid x in" data-t="17.72" data-s="5" data-o="12"></div>
+    </div>
+  </section>
+
+  <!-- S6 -->
+  <section class="sc" id="s6">
+    <div class="L kick x" style="top:250px" data-k="// how it works"></div>
+    <div class="L h x" style="top:304px;font-size:132px">
+      <span class="ln"><span class="w" data-t="19.66">Copy.</span><span class="w" data-t="20.62">Paste.</span></span>
+      <span class="ln soft"><span class="w" data-t="24.46">Done.</span></span>
+    </div>
+    <div class="L card x in chat" style="top:600px;height:300px" data-t="19.7">
+      <div class="who"><i>✳</i>Claude Opus 5.5<span class="lbl" style="margin-left:auto" id="st6">ready</span></div>
+      <div class="inp"><span id="t6"></span></div>
+    </div>
+    <div class="card x in" style="left:64px;width:560px;top:930px;height:560px" data-t="22.6">
+      <div class="chrome"><i></i><i></i><i></i><div class="url">poster.html</div></div>
+      <div class="ed" id="ed6"></div>
+    </div>
+    <div class="card x in" style="left:648px;width:368px;top:930px;height:560px;padding:16px;display:flex;flex-direction:column;gap:14px" data-t="24.4">
+      <div class="lbl" style="padding:6px 6px 0">output ▶</div>
+      <div class="vid" data-s="15" data-o="0" style="width:336px;height:190px"></div>
+      <div class="vid" data-s="15" data-o="18" style="width:336px;height:190px"></div>
+      <div class="lbl" style="padding:0 6px">rendered from code</div>
+    </div>
+  </section>
+
+  <!-- S7 -->
+  <section class="sc" id="s7">
+    <div class="L kick x" style="top:250px" data-k="// on skillry.dev"></div>
+    <div class="L h x" style="top:304px;font-size:112px">
+      <span class="ln"><span class="w" data-t="26.34">Original</span></span>
+      <span class="ln soft"><span class="w" data-t="27.34">vs</span><span class="w" data-t="27.36">live</span><span class="w" data-t="27.7">remake.</span></span>
+    </div>
+    <div class="L card x in" style="top:600px;height:560px" data-t="25.3">
+      <div class="chrome"><i></i><i></i><i></i><div class="url">skillry.dev/ai-videos/opus-5-5</div></div>
+      <div class="img" style="margin:0 20px;height:460px;background-image:url(site.jpg);background-position:center top"></div>
+    </div>
+    <div class="card x in" style="left:64px;width:464px;top:1190px;height:320px;padding:14px" data-t="26.4"><div class="vid" data-s="1" data-o="0" style="width:100%;height:100%"><div class="cap">original</div></div></div>
+    <div class="card x in" style="left:552px;width:464px;top:1190px;height:320px;padding:14px" data-t="27.4"><div class="vid" data-s="1" data-o="0" style="width:100%;height:100%"><div class="cap">live remake</div></div></div>
+  </section>
+
+  <!-- S8 -->
+  <section class="sc" id="s8">
+    <div class="L kick x" style="top:250px" data-k="// want to make these?"></div>
+    <div class="L h x" style="top:304px;font-size:124px">
+      <span class="ln"><span class="w" data-t="29.58">Make</span><span class="w" data-t="30.58">these.</span></span>
+      <span class="ln"><span class="w" data-t="31.02">This</span><span class="w" data-t="31.42">is</span><span class="w" data-t="31.58">your</span></span>
+      <span class="ln soft"><span class="w" data-t="32.1">shortcut.</span></span>
+    </div>
+    <div class="L" style="top:760px;height:760px;left:0;right:0;overflow:visible">
+      <div id="mq1" style="position:absolute;left:0;top:0;display:flex;gap:18px">
+        <div class="vid x in" data-t="28.6" data-s="3" data-o="0" style="width:400px;height:226px"></div><div class="vid x in" data-t="28.65" data-s="11" data-o="6" style="width:400px;height:226px"></div><div class="vid x in" data-t="28.7" data-s="20" data-o="12" style="width:400px;height:226px"></div><div class="vid x in" data-t="28.75" data-s="33" data-o="2" style="width:400px;height:226px"></div><div class="vid x in" data-t="28.8" data-s="7" data-o="9" style="width:400px;height:226px"></div><div class="vid x in" data-t="28.85" data-s="29" data-o="21" style="width:400px;height:226px"></div>
+      </div>
+      <div id="mq2" style="position:absolute;left:0;top:262px;display:flex;gap:18px">
+        <div class="vid x in" data-t="28.7" data-s="22" data-o="3" style="width:400px;height:226px"></div><div class="vid x in" data-t="28.75" data-s="26" data-o="15" style="width:400px;height:226px"></div><div class="vid x in" data-t="28.8" data-s="14" data-o="5" style="width:400px;height:226px"></div><div class="vid x in" data-t="28.85" data-s="38" data-o="27" style="width:400px;height:226px"></div><div class="vid x in" data-t="28.9" data-s="10" data-o="1" style="width:400px;height:226px"></div><div class="vid x in" data-t="28.95" data-s="32" data-o="19" style="width:400px;height:226px"></div>
+      </div>
+      <div id="mq3" style="position:absolute;left:0;top:524px;display:flex;gap:18px">
+        <div class="vid x in" data-t="28.8" data-s="35" data-o="8" style="width:400px;height:226px"></div><div class="vid x in" data-t="28.85" data-s="6" data-o="13" style="width:400px;height:226px"></div><div class="vid x in" data-t="28.9" data-s="39" data-o="4" style="width:400px;height:226px"></div><div class="vid x in" data-t="28.95" data-s="27" data-o="24" style="width:400px;height:226px"></div><div class="vid x in" data-t="29.0" data-s="2" data-o="11" style="width:400px;height:226px"></div><div class="vid x in" data-t="29.05" data-s="37" data-o="6" style="width:400px;height:226px"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- S9 -->
+  <section class="sc" id="s9">
+    <div class="L kick x" style="top:250px" data-k="// want the link?"></div>
+    <div class="L h x" style="top:304px">
+      <span class="ln" style="font-size:132px"><span class="w" data-t="32.74">Comment</span></span>
+      <span class="ln soft" style="font-size:190px;letter-spacing:-8px"><span class="w" data-t="32.94">GITMATE</span></span>
+    </div>
+    <div class="L glass x in cm" style="top:680px;height:400px" data-t="32.75">
+      <div class="lbl" style="margin-bottom:22px">comments</div>
+      <div class="rowc"><div class="av2"></div><div class="cin" id="cin9"><span id="t9" style="color:rgba(255,255,255,.4)">Add a comment…</span></div><div class="send" id="snd9">↑</div></div>
+      <div class="posted" id="pst9"><div class="av2" style="width:56px;height:56px"></div><div><div class="u">you <span class="lbl">· now</span></div><div class="c">GITMATE</div></div></div>
+    </div>
+    <div class="dm x" id="dm9" style="left:300px;top:1140px">
+      <small>git.mate · message</small>Here's your link, mate 🔗</div>
+  </section>
+
+  <!-- S10 -->
+  <section class="sc" id="s10">
+    <div class="L kick x" style="top:250px" data-k="// see you tomorrow, mate"></div>
+    <div class="L h x" style="top:304px;font-size:132px">
+      <span class="ln"><span class="w" data-t="34.98">Follow</span></span>
+      <span class="ln soft" style="font-size:92px;letter-spacing:-3px"><span class="w" data-t="35.6">1 repo</span><span class="w" data-t="36.0">every</span><span class="w" data-t="36.3">day.</span></span>
+    </div>
+    <div class="L glass x in prof" style="top:600px;height:1000px" data-t="34.75">
+      <div class="bead pfp">&gt;_</div>
+      <div class="pn">@git.mate</div>
+      <div class="pnm">git.mate | GitHub Repos Daily</div>
+      <div class="pbio">Your daily open-source mate 🤝<br>1 useful GitHub repo, every day</div>
+      <div class="pst"><span class="chip">open-source</span><span class="chip">free tools</span><span class="chip">daily</span></div>
+      <div class="fbtn" id="fb"><div class="ripple" id="rp"></div><span id="f1">Follow</span><span id="f2" style="opacity:0">Following ✓</span></div>
+    </div>
+    <svg class="hand" id="hand" viewBox="0 0 100 100"><circle cx="50" cy="50" r="34" fill="rgba(255,255,255,.25)" stroke="#fff" stroke-width="5"/><circle cx="50" cy="50" r="12" fill="#fff"/></svg>
+  </section>
+
+  <div class="prog" id="prog"><i><b></b></i><i><b></b></i><i><b></b></i><i><b></b></i><i><b></b></i><i><b></b></i><i><b></b></i><i><b></b></i><i><b></b></i><i><b></b></i></div>
+  <div class="grain"></div>
+</div>
+
+<script>
+(function () {
+  const S = [0, 3.18, 8.85, 12.0, 16.45, 19.55, 25.27, 28.52, 32.7, 34.66];
+  const TOTAL = 39.4; window.__TOTAL = TOTAL;
+  const LABEL = ['wow', 'viral', 'repo', 'prompts', 'free', 'how', 'remakes', 'shortcut', 'link', 'follow'];
+  const $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)];
+  const tl = gsap.timeline({ paused: true, defaults: { ease: 'power3.out' } });
+  const scenes = $$('.sc');
+  scenes.forEach((sc, i) => {
+    tl.set(sc, { visibility: 'visible' }, Math.max(0, S[i] - .3));
+    if (i < scenes.length - 1) {
+      tl.to($$('.x', sc), { opacity: 0, y: -40, scale: .97, duration: .3, ease: 'power2.in', stagger: .01 }, S[i + 1] - .32);
+      tl.set(sc, { visibility: 'hidden' }, S[i + 1]);
+    }
+  });
+  $$('.h .w').forEach((w) => { const t = +w.dataset.t; if (!t) return;
+    tl.fromTo(w, { opacity: 0, y: 70, scale: 1.12, filter: 'blur(18px)' }, { opacity: 1, y: 0, scale: 1, filter: 'blur(0px)', duration: .55, ease: 'expo.out' }, t); });
+  scenes.forEach((sc, i) => { const k = $('.kick', sc), txt = k.dataset.k, o = { n: 0 }; k.textContent = i ? '' : txt; if (!i) return;
+    tl.fromTo(o, { n: 0 }, { n: txt.length, duration: Math.min(.7, txt.length * .025), ease: 'none', immediateRender: false, onUpdate: () => { k.textContent = txt.slice(0, Math.round(o.n)); } }, S[i] + .02); });
+  $$('.in').forEach((c) => { const t = +c.dataset.t; if (!t) return;
+    if (c.classList.contains('glass') || c.classList.contains('card')) { const s = document.createElement('div'); s.className = 'sw'; c.appendChild(s); tl.fromTo(s, { xPercent: -160 }, { xPercent: 420, duration: 1.1, ease: 'power2.inOut' }, t + .2); }
+    tl.fromTo(c, { opacity: 0, y: 80, scale: .94 }, { opacity: 1, y: 0, scale: 1, duration: .75, ease: 'expo.out' }, t); });
+  const count = (el, a, b, t, d, fmt) => { const o = { v: a }; tl.fromTo(o, { v: a }, { v: b, duration: d, ease: 'power2.out', immediateRender: false, onUpdate: () => { el.textContent = fmt(o.v); } }, t); };
+  const typer = (el, text, t, d) => { const o = { n: 0 }; tl.fromTo(o, { n: 0 }, { n: text.length, duration: d, ease: 'none', immediateRender: false, onUpdate: () => { el.textContent = text.slice(0, Math.round(o.n)); } }, t); };
+
+  // S1 slow push into the wall of videos
+  tl.fromTo('#mos', { scale: 1.0 }, { scale: 1.12, duration: 3.4, ease: 'none' }, 0);
+  // S3
+  tl.fromTo('#c3a', { scale: 1 }, { scale: 1.18, duration: .2, yoyo: true, repeat: 1 }, 10.64);
+  // S4 the real prompt types out
+  typer($('#t4'), 'create a motion design video of a poster breaking out of its own frame.', 14.9, 1.4);
+  // S5
+  count($('#n5'), 0, 703, 16.5, 1.1, (v) => Math.round(v));
+  // S6 paste, then code streams in
+  tl.call(() => { $('#t6').textContent = ''; }, null, 20.59);
+  tl.call(() => { $('#t6').textContent = 'create a motion design video of a poster breaking out of its own frame.'; }, null, 20.6);
+  tl.fromTo('#t6', { opacity: 0, x: -14 }, { opacity: 1, x: 0, duration: .25, immediateRender: false }, 20.6);
+  tl.call(() => { $('#st6').textContent = 'ready'; }, null, 21.09); tl.call(() => { $('#st6').textContent = 'writing code…'; }, null, 21.1);
+  tl.call(() => { $('#st6').textContent = 'writing code…'; }, null, 24.39); tl.call(() => { $('#st6').textContent = 'done ✓'; }, null, 24.4);
+  const code = '<canvas id="c"></canvas>\n<script>\nconst ctx = c.getContext("2d");\nlet t = 0;\nfunction frame() {\n  drawPoster(t);\n  breakFrame(t);\n  t += 1 / 60;\n  requestAnimationFrame(frame);\n}\nframe();\n</' + 'script>';
+  typer($('#ed6'), code, 22.7, 1.7);
+  // S9 comment flow
+  tl.call(() => { $('#t9').textContent = 'Add a comment…'; $('#t9').style.color = 'rgba(255,255,255,.4)'; }, null, 32.99);
+  tl.call(() => { $('#t9').style.color = '#fff'; }, null, 33.0);
+  typer($('#t9'), 'GITMATE', 33.0, .4);
+  tl.fromTo('#snd9', { scale: 1 }, { scale: .8, duration: .1, yoyo: true, repeat: 1 }, 33.5);
+  tl.fromTo('#pst9', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: .4 }, 33.62);
+  tl.fromTo('#dm9', { opacity: 0, y: 40, scale: .9, transformOrigin: '0% 100%' }, { opacity: 1, y: 0, scale: 1, duration: .5, ease: 'back.out(2)' }, 34.05);
+  // S10 follow tap
+  tl.fromTo('#hand', { opacity: 0, left: 760, top: 1620 }, { opacity: 1, left: 560, top: 1440, duration: .5, ease: 'power2.out' }, 34.95);
+  tl.to('#hand', { scale: .82, duration: .1, yoyo: true, repeat: 1 }, 35.45);
+  tl.fromTo('#rp', { opacity: .9, scale: .2 }, { opacity: 0, scale: 5, duration: .6, ease: 'power2.out' }, 35.5);
+  tl.to('#f1', { opacity: 0, y: -30, duration: .2 }, 35.55);
+  tl.fromTo('#f2', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: .3 }, 35.6);
+  tl.to('#fb', { backgroundColor: '#1a1b1e', color: '#f5f6f7', boxShadow: '0 0 0 2px rgba(255,255,255,.4)', duration: .3 }, 35.58);
+  tl.to('#hand', { opacity: 0, duration: .4 }, 36.1);
+  tl.to({}, { duration: .01 }, TOTAL);
+
+  const vids = $$('.vid[data-s]');
+  const NF = {"1": 35, "2": 34, "3": 35, "4": 35, "5": 35, "6": 35, "7": 35, "8": 35, "9": 30, "10": 35, "11": 35, "12": 35, "13": 35, "14": 35, "15": 35, "16": 35, "17": 35, "18": 35, "19": 35, "20": 35, "21": 35, "22": 35, "23": 35, "24": 35, "25": 35, "26": 35, "27": 35, "28": 35, "29": 35, "30": 35, "31": 35, "32": 35, "33": 35, "34": 35, "35": 35, "36": 35, "37": 34, "38": 35, "39": 35, "40": 35};
+  vids.forEach((v) => { v.n = NF[v.dataset.s]; v.style.backgroundImage = `url(sp/s${v.dataset.s}.jpg)`; v.style.backgroundSize = `100% ${v.n * 100}%`; });
+  const tag = $('#tag'), segs = $$('#prog b'), tc4 = $('#tc4');
+  const tick = (t) => {
+    vids.forEach((v) => { const f = Math.floor(t * 12 + +v.dataset.o) % v.n; v.style.backgroundPosition = `0 ${(f / (v.n - 1)) * 100}%`; });
+    $('#o1').style.transform = `translate(${Math.sin(t * .3) * 120}px,${Math.cos(t * .23) * 90}px)`;
+    $('#o2').style.transform = `translate(${Math.cos(t * .27) * -100}px,${Math.sin(t * .2) * 110}px)`;
+    $('#dg').style.transform = `translateY(${(t * 6) % 40}px)`;
+    const m = Math.max(0, t - 28.5) * 70;
+    $('#mq1').style.transform = `translateX(${-60 - m}px)`; $('#mq2').style.transform = `translateX(${-900 + m}px)`; $('#mq3').style.transform = `translateX(${-200 - m * .8}px)`;
+    let si = 0; for (let i = 0; i < S.length; i++) if (t >= S[i] - .3) si = i;
+    tag.innerHTML = `<b>${String(si + 1).padStart(2, '0')}</b> / ${LABEL[si]}`;
+    segs.forEach((b, i) => { const e = i < S.length - 1 ? S[i + 1] : TOTAL - 2; b.style.width = Math.min(100, Math.max(0, (t - S[i]) / (e - S[i]) * 100)) + '%'; });
+    tc4.style.opacity = (Math.floor(t * 3) % 2) ? .2 : 1;
+  };
+  window.__tl = tl;
+  window.__seek = (t) => { tl.time(t, false); tick(t); };
+  window.__seek(0);
+  if (!navigator.webdriver) { const t0 = performance.now(); const loop = () => { window.__seek(((performance.now() - t0) / 1000) % TOTAL); requestAnimationFrame(loop); }; requestAnimationFrame(loop); }
+})();
+</script>
+</body></html>

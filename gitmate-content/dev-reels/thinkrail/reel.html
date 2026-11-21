@@ -1,0 +1,497 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<title>git.mate thinkrail</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<style>
+:root{--ink:#0b0b0c;--mut:#8b8d91;--dim:#cfd0d2;--bg:#f7f7f5}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#fff}
+.f{position:relative;width:1080px;height:1920px;overflow:hidden;background:radial-gradient(ellipse 110% 70% at 50% 45%,#ffffff 0%,#f7f7f5 55%,#eeeeec 100%);color:var(--ink);font-family:'Inter',sans-serif}
+#cam{position:absolute;inset:0}
+#stage{position:absolute;inset:0;perspective:1800px;perspective-origin:50% 50%}
+#world{position:absolute;left:0;top:0;width:1080px;height:1920px;transform-style:preserve-3d;transform-origin:540px 960px}
+.sc{position:absolute;left:0;top:0;width:1080px;height:1920px;transform-style:preserve-3d;transform-origin:540px 960px;visibility:hidden}
+.ring{position:absolute;border-radius:50%;border:70px solid rgba(10,10,12,.045);filter:blur(26px)}
+.grain{position:absolute;inset:0;opacity:.05;mix-blend-mode:multiply;z-index:8;pointer-events:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
+.top{position:absolute;left:64px;right:64px;top:84px;height:80px;z-index:6}
+.brand{position:absolute;left:0;top:0;display:flex;align-items:center;gap:16px;font-family:'JetBrains Mono';font-weight:700;font-size:28px}
+.mk{width:58px;height:58px;border-radius:50%;display:grid;place-items:center;font-family:'JetBrains Mono';font-weight:800;font-size:22px;color:#fff;background:radial-gradient(circle at 34% 28%,#5a5c61 0 10%,#1a1b1e 45%,#000 100%);box-shadow:inset 0 2px 3px rgba(255,255,255,.35),0 8px 18px rgba(0,0,0,.25)}
+.tag{position:absolute;right:0;top:14px;font-family:'JetBrains Mono';font-size:24px;color:var(--mut);white-space:nowrap}
+.tag b{color:var(--ink);font-weight:700}
+.C{position:absolute;left:0;right:0;text-align:center;white-space:nowrap}
+.kick{font-family:'JetBrains Mono';font-size:26px;color:var(--mut);letter-spacing:1px}
+.sans{font-weight:600;letter-spacing:-.035em;line-height:1}
+.ser{font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;letter-spacing:-.01em;line-height:1}
+.g{color:var(--mut)}
+.ch{display:inline-block;white-space:pre}
+.mono{font-family:'JetBrains Mono'}
+.card{position:absolute;background:#fff;border-radius:26px;box-shadow:0 0 0 2px var(--ink),0 8px 0 var(--ink),0 40px 70px rgba(0,0,0,.14);overflow:hidden}
+
+/* S1 rails + station sign */
+.floor{position:absolute;left:-460px;top:1180px;width:2000px;height:1900px;transform-origin:50% 0;transform:rotateX(76deg);-webkit-mask-image:linear-gradient(to bottom,#000 0%,#000 30%,transparent 92%);mask-image:linear-gradient(to bottom,#000 0%,#000 30%,transparent 92%)}
+.floor .sl{position:absolute;left:760px;width:480px;top:0;bottom:0;background:repeating-linear-gradient(to top,#2a2b2e 0 34px,transparent 34px 130px)}
+.floor .rl{position:absolute;top:0;bottom:0;width:26px;background:linear-gradient(90deg,#55575c,#f2f2f0 40%,#8d8f93 70%,#2e2f33)}
+.floor .gr{position:absolute;inset:0;background-image:linear-gradient(rgba(11,11,12,.07) 2px,transparent 2px),linear-gradient(90deg,rgba(11,11,12,.07) 2px,transparent 2px);background-size:130px 130px}
+.ssign{position:absolute;left:170px;top:700px;width:740px;height:330px;transform-style:preserve-3d;transform-origin:50% 0}
+.ssign .ch1,.ssign .ch2{position:absolute;top:0;width:8px;height:70px;background:repeating-linear-gradient(to bottom,#3a3b3f 0 10px,#9a9ca1 10px 14px)}
+.ssign .ch1{left:120px}.ssign .ch2{right:120px}
+.ssign .bd{position:absolute;left:0;right:0;top:66px;height:250px;border-radius:24px;background:linear-gradient(170deg,#2a2b2f,#0b0b0c 55%);box-shadow:inset 0 3px 0 rgba(255,255,255,.2),inset 0 0 0 6px #0b0b0c,inset 0 0 0 9px rgba(255,255,255,.18),0 40px 60px rgba(0,0,0,.28);color:#fff;text-align:center}
+.ssign .bd small{display:block;margin-top:34px;font-family:'JetBrains Mono';font-size:24px;letter-spacing:6px;color:#a3a5a9}
+.ssign .bd b{display:block;margin-top:12px;font-size:110px;font-weight:700;letter-spacing:-.04em;line-height:1}
+.ssign .bd b i{font-family:'Instrument Serif';font-weight:400;font-style:italic;letter-spacing:-.01em}
+.ssign .bd em{position:absolute;left:36px;top:26px;font-style:normal;font-family:'JetBrains Mono';font-size:22px;font-weight:800;padding:6px 12px;border-radius:8px;background:#fff;color:var(--ink)}
+.ssign .bd u{position:absolute;right:36px;top:30px;text-decoration:none;font-family:'JetBrains Mono';font-size:20px;color:#a3a5a9}
+
+/* S2 one folder, three cursors */
+.ed{position:absolute;left:64px;top:600px;width:952px;height:760px}
+.ed .tb{position:absolute;left:0;right:0;top:0;height:76px;border-bottom:2px solid #e2e2e0;background:#fafaf8;display:flex;align-items:center;gap:14px;padding:0 28px;font-family:'JetBrains Mono';font-size:24px;font-weight:700}
+.ed .tb span{color:var(--mut);font-weight:500}
+.ed .tb em{margin-left:auto;font-style:normal;font-size:20px;color:var(--mut)}
+.cl{position:absolute;left:0;right:0;height:62px;display:flex;align-items:center;font-family:'JetBrains Mono';font-size:28px;white-space:pre}
+.cl .ln{width:92px;text-align:right;padding-right:28px;color:#b5b6b9;font-size:22px}
+.cl .a,.cl .b{position:absolute;left:92px}
+.cl .b{font-weight:800}
+.k{color:var(--mut)}
+.cur{position:absolute;width:4px;height:44px;background:var(--ink)}
+.cur i{position:absolute;left:0;top:-34px;font-style:normal;font-family:'JetBrains Mono';font-size:18px;font-weight:800;color:#fff;background:var(--ink);padding:4px 10px;border-radius:6px 6px 6px 0;white-space:nowrap}
+.crack{position:absolute;left:0;top:0;overflow:visible}
+
+/* S3 rail yard */
+.yard{position:absolute;left:64px;top:560px;width:952px;height:900px;border-radius:30px;background:#fbfbfa;box-shadow:0 0 0 2px var(--ink),0 10px 0 var(--ink),0 50px 80px rgba(0,0,0,.14);transform-style:preserve-3d}
+.yard::before{content:"";position:absolute;inset:0;border-radius:30px;background-image:radial-gradient(rgba(11,11,12,.12) 2px,transparent 2px);background-size:38px 38px}
+.yard svg{position:absolute;left:0;top:0}
+.wsl{position:absolute;top:40px;width:250px;margin-left:-125px;text-align:center;padding:10px 0;border-radius:14px;background:#fff;box-shadow:0 0 0 2px var(--ink),0 5px 0 var(--ink);font-family:'JetBrains Mono';font-size:19px;font-weight:800;line-height:1.3}
+.wsl span{display:block;font-weight:500;color:var(--mut);font-size:17px}
+.mainpl{position:absolute;left:376px;top:812px;width:200px;height:56px;border-radius:12px;background:var(--ink);color:#fff;display:grid;place-items:center;font-family:'JetBrains Mono';font-size:24px;font-weight:800}
+.clean{position:absolute;left:0;right:0;margin:0 auto;width:max-content;top:1540px;padding:20px 36px;border-radius:999px;background:#fff;box-shadow:0 0 0 3px var(--ink),0 6px 0 var(--ink);font-family:'JetBrains Mono';font-size:30px;font-weight:700;white-space:nowrap}
+.clean b{display:inline-grid;place-items:center;width:42px;height:42px;border-radius:50%;background:var(--ink);color:#fff;margin-left:14px;font-size:24px;vertical-align:middle}
+
+/* S4 merge + shredder */
+.mbar{position:absolute;left:64px;top:520px;width:952px;height:110px;border-radius:22px;background:#fff;box-shadow:0 0 0 2px var(--ink),0 8px 0 var(--ink),0 30px 50px rgba(0,0,0,.12);display:flex;align-items:center;padding:0 34px;gap:22px;font-family:'JetBrains Mono';overflow:hidden}
+.mbar .t{font-size:30px;font-weight:800;background:var(--ink);color:#fff;padding:8px 18px;border-radius:10px}
+.mbar .rails{flex:1;height:28px;background:repeating-linear-gradient(90deg,#2a2b2e 0 8px,transparent 8px 30px);border-top:5px solid var(--ink);border-bottom:5px solid var(--ink)}
+.mbar .st{font-size:26px;font-weight:700;color:var(--mut);width:190px;text-align:right}
+.mbar .st.on{color:var(--ink)}
+.br{position:absolute;top:720px;width:288px;height:330px;border-radius:24px;background:#fff;box-shadow:0 0 0 2px var(--ink),0 8px 0 var(--ink),0 30px 50px rgba(0,0,0,.14);padding:28px 26px;font-family:'JetBrains Mono';transform-style:preserve-3d}
+.br .w{font-size:20px;color:var(--mut)}
+.br .n{margin-top:10px;font-size:28px;font-weight:800}
+.br .d{margin-top:30px;font-size:26px}
+.br .d span{color:var(--mut)}
+.br .s{position:absolute;left:26px;right:26px;bottom:28px;height:64px;border-radius:14px;display:flex;align-items:center;justify-content:center;gap:10px;font-size:24px;font-weight:800;box-shadow:inset 0 0 0 3px var(--ink)}
+.br .s.ok{background:var(--ink);color:#fff}
+.br .bars{margin-top:22px;display:flex;gap:6px;height:16px}
+.br .bars i{flex:1;border-radius:4px;background:#e6e6e4}
+.br .bars i.on{background:var(--ink)}
+.shred{position:absolute;left:190px;top:1180px;width:700px;height:200px;transform-style:preserve-3d}
+.shred .bd{position:absolute;inset:0;border-radius:28px;background:linear-gradient(180deg,#2e2f33,#0b0b0c);box-shadow:inset 0 3px 0 rgba(255,255,255,.18),0 30px 50px rgba(0,0,0,.25)}
+.shred .sl{position:absolute;left:60px;right:60px;top:26px;height:22px;border-radius:11px;background:#000;box-shadow:inset 0 3px 6px rgba(0,0,0,.9),0 1px 0 rgba(255,255,255,.15)}
+.shred .lb{position:absolute;left:44px;bottom:36px;font-family:'JetBrains Mono';font-size:26px;color:#a3a5a9;letter-spacing:3px}
+.shred .lb b{color:#fff}
+.shred .led{position:absolute;right:46px;bottom:40px;width:20px;height:20px;border-radius:50%;background:#55575c}
+.strips{position:absolute;left:240px;top:1376px;width:600px;height:250px;display:flex;justify-content:center;gap:10px}
+.strips i{width:20px;height:100%;background:#fff;box-shadow:0 0 0 2px var(--ink);transform-origin:50% 0;border-radius:0 0 4px 4px}
+
+/* S5 chat vs specs */
+.chat{position:absolute;left:64px;top:560px;width:440px;height:640px}
+.chat .hd,.spc .hd{position:absolute;left:0;right:0;top:0;height:64px;border-bottom:2px solid #e2e2e0;background:#fafaf8;display:flex;align-items:center;padding:0 24px;font-family:'JetBrains Mono';font-size:21px;font-weight:800;gap:12px}
+.chat .hd em,.spc .hd em{margin-left:auto;font-style:normal;font-size:18px;color:var(--mut);font-weight:500}
+.bub{position:absolute;left:24px;max-width:340px;padding:16px 20px;border-radius:20px 20px 20px 6px;background:#efefed;font-size:23px;line-height:1.3;font-weight:500}
+.bub.me{left:auto;right:24px;border-radius:20px 20px 6px 20px;background:var(--ink);color:#fff}
+.bub.dec{box-shadow:inset 0 0 0 3px var(--ink);background:#fff}
+.gone{position:absolute;left:0;right:0;top:280px;text-align:center;font-family:'JetBrains Mono';font-size:26px;font-weight:700;color:var(--mut)}
+.spc{position:absolute;left:540px;top:560px;width:476px;height:640px}
+.spc img{position:absolute;left:0;top:64px;width:476px;height:567px}
+.kept{font-style:normal;margin-left:auto;font-size:18px;font-weight:800;color:#fff;background:var(--ink);padding:4px 10px;border-radius:6px}
+.ftree{position:absolute;left:64px;top:1270px;width:952px;display:flex;gap:22px}
+.ftree>div{flex:1;border-radius:20px;background:#fff;box-shadow:0 0 0 2px var(--ink),0 6px 0 var(--ink);padding:20px 22px;font-family:'JetBrains Mono';font-size:22px;line-height:1.7;transform-style:preserve-3d}
+.ftree b{font-weight:800}
+.ftree .sp{display:inline-block;background:var(--ink);color:#fff;padding:0 10px;border-radius:6px;font-weight:700}
+.ftree .k{color:#b5b6b9}
+.link{position:absolute;left:0;top:0;overflow:visible}
+
+/* S6 exploded workbench */
+.winw{position:absolute;left:64px;top:780px;width:952px;height:595px;transform-style:preserve-3d}
+.winw .base{position:absolute;inset:0;border-radius:22px;background:#f4f4f2;box-shadow:0 0 0 2px var(--ink),0 8px 0 var(--ink),0 40px 70px rgba(0,0,0,.14)}
+.winw .full{position:absolute;inset:0;border-radius:22px;overflow:hidden}
+.winw .full img{width:100%;height:100%;display:block}
+.pane{position:absolute;border-radius:10px;overflow:hidden;background:#fff;box-shadow:0 0 0 2px var(--ink),0 18px 30px rgba(0,0,0,.18)}
+.pane img{position:absolute;left:0;top:0;width:100%;height:100%}
+.pane .pl{position:absolute;left:8px;bottom:8px;font-family:'JetBrains Mono';font-size:15px;font-weight:800;background:var(--ink);color:#fff;padding:4px 9px;border-radius:6px;white-space:nowrap}
+.term{background:#0b0b0c;color:#e9e9e7;font-family:'JetBrains Mono';font-size:14px;line-height:1.55;padding:12px 14px}
+.term .k{color:#8b8d91}
+.pane.term .pl{background:#fff;color:var(--ink)}
+
+/* S7 ticket + validator */
+.tkt{position:absolute;left:64px;top:560px;width:952px;height:420px;border-radius:26px;background:#fff;box-shadow:0 0 0 2px var(--ink),0 8px 0 var(--ink),0 40px 70px rgba(0,0,0,.14);overflow:hidden;font-family:'JetBrains Mono'}
+.tkt .stub{position:absolute;left:0;top:0;bottom:0;width:190px;background:var(--ink);color:#fff;display:grid;place-items:center}
+.tkt .stub span{transform:rotate(-90deg);font-size:34px;font-weight:800;letter-spacing:8px;white-space:nowrap}
+.tkt .perf{position:absolute;left:190px;top:0;bottom:0;width:0;border-left:4px dotted #b5b6b9}
+.tkt .bdy{position:absolute;left:230px;right:40px;top:34px}
+.tkt .ttl{font-family:'Inter';font-size:64px;font-weight:700;letter-spacing:-.04em}
+.tkt .ttl i{font-family:'Instrument Serif';font-weight:400}
+.tkt .ttl small{font-family:'JetBrains Mono';font-size:20px;letter-spacing:3px;color:var(--mut);margin-left:16px;font-weight:500}
+.tkt .route{margin-top:16px;display:flex;align-items:center;gap:16px;font-size:26px;font-weight:800}
+.tkt .route i{flex:1;height:14px;background:repeating-linear-gradient(90deg,var(--ink) 0 6px,transparent 6px 18px);border-top:3px solid var(--ink);border-bottom:3px solid var(--ink)}
+.tkt .flds{margin-top:22px;display:flex;gap:16px}
+.tkt .flds div{flex:1;border-radius:12px;box-shadow:inset 0 0 0 2px #d4d4d2;padding:10px 14px;font-size:24px;font-weight:800}
+.tkt .flds small{display:block;font-size:15px;color:var(--mut);font-weight:500;letter-spacing:2px}
+.tkt .cmd{margin-top:20px;height:52px;border-radius:12px;background:#f0f0ee;display:flex;align-items:center;padding:0 18px;font-size:22px;font-weight:700;white-space:nowrap;overflow:hidden}
+.val{position:absolute;left:220px;top:1080px;width:640px;height:300px;transform-style:preserve-3d}
+.val .bd{position:absolute;inset:0;border-radius:34px;background:linear-gradient(180deg,#2e2f33,#0b0b0c);box-shadow:inset 0 3px 0 rgba(255,255,255,.18),0 30px 50px rgba(0,0,0,.25)}
+.val .scr{position:absolute;left:44px;right:44px;top:44px;height:130px;border-radius:18px;background:#141518;box-shadow:inset 0 0 0 2px #2c2d31;display:grid;place-items:center;font-family:'JetBrains Mono';font-size:40px;font-weight:800;color:#6c6e73;letter-spacing:2px}
+.val .scr.on{background:#f4f4f2;color:var(--ink)}
+.val .rdr{position:absolute;left:44px;right:44px;bottom:40px;height:60px;border-radius:14px;box-shadow:inset 0 0 0 3px #3a3b3f;display:flex;align-items:center;justify-content:center;gap:14px}
+.val .rdr i{width:14px;height:14px;border-radius:50%;background:#3a3b3f}
+.val .rdr i.on{background:#fff;box-shadow:0 0 12px #fff}
+.scan{position:absolute;left:64px;width:952px;height:6px;background:var(--ink);box-shadow:0 0 0 2px #fff,0 0 30px 8px rgba(11,11,12,.25);border-radius:3px}
+
+/* S8/S9 comment + end (shell) */
+.cin{display:flex;align-items:center;gap:26px;padding:0 26px 0 30px;background:#fff;box-shadow:0 0 0 2px var(--ink),0 6px 0 var(--ink),0 30px 50px rgba(0,0,0,.12)}
+.cbar{position:absolute}
+.av{width:76px;height:76px;border-radius:50%;background:linear-gradient(135deg,#d9d9d7,#a9aaad);flex:none}
+.cin .tx{flex:1;font-size:46px;font-weight:600;letter-spacing:.02em}
+.send{width:84px;height:84px;border-radius:50%;background:var(--ink);display:grid;place-items:center;color:#fff;font-size:40px;flex:none}
+.dm{position:absolute;padding:30px 44px;border-radius:44px 44px 44px 12px;background:var(--ink);color:#fff;font-size:42px;font-weight:500;white-space:nowrap}
+.dm small{display:block;font-family:'JetBrains Mono';font-size:20px;color:#9a9ca1;margin-bottom:8px}
+.bigmk{position:absolute;left:400px;top:600px;width:280px;height:280px;border-radius:50%;display:grid;place-items:center;font-family:'JetBrains Mono';font-weight:800;font-size:96px;color:#fff;background:radial-gradient(circle at 34% 26%,#6a6c71 0 8%,#1c1d20 42%,#000 100%);box-shadow:inset 0 6px 10px rgba(255,255,255,.3),inset 0 -14px 26px rgba(0,0,0,.6),0 40px 80px rgba(0,0,0,.28)}
+.erings{position:absolute;left:290px;top:490px;width:500px;height:500px}
+.fol{position:absolute;left:300px;top:1390px;width:480px;height:132px;border-radius:999px;display:grid;place-items:center;font-size:50px;font-weight:600;background:var(--ink);color:#fff;box-shadow:0 22px 44px rgba(0,0,0,.22)}
+.fol2{position:absolute;left:300px;top:1390px;width:480px;height:132px;border-radius:999px;display:grid;place-items:center;font-size:50px;font-weight:600;background:#fff;color:var(--ink);border:3px solid var(--ink);opacity:0}
+.tapd{position:absolute;width:90px;height:90px;border-radius:50%;background:rgba(11,11,12,.18);border:3px solid rgba(11,11,12,.55);opacity:0}
+.rip{position:absolute;left:540px;top:1456px;width:10px;height:10px;margin:-5px;border-radius:50%;border:4px solid var(--ink);opacity:0}
+</style></head>
+<body>
+<svg width="0" height="0" style="position:absolute"><defs>
+  <filter id="mb" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur id="mbg" stdDeviation="0 0"/></filter>
+</defs></svg>
+<div class="f" id="F">
+ <div id="cam"><div id="stage"><div id="world">
+
+  <!-- S1 hook: rails rushing + station sign -->
+  <div class="sc" id="s1" data-pose="0,0,0,0,0,0">
+    <div class="ring" style="left:-260px;top:-180px;width:720px;height:720px;transform:translateZ(-500px)"></div>
+    <div class="floor" id="flr"><div class="gr" id="flg"></div><div class="sl" id="fls"></div><div class="rl" style="left:820px"></div><div class="rl" style="left:1154px"></div></div>
+    <div class="C sans ty" style="top:250px;font-size:132px;font-weight:700;letter-spacing:-.05em" data-t="0.75" data-cd=".04">JetBrains</div>
+    <div class="C ser ty" style="top:400px;font-size:132px" data-t="1.25" data-cd=".035">open-sourced</div>
+    <div class="C sans rv" style="top:560px;font-size:60px;font-weight:500" data-t="2.0"><span class="g">an IDE built for</span> <span class="ser" style="font-size:76px">AI agents.</span></div>
+    <div class="ssign" id="sgn"><div class="ch1"></div><div class="ch2"></div><div class="bd"><em>TR</em><small>NEXT STOP</small><b>Think<i>Rail</i></b></div></div>
+  </div>
+
+  <!-- S2 three agents, one folder -->
+  <div class="sc" id="s2" data-pose="2400,0,-600,-30,0,0">
+    <div class="ring" style="left:640px;top:-160px;width:700px;height:700px;transform:translateZ(-600px)"></div>
+    <div class="C kick rv" style="top:250px" data-t="5.5">// here's the problem</div>
+    <div class="C sans rv" style="top:316px;font-size:116px" data-t="6.95">3 agents.</div>
+    <div class="C ser rv" style="top:440px;font-size:116px" data-t="7.7">one folder.</div>
+    <div class="card ed c3d" id="ed" data-t="5.6" data-rx="12" data-ry="8">
+      <div class="tb">src/<span>auth.ts</span><em>~/code/app · main</em></div>
+      <div class="cl" style="top:100px"><span class="ln">1</span><span class="a"><span class="k">import</span> { db } <span class="k">from</span> './db'</span></div>
+      <div class="cl" style="top:162px"><span class="ln">2</span><span class="a"> </span></div>
+      <div class="cl" style="top:224px"><span class="ln">3</span><span class="a"><span class="k">export async function</span> login(u) {</span></div>
+      <div class="cl" style="top:286px"><span class="ln">4</span><span class="a">  const user = await db.find(u)</span><span class="b" id="cf1">&lt;&lt;&lt;&lt;&lt;&lt;&lt; agent-1</span></div>
+      <div class="cl" style="top:348px"><span class="ln">5</span><span class="a">  if (!user) throw new Error()</span><span class="b" id="cf2">=======</span></div>
+      <div class="cl" style="top:410px"><span class="ln">6</span><span class="a">  return token(user)</span><span class="b" id="cf3">&gt;&gt;&gt;&gt;&gt;&gt;&gt; agent-3</span></div>
+      <div class="cl" style="top:472px"><span class="ln">7</span><span class="a">}</span></div>
+      <div class="cl" style="top:534px"><span class="ln">8</span><span class="a"> </span></div>
+      <div class="cl" style="top:596px"><span class="ln">9</span><span class="a"><span class="k">export const</span> ttl = 3600</span></div>
+      <div class="cur" id="cu1" style="left:560px;top:295px"><i>agent-1</i></div>
+      <div class="cur" id="cu2" style="left:640px;top:357px"><i>agent-2</i></div>
+      <div class="cur" id="cu3" style="left:470px;top:419px"><i>agent-3</i></div>
+      <svg class="crack" width="952" height="760"><path class="dl" data-t="8.62" data-d=".35" d="M0 250 L120 290 L190 262 L300 330 L360 300 L470 380 L540 350 L640 420 L720 390 L820 452 L952 430" stroke="#0b0b0c" stroke-width="6" fill="none" stroke-linejoin="round"/></svg>
+    </div>
+    <div class="C ser g rv" style="top:1450px;font-size:100px" data-t="8.6">they trip over</div>
+    <div class="C ser rv" style="top:1560px;font-size:100px" data-t="9.3">each other.</div>
+  </div>
+
+  <!-- S3 rail yard: a worktree per task -->
+  <div class="sc" id="s3" data-pose="2400,-2600,-600,0,25,0">
+    <div class="C sans rv" style="top:250px;font-size:100px" data-t="10.4">every task gets</div>
+    <div class="C ser rv" style="top:362px;font-size:116px" data-t="12.1">its own worktree.</div>
+    <div class="yard c3d" id="yard" data-t="10.3" data-rx="24">
+      <svg width="952" height="900" viewBox="0 0 952 900" id="ysvg">
+        <g fill="none" stroke-linecap="round">
+          <path class="slp" d="M476 900 L476 700" stroke="#0b0b0c" stroke-width="46" stroke-dasharray="7 21"/>
+          <path class="slp s1" d="M476 700 C476 600, 200 620, 200 500 L200 130" stroke="#0b0b0c" stroke-width="46" stroke-dasharray="7 21"/>
+          <path class="slp s2" d="M476 700 L476 130" stroke="#0b0b0c" stroke-width="46" stroke-dasharray="7 21"/>
+          <path class="slp s3" d="M476 700 C476 600, 752 620, 752 500 L752 130" stroke="#0b0b0c" stroke-width="46" stroke-dasharray="7 21"/>
+          <path class="rail" data-t="10.45" d="M476 900 L476 700" stroke="#0b0b0c" stroke-width="30"/>
+          <path class="rail" data-t="11.1" d="M476 700 C476 600, 200 620, 200 500 L200 130" stroke="#0b0b0c" stroke-width="30"/>
+          <path class="rail" data-t="11.35" d="M476 700 L476 130" stroke="#0b0b0c" stroke-width="30"/>
+          <path class="rail" data-t="11.6" d="M476 700 C476 600, 752 620, 752 500 L752 130" stroke="#0b0b0c" stroke-width="30"/>
+          <path class="rli" data-t="10.45" d="M476 900 L476 700" stroke="#fbfbfa" stroke-width="18"/>
+          <path class="rli" data-t="11.1" d="M476 700 C476 600, 200 620, 200 500 L200 130" stroke="#fbfbfa" stroke-width="18"/>
+          <path class="rli" data-t="11.35" d="M476 700 L476 130" stroke="#fbfbfa" stroke-width="18"/>
+          <path class="rli" data-t="11.6" d="M476 700 C476 600, 752 620, 752 500 L752 130" stroke="#fbfbfa" stroke-width="18"/>
+        </g>
+        <path id="cp1" d="M476 880 L476 700 C476 600, 200 620, 200 500 L200 200" fill="none"/>
+        <path id="cp2" d="M476 880 L476 200" fill="none"/>
+        <path id="cp3" d="M476 880 L476 700 C476 600, 752 620, 752 500 L752 200" fill="none"/>
+        <circle id="sw" cx="476" cy="700" r="20" fill="#fff" stroke="#0b0b0c" stroke-width="6"/>
+        <g id="car1"><rect x="-38" y="-56" width="76" height="112" rx="16" fill="#0b0b0c"/><rect x="-26" y="-44" width="52" height="30" rx="7" fill="#fff" opacity=".9"/><text x="0" y="26" text-anchor="middle" font-family="JetBrains Mono" font-weight="800" font-size="26" fill="#fff">A1</text></g>
+        <g id="car2"><rect x="-38" y="-56" width="76" height="112" rx="16" fill="#0b0b0c"/><rect x="-26" y="-44" width="52" height="30" rx="7" fill="#fff" opacity=".9"/><text x="0" y="26" text-anchor="middle" font-family="JetBrains Mono" font-weight="800" font-size="26" fill="#fff">A2</text></g>
+        <g id="car3"><rect x="-38" y="-56" width="76" height="112" rx="16" fill="#0b0b0c"/><rect x="-26" y="-44" width="52" height="30" rx="7" fill="#fff" opacity=".9"/><text x="0" y="26" text-anchor="middle" font-family="JetBrains Mono" font-weight="800" font-size="26" fill="#fff">A3</text></g>
+      </svg>
+      <div class="wsl pp" style="left:200px" data-t="12.3">workspace-1<span>agent/login</span></div>
+      <div class="wsl pp" style="left:476px" data-t="12.5">workspace-2<span>agent/tests</span></div>
+      <div class="wsl pp" style="left:752px" data-t="12.7">workspace-3<span>agent/docs</span></div>
+      <div class="mainpl">main</div>
+    </div>
+    <div class="clean pp" data-t="15.2">your checkout: clean<b>✓</b></div>
+  </div>
+
+  <!-- S4 merge the good one, shred the rest -->
+  <div class="sc" id="s4" data-pose="4800,-2600,-1800,30,0,0">
+    <div class="C ser" style="top:300px;font-size:120px;height:140px"><span class="swap" data-a="16.5" data-b="17.65" style="position:absolute;left:0;right:0">merge the good one.</span><span class="swap" data-a="17.7" data-b="99" style="position:absolute;left:0;right:0">delete the rest.</span></div>
+    <div class="mbar c3d" data-t="16.4" data-rx="14"><span class="t">main</span><span class="rails"></span><span class="st" id="mst">waiting</span></div>
+    <div class="br" id="br1" style="left:64px"><div class="w">workspace-1</div><div class="n">agent/login</div><div class="d">+18 <span>−42</span></div><div class="bars"><i class="on"></i><i class="on"></i><i></i><i></i><i></i></div><div class="s">✗ 3 failing</div></div>
+    <div class="br" id="br2" style="left:396px"><div class="w">workspace-2</div><div class="n">agent/tests</div><div class="d">+42 <span>−3</span></div><div class="bars"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></div><div class="s ok">✓ 17 passed</div></div>
+    <div class="br" id="br3" style="left:728px"><div class="w">workspace-3</div><div class="n">agent/docs</div><div class="d">+7 <span>−0</span></div><div class="bars"><i class="on"></i><i></i><i></i><i></i><i></i></div><div class="s">✗ off-spec</div></div>
+    <div class="strips" id="strips"></div>
+    <div class="shred" id="shr"><div class="bd"></div><div class="sl"></div><div class="lb"><b>git</b> worktree remove</div><div class="led" id="sled"></div></div>
+  </div>
+
+  <!-- S5 it remembers: chat vs living specs -->
+  <div class="sc" id="s5" data-pose="4800,0,-3600,-25,0,0">
+    <div class="ring" style="left:-300px;top:1300px;width:800px;height:800px;transform:translateZ(-600px)"></div>
+    <div class="C sans rv" style="top:250px;font-size:96px" data-t="18.85">and it</div>
+    <div class="C ser rv" style="top:346px;font-size:140px" data-t="19.3">remembers.</div>
+    <div class="card chat c3d" id="chat" data-t="19.0" data-rx="10" data-ry="12">
+      <div class="hd">chat · pi<em id="cst">live</em></div>
+      <div class="cbx" id="cbx">
+        <div class="bub me" style="top:96px">add login with email</div>
+        <div class="bub" style="top:196px">done ✓ 4 tool calls</div>
+        <div class="bub me dec" id="dec" style="top:296px;color:#0b0b0c">tokens expire in 1h. never store passwords</div>
+        <div class="bub" style="top:450px">noted. updating spec</div>
+      </div>
+      <div class="gone" id="gone">chat ended</div>
+    </div>
+    <div class="card spc c3d" id="spc" data-t="19.15" data-rx="10" data-ry="-12">
+      <div class="hd">SPEC graph<em class="kept" id="kept">kept ✓</em></div>
+      <img src="spectree.jpg">
+    </div>
+    <div class="ftree">
+      <div data-k="21.6"><b>server/</b><br><span class="k">├</span> agent.ts<br><span class="k">└</span> <span class="sp">SPEC.md</span></div>
+      <div data-k="21.75"><b>web/</b><br><span class="k">├</span> App.tsx<br><span class="k">└</span> <span class="sp">SPEC.md</span></div>
+      <div data-k="21.9"><b>cli/</b><br><span class="k">├</span> args.ts<br><span class="k">└</span> <span class="sp">SPEC.md</span></div>
+    </div>
+    <div class="C ser g rv" style="top:1520px;font-size:84px" data-t="22.9">decisions don't vanish.</div>
+  </div>
+
+  <!-- S6 exploded workbench -> one window -->
+  <div class="sc" id="s6" data-pose="7200,0,-3600,25,0,0">
+    <div class="C kick rv" style="top:250px" data-t="25.05">// real screenshots from the repo</div>
+    <div class="C ser" style="top:320px;font-size:130px;height:150px">
+      <span class="swap" data-a="25.1" data-b="25.7" style="position:absolute;left:0;right:0">Editor.</span><span class="swap" data-a="25.72" data-b="26.25" style="position:absolute;left:0;right:0">Diffs.</span><span class="swap" data-a="26.27" data-b="26.85" style="position:absolute;left:0;right:0">Terminals.</span><span class="swap" data-a="26.87" data-b="27.8" style="position:absolute;left:0;right:0">Pull requests.</span><span class="swap" data-a="27.85" data-b="99" style="position:absolute;left:0;right:0"><span class="g">all in</span> one window.</span>
+    </div>
+    <div class="winw" id="winw">
+      <div class="base" id="wbase"></div>
+      <div class="full" id="wfull"><img src="wb.jpg"></div>
+      <div class="pane" id="pn1" style="left:26px;top:26px;width:172px;height:543px"><img src="p_proj.jpg"><span class="pl">WORKSPACES</span></div>
+      <div class="pane" id="pn2" style="left:198px;top:26px;width:230px;height:543px"><img src="p_chat.jpg"><span class="pl">EDITOR · CHAT</span></div>
+      <div class="pane" id="pn3" style="left:428px;top:26px;width:231px;height:251px"><img src="p_diff.jpg"><span class="pl">DIFFS</span></div>
+      <div class="pane term" id="pn4" style="left:428px;top:277px;width:231px;height:292px"><div><span class="k">$</span> bun test</div><div>✓ args.test.ts</div><div>✓ 17 passed</div><div><span class="k">$</span> git push</div><div>→ workspace-3</div><span class="pl">TERMINAL</span></div>
+      <div class="pane" id="pn5" style="left:659px;top:26px;width:266px;height:317px"><img src="p_specs.jpg"><span class="pl">SPECS</span></div>
+      <div class="pane" id="pn6" style="left:659px;top:343px;width:266px;height:226px"><img src="p_changes.jpg"><span class="pl">PULL REQUEST</span></div>
+    </div>
+    <div class="C mono g rv" style="top:1450px;font-size:26px" data-t="28.3">JetBrains/thinkrail · workbench</div>
+  </div>
+
+  <!-- S7 ticket + validator -->
+  <div class="sc" id="s7" data-pose="7200,2600,-4800,0,-25,0">
+    <div class="ring" style="left:600px;top:1400px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="C sans rv" style="top:250px;font-size:120px" data-t="29.3">free.</div>
+    <div class="C ser rv" style="top:378px;font-size:116px" data-t="29.95">Apache 2.0</div>
+    <div class="tkt c3d" id="tkt" data-t="29.25" data-rx="12" data-ry="-6">
+      <div class="stub"><span>ADMIT ONE</span></div><div class="perf"></div>
+      <div class="bdy">
+        <div class="ttl">Think<i>Rail</i><small>BY JETBRAINS</small></div>
+        <div class="route">main<i></i>shipped</div>
+        <div class="flds"><div><small>FARE</small>$0.00</div><div><small>LICENSE</small>Apache-2.0</div><div><small>RUNS ON</small>mac·win·linux</div></div>
+        <div class="cmd" id="cmd"></div>
+      </div>
+    </div>
+    <div class="scan" id="scan" style="top:560px"></div>
+    <div class="val c3d" data-t="29.6" data-rx="18"><div class="bd"></div><div class="scr" id="vscr">ONE COMMAND</div><div class="rdr"><i id="vl1"></i><i id="vl2"></i><i id="vl3"></i></div></div>
+  </div>
+
+  <!-- S8 comment -->
+  <div class="sc" id="s8" data-pose="9600,2600,-4800,-30,0,0">
+    <div class="ring" style="left:620px;top:1300px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="C sans rv" style="top:380px;font-size:120px;font-weight:500" data-t="32.85">Comment</div>
+    <div class="C sans ty" style="top:510px;font-size:196px;font-weight:700;letter-spacing:-.04em" data-t="33.0" data-cd=".05">GITMATE</div>
+    <div class="cbar cin c3d" style="left:64px;top:860px;width:952px;height:140px;border-radius:999px" data-t="32.82" data-rx="10"><div class="av"></div><div class="tx" id="ctx"></div><div class="send">↑</div></div>
+    <div class="dm pp" style="left:250px;top:1110px" data-t="33.85"><small>git.mate · message</small>Here's your link, mate 🔗</div>
+  </div>
+
+  <!-- S9 end -->
+  <div class="sc" id="s9" data-pose="12000,2600,-4800,-24,0,0">
+    <div class="ring" style="left:-300px;top:-160px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="ring" style="left:640px;top:1400px;width:760px;height:760px;transform:translateZ(-800px)"></div>
+    <svg class="erings" viewBox="0 0 500 500"><circle id="er1" cx="250" cy="250" r="226" fill="none" stroke="#0b0b0c" stroke-width="3" stroke-dasharray="1420" stroke-dashoffset="1420" transform="rotate(-90 250 250)"/>
+      <circle id="er2" cx="250" cy="250" r="246" fill="none" stroke="#c9cacc" stroke-width="2" stroke-dasharray="1546" stroke-dashoffset="1546" transform="rotate(90 250 250)"/></svg>
+    <div class="bigmk" id="bigmk">&gt;_</div>
+    <div class="C sans ty" style="top:1050px;font-size:104px;font-weight:700" data-t="34.95" data-cd=".05">@git.mate</div>
+    <div class="C ser" style="top:1200px;font-size:96px"><span class="rv g" data-t="35.45">1 repo</span> <span class="rv" data-t="35.7">every</span> <span class="rv" data-t="35.95">day.</span></div>
+    <div class="fol pp" id="fol" data-t="35.15">Follow</div>
+    <div class="fol2" id="fol2">Following ✓</div>
+    <div class="rip" id="rip"></div>
+    <div class="tapd" id="tapd" style="left:640px;top:1560px"></div>
+  </div>
+
+ </div></div></div>
+ <div class="top"><div class="brand"><div class="mk">&gt;_</div>git.mate</div><div class="tag" id="tag"><b>01</b> / 09</div></div>
+ <div class="grain"></div>
+</div>
+<script>
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+const TOTAL = 37.4; window.__TOTAL = TOTAL;
+const S = [0, 5.45, 10.25, 16.45, 18.75, 24.95, 29.2, 32.8, 34.62];
+const scenes = $$('.sc');
+const poses = scenes.map(s => s.dataset.pose.split(',').map(Number));
+scenes.forEach((s, i) => { const [x, y, z, ry, rx, rz] = poses[i]; s.style.transform = `translate3d(${x}px,${y}px,${z}px) rotateY(${ry}deg) rotateX(${rx}deg) rotateZ(${rz}deg)`; });
+const tl = gsap.timeline({ paused: true });
+
+// shell: typing / reveals / pops / 3D cards / line draws / swaps
+$$('.ty').forEach(el => { const t = +el.dataset.t, cd = +(el.dataset.cd || .045); const txt = el.textContent; el.textContent = '';
+  const chs = [...txt].map(c => { const s = document.createElement('span'); s.className = 'ch'; s.textContent = c; el.appendChild(s); return s; });
+  tl.set(chs, { opacity: 0 }, 0);
+  chs.forEach((c, i) => tl.fromTo(c, { opacity: 0, y: 26, filter: 'blur(14px)' }, { opacity: 1, y: 0, filter: 'blur(0px)', duration: .42, ease: 'power3.out', immediateRender: false }, Math.max(0.001, t + i * cd))); });
+$$('.rv').forEach(el => { const t = +el.dataset.t; if (isNaN(t)) return;
+  tl.set(el, { opacity: 0 }, 0); tl.fromTo(el, { opacity: 0, y: 46, filter: 'blur(16px)' }, { opacity: 1, y: 0, filter: 'blur(0px)', duration: .55, ease: 'power3.out', immediateRender: false }, Math.max(0.001, t)); });
+$$('.pp').forEach(el => { const t = +el.dataset.t;
+  tl.set(el, { opacity: 0 }, 0); tl.fromTo(el, { opacity: 0, scale: .55, filter: 'blur(10px)' }, { opacity: 1, scale: 1, filter: 'blur(0px)', duration: .5, ease: 'back.out(2.2)', immediateRender: false }, t); });
+$$('.c3d').forEach(el => { const t = +el.dataset.t, rx = +(el.dataset.rx || 0), ry = +(el.dataset.ry || 0);
+  tl.set(el, { opacity: 0, transformPerspective: 1500 }, 0);
+  tl.fromTo(el, { opacity: 0, rotationX: rx + 50, rotationY: ry * 2.5, y: 260, z: -500, scale: .9 }, { opacity: 1, rotationX: rx, rotationY: ry, y: 0, z: 0, scale: 1, duration: 1.05, ease: 'expo.out', immediateRender: false }, Math.max(0.001, t));
+  tl.to(el, { rotationX: rx * .4, rotationY: -ry * .5, duration: 3.2, ease: 'sine.inOut' }, Math.max(0.001, t) + 1.05); });
+$$('path.dl, path.rail, path.rli').forEach(p => { const L = p.getTotalLength() + 2; p.style.strokeDasharray = L;
+  tl.set(p, { strokeDashoffset: L }, 0); tl.to(p, { strokeDashoffset: 0, duration: +(p.dataset.d || .5), ease: 'power2.inOut' }, +p.dataset.t); });
+$$('.swap').forEach(el => { tl.set(el, { opacity: 0 }, 0); tl.fromTo(el, { opacity: 0, y: 40, filter: 'blur(12px)' }, { opacity: 1, y: 0, filter: 'blur(0px)', duration: .3, immediateRender: false }, +el.dataset.a);
+  if (+el.dataset.b < 90) tl.to(el, { opacity: 0, y: -40, filter: 'blur(12px)', duration: .22 }, +el.dataset.b - .1); });
+$$('[data-k]').forEach(el => { const t = +el.dataset.k;
+  tl.set(el, { opacity: 0 }, 0); tl.fromTo(el, { opacity: 0, z: 260, y: -30, scale: 1.2 }, { opacity: 1, z: 0, y: 0, scale: 1, duration: .45, ease: 'power3.out', immediateRender: false }, t); });
+
+// S1 station sign swings in on its chains
+tl.set('#sgn', { opacity: 0, rotationX: -95, transformPerspective: 1600 }, 0);
+tl.to('#sgn', { opacity: 1, duration: .15 }, 4.35);
+tl.to('#sgn', { rotationX: 0, duration: 1.1, ease: 'elastic.out(1,.45)' }, 4.35);
+tl.to('#sgn', { rotationY: 6, duration: 1.2, ease: 'sine.inOut', yoyo: true, repeat: 1 }, 5.4);
+tl.set('#flr', { opacity: 0 }, 0); tl.to('#flr', { opacity: 1, duration: .6 }, 0.1);
+
+// S2 cursors fight over the same lines, then conflict + crack
+const CU = [['#cu1', [[560, 295], [430, 357], [610, 419], [380, 295]]], ['#cu2', [[640, 357], [520, 295], [460, 419], [560, 357]]], ['#cu3', [[470, 419], [600, 357], [520, 295], [440, 419]]]];
+CU.forEach(([id, pts], k) => { tl.set(id, { opacity: 0 }, 0); tl.to(id, { opacity: 1, duration: .2 }, 6.9 + k * .25);
+  pts.slice(1).forEach((p, j) => tl.to(id, { left: p[0], top: p[1], duration: .32, ease: 'power2.inOut' }, 7.3 + k * .12 + j * .42)); });
+['#cf1', '#cf2', '#cf3'].forEach((id, k) => { tl.set(id, { opacity: 0 }, 0); tl.to(id, { opacity: 1, duration: .08 }, 8.6 + k * .06);
+});
+tl.to('.cl:nth-child(5) .a, .cl:nth-child(6) .a, .cl:nth-child(7) .a', { opacity: 0, duration: .08 }, 8.58);
+tl.fromTo('#ed', { x: 0 }, { x: 16, duration: .05, yoyo: true, repeat: 5, immediateRender: false }, 8.62);
+
+// S3 cars run up their own tracks
+const cars = [{ g: '#car1', p: '#cp1', v: { u: 0 } }, { g: '#car2', p: '#cp2', v: { u: 0 } }, { g: '#car3', p: '#cp3', v: { u: 0 } }];
+cars.forEach((c, k) => { c.el = $(c.g); c.path = $(c.p); c.L = c.path.getTotalLength();
+  tl.set(c.el, { opacity: 0 }, 0); tl.to(c.el, { opacity: 1, duration: .2 }, 11.9 + k * .2);
+  tl.fromTo(c.v, { u: 0 }, { u: .4, duration: 1.0, ease: 'power2.out', immediateRender: false }, 11.9 + k * .2);
+  tl.to(c.v, { u: 1, duration: 1.5, ease: 'power2.inOut' }, 14.1 + k * .05); });
+tl.set('.slp', { opacity: 0 }, 0); tl.to('.slp', { opacity: .16, duration: .6, stagger: .15 }, 10.7);
+
+// S4 merge good branch up into main, shred the other two
+tl.set(['#br1', '#br2', '#br3'], { opacity: 0, transformPerspective: 1300 }, 0);
+['#br1', '#br2', '#br3'].forEach((id, k) => tl.fromTo(id, { opacity: 0, rotationY: -80, y: 120 }, { opacity: 1, rotationY: 0, y: 0, duration: .7, ease: 'expo.out', immediateRender: false }, 16.45 + k * .1));
+tl.to('#br2', { y: -260, scale: .5, rotationX: 30, duration: .45, ease: 'power3.in' }, 17.0);
+tl.to('#br2', { opacity: 0, duration: .12 }, 17.4);
+tl.fromTo('.mbar', { scale: 1 }, { scale: 1.04, duration: .1, yoyo: true, repeat: 1, immediateRender: false }, 17.45);
+tl.to('#br1', { left: 246, top: 900, rotationZ: 0, duration: .45, ease: 'power2.inOut' }, 17.75);
+tl.to('#br3', { left: 546, top: 900, duration: .45, ease: 'power2.inOut' }, 17.85);
+tl.to('#br1', { top: 1200, duration: .55, ease: 'power2.in' }, 18.2);
+tl.to('#br3', { top: 1200, duration: .55, ease: 'power2.in' }, 18.3);
+const ST = $('#strips'); for (let i = 0; i < 18; i++) { const s = document.createElement('i'); ST.appendChild(s); }
+tl.set('#strips i', { scaleY: 0 }, 0);
+tl.to('#strips i', { scaleY: 1, duration: .5, ease: 'power1.out', stagger: { each: .015, from: 'random' } }, 18.35);
+tl.set('#sled', { background: '#55575c', boxShadow: 'none' }, 0); tl.set('#sled', { background: '#ffffff', boxShadow: '0 0 14px #fff' }, 18.3);
+tl.fromTo('#shr', { x: 0 }, { x: 6, duration: .04, yoyo: true, repeat: 9, immediateRender: false }, 18.35);
+tl.set('#shr', { opacity: 0, transformPerspective: 1300 }, 0);
+tl.fromTo('#shr', { opacity: 0, rotationX: 70, y: 100 }, { opacity: 1, rotationX: 14, y: 0, duration: .8, ease: 'expo.out', immediateRender: false }, 16.6);
+
+// S5 decision flows to spec, chat dissolves
+tl.set('#dec', { scale: 1 }, 0); tl.to('#dec', { scale: 1.06, duration: .25, yoyo: true, repeat: 1 }, 22.75);
+tl.set('#kept', { opacity: 0, scale: .4 }, 0); tl.to('#kept', { opacity: 1, scale: 1, duration: .35, ease: 'back.out(2.5)' }, 23.4);
+tl.set('#cbx .bub', { opacity: 1 }, 0); tl.set('#gone', { opacity: 0 }, 0);
+tl.to('#cbx .bub', { opacity: 0, y: -70, filter: 'blur(14px)', duration: .35, stagger: .05, ease: 'power2.in' }, 23.9);
+tl.to('#gone', { opacity: 1, duration: .25 }, 24.42);
+
+// S6 exploded workbench snaps into one window
+const PN = ['#pn1', '#pn2', '#pn3', '#pn4', '#pn5', '#pn6'], PZ = [0, 90, 180, 180, 270, 270], WT = [0, 25.18, 25.78, 26.32, 26.93, 26.93];
+tl.set('#winw', { opacity: 0, transformPerspective: 1700, rotationX: 40, rotationZ: -14, rotationY: 0, z: -160, scale: .86 }, 0);
+tl.to('#winw', { opacity: 1, duration: .4 }, 25.0);
+tl.to('#winw', { rotationX: 36, rotationZ: -11, z: -100, duration: 2.8, ease: 'sine.inOut' }, 25.0);
+tl.to('#winw', { rotationX: 6, rotationZ: 0, rotationY: -6, z: 0, scale: 1, duration: .8, ease: 'expo.inOut' }, 27.75);
+tl.to('#winw', { rotationY: 4, duration: 1.4, ease: 'sine.inOut' }, 28.55);
+tl.set('#wfull', { opacity: 0 }, 0); tl.to('#wfull', { opacity: 1, duration: .3 }, 28.45);
+PN.forEach((id, k) => { tl.set(id, { z: PZ[k] + 40, opacity: 0 }, 0);
+  tl.to(id, { opacity: 1, duration: .3 }, 25.0 + k * .06);
+  if (WT[k]) tl.to(id, { z: '+=80', duration: .25, ease: 'power3.out', yoyo: true, repeat: 1 }, WT[k] - .05);
+  tl.to(id, { z: 0, duration: .8, ease: 'expo.inOut' }, 27.75);
+  tl.to(id, { opacity: 0, duration: .3 }, 28.5); });
+
+// S7 command types on the ticket, scan beam validates
+const cmdT = '$ curl -fsSL …/thinkrail/install.sh | bash', cm1 = { n: 0 };
+tl.fromTo(cm1, { n: 0 }, { n: cmdT.length, duration: .7, ease: 'none', immediateRender: false }, 30.95);
+tl.set('#scan', { opacity: 0, top: 560 }, 0);
+tl.to('#scan', { opacity: 1, duration: .1 }, 31.35); tl.to('#scan', { top: 984, duration: .55, ease: 'power1.inOut' }, 31.35); tl.to('#scan', { opacity: 0, duration: .15 }, 31.9);
+['#vl1', '#vl2', '#vl3'].forEach((id, k) => { tl.set(id, { className: '' }, 0); tl.set(id, { className: 'on' }, 31.45 + k * .15); });
+
+// S8 comment typing
+const cm = { n: 0 };
+tl.fromTo(cm, { n: 0 }, { n: 7, duration: .6, ease: 'none', immediateRender: false, onUpdate: () => $('#ctx').textContent = 'GITMATE'.slice(0, Math.round(cm.n)) }, 33.1);
+
+// S9 end
+tl.set('#bigmk', { opacity: 0, scale: .2 }, 0);
+tl.to('#bigmk', { opacity: 1, scale: 1, duration: .9, ease: 'back.out(1.8)' }, 34.65);
+tl.fromTo('#er1', { attr: { 'stroke-dashoffset': 1420 } }, { attr: { 'stroke-dashoffset': 0 }, duration: 1.0, ease: 'power2.inOut', immediateRender: false }, 34.8);
+tl.fromTo('#er2', { attr: { 'stroke-dashoffset': 1546 } }, { attr: { 'stroke-dashoffset': 0 }, duration: 1.2, ease: 'power2.inOut', immediateRender: false }, 34.95);
+tl.to('#tapd', { opacity: 1, left: 560, top: 1440, duration: .5, ease: 'power2.out' }, 36.0);
+tl.to('#tapd', { scale: .7, duration: .1 }, 36.5); tl.to('#tapd', { scale: 1, duration: .15 }, 36.6);
+tl.to('#fol', { scale: .93, duration: .1 }, 36.5); tl.to('#fol', { scale: 1, duration: .2 }, 36.6);
+tl.set('#fol2', { opacity: 1 }, 36.6); tl.set('#fol', { opacity: 0 }, 36.6);
+tl.fromTo('#rip', { opacity: .7, width: 10, height: 10, margin: -5 }, { opacity: 0, width: 640, height: 640, margin: -320, duration: .8, ease: 'power2.out', immediateRender: false }, 36.55);
+tl.to('#tapd', { opacity: 0, duration: .3 }, 37.0);
+tl.to({}, { duration: .01 }, TOTAL);
+
+// camera: pure function of t
+const ease = x => x < .5 ? 16 * x ** 5 : 1 - Math.pow(-2 * x + 2, 5) / 2;
+const TD = .75, TPRE = .42;
+function camAt(t) {
+  let i = 0; for (let k = 0; k < S.length; k++) if (t >= S[k] - TPRE) i = k;
+  const ta = S[i] - TPRE; let p = poses[i].slice(), d = 0, rr = 0;
+  if (i > 0 && t < ta + TD) { const u = (t - ta) / TD, e = ease(u), a = poses[i - 1]; p = a.map((v, j) => v + (poses[i][j] - v) * e); d = Math.sin(u * Math.PI) * 700; rr = Math.sin(u * Math.PI) * (i % 2 ? 4 : -4); }
+  const st = Math.max(0, t - (S[i] - TPRE + TD)); const dz = Math.min(st, 6) * 8;
+  return { x: p[0], y: p[1], z: p[2] - dz, ry: p[3] + Math.sin(t * .6) * .6, rx: p[4] + Math.sin(t * .45) * .5, rz: p[5] + rr, d, i };
+}
+function camT(c) { return `translateZ(${-c.d + 60}px) rotateZ(${-c.rz}deg) rotateX(${-c.rx}deg) rotateY(${-c.ry}deg) translate3d(${-c.x}px,${-c.y}px,${-c.z}px)`; }
+const world = $('#world'), mbg = $('#mbg'), cam = $('#cam');
+function tick(t) {
+  const c = camAt(t), p = camAt(Math.max(0, t - 1 / 30));
+  world.style.transform = camT(c);
+  const hx = Math.abs(c.x - p.x) * .9 + Math.abs(c.ry - p.ry) * 32, vy = Math.abs(c.y - p.y) * .9 + Math.abs(c.rx - p.rx) * 32, zz = Math.abs(c.z - p.z + (p.d - c.d)) * .25;
+  const bx = Math.min(70, hx * .22 + zz * .05), by = Math.min(70, vy * .22 + zz * .05);
+  if (bx + by > .4) { mbg.setAttribute('stdDeviation', `${bx.toFixed(1)} ${by.toFixed(1)}`); cam.style.filter = 'url(#mb)'; } else cam.style.filter = 'none';
+  scenes.forEach((s, k) => { s.style.visibility = (k === c.i || (k === c.i - 1 && t < S[c.i] - TPRE + TD)) ? 'visible' : 'hidden'; });
+  $('#tag').innerHTML = `<b>${String(c.i + 1).padStart(2, '0')}</b> / 09`;
+  // S1 rails rush toward the camera
+  const sp = t * 620; $('#fls').style.backgroundPosition = `0 ${sp % 130}px`; $('#flg').style.backgroundPosition = `0 ${sp % 130}px`;
+  // S3 cars on their tracks
+  cars.forEach(c2 => { const L = c2.L * c2.v.u, a = c2.path.getPointAtLength(L), b = c2.path.getPointAtLength(Math.min(c2.L, L + 2));
+    const ang = Math.atan2(b.y - a.y, b.x - a.x) * 180 / Math.PI + 90; c2.el.setAttribute('transform', `translate(${a.x},${a.y}) rotate(${c2.v.u > .999 ? 0 : ang})`); });
+  // S7 command
+  $('#cmd').textContent = cmdT.slice(0, Math.round(cm1.n));
+  const m = t >= 17.45; $('#mst').textContent = m ? 'merged ✓' : 'waiting'; $('#mst').className = m ? 'st on' : 'st';
+  $('#cst').textContent = t >= 24.2 ? 'closed' : 'live';
+  const v = t >= 31.9; $('#vscr').textContent = v ? '✓ INSTALLED' : 'ONE COMMAND'; $('#vscr').className = v ? 'scr on' : 'scr';
+}
+window.__seek = t => { tl.time(t, false); tick(t); };
+__seek(0);
+if (!navigator.webdriver) { const t0 = performance.now(); const loop = () => { window.__seek(((performance.now() - t0) / 1000) % TOTAL); requestAnimationFrame(loop); }; requestAnimationFrame(loop); }
+</script>
+</body></html>

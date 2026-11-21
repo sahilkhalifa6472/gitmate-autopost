@@ -1,0 +1,10 @@
+{
+ "title": "Handy: free, offline speech-to-text that types into any app",
+ "caption": "Stop typing. Just talk, and your words land in any app. \ud83c\udf99\ufe0f\n\nHandy (36k+ \u2b50 on GitHub) is a free, open source speech-to-text app that runs completely offline:\n\u2192 Hold a shortcut, speak, let go: the text gets pasted right where your cursor is\n\u2192 Works in any text field: Slack, your code editor, Google Docs, anywhere\n\u2192 Local models: Whisper (small / medium / turbo / large) or Parakeet V3, which is CPU-optimized\n\u2192 Your voice never leaves your machine, no cloud, no account\n\u2192 Silence filtered with Silero VAD before transcription\n\n\u2705 Free + open source (MIT)\n\u2705 macOS, Windows and Linux (brew install --cask handy / winget install cjpais.Handy)\n\nComment GITMATE and I'll send you the link \ud83d\udc47\nFollow @git.mate for 1 useful repo every day.\n\n#github #opensource #speechtotext #dictation #whisper #privacy #offline #productivity #devtools #developer #programming #rust\n",
+ "repo_url": "https://github.com/cjpais/Handy",
+ "date": "2026-11-02",
+ "theme": "dark",
+ "video": "/mnt/project-files/dev-reels/handy/gitmate_handy.mp4",
+ "duration_sec": 36.5,
+ "cover_offset_ms": 4120
+}

@@ -1,0 +1,16 @@
+Your scraper spins up a whole Chrome just to read some HTML. There's a lighter way. 🐼
+
+Lightpanda (39k+ ⭐ on GitHub) is a headless browser built from scratch for AI agents and automation:
+→ Written in Zig. Not a Chromium fork, not a WebKit patch
+→ No graphical rendering: just the DOM, JavaScript and the network
+→ Their crawl benchmark (100 pages): 5s vs 46s for headless Chrome, 123 MB vs 2 GB peak memory
+→ Runs a CDP server, so your Puppeteer and Playwright scripts connect with one line (ws://127.0.0.1:9222)
+→ Also has a native MCP server and an agent mode
+
+✅ Free + open source (AGPL-3.0)
+✅ Linux + macOS builds, Docker image, WSL on Windows
+
+Comment GITMATE and I'll send you the link 👇
+Follow @git.mate for 1 useful repo every day.
+
+#github #opensource #webscraping #puppeteer #playwright #automation #aiagents #zig #devtools #developer #programming #ai

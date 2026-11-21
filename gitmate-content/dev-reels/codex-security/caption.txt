@@ -1,0 +1,19 @@
+OpenAI open-sourced its AI bug hunter 🛡️
+
+Codex Security is OpenAI's CLI + TypeScript SDK for finding and fixing security vulnerabilities in your code:
+→ One command: cs scan . (or scan just a path, or only your git diff)
+→ It validates each finding, so you're not drowning in false alarms
+→ Generates the patch, then verifies the fix actually holds
+→ Saves threat models and drafts your SECURITY.md
+→ Runs weekly in GitHub Actions; exports SARIF, JSON, CSV; tracks findings in Linear, Jira or GitHub
+
+Install: npm install --global @openai/codex-security
+Then: cs login → cs scan .
+(Beta: needs an OpenAI sign-in or API key, scans use your OpenAI usage.)
+
+✅ Open source (Apache 2.0) · 12K+ ★ on GitHub
+
+Comment GITMATE and I'll send you the link 👇
+Follow @git.mate for 1 useful repo every day.
+
+#github #opensource #openai #codex #cybersecurity #appsec #devsecops #security #ai #typescript #nodejs #developer #programming #coding

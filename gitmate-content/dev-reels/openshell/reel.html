@@ -1,0 +1,487 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<title>git.mate openshell</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Inter+Tight:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<style>
+:root{--ink:#f5f6f7;--mut:rgba(235,238,242,.58);--dim:rgba(235,238,242,.32)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#000}
+.f{position:relative;width:1080px;height:1920px;overflow:hidden;background:radial-gradient(ellipse 120% 80% at 50% 40%,#0d0e11 0%,#040405 60%,#000 100%);color:var(--ink);font-family:'Inter Tight',sans-serif}
+.vig{position:absolute;inset:0;z-index:5;pointer-events:none;background:radial-gradient(ellipse 90% 70% at 50% 50%,transparent 50%,rgba(0,0,0,.7) 100%)}
+.grain{position:absolute;inset:0;opacity:.08;mix-blend-mode:overlay;z-index:8;pointer-events:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
+#stage{position:absolute;inset:0;perspective:2200px;perspective-origin:50% 46%;z-index:2}
+#world{position:absolute;left:0;top:0;width:1080px;height:1920px;transform-style:preserve-3d}
+#floor{position:absolute;left:-3960px;top:-2540px;width:9000px;height:9000px;transform:translateY(1150px) rotateX(90deg);
+  background-image:linear-gradient(rgba(255,255,255,.08) 2px,transparent 2px),linear-gradient(90deg,rgba(255,255,255,.08) 2px,transparent 2px);background-size:150px 150px;
+  -webkit-mask:radial-gradient(circle at 50% 50%,#000 0%,rgba(0,0,0,.6) 28%,transparent 55%);mask:radial-gradient(circle at 50% 50%,#000 0%,rgba(0,0,0,.6) 28%,transparent 55%)}
+.sc{position:absolute;left:0;top:0;width:1080px;height:1920px;transform-style:preserve-3d;backface-visibility:hidden;visibility:hidden}
+#s1{visibility:visible}
+.c3{position:absolute;border-radius:34px;overflow:hidden;background:linear-gradient(160deg,#1d1e22 0%,#121316 45%,#0b0c0e 100%);
+  box-shadow:inset 0 1.5px 0 rgba(255,255,255,.2),inset 0 0 0 1.5px rgba(255,255,255,.07),0 3px 0 #1b1c1f,0 6px 0 #16171a,0 9px 0 #111214,0 12px 0 #0c0d0f,0 60px 90px rgba(0,0,0,.75)}
+.c3.lite{background:linear-gradient(160deg,#f7f8f9,#d9dce0);color:#08090a;box-shadow:inset 0 2px 0 #fff,0 3px 0 #c3c6cb,0 6px 0 #aeb2b8,0 9px 0 #9a9ea4,0 12px 0 #868a90,0 60px 90px rgba(0,0,0,.7)}
+.bead{width:62px;height:62px;border-radius:50%;display:grid;place-items:center;font-family:'JetBrains Mono';font-weight:800;font-size:24px;color:#050505;flex:none;
+  background:radial-gradient(circle at 35% 28%,#fff 0 18%,#e4e6ea 45%,#9da1a8 100%);box-shadow:inset 0 -5px 10px rgba(0,0,0,.25),inset 0 3px 4px #fff,0 10px 24px rgba(0,0,0,.6)}
+.top{position:absolute;left:64px;right:64px;top:88px;height:90px;z-index:6}
+.brand{position:absolute;left:0;top:0;display:flex;align-items:center;gap:18px;padding:14px 30px 14px 14px;font-family:'JetBrains Mono';font-weight:700;font-size:30px;border-radius:999px;background:#0e0f11;box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 0 0 1.5px rgba(255,255,255,.1)}
+.tag{position:absolute;right:0;top:12px;padding:18px 30px;font-family:'JetBrains Mono';font-size:24px;color:var(--mut);white-space:nowrap;border-radius:999px;background:#0e0f11;box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 0 0 1.5px rgba(255,255,255,.08)}
+.tag b{color:var(--ink)}
+.prog{position:absolute;left:64px;right:64px;bottom:96px;display:flex;gap:10px;z-index:6}
+.prog i{flex:1;height:8px;border-radius:4px;background:rgba(255,255,255,.14);position:relative;overflow:hidden}
+.prog i b{position:absolute;left:0;top:0;bottom:0;width:0;background:#f2f3f5;border-radius:4px}
+.L{position:absolute;left:64px;right:64px}
+.kick{font-family:'JetBrains Mono';font-size:28px;color:var(--mut);letter-spacing:1px;white-space:pre;height:40px}
+.h{font-weight:900;letter-spacing:-5px;line-height:.92;text-transform:uppercase}
+.h .ln{display:block;white-space:nowrap}
+.h .w{display:inline-block;padding-bottom:.05em;margin-right:.2em;background-image:linear-gradient(180deg,#ffffff 0%,#f1f2f4 50%,#b4b8be 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.h .w:last-child{margin-right:0}
+.h .soft .w{background-image:linear-gradient(180deg,rgba(255,255,255,.62),rgba(255,255,255,.24))}
+.lbl{font-family:'JetBrains Mono';font-size:22px;color:var(--mut)}
+.mono{font-family:'JetBrains Mono'}
+.chrome{display:flex;align-items:center;gap:14px;padding:24px 30px 16px}
+.chrome i{width:18px;height:18px;border-radius:50%;background:rgba(255,255,255,.3)}
+.url{margin-left:14px;flex:1;font-family:'JetBrains Mono';font-size:22px;color:var(--mut);padding:10px 22px;border-radius:999px;background:rgba(0,0,0,.3);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.08)}
+.lite .url{color:#4a4e55;background:rgba(0,0,0,.06);box-shadow:inset 0 0 0 1.5px rgba(0,0,0,.08)}
+.lite .chrome i{background:rgba(0,0,0,.2)}
+
+/* S1 access web */
+.core{position:absolute;left:440px;top:700px;width:200px;height:200px;font-size:62px}
+.wires{position:absolute;left:0;top:0;width:1080px;height:1920px;overflow:visible}
+.wires path{fill:none;stroke:rgba(255,255,255,.55);stroke-width:4;stroke-linecap:round}
+.res{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;text-align:center}
+.res .ic{width:120px;height:110px;position:relative}
+.res .t{font-size:38px;font-weight:900;letter-spacing:-1px}
+.res .s{font-family:'JetBrains Mono';font-size:19px;color:var(--mut)}
+.lite.res .s{color:#4a4e55}
+.fold{position:absolute;width:110px;height:78px;border-radius:10px;background:#d9dce0;box-shadow:inset 0 2px 0 #fff}
+.fold::before{content:"";position:absolute;left:0;top:-14px;width:46px;height:20px;border-radius:8px 8px 0 0;background:#d9dce0}
+.termi{position:absolute;left:5px;top:10px;width:110px;height:84px;border-radius:12px;background:#000;box-shadow:inset 0 0 0 3px #d9dce0;font-family:'JetBrains Mono';font-weight:800;font-size:30px;color:#f2f3f5;padding:14px 0 0 14px}
+.keyi{position:absolute;left:8px;top:22px;width:104px;height:60px}
+
+/* S2 monitor wall */
+.mon{position:absolute;width:296px;height:214px;border-radius:22px;padding:14px 16px;background:linear-gradient(160deg,#18191c,#0a0b0c);box-shadow:inset 0 0 0 2px rgba(255,255,255,.1),0 3px 0 #141517,0 6px 0 #0f1012,0 9px 0 #0b0c0d,0 40px 60px rgba(0,0,0,.7);overflow:hidden}
+.mon .hd{display:flex;justify-content:space-between;font-family:'JetBrains Mono';font-size:15px;color:var(--mut);margin-bottom:8px}
+.mon .hd b{color:#fff}
+.mon .lg{font-family:'JetBrains Mono';font-size:15px;line-height:1.55;color:rgba(255,255,255,.72);white-space:pre}
+.rec{display:inline-block;width:12px;height:12px;border-radius:50%;background:#fff;margin-right:6px;vertical-align:-1px}
+.nobody{display:flex;align-items:center;justify-content:center;gap:22px;font-size:46px;font-weight:900;letter-spacing:-1px}
+
+/* S3 brand */
+.ban{background:#000 url(banner.png) center/contain no-repeat}
+.xmk{position:absolute;left:390px;top:780px;width:300px;height:300px;transform-style:preserve-3d}
+.xmk img{position:absolute;inset:0;width:300px;height:300px}
+.keys{position:absolute;left:64px;width:952px;display:flex;gap:26px}
+.kc{flex:1;height:150px;border-radius:26px;display:grid;place-items:center;font-size:40px;font-weight:900;color:#08090a;background:linear-gradient(180deg,#fbfbfc,#d4d7db);
+  box-shadow:inset 0 2px 0 #fff,inset 0 -8px 14px rgba(0,0,0,.12),0 4px 0 #b8bbc0,0 8px 0 #9fa3a9,0 12px 0 #878b91,0 16px 0 #6f7379,0 40px 60px rgba(0,0,0,.6)}
+.kc small{display:block;font-family:'JetBrains Mono';font-size:18px;font-weight:500;color:#55595f;text-align:center;margin-top:-18px}
+
+/* S4 cubes */
+.cbh{position:absolute;width:240px;height:240px;transform-style:preserve-3d}
+.cube{position:absolute;inset:0;transform-style:preserve-3d}
+.fc{position:absolute;inset:0;border:3px solid rgba(255,255,255,.85);border-radius:6px;background:linear-gradient(160deg,rgba(255,255,255,.07),rgba(255,255,255,.015));box-shadow:inset 0 0 40px rgba(255,255,255,.08)}
+.cbh .ag{position:absolute;left:70px;top:70px;width:100px;height:100px;font-size:30px}
+.clab{position:absolute;width:240px;text-align:center;font-family:'JetBrains Mono';font-size:24px;color:var(--mut)}
+.wall{display:flex;align-items:center;justify-content:space-between;padding:0 40px;font-size:34px;font-weight:800}
+.wall .lbl{font-size:22px}
+
+/* S5 policy sheet */
+.yml{padding:4px 44px 30px;font-family:'JetBrains Mono';font-size:33px;line-height:1.72;white-space:pre;position:relative}
+.yml .c{color:#8a8e95}
+.yml .ln{position:relative;z-index:1;display:block}
+.hl{position:absolute;left:28px;right:28px;height:56px;border-radius:12px;background:#0b0c0e;z-index:0;opacity:0}
+.yml .ln.on{color:#f5f6f7;background:#0b0c0e;border-radius:10px;margin:0 -16px;padding:0 16px}
+.stamp{position:absolute;padding:18px 34px;border:6px solid #f5f6f7;border-radius:18px;font-family:'JetBrains Mono';font-weight:800;font-size:44px;color:#f5f6f7;background:#08090a;letter-spacing:2px}
+
+/* S6 kernel lanes */
+.plane{position:absolute;left:90px;top:640px;width:900px;height:900px;transform-style:preserve-3d}
+.lane{position:absolute;top:0;width:250px;height:900px;border-radius:24px;background:linear-gradient(180deg,rgba(255,255,255,.02),rgba(255,255,255,.07));box-shadow:inset 0 0 0 2px rgba(255,255,255,.14)}
+.lane .nm{position:absolute;left:0;right:0;bottom:24px;text-align:center;font-family:'JetBrains Mono';font-weight:800;font-size:28px;color:var(--mut)}
+.gate{position:absolute;left:-20px;right:-20px;top:430px;height:44px;border-radius:12px;background:linear-gradient(180deg,#fbfbfc,#c9ccd1);box-shadow:0 0 60px rgba(255,255,255,.35),0 6px 0 #8a8e94;display:grid;place-items:center;font-family:'JetBrains Mono';font-weight:800;font-size:22px;color:#08090a;letter-spacing:3px}
+.pk{position:absolute;left:20px;width:210px;height:64px;border-radius:14px;display:flex;align-items:center;justify-content:center;gap:10px;font-family:'JetBrains Mono';font-size:21px;font-weight:700;background:linear-gradient(160deg,#26272b,#141518);box-shadow:inset 0 0 0 2px rgba(255,255,255,.2),0 4px 0 #0c0d0f;white-space:nowrap}
+.pk.ok{background:linear-gradient(160deg,#fbfbfc,#d4d7db);color:#08090a;box-shadow:0 4px 0 #9a9ea4}
+.pk i{font-style:normal;font-weight:900}
+.cnt{position:absolute;top:1640px;width:290px;height:120px;border-radius:24px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:900;font-size:36px;letter-spacing:-1px}
+.cnt small{font-family:'JetBrains Mono';font-size:18px;font-weight:500;color:var(--mut);letter-spacing:0;margin-top:4px}
+.cnt.on{background:linear-gradient(160deg,#f7f8f9,#d0d3d8);color:#060607;box-shadow:inset 0 2px 0 #fff,0 3px 0 #c3c6cb,0 6px 0 #aeb2b8,0 9px 0 #9a9ea4,0 0 60px rgba(255,255,255,.25)}
+.cnt.on small{color:#4a4e55}
+
+/* S7 key swap */
+.kcard{padding:30px 32px}
+.kcard .lbl{margin-bottom:18px}
+.kcard .v{font-family:'JetBrains Mono';font-size:25px;line-height:1.6;white-space:pre}
+.kcard .big{font-size:40px;font-weight:900;letter-spacing:-1px;margin-bottom:12px}
+.mask{display:inline-block;padding:2px 12px;border-radius:8px;background:rgba(255,255,255,.1)}
+.lite .mask{background:#08090a;color:#f5f6f7}
+.bnd{position:absolute;left:532px;top:690px;width:16px;height:380px}
+.bnd i{position:absolute;left:6px;width:4px;height:22px;border-radius:2px;background:rgba(255,255,255,.6)}
+.dg{background-size:contain;background-repeat:no-repeat;background-position:center}
+.cap{position:absolute;right:16px;bottom:12px;padding:6px 14px;border-radius:999px;font-family:'JetBrains Mono';font-size:17px;font-weight:700;color:#fff;background:rgba(0,0,0,.78)}
+
+/* S8 diff + prover */
+.diff{padding:10px 0 20px;font-family:'JetBrains Mono';font-size:28px;line-height:1.9;white-space:pre}
+.diff div{padding:0 34px}
+.diff .a{background:rgba(255,255,255,.07)}
+.diff .a b{color:#fff}
+.beam{position:absolute;left:0;right:0;height:6px;background:#fff;box-shadow:0 0 34px 12px rgba(255,255,255,.45);opacity:0}
+.flag{position:absolute;left:150px;top:1110px;width:780px;height:120px;transform-origin:50% -60px;display:flex;align-items:center;gap:22px;padding:0 34px;font-size:36px;font-weight:900}
+.flag .fi{width:64px;height:64px;border-radius:16px;background:#08090a;color:#f5f6f7;display:grid;place-items:center;font-size:34px;flex:none}
+.flag small{display:block;font-family:'JetBrains Mono';font-size:20px;font-weight:500;color:#4a4e55}
+.string{position:absolute;width:3px;height:56px;top:1056px;background:rgba(255,255,255,.5)}
+.btns{position:absolute;left:150px;top:1280px;width:780px;display:flex;gap:30px}
+.btn{flex:1;height:110px;border-radius:999px;display:grid;place-items:center;font-size:40px;font-weight:900;position:relative;overflow:hidden}
+.btn.no{background:#101114;box-shadow:inset 0 0 0 2px rgba(255,255,255,.2);color:var(--mut)}
+.btn.yes{background:linear-gradient(180deg,#fbfbfc,#d4d7db);color:#08090a;box-shadow:0 6px 0 #9a9ea4,0 20px 40px rgba(0,0,0,.5)}
+.tap{position:absolute;width:96px;height:96px;opacity:0;z-index:4}
+
+/* S9 terminal */
+.term{font-family:'JetBrains Mono';font-size:27px;line-height:1.7;padding:6px 38px 30px;white-space:pre-wrap;word-break:break-all}
+.term .p{color:var(--dim)}
+.tc{display:inline-block;width:15px;height:30px;border-radius:3px;background:#e8eaed;vertical-align:-5px;margin-left:3px}
+
+/* S10 comment */
+.cm{padding:30px 34px}
+.rowc{display:flex;align-items:center;gap:20px}
+.av2{width:70px;height:70px;border-radius:50%;flex:none;background:radial-gradient(circle at 35% 28%,#5a5e64,#1b1d20);box-shadow:inset 0 0 0 2px rgba(255,255,255,.2)}
+.cin{flex:1;padding:20px 26px;border-radius:999px;font-size:32px;font-weight:700;background:rgba(255,255,255,.06);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.14)}
+.send{width:76px;height:76px;border-radius:50%;display:grid;place-items:center;background:#f2f3f5;color:#000;font-size:34px;font-weight:900;flex:none}
+.posted{display:flex;gap:20px;align-items:flex-start;margin-top:30px}
+.posted .u{font-weight:800;font-size:28px}
+.posted .c{font-size:34px;font-weight:800;margin-top:4px}
+.dm{padding:24px 30px;border-radius:32px 32px 32px 10px;font-size:32px;font-weight:700}
+.dm small{display:block;font-family:'JetBrains Mono';font-size:20px;color:#55595f;font-weight:500;margin-bottom:6px}
+
+/* S11 end: mark + rings + handle + follow */
+.erings{position:absolute;left:290px;top:420px;width:500px;height:500px}
+.bigmk{position:absolute;left:390px;top:520px;width:300px;height:300px;font-size:110px;letter-spacing:-6px}
+.hnd{position:absolute;left:0;right:0;top:1000px;text-align:center;font-family:'JetBrains Mono';font-weight:800;font-size:92px;white-space:pre;height:120px}
+.fol{position:absolute;left:280px;top:1390px;width:520px;height:132px;border-radius:999px;display:grid;place-items:center;font-size:52px;font-weight:900;background:linear-gradient(180deg,#fbfbfc,#d4d7db);color:#08090a;box-shadow:0 6px 0 #9a9ea4,0 20px 60px rgba(255,255,255,.16)}
+.fol2{position:absolute;left:280px;top:1390px;width:520px;height:132px;border-radius:999px;display:grid;place-items:center;font-size:52px;font-weight:900;background:#101114;color:#f5f6f7;box-shadow:inset 0 0 0 3px rgba(255,255,255,.7);opacity:0}
+.rip{position:absolute;left:540px;top:1456px;border-radius:50%;border:4px solid rgba(255,255,255,.8);opacity:0}
+</style></head><body>
+<div class="f" id="F">
+ <div id="stage"><div id="world">
+  <div id="floor"></div>
+
+  <!-- S1 access web -->
+  <section class="sc" id="s1">
+    <div class="L kick" style="top:250px" data-k="// mate, quick question"></div>
+    <div class="L h" style="top:300px;font-size:116px">
+      <span class="ln"><span class="w" data-t="0">your</span><span class="w" data-t="0">agent</span></span>
+      <span class="ln soft"><span class="w" data-t="1.86">has</span><span class="w" data-t="2.04">your</span></span>
+      <span class="ln"><span class="w" data-t="4.56">API</span><span class="w" data-t="5.06">keys.</span></span>
+    </div>
+    <svg class="wires" viewBox="0 0 1080 1920"><path id="w1" d="M540 900 C 540 1020, 210 1020, 210 1150"/><path id="w2" d="M540 900 L 540 1150"/><path id="w3" d="M540 900 C 540 1020, 870 1020, 870 1150"/></svg>
+    <div class="bead core in" data-t="0" data-z="60">AI</div>
+    <div class="c3 res in" id="r1" style="left:64px;top:1150px;width:292px;height:330px" data-t="2.3" data-ry="14"><div class="ic"><div class="fold" style="left:12px;top:30px;opacity:.55"></div><div class="fold" style="left:4px;top:40px"></div></div><div class="t">files</div><div class="s">~/projects/*</div></div>
+    <div class="c3 res in" id="r2" style="left:394px;top:1150px;width:292px;height:330px" data-t="3.2"><div class="ic"><div class="termi">&gt;_</div></div><div class="t">terminal</div><div class="s">bash · sudo?</div></div>
+    <div class="c3 res in" id="r3" style="left:724px;top:1150px;width:292px;height:330px" data-t="4.56" data-ry="-14"><div class="ic"><svg class="keyi" viewBox="0 0 104 60"><circle cx="24" cy="30" r="20" fill="none" stroke="currentColor" stroke-width="8"/><path d="M44 30 H100 M80 30 V46 M94 30 V42" stroke="currentColor" stroke-width="8" stroke-linecap="round" fill="none"/></svg></div><div class="t">API keys</div><div class="s">sk-live-…</div></div>
+  </section>
+
+  <!-- S2 who's watching -->
+  <section class="sc" id="s2">
+    <div class="L kick" style="top:250px" data-k="// so..."></div>
+    <div class="L h" style="top:300px;font-size:150px">
+      <span class="ln"><span class="w" data-t="6.1">who's</span></span>
+      <span class="ln soft"><span class="w" data-t="6.32">watching</span></span>
+      <span class="ln"><span class="w" data-t="6.7">it?</span></span>
+    </div>
+    <div class="mon in" style="left:64px;top:790px" data-t="5.8" data-ry="16"><div class="hd"><span><span class="rec"></span>agent-1</span><b>live</b></div><div class="lg" data-log="0"></div></div>
+    <div class="mon in" style="left:392px;top:790px" data-t="5.9"><div class="hd"><span><span class="rec"></span>agent-2</span><b>live</b></div><div class="lg" data-log="1"></div></div>
+    <div class="mon in" style="left:720px;top:790px" data-t="6.0" data-ry="-16"><div class="hd"><span><span class="rec"></span>agent-3</span><b>live</b></div><div class="lg" data-log="2"></div></div>
+    <div class="mon in" style="left:64px;top:1040px" data-t="6.1" data-ry="16"><div class="hd"><span><span class="rec"></span>agent-4</span><b>live</b></div><div class="lg" data-log="3"></div></div>
+    <div class="mon in" style="left:392px;top:1040px" data-t="6.2"><div class="hd"><span><span class="rec"></span>agent-5</span><b>live</b></div><div class="lg" data-log="4"></div></div>
+    <div class="mon in" style="left:720px;top:1040px" data-t="6.3" data-ry="-16"><div class="hd"><span><span class="rec"></span>agent-6</span><b>live</b></div><div class="lg" data-log="5"></div></div>
+    <div class="c3 nobody in" style="left:64px;top:1330px;width:952px;height:140px" data-t="6.7"><span class="mono" style="font-size:24px;color:var(--mut)">watchers:</span><span>nobody.</span></div>
+    <div class="c3 lite nobody in" style="left:64px;top:1500px;width:952px;height:150px" data-t="7.42" data-z="60"><span>NVIDIA</span><span class="mono" style="font-size:26px;color:#4a4e55">open-sourced the answer →</span></div>
+  </section>
+
+  <!-- S3 it's called OpenShell -->
+  <section class="sc" id="s3">
+    <div class="L kick" style="top:250px" data-k="// it's called"></div>
+    <div class="c3 ban in" style="left:64px;top:320px;width:952px;height:300px" data-t="9.4" data-rx="8"></div>
+    <div class="xmk in" id="xmk" data-t="9.9" data-z="80"></div>
+    <div class="keys" style="top:1260px">
+      <div class="kc in" data-t="10.3">★ 19.5k<small>stars</small></div>
+      <div class="kc in" data-t="10.45">Rust<small>runtime</small></div>
+      <div class="kc in" data-t="10.6">Apache 2.0<small>license</small></div>
+    </div>
+    <div class="L lbl" style="top:1480px;text-align:center;font-size:24px">github.com/NVIDIA/OpenShell</div>
+  </section>
+
+  <!-- S4 sandbox cubes -->
+  <section class="sc" id="s4">
+    <div class="L kick" style="top:250px" data-k="// step one"></div>
+    <div class="L h" style="top:300px;font-size:112px">
+      <span class="ln"><span class="w" data-t="11.16">every</span><span class="w" data-t="11.46">agent</span></span>
+      <span class="ln soft"><span class="w" data-t="11.82">gets</span><span class="w" data-t="11.98">its</span><span class="w" data-t="12.24">own</span></span>
+      <span class="ln"><span class="w" data-t="12.52">sandbox.</span></span>
+    </div>
+    <div class="cbh in" style="left:80px;top:860px" data-t="11.3"><div class="cube" id="cb1"></div></div>
+    <div class="cbh in" style="left:420px;top:860px" data-t="11.55"><div class="cube" id="cb2"></div></div>
+    <div class="cbh in" style="left:760px;top:860px" data-t="11.8"><div class="cube" id="cb3"></div></div>
+    <div class="clab" style="left:80px;top:1190px">agent-1</div><div class="clab" style="left:420px;top:1190px">agent-2</div><div class="clab" style="left:760px;top:1190px">agent-3</div>
+    <div class="c3 wall in" style="left:64px;top:1330px;width:952px;height:130px" data-t="12.6"><span class="lbl">isolation</span><span>container · VM</span></div>
+    <div class="c3 wall in" style="left:64px;top:1490px;width:952px;height:130px" data-t="12.8"><span class="lbl">egress</span><span>denied by default</span></div>
+  </section>
+
+  <!-- S5 policy sheet -->
+  <section class="sc" id="s5">
+    <div class="L kick" style="top:250px" data-k="// you write the rules"></div>
+    <div class="L h" style="top:300px;font-size:124px">
+      <span class="ln"><span class="w" data-t="13.88">one</span><span class="w" data-t="14.06">policy.</span></span>
+      <span class="ln soft"><span class="w" data-t="16.82">nothing</span><span class="w" data-t="17.14">else.</span></span>
+    </div>
+    <div class="c3 lite in" id="ymc" style="left:64px;top:600px;width:952px;height:610px" data-t="13.4" data-ry="-9" data-rx="6">
+      <div class="chrome"><i></i><i></i><i></i><div class="url">policy.yaml · simplified</div></div>
+      <div class="yml"><span class="ln c" id="y0"># what agent-1 may touch</span><span class="ln" id="y1">filesystem:</span><span class="ln" id="y2">  allow: /sandbox/project</span><span class="ln" id="y3">network:</span><span class="ln" id="y4">  allow:</span><span class="ln" id="y5">    - api.github.com</span><span class="ln" id="y6">    - pypi.org</span><span class="ln" id="y7">  default: deny</span></div>
+    </div>
+    <div class="stamp" id="stmp" style="left:560px;top:1270px">DENY *</div>
+  </section>
+
+  <!-- S6 kernel gate lanes -->
+  <section class="sc" id="s6">
+    <div class="L kick" style="top:250px" data-k="// enforced below the agent"></div>
+    <div class="L h" style="top:300px;font-size:112px">
+      <span class="ln"><span class="w" data-t="17.94">the</span><span class="w" data-t="18.08">kernel</span></span>
+      <span class="ln soft"><span class="w" data-t="18.44">enforces</span><span class="w" data-t="19.06">it.</span></span>
+    </div>
+    <div class="plane" id="plane">
+      <div class="lane" style="left:0"><div class="nm">FILE</div></div>
+      <div class="lane" style="left:325px"><div class="nm">SYSCALL</div></div>
+      <div class="lane" style="left:650px"><div class="nm">NET</div></div>
+      <div id="pks"></div>
+      <div class="gate">KERNEL · POLICY CHECK</div>
+    </div>
+    <div class="cnt" id="ct0" style="left:64px">every file<small>open · read · write</small></div>
+    <div class="cnt" id="ct1" style="left:395px">every syscall<small>exec · ptrace · mount</small></div>
+    <div class="cnt" id="ct2" style="left:726px">every connection<small>tcp · dns</small></div>
+  </section>
+
+  <!-- S7 key swap -->
+  <section class="sc" id="s7">
+    <div class="L kick" style="top:250px" data-k="// the best part"></div>
+    <div class="L h" style="top:300px;font-size:104px">
+      <span class="ln"><span class="w" data-t="22.86">it</span><span class="w" data-t="23.48">never</span><span class="w" data-t="24.14">sees</span></span>
+      <span class="ln soft"><span class="w" data-t="24.48">your</span><span class="w" data-t="24.66">real</span></span>
+      <span class="ln"><span class="w" data-t="24.94">keys.</span></span>
+    </div>
+    <div class="c3 kcard in" style="left:64px;top:690px;width:440px;height:380px" data-t="22.9" data-ry="14"><div class="lbl">inside the sandbox</div><div class="big">agent sees</div><div class="v">$ echo $API_KEY
+<span class="mask" id="ph">placeholder</span></div></div>
+    <div class="bnd" id="bnd"></div>
+    <div class="c3 lite kcard in" style="left:576px;top:690px;width:440px;height:380px" data-t="23.6" data-ry="-14"><div class="lbl" style="color:#4a4e55">approved endpoint only</div><div class="big">gets added</div><div class="v">Authorization:
+Bearer <span class="mask" id="rk">sk-••••</span></div></div>
+    <div class="c3 lite dg in" style="left:64px;top:1120px;width:952px;height:340px;background-image:url(enforce.png);background-color:#fff;background-size:92% auto" data-t="24.0" data-rx="10"><div class="cap">NVIDIA/OpenShell docs · enforcement flow</div></div>
+  </section>
+
+  <!-- S8 more access: diff, prover, approve -->
+  <section class="sc" id="s8">
+    <div class="L kick" style="top:250px" data-k="// it wants more?"></div>
+    <div class="L h" style="top:300px;font-size:112px">
+      <span class="ln"><span class="w" data-t="26.6">more</span><span class="w" data-t="26.88">access?</span></span>
+      <span class="ln soft"><span class="w" data-t="28.12">checked</span><span class="w" data-t="28.88">first.</span></span>
+    </div>
+    <div class="c3 in" id="dif" style="left:64px;top:580px;width:952px;height:420px" data-t="25.7" data-rx="10" data-ry="6">
+      <div class="chrome"><i></i><i></i><i></i><div class="url">policy change · proposed by agent</div></div>
+      <div class="diff"><div style="color:var(--mut)">  network.allow:</div><div style="color:var(--mut)">    - api.github.com</div><div class="a"><b>+   - payments-api.example</b></div><div class="a"><b>+ credentials: PAYMENTS_KEY</b></div></div>
+      <div class="beam" id="beam"></div>
+    </div>
+    <div class="string" style="left:300px"></div><div class="string" style="left:780px"></div>
+    <div class="c3 lite flag" id="flag"><div class="fi">⚑</div><div>flagged: risky<small>new host + credentials · needs you</small></div></div>
+    <div class="btns" id="btns"><div class="btn no">deny</div><div class="btn yes" id="apv"><span id="ap1">approve</span></div></div>
+    <svg class="tap" id="tap8" viewBox="0 0 100 100" style="left:680px;top:1300px"><circle cx="50" cy="50" r="34" fill="rgba(255,255,255,.25)" stroke="#fff" stroke-width="5"/><circle cx="50" cy="50" r="12" fill="#fff"/></svg>
+    <div class="c3 lite dg in" style="left:64px;top:1450px;width:952px;height:200px;background-image:url(lifecycle.png);background-color:#fff;background-size:94% auto" data-t="29.4" data-rx="8"><div class="cap">policy lifecycle · OpenShell docs</div></div>
+  </section>
+
+  <!-- S9 install -->
+  <section class="sc" id="s9">
+    <div class="L kick" style="top:250px" data-k="// try it"></div>
+    <div class="L h" style="top:300px;font-size:112px">
+      <span class="ln"><span class="w" data-t="31.98">one</span><span class="w" data-t="32.16">command.</span></span>
+      <span class="ln soft"><span class="w" data-t="33.38">free.</span><span class="w" data-t="33.98">open</span><span class="w" data-t="34.28">source.</span></span>
+    </div>
+    <div class="c3 in" style="left:64px;top:580px;width:952px;height:520px" data-t="31.9" data-ry="10" data-rx="6">
+      <div class="chrome"><i></i><i></i><i></i><div class="url">~ — zsh</div></div>
+      <div class="term"><div><span class="p">$ </span><span id="t9"></span><span class="tc" id="tc9"></span></div><div id="t9b" style="margin-top:14px"></div></div>
+    </div>
+    <div class="keys" style="top:1170px">
+      <div class="kc in" data-t="33.38">$0<small>free</small></div>
+      <div class="kc in" data-t="33.98">open<small>source</small></div>
+      <div class="kc in" data-t="34.3">NVIDIA<small>built by</small></div>
+    </div>
+    <div class="L lbl" style="top:1400px;text-align:center;font-size:24px">Linux · macOS (Apple Silicon) · WSL 2</div>
+  </section>
+
+  <!-- S10 comment -->
+  <section class="sc" id="s10">
+    <div class="L kick" style="top:250px" data-k="// want the link?"></div>
+    <div class="L h" style="top:304px">
+      <span class="ln" style="font-size:132px"><span class="w" data-t="35.02">Comment</span></span>
+      <span class="ln soft" style="font-size:190px;letter-spacing:-8px"><span class="w" data-t="35.44">GITMATE</span></span>
+    </div>
+    <div class="c3 cm in" style="left:64px;top:690px;width:952px;height:390px" data-t="34.9" data-ry="-10" data-rx="8">
+      <div class="lbl" style="margin-bottom:22px">comments</div>
+      <div class="rowc"><div class="av2"></div><div class="cin"><span id="t10" style="color:rgba(255,255,255,.4)">Add a comment…</span></div><div class="send" id="snd10">↑</div></div>
+      <div class="posted" id="pst10"><div class="av2" style="width:56px;height:56px"></div><div><div class="u">you <span class="lbl">· now</span></div><div class="c">GITMATE</div></div></div>
+    </div>
+    <div class="c3 lite dm in" style="left:300px;top:1150px;width:560px;height:130px" data-t="36.3" data-z="80"><small>git.mate · message</small>Here's your link, mate 🔗</div>
+  </section>
+
+  <!-- S11 end -->
+  <section class="sc" id="s11">
+    <svg class="erings" viewBox="0 0 500 500"><circle id="er1" cx="250" cy="250" r="226" fill="none" stroke="#f5f6f7" stroke-width="3" stroke-dasharray="1420" stroke-dashoffset="1420" transform="rotate(-90 250 250)"/>
+      <circle id="er2" cx="250" cy="250" r="246" fill="none" stroke="rgba(255,255,255,.3)" stroke-width="2" stroke-dasharray="1546" stroke-dashoffset="1546" transform="rotate(90 250 250)"/></svg>
+    <div class="bead bigmk" id="bigmk">&gt;_</div>
+    <div class="hnd" id="hnd"></div>
+    <div class="L h" style="top:1160px;font-size:84px;letter-spacing:-3px;text-align:center"><span class="ln soft"><span class="w" data-t="37.9">1 repo</span><span class="w" data-t="38.1">every</span><span class="w" data-t="38.3">day.</span></span></div>
+    <div class="fol" id="fol">Follow</div>
+    <div class="fol2" id="fol2">Following ✓</div>
+    <div class="rip" id="rip"></div>
+    <svg class="tap" id="tap11" viewBox="0 0 100 100" style="left:600px;top:1420px"><circle cx="50" cy="50" r="34" fill="rgba(255,255,255,.25)" stroke="#fff" stroke-width="5"/><circle cx="50" cy="50" r="12" fill="#fff"/></svg>
+  </section>
+ </div></div>
+
+ <div class="top"><div class="brand"><div class="bead">&gt;_</div>git.mate</div><div class="tag" id="tag"><b>01</b> / hook</div></div>
+ <div class="prog" id="prog"></div>
+ <div class="vig"></div><div class="grain"></div>
+</div>
+
+<script>
+(function () {
+  // all times below are voice-take seconds; the voice is sped up 1.05x, so the page runs at SPD
+  const SPD = 1.05;
+  const S = [0, 5.75, 9.25, 10.95, 13.25, 17.6, 22.6, 25.55, 31.75, 34.75, 36.95];
+  const TOTAL = 40.5; window.__TOTAL = TOTAL / SPD;
+  const LABEL = ['hook', 'the problem', 'meet it', 'sandbox', 'policy', 'kernel', 'your keys', 'approvals', 'install', 'link', 'follow'];
+  const $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)];
+  const tl = gsap.timeline({ paused: true, defaults: { ease: 'power3.out' } });
+  $('#prog').innerHTML = S.map(() => '<i><b></b></i>').join('');
+  const scenes = $$('.sc');
+  const R = 2400, STEP = 33;
+  scenes.forEach((sc, i) => { sc.style.transform = `rotateY(${i * STEP}deg) translateZ(${R}px)`; });
+  const cam = { a: 0, d: 0, rx: 0, rz: 0 };
+  // per-cut flavour: 'crane' drops from above, 'roll' banks, default = side tilt
+  const MOVE = { 3: 'crane', 5: 'crane', 7: 'roll', 10: 'crane' };
+  scenes.forEach((sc, i) => {
+    tl.set(sc, { visibility: 'visible' }, Math.max(0, S[i] - .62));
+    if (i < scenes.length - 1) tl.set(sc, { visibility: 'hidden' }, S[i + 1] + .45);
+    if (i) {
+      const t0 = S[i] - .58, dir = i % 2 ? 1 : -1, mv = MOVE[i];
+      const prx = mv === 'crane' ? 22 : 9 * dir, prz = mv === 'roll' ? 9 * dir : mv === 'crane' ? 0 : 3 * dir, pd = mv === 'crane' ? 1250 : 900;
+      tl.to(cam, { a: i * STEP, duration: 1.0, ease: 'power3.inOut' }, t0);
+      tl.to(cam, { keyframes: [{ d: pd, rx: prx, rz: prz, duration: .5, ease: 'power2.out' }, { d: 0, rx: 0, rz: 0, duration: .5, ease: 'power2.in' }] }, t0);
+    }
+  });
+  tl.set(scenes[0], { visibility: 'visible' }, 0);
+
+  $$('.h .w').forEach((w) => { const t = +w.dataset.t; if (!t) return;
+    tl.fromTo(w, { opacity: 0, y: 70, scale: 1.12, filter: 'blur(18px)' }, { opacity: 1, y: 0, scale: 1, filter: 'blur(0px)', duration: .55, ease: 'expo.out' }, t); });
+  scenes.forEach((sc, i) => { const k = $('.kick', sc); if (!k) return; const txt = k.dataset.k, o = { n: 0 }; k.textContent = i ? '' : txt; if (!i) return;
+    tl.fromTo(o, { n: 0 }, { n: txt.length, duration: Math.min(.7, txt.length * .025), ease: 'none', immediateRender: false, onUpdate: () => { k.textContent = txt.slice(0, Math.round(o.n)); } }, S[i] + .05); });
+  $$('.in').forEach((c) => {
+    const t = +c.dataset.t, rx = +(c.dataset.rx || 0), ry = +(c.dataset.ry || 0), z = +(c.dataset.z || 0);
+    const end = { opacity: 1, z, rotationX: rx, rotationY: ry, y: 0, duration: .9, ease: 'expo.out' };
+    if (!t) { gsap.set(c, end); return; }
+    tl.fromTo(c, { opacity: 0, z: -900, rotationX: rx + 40, rotationY: ry * 2, y: 120 }, end, t);
+  });
+  const typer = (el, text, t, d) => { const o = { n: 0 }; tl.fromTo(o, { n: 0 }, { n: text.length, duration: d, ease: 'none', immediateRender: false, onUpdate: () => { el.textContent = text.slice(0, Math.round(o.n)); } }, t); };
+
+  // S1 wires draw from the agent to what it can reach
+  [['#w1', 2.3], ['#w2', 3.2], ['#w3', 4.56]].forEach(([id, t]) => { const p = $(id), L = p.getTotalLength(); p.style.strokeDasharray = L; p.style.strokeDashoffset = L;
+    tl.to(p, { strokeDashoffset: 0, duration: .5, ease: 'power2.out' }, t - .15); });
+  tl.call(() => $('#r3').classList.remove('lite'), null, 5.05);
+  tl.call(() => $('#r3').classList.add('lite'), null, 5.06);
+  tl.to('#r3', { z: 120, duration: .4, yoyo: true, repeat: 1, ease: 'sine.inOut' }, 5.06);
+
+  // S3 extruded OpenShell mark: stacked layers of the repo's own mark
+  const xmk = $('#xmk');
+  for (let i = 14; i >= 0; i--) { const im = document.createElement('img'); im.src = 'mark.svg'; im.style.transform = `translateZ(${-i * 3}px)`; im.style.filter = i ? `brightness(${.42 - i * .012})` : 'drop-shadow(0 0 30px rgba(255,255,255,.35))'; xmk.appendChild(im); }
+
+  // S4 cubes
+  ['#cb1', '#cb2', '#cb3'].forEach((id, k) => { const c = $(id);
+    const F = ['rotateY(0deg)', 'rotateY(90deg)', 'rotateY(180deg)', 'rotateY(-90deg)', 'rotateX(90deg)', 'rotateX(-90deg)'];
+    c.innerHTML = F.map(f => `<div class="fc" style="transform:${f} translateZ(120px)"></div>`).join(''); const b = document.createElement('div'); b.className = 'bead ag'; b.textContent = 'AI'; c.parentNode.appendChild(b); });
+
+  // S5 policy highlight follows the voice
+  const YL = [[14.06, 1, 2], [14.9, 2, 1], [15.98, 5, 2], [16.82, 7, 1]];
+  tl.fromTo('#stmp', { opacity: 0, scale: 2.4, rotation: -14 }, { opacity: 1, scale: 1, rotation: -8, duration: .35, ease: 'back.out(2)' }, 16.95);
+
+  // S7 boundary dashes
+  $('#bnd').innerHTML = Array.from({ length: 11 }, (_, i) => `<i style="top:${i * 36}px"></i>`).join('');
+
+  // S8 prover beam, flag drop, approve tap
+  tl.fromTo('#beam', { opacity: 0, top: 80 }, { opacity: 1, top: 400, duration: 1.1, ease: 'sine.inOut' }, 28.1);
+  tl.to('#beam', { opacity: 0, duration: .2 }, 29.2);
+  tl.fromTo('#flag', { opacity: 0, rotationX: -95, y: -40 }, { opacity: 1, rotationX: 0, y: 0, duration: .9, ease: 'elastic.out(1,.55)' }, 29.54);
+  tl.fromTo('#btns', { opacity: 0, y: 60 }, { opacity: 1, y: 0, duration: .5 }, 30.3);
+  tl.fromTo('#tap8', { opacity: 0, x: 160, y: 140 }, { opacity: 1, x: 0, y: 0, duration: .45, ease: 'power2.out' }, 30.55);
+  tl.to('#tap8', { scale: .8, duration: .1, yoyo: true, repeat: 1 }, 31.05);
+  tl.to('#apv', { scale: .94, duration: .1, yoyo: true, repeat: 1 }, 31.05);
+  tl.call(() => { $('#ap1').textContent = 'approve'; }, null, 31.13);
+  tl.call(() => { $('#ap1').textContent = 'approved ✓'; }, null, 31.14);
+  tl.to('#tap8', { opacity: 0, duration: .3 }, 31.5);
+
+  // S9 install commands (from the README)
+  typer($('#t9'), 'curl -LsSf https://raw.githubusercontent.com/NVIDIA/OpenShell/main/install.sh | sh', 32.1, 1.0);
+  const t9b = $('#t9b'), C2 = 'openshell sandbox create --name demo';
+  const o9 = { n: 0 }; tl.fromTo(o9, { n: 0 }, { n: C2.length, duration: .7, ease: 'none', immediateRender: false, onUpdate: () => { t9b.innerHTML = '<span class="p">$ </span>' + C2.slice(0, Math.round(o9.n)); } }, 33.3);
+
+  // S10 comment flow
+  tl.call(() => { $('#t10').textContent = 'Add a comment…'; $('#t10').style.color = 'rgba(255,255,255,.4)'; }, null, 35.49);
+  tl.call(() => { $('#t10').style.color = '#fff'; }, null, 35.5);
+  typer($('#t10'), 'GITMATE', 35.5, .4);
+  tl.fromTo('#snd10', { scale: 1 }, { scale: .8, duration: .1, yoyo: true, repeat: 1 }, 36.0);
+  tl.fromTo('#pst10', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: .4 }, 36.1);
+
+  // S11 end
+  tl.fromTo('#bigmk', { opacity: 0, scale: .2, rotation: -40 }, { opacity: 1, scale: 1, rotation: 0, duration: .9, ease: 'back.out(1.8)' }, 36.9);
+  tl.fromTo('#er1', { attr: { 'stroke-dashoffset': 1420 } }, { attr: { 'stroke-dashoffset': 0 }, duration: 1.0, ease: 'power2.inOut', immediateRender: false }, 37.05);
+  tl.fromTo('#er2', { attr: { 'stroke-dashoffset': 1546 } }, { attr: { 'stroke-dashoffset': 0 }, duration: 1.2, ease: 'power2.inOut', immediateRender: false }, 37.2);
+  typer($('#hnd'), '@git.mate', 37.3, .5);
+  tl.fromTo('#fol', { opacity: 0, scale: .6 }, { opacity: 1, scale: 1, duration: .5, ease: 'back.out(2)' }, 37.7);
+  tl.fromTo('#tap11', { opacity: 0, x: 160, y: 140 }, { opacity: 1, x: 0, y: 0, duration: .5, ease: 'power2.out' }, 38.6);
+  tl.to('#tap11', { scale: .75, duration: .1, yoyo: true, repeat: 1 }, 39.15);
+  tl.to('#fol', { scale: .93, duration: .1 }, 39.15);
+  tl.set('#fol2', { opacity: 1 }, 39.25); tl.set('#fol', { opacity: 0 }, 39.25);
+  tl.fromTo('#rip', { opacity: .8, width: 10, height: 10, margin: -5 }, { opacity: 0, width: 640, height: 640, margin: -320, duration: .8, ease: 'power2.out', immediateRender: false }, 39.2);
+  tl.to('#tap11', { opacity: 0, duration: .3 }, 39.7);
+  tl.to({}, { duration: .01 }, TOTAL);
+
+  // S2 monitor logs scroll as a pure function of time
+  const LOGS = [['read ~/.ssh/id_rsa', 'cat .env', 'curl paste.site', 'git push --force', 'rm -rf build/'], ['pip install reqests', 'export AWS_KEY', 'chmod 777 /', 'POST /upload', 'read ~/.aws'],
+    ['npm i left-pad', 'open :8080', 'sudo apt install', 'read secrets.json', 'curl | sh'], ['ls ~/Documents', 'scp db.dump', 'env | grep KEY', 'kill -9 1', 'wget x.bin'],
+    ['read .git/config', 'dns leak.io', 'cat id_ed25519', 'POST /webhook', 'docker run --priv'], ['mount /dev/sda', 'read browser cookies', 'curl -d @.env', 'crontab -e', 'nc -l 4444']];
+  const lgs = $$('[data-log]');
+  // S6 packets: each lane cycles requests; denied ones stop at the gate
+  const PK = [[['/sandbox/a.py', 1], ['~/.ssh/id_rsa', 0], ['/sandbox/out', 1]], [['read', 1], ['ptrace', 0], ['write', 1]], [['api.github.com', 1], ['evil.example', 0], ['pypi.org', 1]]];
+  const pks = $('#pks'); const pkEl = [];
+  PK.forEach((lane, l) => lane.forEach(([n, ok], k) => { const d = document.createElement('div'); d.className = 'pk'; d.style.left = (l * 325 + 20) + 'px'; d.dataset.n0 = n; d.innerHTML = n; pks.appendChild(d); pkEl.push({ d, l, k, ok, n }); }));
+  const world = $('#world'), tag = $('#tag'), segs = $$('#prog b');
+  const tick = (t) => {
+    const a = cam.a + Math.sin(t * .5) * .35, rx = cam.rx + Math.sin(t * .37 + 1) * .7, rz = cam.rz + Math.sin(t * .29) * .25;
+    world.style.transform = `translateZ(${-cam.d}px) rotateX(${rx}deg) rotateZ(${rz}deg) translateZ(${-R}px) rotateY(${-a}deg)`;
+    lgs.forEach((el, i) => { const L = LOGS[i], sh = Math.floor(t * 2.2 + i * 1.7); el.textContent = Array.from({ length: 6 }, (_, j) => '› ' + L[(sh + j) % L.length]).join('\n'); });
+    $('.rec', $('#s2')) && $$('.rec').forEach((r) => r.style.opacity = Math.floor(t * 2) % 2 ? .25 : 1);
+    $('#xmk').style.transform = `translateZ(80px) rotateY(${Math.sin(t * 1.3) * 28}deg) rotateX(${8 + Math.sin(t * .9) * 6}deg)`;
+    const cr = (t - 11) * 38; $('#cb1').style.transform = `rotateX(-18deg) rotateY(${cr}deg)`; $('#cb2').style.transform = `rotateX(-18deg) rotateY(${cr + 30}deg)`; $('#cb3').style.transform = `rotateX(-18deg) rotateY(${cr + 60}deg)`;
+    $('#plane').style.transform = `rotateX(54deg) translateZ(0)`;
+    pkEl.forEach(({ d, l, k, ok }) => { const per = 2.4, ph = ((t - 17.2) / per + k / 3 + l * .11) % 1; const p = ph < 0 ? ph + 1 : ph; let y = 830 - p * 900;
+      let op = Math.min(1, p * 8) * Math.min(1, (1 - p) * 8);
+      if (!ok && y < 480) { y = 480; op = Math.max(0, 1 - (480 - (830 - p * 900)) / 160); d.innerHTML = '<i>✕</i> ' + d.dataset.n0; }
+      else d.innerHTML = (ok && y < 430 ? '<i>✓</i> ' : '') + d.dataset.n0;
+      d.className = 'pk' + (ok && y < 430 ? ' ok' : ''); d.style.top = y + 'px'; d.style.opacity = op; });
+    ['#ct0', '#ct1', '#ct2'].forEach((id, i) => { const on = t >= [19.9, 20.8, 21.9][i] && t < 22.7; $(id).classList.toggle('on', on); });
+    $$('#bnd i').forEach((e, i) => e.style.opacity = .3 + .7 * ((Math.floor(t * 8) + i) % 3 === 0));
+    const yl = YL.filter(([s]) => t >= s).pop(); for (let i = 0; i < 8; i++) { const e = $('#y' + i); e.classList.toggle('on', !!yl && i >= yl[1] && i < yl[1] + yl[2]); }
+    $('#rk').style.boxShadow = t > 24.66 && t < 25.6 ? '0 0 30px rgba(0,0,0,.35)' : 'none';
+    $('#tc9').style.visibility = (Math.floor(t * 3) % 2) ? 'hidden' : 'visible';
+    let si = 0; for (let i = 0; i < S.length; i++) if (t >= S[i] - .3) si = i;
+    tag.innerHTML = `<b>${String(si + 1).padStart(2, '0')}</b> / ${LABEL[si]}`;
+    segs.forEach((b, i) => { const e = i < S.length - 1 ? S[i + 1] : TOTAL - 2; b.style.width = Math.min(100, Math.max(0, (t - S[i]) / (e - S[i]) * 100)) + '%'; });
+  };
+  window.__tl = tl;
+  window.__seek = (rt) => { const t = rt * SPD; tl.time(t, false); tick(t); };
+  window.__seek(0);
+  if (!navigator.webdriver) { const t0 = performance.now(); const loop = () => { window.__seek(((performance.now() - t0) / 1000) % (TOTAL / SPD)); requestAnimationFrame(loop); }; requestAnimationFrame(loop); }
+})();
+</script>
+</body></html>

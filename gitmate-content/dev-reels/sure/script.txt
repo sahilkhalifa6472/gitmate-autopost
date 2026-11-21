@@ -1,0 +1,8 @@
+[frustrated] Mint shut down... and now every budget app wants a monthly subscription.
+[excited] Mate, meet Sure. A free, open-source personal finance app you run yourself.
+Net worth, cash flow and spending, all on one clean dashboard.
+Connect your bank accounts, set budgets, and track your investments.
+[impressed] You can even bring your old Mint data over, and ask the built-in AI about your money.
+[warm] A startup spent almost a million dollars building it... then open-sourced it.
+[friendly] One Docker compose file, and your money data stays with you. Over sixteen thousand stars.
+[warm] Comment GITMATE and I'll send you the link.

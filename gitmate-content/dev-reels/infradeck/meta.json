@@ -1,0 +1,32 @@
+{
+ "title": "Infradeck: self-hosted monitoring for every server, container and service",
+ "slug": "infradeck",
+ "link": "https://github.com/karloks2005/Infradeck",
+ "repo": "https://github.com/karloks2005/Infradeck",
+ "post_on": "2026-11-15",
+ "paid": true,
+ "customer": "karlo.ks (PayPal $9)",
+ "instagram": {
+  "caption": "Your server's disk is at 95%... and you have no idea 😬\n\nInfradeck by @karlo.ks is self-hosted monitoring for your homelab:\n→ Every server, every container, every service in one dashboard\n→ A tiny collector on each machine reports back over your VPN\n→ Uptime checks run from your own machines, so you can tell a dead service from a broken network path\n→ An optional AI incident agent reads masked evidence, explains what's wrong and proposes a fix. It never runs commands on your servers\n→ Add a server with one command and one click\n\nDocker Compose · open source (AGPL-3.0)\n\nBuilt something too? DM us your repo 📩\nComment GITMATE and I'll send you the link 👇\nFollow @git.mate for 1 useful repo every day.",
+  "hashtags": [
+   "github",
+   "opensource",
+   "homelab",
+   "selfhosted",
+   "monitoring",
+   "devops",
+   "docker",
+   "sysadmin",
+   "linux",
+   "ai",
+   "developer",
+   "programming"
+  ],
+  "cover_offset_ms": 4450
+ },
+ "video": {
+  "duration_sec": 36.6,
+  "source": "gitmate_infradeck.mp4"
+ },
+ "theme": "dark"
+}

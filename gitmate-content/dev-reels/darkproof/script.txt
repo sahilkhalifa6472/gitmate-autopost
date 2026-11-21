@@ -1,0 +1,9 @@
+Mate... the network is down. No internet, no signal. So how do you text your family?
+Meet DarkProof.
+Phones talk to each other directly. Over Bluetooth, Wi-Fi, even LoRa radio.
+And every phone passes your message along, up to sixteen hops, so it reaches people way out of range.
+It's end-to-end encrypted. The phones in between can't read a word.
+One tap for "I need help". Offline maps. And an AI that runs right on your phone.
+No servers. No accounts. Android and iPhone.
+Built something too? DM us your repo.
+Comment GITMATE and I'll send you the link.

@@ -1,0 +1,16 @@
+Your AI agent gave the boss the wrong revenue number… and sounded 100% sure about it. 😬
+
+NVIDIA's Auto Ontology (open source) is the fix:
+→ Reads your database metadata and builds an ontology: what every table, metric and join actually means
+→ Ask in plain English: it writes the SQL, runs it and shows every step, so you can check the answer
+→ If your data can't answer the question, it tells you instead of making something up
+→ Plugs into any agent harness through MCP, CLI and API
+→ Comes with a web UI for chat, data catalog and analytics
+
+✅ Free + open source (Apache-2.0)
+✅ Runs locally with Docker Compose + an NVIDIA API key
+
+Comment GITMATE and I'll send you the link 👇
+Follow @git.mate for 1 useful repo every day.
+
+#github #opensource #nvidia #ai #aiagents #sql #database #mcp #dataengineering #llm #devtools #developer #programming

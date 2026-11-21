@@ -1,0 +1,22 @@
+{
+ "account": "git.mate",
+ "n": 24,
+ "slug": "astryx",
+ "title": "Astryx: Meta open-sourced its own design system (150+ React components, built for AI agents)",
+ "video": {
+  "file": "24.mp4",
+  "duration_sec": 35.82,
+  "source": "/mnt/project-files/dev-reels/astryx/gitmate_astryx.mp4"
+ },
+ "instagram": {
+  "caption": "Meta's own design system... now open source. \ud83c\udfa8\n\nAstryx grew inside Meta for 8 years and powers 13,000+ apps there. Now it's on GitHub:\n\u2192 150+ accessible React components (React 19+, StyleX under the hood)\n\u2192 Dark mode, brand-level theming + 7 ready-made themes (neutral, butter, chocolate, matcha, stone, gothic, y2k)\n\u2192 Ready-to-ship page templates: dashboards, forms, login, AI chat, settings\n\u2192 Built for people AND coding agents: same API, docs and CLI\n\u2192 \"swizzle\" ejects a component's full source into your project to own\n\u2192 No styling lock-in: override with Tailwind, CSS modules or plain CSS\n\n\u2705 Free + open source (MIT) \u00b7 currently in beta\nInstall: npm i @astryxdesign/core @astryxdesign/theme-neutral @stylexjs/stylex\n\nComment GITMATE and I'll send you the link \ud83d\udc47\nFollow @git.mate for 1 useful repo every day.\n\n#react #designsystem #github #opensource #meta #frontend #webdev #uidesign #javascript #typescript #aiagents #developer #programming #coding\n",
+  "hashtags": [],
+  "cover_offset_ms": 2636,
+  "share_to_feed": true
+ },
+ "posting": {
+  "audience": "US",
+  "timezone": "America/New_York"
+ },
+ "link": "https://github.com/meta/astryx"
+}

@@ -1,0 +1,10 @@
+{
+ "video": "gitmate_playnck.mp4",
+ "title": "Playnck: a free music player for the files you already own (by @fakhar_arrazi)",
+ "description": "Why does every music app want an account and a subscription\u2026 just to play songs you already own? \ud83c\udfa7\n\nPlaynck, built by @fakhar_arrazi, is a free desktop music player for the music files you already have:\n\u2192 Songs, albums, artists, genres, playlists + listening history\n\u2192 Synced lyrics and a 10-band equalizer with presets\n\u2192 Auto-Tag: identifies a song from its audio (AcoustID + MusicBrainz) and fixes title, artist and cover\n\u2192 Metadata edits are written back into the real files\n\u2192 Convert to MP3, AAC, Opus, FLAC, ALAC or WAV in one batch\n\u2192 No account, no subscription, no cloud library\n\nInstall: download the installer from GitHub Releases. Windows 10/11 (.exe) and Linux (.deb, .rpm).\n\nFree, source on GitHub (custom no-selling license) \u00b7 built by @fakhar_arrazi \ud83d\ude4c\n\nWant your repo featured too? DM us FEATURE \ud83d\udce9\nComment GITMATE and I'll send you the link \ud83d\udc47\nFollow @git.mate for 1 useful repo every day.\n\n#musicplayer #mp3 #flac #windows #linux #opensource #github #music #audiophile #localmusic #indiedev #developer #programming #coding #freeapps #productivity\n",
+ "repo": "https://github.com/FakharArrazi/Project-Playnck",
+ "theme": "light",
+ "duration": 35.19,
+ "cover_offset_ms": 4100,
+ "source": "old free DM repo (Orders > Old repos, DM'd 2026-11-11 by @fakhar_arrazi)"
+}

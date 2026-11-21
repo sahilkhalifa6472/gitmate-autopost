@@ -1,0 +1,370 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<title>git.mate light</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<style>
+:root{--ink:#0b0b0c;--mut:#8b8d91;--dim:#c9cacc;--bg:#f7f7f5}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#fff}
+.f{position:relative;width:1080px;height:1920px;overflow:hidden;background:radial-gradient(ellipse 110% 70% at 50% 45%,#ffffff 0%,#f7f7f5 55%,#eeeeec 100%);color:var(--ink);font-family:'Inter',sans-serif}
+#cam{position:absolute;inset:0}
+#stage{position:absolute;inset:0;perspective:1800px;perspective-origin:50% 50%}
+#world{position:absolute;left:0;top:0;width:1080px;height:1920px;transform-style:preserve-3d;transform-origin:540px 960px}
+.sc{position:absolute;left:0;top:0;width:1080px;height:1920px;transform-style:preserve-3d;transform-origin:540px 960px;visibility:hidden}
+.ring{position:absolute;border-radius:50%;border:70px solid rgba(10,10,12,.045);filter:blur(26px)}
+.grain{position:absolute;inset:0;opacity:.05;mix-blend-mode:multiply;z-index:8;pointer-events:none;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
+
+.top{position:absolute;left:64px;right:64px;top:84px;height:80px;z-index:6}
+.brand{position:absolute;left:0;top:0;display:flex;align-items:center;gap:16px;font-family:'JetBrains Mono';font-weight:700;font-size:28px}
+.mk{width:58px;height:58px;border-radius:50%;display:grid;place-items:center;font-family:'JetBrains Mono';font-weight:800;font-size:22px;color:#fff;
+  background:radial-gradient(circle at 34% 28%,#5a5c61 0 10%,#1a1b1e 45%,#000 100%);box-shadow:inset 0 2px 3px rgba(255,255,255,.35),0 8px 18px rgba(0,0,0,.25)}
+.tag{position:absolute;right:0;top:14px;font-family:'JetBrains Mono';font-size:24px;color:var(--mut);white-space:nowrap}
+.tag b{color:var(--ink);font-weight:700}
+
+.C{position:absolute;left:0;right:0;text-align:center;white-space:nowrap}
+.kick{font-family:'JetBrains Mono';font-size:26px;color:var(--mut);letter-spacing:1px}
+.sans{font-weight:600;letter-spacing:-.035em;line-height:1}
+.ser{font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;letter-spacing:-.01em;line-height:1}
+.g{color:var(--mut)}
+.ch{display:inline-block;white-space:pre}
+.rv{display:inline-block}
+
+.card{position:absolute;border-radius:30px;overflow:hidden;background:#fff;
+  box-shadow:0 0 0 1.5px rgba(0,0,0,.07),0 2px 0 #e9e9e7,0 4px 0 #e0e0de,0 6px 0 #d6d6d4,0 8px 0 #cbcbc9,0 10px 0 #c0c0be,0 50px 90px rgba(0,0,0,.16),0 18px 30px rgba(0,0,0,.08)}
+.card img{display:block;width:100%;height:100%;object-fit:cover}
+.card.dark{background:#0d0d0f;color:#f2f2f2;box-shadow:0 2px 0 #26272a,0 4px 0 #1e1f22,0 6px 0 #17181a,0 8px 0 #111214,0 10px 0 #0b0b0c,0 50px 90px rgba(0,0,0,.25)}
+.card::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:linear-gradient(118deg,rgba(255,255,255,.35) 0%,rgba(255,255,255,0) 30%)}
+.card.dark::after{background:linear-gradient(118deg,rgba(255,255,255,.08) 0%,rgba(255,255,255,0) 30%)}
+.sheen{position:absolute;top:-20%;bottom:-20%;width:180px;left:-300px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.55),transparent);transform:skewX(-18deg);pointer-events:none}
+
+.pl{position:absolute;display:inline-flex;align-items:center;gap:12px;padding:0 40px;height:96px;border-radius:999px;font-size:38px;font-weight:500;letter-spacing:-.01em;white-space:nowrap;
+  border:2.5px solid var(--ink);color:var(--ink);background:rgba(255,255,255,.85)}
+.pl.f1{background:var(--ink);color:#fff;box-shadow:0 14px 30px rgba(0,0,0,.18)}
+.pl.sm{height:82px;font-size:32px;padding:0 32px}
+
+/* s1 counter ring */
+.cring{position:absolute;left:340px;top:1060px;width:400px;height:400px}
+.cring svg{position:absolute;inset:0}
+.cring .num{position:absolute;inset:0;display:grid;place-items:center;font-weight:600;font-size:150px;letter-spacing:-.05em}
+/* s4 dial */
+.dial{position:absolute;left:90px;top:600px;width:900px;height:900px}
+.dial svg{position:absolute;inset:0}
+.dl{position:absolute;width:250px;height:76px;margin:-38px 0 0 -125px;border-radius:999px;display:grid;place-items:center;font-size:32px;font-weight:600;border:2.5px solid var(--dim);color:var(--mut);background:#fff}
+.dl.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.needle{position:absolute;left:446px;top:220px;width:8px;height:236px;border-radius:4px;background:var(--ink);transform-origin:50% 230px}
+.needle::before{content:"";position:absolute;left:-14px;top:-12px;width:36px;height:36px;background:var(--ink);transform:rotate(45deg) scale(.7,1.2);border-radius:4px}
+.hub{position:absolute;left:414px;top:414px;width:72px;height:72px;border-radius:50%;background:var(--ink);box-shadow:0 0 0 12px #fff,0 0 0 14px var(--dim)}
+.dsc{position:absolute;left:0;right:0;top:1690px;text-align:center;font-size:46px;font-weight:500;color:var(--mut)}
+.dsc span{position:absolute;left:0;right:0}
+/* s5 hex */
+.hx{position:absolute;width:300px;height:330px}
+.hx .b{position:absolute;inset:0;clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);background:var(--ink)}
+.hx .d{position:absolute;inset:0;transform:translateY(14px);clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);background:#55575c}
+.hx .b svg{position:absolute;left:75px;top:90px;width:150px;height:150px}
+.hx.w .b{background:#fff;}
+.hx.w .o{position:absolute;inset:0}
+.hl{position:absolute;font-size:34px;font-weight:500;white-space:nowrap}
+.hl small{display:block;font-family:'JetBrains Mono';font-size:22px;color:var(--mut);margin-bottom:6px}
+/* terminal */
+.term{padding:0}
+.term .bar{display:flex;gap:12px;padding:26px 30px}
+.term .bar i{width:18px;height:18px;border-radius:50%;background:#3a3b3f}
+.term pre{font-family:'JetBrains Mono';font-size:31px;line-height:1.5;padding:4px 40px;white-space:pre-wrap;color:#f2f2f2}
+.term .ok{color:#9a9ca1}
+.cur{display:inline-block;width:16px;height:34px;background:#f2f2f2;vertical-align:-6px;margin-left:4px}
+.ask{padding:34px 44px}
+.ask small{font-family:'JetBrains Mono';font-size:22px;color:var(--mut)}
+.ask p{font-size:46px;font-weight:500;letter-spacing:-.02em;margin-top:14px}
+/* comment */
+.cin{display:flex;align-items:center;gap:26px;padding:0 26px 0 30px}
+.av{width:76px;height:76px;border-radius:50%;background:linear-gradient(135deg,#d9d9d7,#a9aaad);flex:none}
+.cin .tx{flex:1;font-size:46px;font-weight:600;letter-spacing:.02em}
+.send{width:84px;height:84px;border-radius:50%;background:var(--ink);display:grid;place-items:center;color:#fff;font-size:40px;flex:none}
+.dm{position:absolute;padding:30px 44px;border-radius:44px 44px 44px 12px;background:var(--ink);color:#fff;font-size:42px;font-weight:500;white-space:nowrap}
+.dm small{display:block;font-family:'JetBrains Mono';font-size:20px;color:#9a9ca1;margin-bottom:8px}
+/* end */
+.bigmk{position:absolute;left:400px;top:600px;width:280px;height:280px;border-radius:50%;display:grid;place-items:center;font-family:'JetBrains Mono';font-weight:800;font-size:96px;color:#fff;
+  background:radial-gradient(circle at 34% 26%,#6a6c71 0 8%,#1c1d20 42%,#000 100%);box-shadow:inset 0 6px 10px rgba(255,255,255,.3),inset 0 -14px 26px rgba(0,0,0,.6),0 40px 80px rgba(0,0,0,.28)}
+.erings{position:absolute;left:290px;top:490px;width:500px;height:500px}
+.fol{position:absolute;left:300px;top:1390px;width:480px;height:132px;border-radius:999px;display:grid;place-items:center;font-size:50px;font-weight:600;background:var(--ink);color:#fff;box-shadow:0 22px 44px rgba(0,0,0,.22)}
+.fol2{position:absolute;left:300px;top:1390px;width:480px;height:132px;border-radius:999px;display:grid;place-items:center;font-size:50px;font-weight:600;background:#fff;color:var(--ink);border:3px solid var(--ink);opacity:0}
+.tapd{position:absolute;width:90px;height:90px;border-radius:50%;background:rgba(11,11,12,.18);border:3px solid rgba(11,11,12,.55);opacity:0}
+.rip{position:absolute;left:540px;top:1456px;width:10px;height:10px;margin:-5px;border-radius:50%;border:4px solid var(--ink);opacity:0}
+</style></head>
+<body>
+<svg width="0" height="0" style="position:absolute"><defs>
+  <filter id="mb" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur id="mbg" stdDeviation="0 0"/></filter>
+  <filter id="tb" x="-20%" y="-50%" width="140%" height="200%"><feGaussianBlur id="tbg" stdDeviation="0 0"/></filter>
+</defs></svg>
+<div class="f" id="F">
+ <div id="cam"><div id="stage"><div id="world">
+
+  <!-- S1 hook -->
+  <div class="sc" id="s1" data-pose="0,0,0,0,0,0">
+    <div class="ring" style="left:-260px;top:-180px;width:720px;height:720px;transform:translateZ(-500px)"></div>
+    <div class="ring" style="left:640px;top:1380px;width:760px;height:760px;transform:translateZ(-700px)"></div>
+    <div class="C kick rv" style="top:560px" data-t="0">// #1 on github trending</div>
+    <div class="C sans ty" style="top:660px;font-size:118px" data-t="0" data-cd=".045">Cloudflare's</div>
+    <div class="C ser ty" style="top:800px;font-size:170px" data-t="2.6" data-cd=".05">bug hunter</div>
+    <div class="cring" id="cring" data-t="4.0">
+      <svg viewBox="0 0 400 400"><circle cx="200" cy="200" r="180" fill="none" stroke="#e3e3e1" stroke-width="16"/>
+        <circle id="carc" cx="200" cy="200" r="180" fill="none" stroke="#0b0b0c" stroke-width="16" stroke-linecap="round" stroke-dasharray="1131" stroke-dashoffset="1131" transform="rotate(-90 200 200)"/></svg>
+      <div class="num"><span id="cnum">#9</span></div>
+    </div>
+    <div class="C sans rv" style="top:1520px;font-size:56px;font-weight:500" data-t="4.85"><span class="g">on GitHub,</span> today.</div>
+  </div>
+
+  <!-- S2 repo -->
+  <div class="sc" id="s2" data-pose="0,2600,0,0,0,0">
+    <div class="ring" style="left:620px;top:-200px;width:700px;height:700px;transform:translateZ(-600px)"></div>
+    <div class="C kick rv" style="top:330px" data-t="6.0">// meet the repo</div>
+    <div class="C sans ty" style="top:410px;font-size:112px" data-t="6.4" data-cd=".04">security-audit</div>
+    <div class="card c3d" style="left:64px;top:640px;width:952px;height:543px" data-t="5.95" data-rx="8" data-ry="-7"><img src="repo.jpg"><div class="sheen"></div></div>
+    <div class="pl f1 pp" style="left:118px;top:1290px" data-t="6.7">★ 42.5k</div>
+    <div class="pl pp" style="left:440px;top:1290px" data-t="6.9">⑂ 2.7k</div>
+    <div class="pl pp" style="left:740px;top:1290px" data-t="7.1">MIT</div>
+    <div class="C sans rv g" style="top:1460px;font-size:44px;font-weight:500" data-t="7.2">by Cloudflare · open source</div>
+  </div>
+
+  <!-- S3 sentence track -->
+  <div class="sc" id="s3" data-pose="2300,2600,-500,-22,0,0">
+    <div class="ring" style="left:-300px;top:1300px;width:800px;height:800px;transform:translateZ(-600px)"></div>
+    <div id="trk" style="position:absolute;left:0;top:470px;height:180px;white-space:nowrap;transform-origin:0 50%">
+      <span class="sans tw" style="font-size:140px" data-t="8.187">your</span><span class="sans tw" style="font-size:140px" data-t="8.64">agent</span><span class="sans tw g" style="font-size:140px" data-t="8.96">becomes a</span><span class="ser tw" style="font-size:176px" data-t="9.76">security auditor.</span>
+    </div>
+    <div class="card c3d" style="left:64px;top:690px;width:952px;height:535px" data-t="10.55" data-rx="10" data-ry="6"><img src="hero.jpg" style="filter:grayscale(1) contrast(1.15) brightness(1.05)"><div class="sheen"></div></div>
+    <div class="pl pp" style="left:92px;top:1330px" data-t="10.9">isolated agents</div>
+    <div class="pl f1 pp" style="left:478px;top:1330px" data-t="11.3">parallel sub-agents</div>
+    <div class="pl f1 pp" style="left:250px;top:1452px" data-t="11.7">verified output</div>
+    <div class="pl pp" style="left:620px;top:1452px" data-t="12.0">no noise</div>
+  </div>
+
+  <!-- S4 dial -->
+  <div class="sc" id="s4" data-pose="2300,2600,-3400,-22,0,0">
+    <div class="ring" style="left:640px;top:-160px;width:700px;height:700px;transform:translateZ(-600px)"></div>
+    <div class="C" style="top:300px"><span class="sans rv" style="font-size:150px" data-t="13.1">Six</span> <span class="ser rv" style="font-size:186px;margin-left:30px" data-t="13.44">phases.</span></div>
+    <div class="dial" id="dial">
+      <svg viewBox="0 0 900 900" id="dsv"><circle cx="450" cy="450" r="430" fill="#fff" stroke="#e3e3e1" stroke-width="3"/>
+        <circle id="darc" cx="450" cy="450" r="430" fill="none" stroke="#0b0b0c" stroke-width="6" stroke-linecap="round" stroke-dasharray="2702" stroke-dashoffset="2702" transform="rotate(-90 450 450)"/>
+        <g id="ticks"></g></svg>
+      <div class="needle" id="ndl"></div><div class="hub"></div>
+    </div>
+    <div class="dsc" id="dsc"></div>
+  </div>
+
+  <!-- S5 hexes -->
+  <div class="sc" id="s5" data-pose="4700,2600,-3400,26,0,0">
+    <div class="ring" style="left:-280px;top:-200px;width:720px;height:720px;transform:translateZ(-600px)"></div>
+    <div class="C sans ty" style="top:270px;font-size:130px" data-t="19.1" data-cd=".05">checker</div>
+    <div class="C ser" style="top:410px;font-size:160px"><span class="rv" data-t="20.16">≠</span> <span class="rv" data-t="20.6">finder.</span></div>
+    <svg style="position:absolute;left:0;top:0;width:1080px;height:1920px;overflow:visible" id="hxl">
+      <path id="l1" d="M160 760 L160 820 L250 880" fill="none" stroke="#0b0b0c" stroke-width="3"/>
+      <path id="l2" d="M920 760 L920 820 L830 880" fill="none" stroke="#0b0b0c" stroke-width="3"/>
+      <path id="l3" d="M540 1505 L540 1580 L620 1640" fill="none" stroke="#0b0b0c" stroke-width="3"/>
+    </svg>
+    <div class="hl rv" style="left:64px;top:660px" data-t="18.6"><small>agent A · hunter</small>finds the bug</div>
+    <div class="hl rv" style="right:64px;top:660px;text-align:right" data-t="19.3"><small>agent B · fresh</small>checks it</div>
+    <div class="hx pp" style="left:150px;top:860px" data-t="18.5"><div class="d"></div><div class="b">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 21 21"/><path d="M8 10.5h5M10.5 8v5"/></svg></div></div>
+    <div class="hx pp" style="left:630px;top:860px" data-t="19.24"><div class="d"></div><div class="b">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6z"/><path d="M8.8 12l2.3 2.3 4.3-4.6"/></svg></div></div>
+    <div class="pp" style="position:absolute;left:490px;top:975px;width:100px;height:100px;border-radius:50%;background:#fff;border:3px solid #0b0b0c;display:grid;place-items:center;font-size:56px;font-weight:600" data-t="20.16">≠</div>
+    <div class="hx w pp" style="left:390px;top:1200px" data-t="20.75"><div class="d" style="background:#c9cacc"></div><div class="b" style="background:#0b0b0c"></div><div class="b" style="inset:4px;background:#fff">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#0b0b0c" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="left:71px;top:86px"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div></div>
+    <div class="hl rv" style="left:636px;top:1600px" data-t="20.85"><small>verdict</small>confirmed</div>
+  </div>
+
+  <!-- S6 findings -->
+  <div class="sc" id="s6" data-pose="4700,0,-3400,26,0,0">
+    <div class="ring" style="left:600px;top:1400px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="C sans ty" style="top:270px;font-size:104px" data-t="21.95" data-cd=".04">Verified findings,</div>
+    <div class="C" style="top:400px;height:170px"><span class="ser rv" style="font-size:160px;position:relative;display:inline-block" data-t="23.28">not noise.
+      <svg id="oval" viewBox="0 0 700 220" style="position:absolute;left:-70px;top:-30px;width:calc(100% + 140px);height:230px;overflow:visible"><path id="ovp" d="M350 18 C560 14 690 60 688 112 C686 168 540 205 350 204 C150 203 12 170 14 112 C16 58 160 20 362 16" fill="none" stroke="#0b0b0c" stroke-width="5" stroke-linecap="round"/></svg></span></div>
+    <div class="card c3d" style="left:64px;top:650px;width:952px;height:681px" data-t="21.75" data-rx="9" data-ry="-6"><img src="sankey.jpg"><div class="sheen"></div></div>
+    <div class="pl f1 pp sm" style="left:84px;top:1440px" data-t="23.6">confirmed ✓</div>
+    <div class="pl pp sm" style="left:404px;top:1440px" data-t="23.8">needs check</div>
+    <div class="pl pp sm" style="left:722px;top:1440px;color:#8b8d91;border-color:#c9cacc;text-decoration:line-through" data-t="24.0">rejected</div>
+  </div>
+
+  <!-- S7 install -->
+  <div class="sc" id="s7" data-pose="7000,0,-3400,-20,0,0">
+    <div class="ring" style="left:-260px;top:-200px;width:720px;height:720px;transform:translateZ(-600px)"></div>
+    <div class="C" style="top:290px"><span class="sans rv" style="font-size:130px" data-t="24.5">One</span> <span class="ser rv" style="font-size:160px;margin-left:28px" data-t="24.72">command.</span></div>
+    <div class="card dark term c3d" style="left:64px;top:540px;width:952px;height:390px" data-t="24.45" data-rx="10" data-ry="8">
+      <div class="bar"><i></i><i></i><i></i></div>
+      <pre id="tpre"></pre>
+    </div>
+    <div class="card ask c3d" style="left:64px;top:1010px;width:952px;height:220px" data-t="25.9" data-rx="8" data-ry="-8"><small>then just tell your agent</small><p id="askp"></p></div>
+    <div class="pl f1 pp" style="left:150px;top:1350px" data-t="28.32">$0 · free</div>
+    <div class="pl pp" style="left:510px;top:1350px" data-t="29.12">MIT</div>
+    <div class="pl pp" style="left:720px;top:1350px" data-t="29.35">local</div>
+  </div>
+
+  <!-- S8 comment -->
+  <div class="sc" id="s8" data-pose="7000,0,-6600,-20,0,0">
+    <div class="ring" style="left:620px;top:1300px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="C sans rv" style="top:380px;font-size:120px;font-weight:500" data-t="29.95">Comment</div>
+    <div class="C sans ty" style="top:510px;font-size:196px;font-weight:700;letter-spacing:-.04em" data-t="30.4" data-cd=".05">GITMATE</div>
+    <div class="card cin c3d" style="left:64px;top:860px;width:952px;height:140px;border-radius:999px" data-t="30.0" data-rx="10"><div class="av"></div><div class="tx" id="ctx"></div><div class="send">↑</div></div>
+    <div class="dm pp" style="left:250px;top:1110px" data-t="31.4"><small>git.mate · message</small>Here's your link, mate 🔗</div>
+  </div>
+
+  <!-- S9 end -->
+  <div class="sc" id="s9" data-pose="9300,0,-6600,24,0,0">
+    <div class="ring" style="left:-300px;top:-160px;width:760px;height:760px;transform:translateZ(-600px)"></div>
+    <div class="ring" style="left:640px;top:1400px;width:760px;height:760px;transform:translateZ(-800px)"></div>
+    <svg class="erings" viewBox="0 0 500 500"><circle id="er1" cx="250" cy="250" r="226" fill="none" stroke="#0b0b0c" stroke-width="3" stroke-dasharray="1420" stroke-dashoffset="1420" transform="rotate(-90 250 250)"/>
+      <circle id="er2" cx="250" cy="250" r="246" fill="none" stroke="#c9cacc" stroke-width="2" stroke-dasharray="1546" stroke-dashoffset="1546" transform="rotate(90 250 250)"/></svg>
+    <div class="bigmk" id="bigmk">&gt;_</div>
+    <div class="C sans ty" style="top:1050px;font-size:104px;font-weight:700" data-t="32.3" data-cd=".05">@git.mate</div>
+    <div class="C ser" style="top:1200px;font-size:96px"><span class="rv g" data-t="32.8">1 repo</span> <span class="rv" data-t="33.76">every</span> <span class="rv" data-t="34.12">day.</span></div>
+    <div class="fol pp" id="fol" data-t="32.24">Follow</div>
+    <div class="fol2" id="fol2">Following ✓</div>
+    <div class="rip" id="rip"></div>
+    <div class="tapd" id="tapd" style="left:640px;top:1560px"></div>
+  </div>
+
+ </div></div></div>
+ <div class="top"><div class="brand"><div class="mk">&gt;_</div>git.mate</div><div class="tag" id="tag"><b>01</b> / 09</div></div>
+ <div class="grain"></div>
+</div>
+<script>
+const $ = s => document.querySelector(s), $$ = s => [...document.querySelectorAll(s)];
+const TOTAL = 36.2; window.__TOTAL = TOTAL;
+const S = [0, 5.9, 7.9, 13.0, 18.45, 21.65, 24.4, 29.9, 31.95];
+const scenes = $$('.sc');
+const poses = scenes.map(s => s.dataset.pose.split(',').map(Number));
+scenes.forEach((s, i) => { const [x, y, z, ry, rx, rz] = poses[i]; s.style.transform = `translate3d(${x}px,${y}px,${z}px) rotateY(${ry}deg) rotateX(${rx}deg) rotateZ(${rz}deg)`; });
+const tl = gsap.timeline({ paused: true });
+
+// dial ticks + labels
+const tg = $('#ticks'); let th = '';
+for (let i = 0; i < 72; i++) { const a = i * 5 * Math.PI / 180, big = i % 12 === 0, r1 = big ? 372 : 392, r2 = 414;
+  th += `<line x1="${450 + r1 * Math.sin(a)}" y1="${450 - r1 * Math.cos(a)}" x2="${450 + r2 * Math.sin(a)}" y2="${450 - r2 * Math.cos(a)}" stroke="${big ? '#0b0b0c' : '#c9cacc'}" stroke-width="${big ? 5 : 2.5}" stroke-linecap="round"/>`; }
+tg.innerHTML = th;
+const PH = [['Recon', 'map the attack surface', 14.24], ['Hunt', 'isolated hunter agents', 15.01], ['Validate', 'try to disprove each bug', 16.19], ['Output', 'findings.json + schema', 16.72], ['Verify', 'a fresh agent re-checks', 17.08], ['Report', 'clean REPORT.md', 17.6]];
+const dl = PH.map((p, i) => { const a = i * 60 * Math.PI / 180, e = document.createElement('div'); e.className = 'dl'; e.textContent = p[0];
+  e.style.left = (450 + 290 * Math.sin(a)) + 'px'; e.style.top = (450 - 290 * Math.cos(a)) + 'px'; $('#dial').appendChild(e);
+  const d = document.createElement('span'); d.textContent = p[1]; d.style.opacity = 0; $('#dsc').appendChild(d); return [e, d]; });
+
+// typing chars
+$$('.ty').forEach(el => { const t = +el.dataset.t, cd = +(el.dataset.cd || .045); const txt = el.textContent; el.textContent = '';
+  const chs = [...txt].map(c => { const s = document.createElement('span'); s.className = 'ch'; s.textContent = c; el.appendChild(s); return s; });
+  tl.set(chs, { opacity: 0 }, 0);
+  chs.forEach((c, i) => tl.fromTo(c, { opacity: 0, y: 26, filter: 'blur(14px)' }, { opacity: 1, y: 0, filter: 'blur(0px)', duration: .42, ease: 'power3.out', immediateRender: false }, Math.max(0.001, t + i * cd))); });
+$$('.rv').forEach(el => { const t = +el.dataset.t; if (isNaN(t)) return;
+  tl.set(el, { opacity: 0 }, 0); tl.fromTo(el, { opacity: 0, y: 46, filter: 'blur(16px)' }, { opacity: 1, y: 0, filter: 'blur(0px)', duration: .55, ease: 'power3.out', immediateRender: false }, Math.max(0.001, t)); });
+$$('.pp').forEach(el => { const t = +el.dataset.t;
+  tl.set(el, { opacity: 0 }, 0); tl.fromTo(el, { opacity: 0, scale: .55, filter: 'blur(10px)' }, { opacity: 1, scale: 1, filter: 'blur(0px)', duration: .5, ease: 'back.out(2.2)', immediateRender: false }, t); });
+$$('.c3d').forEach(el => { const t = +el.dataset.t, rx = +(el.dataset.rx || 0), ry = +(el.dataset.ry || 0);
+  tl.set(el, { opacity: 0, transformPerspective: 1500 }, 0);
+  tl.fromTo(el, { opacity: 0, rotationX: rx + 50, rotationY: ry * 2.5, y: 260, z: -500, scale: .9 }, { opacity: 1, rotationX: rx, rotationY: ry, y: 0, z: 0, scale: 1, duration: 1.05, ease: 'expo.out', immediateRender: false }, t);
+  tl.to(el, { rotationX: rx * .4, rotationY: -ry * .5, duration: 3.2, ease: 'sine.inOut' }, t + 1.05);
+  const sh = el.querySelector('.sheen'); if (sh) tl.fromTo(sh, { left: -300 }, { left: 1200, duration: 1.1, ease: 'power2.inOut', immediateRender: false }, t + .7); });
+
+// s1 counter ring
+tl.set('#cring', { opacity: 0, transformPerspective: 1400 }, 0);
+tl.fromTo('#cring', { opacity: 0, rotationX: 70, scale: .6, y: 120 }, { opacity: 1, rotationX: 0, scale: 1, y: 0, duration: .9, ease: 'expo.out', immediateRender: false }, 3.6);
+const cn = { v: 9 };
+tl.fromTo(cn, { v: 9 }, { v: 1, duration: .95, ease: 'power2.in', immediateRender: false, onUpdate: () => $('#cnum').textContent = '#' + Math.round(cn.v) }, 3.75);
+tl.fromTo('#carc', { attr: { 'stroke-dashoffset': 1131 } }, { attr: { 'stroke-dashoffset': 0 }, duration: 1.0, ease: 'power2.inOut', immediateRender: false }, 3.75);
+tl.to('#cring', { scale: 1.08, duration: .15, yoyo: true, repeat: 1, ease: 'power2.out' }, 4.72);
+tl.to('#cring', { rotationY: 14, rotationX: -8, duration: 1.2, ease: 'sine.inOut' }, 4.9);
+
+// s3 track
+const tws = $$('.tw'); tws.forEach(w => { w.style.marginRight = '44px'; w.style.display = 'inline-block'; });
+tl.set(tws, { opacity: 0 }, 0);
+const trk = $('#trk');
+function wc(i) { const w = tws[i]; return w.offsetLeft + w.offsetWidth / 2; }
+const tr = { x: 540 - wc(0), s: 1 };
+tl.set(tr, { x: 540 - wc(0), s: 1 }, 0);
+tws.forEach((w, i) => { const t = +w.dataset.t;
+  tl.fromTo(w, { opacity: 0, filter: 'blur(18px)' }, { opacity: 1, filter: 'blur(0px)', duration: .35, ease: 'power2.out', immediateRender: false }, t - .05);
+  if (i) tl.to(tr, { x: 540 - wc(i), duration: .42, ease: 'expo.inOut' }, t - .22); });
+const fullW = () => tws[tws.length - 1].offsetLeft + tws[tws.length - 1].offsetWidth;
+tl.to(tr, { s: () => 952 / fullW(), x: 64, duration: .9, ease: 'expo.inOut' }, 10.5);
+tl.to(trk, { y: -100, duration: .9, ease: 'expo.inOut' }, 10.5);
+let ptx = null;
+
+// s4 dial
+tl.set('#dial', { transformPerspective: 1600, rotationX: 62, rotationZ: -40, scale: 1.25, opacity: 0 }, 0);
+tl.to('#dial', { opacity: 1, duration: .3 }, 12.85);
+tl.to('#dial', { rotationX: 34, rotationZ: 0, scale: 1, duration: 1.4, ease: 'expo.out' }, 12.9);
+tl.to('#dial', { rotationX: 26, rotationY: -8, duration: 4, ease: 'sine.inOut' }, 14.3);
+tl.fromTo('#darc', { attr: { 'stroke-dashoffset': 2702 } }, { attr: { 'stroke-dashoffset': 0 }, duration: 4.0, ease: 'none', immediateRender: false }, 14.0);
+tl.set('#ndl', { rotation: -60 }, 0);
+PH.forEach((p, i) => { const t = p[2];
+  tl.to('#ndl', { rotation: i * 60, duration: .45, ease: 'back.out(2.5)' }, t - .12);
+  tl.call(() => {}, null, t);
+  tl.set(dl[i][0], { className: 'dl on' }, t);
+  if (i) tl.set(dl[i - 1][0], { className: 'dl' }, t);
+  tl.fromTo(dl[i][0], { scale: 1 }, { scale: 1.12, duration: .14, yoyo: true, repeat: 1, immediateRender: false }, t);
+  tl.fromTo(dl[i][1], { opacity: 0, y: 30, filter: 'blur(10px)' }, { opacity: 1, y: 0, filter: 'blur(0px)', duration: .3, immediateRender: false }, t);
+  const nt = i < 5 ? PH[i + 1][2] : 18.4; tl.to(dl[i][1], { opacity: 0, y: -30, filter: 'blur(10px)', duration: .2 }, nt - .12); });
+tl.set(dl[5][0], { className: 'dl on' }, 18.0);
+
+// s5 lines
+['#l1', '#l2', '#l3'].forEach((id, i) => { const p = $(id), L = p.getTotalLength(); p.style.strokeDasharray = L;
+  tl.set(p, { strokeDashoffset: L }, 0); tl.to(p, { strokeDashoffset: 0, duration: .5, ease: 'power2.out' }, [18.6, 19.35, 20.8][i]); });
+
+// s6 oval
+{ const p = $('#ovp'), L = p.getTotalLength(); p.style.strokeDasharray = L; tl.set(p, { strokeDashoffset: L }, 0); tl.to(p, { strokeDashoffset: 0, duration: .55, ease: 'power2.inOut' }, 23.75); }
+
+// s7 terminal + ask typing
+const CMD = '$ npx skills add cloudflare/\n  security-audit-skill \\\n  --skill security-audit';
+const tp = { n: 0 }; const tpre = $('#tpre');
+function renderTerm(n, done) { tpre.innerHTML = CMD.slice(0, n).replace(/</g, '&lt;') + (done ? '\n<span class="ok">✓ skill installed</span>' : '<span class="cur"></span>'); }
+renderTerm(0);
+tl.fromTo(tp, { n: 0 }, { n: CMD.length, duration: 1.1, ease: 'none', immediateRender: false, onUpdate: () => renderTerm(Math.round(tp.n), false) }, 24.9);
+tl.call(() => renderTerm(CMD.length, true), null, 26.1); tl.call(() => renderTerm(CMD.length, false), null, 26.09);
+const ASK = '"security audit this codebase"'; const ak = { n: 0 };
+tl.fromTo(ak, { n: 0 }, { n: ASK.length, duration: 1.1, ease: 'none', immediateRender: false, onUpdate: () => $('#askp').textContent = ASK.slice(0, Math.round(ak.n)) }, 26.4);
+// s8 comment typing
+const cm = { n: 0 };
+tl.fromTo(cm, { n: 0 }, { n: 7, duration: .6, ease: 'none', immediateRender: false, onUpdate: () => $('#ctx').textContent = 'GITMATE'.slice(0, Math.round(cm.n)) }, 30.5);
+
+// s9 end
+tl.set('#bigmk', { opacity: 0, scale: .2 }, 0);
+tl.to('#bigmk', { opacity: 1, scale: 1, rotation: 0, duration: .9, ease: 'back.out(1.8)' }, 31.95);
+tl.fromTo('#er1', { attr: { 'stroke-dashoffset': 1420 } }, { attr: { 'stroke-dashoffset': 0 }, duration: 1.0, ease: 'power2.inOut', immediateRender: false }, 32.1);
+tl.fromTo('#er2', { attr: { 'stroke-dashoffset': 1546 } }, { attr: { 'stroke-dashoffset': 0 }, duration: 1.2, ease: 'power2.inOut', immediateRender: false }, 32.25);
+tl.to('#tapd', { opacity: 1, left: 560, top: 1440, duration: .5, ease: 'power2.out' }, 34.3);
+tl.to('#tapd', { scale: .7, duration: .1 }, 34.85); tl.to('#tapd', { scale: 1, duration: .15 }, 34.95);
+tl.to('#fol', { scale: .93, duration: .1 }, 34.85); tl.to('#fol', { scale: 1, duration: .2 }, 34.95);
+tl.set('#fol2', { opacity: 1 }, 34.95); tl.set('#fol', { opacity: 0 }, 34.95);
+tl.fromTo('#rip', { opacity: .7, width: 10, height: 10, margin: -5 }, { opacity: 0, width: 640, height: 640, margin: -320, duration: .8, ease: 'power2.out', immediateRender: false }, 34.9);
+tl.to('#tapd', { opacity: 0, duration: .3 }, 35.4);
+tl.to({}, { duration: .01 }, TOTAL);
+
+// camera: pure function of t
+const ease = x => x < .5 ? 16 * x ** 5 : 1 - Math.pow(-2 * x + 2, 5) / 2;
+const TD = .75, TPRE = .42;
+function camAt(t) {
+  let i = 0; for (let k = 0; k < S.length; k++) if (t >= S[k] - TPRE) i = k;
+  const ta = S[i] - TPRE; let p = poses[i].slice(), d = 0, rr = 0;
+  if (i > 0 && t < ta + TD) { const u = (t - ta) / TD, e = ease(u), a = poses[i - 1]; p = a.map((v, j) => v + (poses[i][j] - v) * e); d = Math.sin(u * Math.PI) * 700; rr = Math.sin(u * Math.PI) * (i % 2 ? 4 : -4); }
+  // slow drift inside scene
+  const st = Math.max(0, t - (S[i] - TPRE + TD)); const dz = Math.min(st, 6) * 14;
+  return { x: p[0], y: p[1], z: p[2] - dz, ry: p[3] + Math.sin(t * .6) * .6, rx: p[4] + Math.sin(t * .45) * .5, rz: p[5] + rr, d, i };
+}
+function camT(c) { return `translateZ(${-c.d + 60}px) rotateZ(${-c.rz}deg) rotateX(${-c.rx}deg) rotateY(${-c.ry}deg) translate3d(${-c.x}px,${-c.y}px,${-c.z}px)`; }
+const world = $('#world'), mbg = $('#mbg'), cam = $('#cam'), tbg = $('#tbg');
+function tick(t) {
+  const c = camAt(t), p = camAt(Math.max(0, t - 1 / 30));
+  world.style.transform = camT(c);
+  const hx = Math.abs(c.x - p.x) * .9 + Math.abs(c.ry - p.ry) * 32, vy = Math.abs(c.y - p.y) * .9 + Math.abs(c.rx - p.rx) * 32, zz = Math.abs(c.z - p.z + (p.d - c.d)) * .25;
+  const bx = Math.min(70, hx * .22 + zz * .05), by = Math.min(70, vy * .22 + zz * .05);
+  if (bx + by > .4) { mbg.setAttribute('stdDeviation', `${bx.toFixed(1)} ${by.toFixed(1)}`); cam.style.filter = 'url(#mb)'; } else cam.style.filter = 'none';
+  scenes.forEach((s, k) => { s.style.visibility = (k === c.i || (k === c.i - 1 && t < S[c.i] - TPRE + TD) ) ? 'visible' : 'hidden'; });
+  // track
+  trk.style.transform = `translate(${tr.x}px, ${gsap.getProperty(trk, 'y')}px) scale(${tr.s})`;
+  if (ptx !== null) { const dv = Math.abs(tr.x - ptx); if (dv > 2) { tbg.setAttribute('stdDeviation', `${Math.min(40, dv * .12).toFixed(1)} 0`); trk.style.filter = 'url(#tb)'; } else trk.style.filter = 'none'; }
+  ptx = tr.x;
+  $('#tag').innerHTML = `<b>${String(c.i + 1).padStart(2, '0')}</b> / 09`;
+}
+window.__seek = t => { tl.time(t, false); tick(t); };
+__seek(0);
+if (!navigator.webdriver) { const t0 = performance.now(); const loop = () => { window.__seek(((performance.now() - t0) / 1000) % TOTAL); requestAnimationFrame(loop); }; requestAnimationFrame(loop); }
+</script>
+</body></html>

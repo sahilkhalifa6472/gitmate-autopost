@@ -1,0 +1,22 @@
+{
+ "account": "git.mate",
+ "n": 40,
+ "slug": "affine",
+ "title": "AFFiNE: free open-source Notion + Miro alternative",
+ "video": {
+  "file": "40.mp4",
+  "duration_sec": 34.9,
+  "source": "/mnt/project-files/dev-reels/affine/gitmate_affine.mp4"
+ },
+ "instagram": {
+  "caption": "Paying for Notion AND Miro\u2026 every single month? \ud83d\udcb8\n\nAFFiNE is a free, open-source workspace where docs, whiteboards and tasks live together:\n\u2192 Write a normal doc, flip one switch and the same page becomes an endless whiteboard (Edgeless mode)\n\u2192 Kanban boards, tables, sticky notes and mind maps built in\n\u2192 Local-first: your notes are saved on your own device\n\u2192 75K+ \u2b50 on GitHub\n\nGet it: free desktop app for Mac, Windows and Linux (affine.pro/download), or try the demo in your browser with no sign-up (app.affine.pro).\nBuilt by the toeverything team, MIT-licensed client.\n\n(Prices on screen: Notion Plus $10 + Miro Starter $8, per member/month billed yearly, from their pricing pages.)\n\nComment GITMATE and I'll send you the link \ud83d\udc47\nFollow @git.mate for 1 useful repo every day.\n\n#notion #notionalternative #miro #productivity #notetaking #opensource #github #freeapps #whiteboard #kanban #secondbrain #studytips #developer #programming #coding #techtok\n",
+  "hashtags": [],
+  "cover_offset_ms": 3500,
+  "share_to_feed": true
+ },
+ "posting": {
+  "audience": "US",
+  "timezone": "America/New_York"
+ },
+ "link": "https://github.com/toeverything/AFFiNE"
+}

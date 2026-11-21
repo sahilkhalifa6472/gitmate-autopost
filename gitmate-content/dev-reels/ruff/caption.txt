@@ -1,0 +1,16 @@
+Your Python linter takes over a minute... Ruff does it in 0.29 seconds. ⚡
+
+Ruff (by Astral) is an extremely fast Python linter + code formatter, written in Rust:
+→ Linting all of CPython from scratch: Pylint >60s, Flake8 12.26s, Ruff 0.29s
+→ Replaces Flake8 (+ dozens of plugins), Black, isort, pyupgrade and more
+→ 900+ built-in rules, with auto-fix (e.g. removes unused imports)
+→ pyproject.toml support, built-in caching, VS Code + editor integrations
+→ Used by FastAPI, pandas, Hugging Face, SciPy, Apache Airflow
+
+✅ Free + open source (MIT) · 51k ★
+Try it: uvx ruff check && uvx ruff format
+
+Comment GITMATE and I'll send you the link 👇
+Follow @git.mate for 1 useful repo every day.
+
+#python #github #opensource #ruff #rust #linter #devtools #developer #programming #coding #pythonprogramming #softwareengineering

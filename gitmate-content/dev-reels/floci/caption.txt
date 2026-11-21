@@ -1,0 +1,16 @@
+You shouldn't need a real AWS account just to test your code. ☁️
+
+Floci (29k+ ⭐ on GitHub) is a free, open-source AWS emulator that runs on your laptop:
+→ No account, no auth token, no paywall
+→ Point your SDK, CLI or Terraform at localhost:4566 and S3, DynamoDB, SQS just work
+→ Lambda, RDS, ElastiCache, ECS, EKS run in real Docker containers
+→ ~24 ms startup, ~13 MiB idle memory (per the README)
+→ Drop-in swap for LocalStack: change one image line
+
+✅ Free + open source (MIT)
+✅ docker compose up (or the floci CLI)
+
+Comment GITMATE and I'll send you the link 👇
+Follow @git.mate for 1 useful repo every day.
+
+#github #opensource #aws #localstack #docker #devops #cloud #terraform #serverless #devtools #developer #programming

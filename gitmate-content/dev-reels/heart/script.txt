@@ -1,0 +1,8 @@
+[warm] Mate... forget flowers. This is how a developer says "I love you."
+[excited] It's called 4R022 Heart. A tiny Python app.
+It draws a glowing heart in light... and fills it with "I love you" in thirty languages.
+Then it beats. On every screen you have. All at once.
+[warm] Birthday, anniversary, even a proposal... hit run, and just watch their face.
+Fully offline. Built by Kaan.
+[friendly] Want your repo featured too? DM us FEATURE.
+Comment GITMATE and I'll send you the link.
