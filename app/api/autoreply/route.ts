@@ -29,7 +29,7 @@ export async function POST(req: Request) {
   if (typeof b.keyword === "string" && b.keyword.trim()) ar.keyword = b.keyword.trim().slice(0, 40);
   if (typeof b.dm_text === "string" && b.dm_text.includes("{link}")) ar.dm_text = b.dm_text.slice(0, 900);
   else if (typeof b.dm_text === "string") return Response.json({ error: "DM text must contain {link}" }, { status: 400 });
-  if (typeof b.link_replies === "string") { const l = b.link_replies.split("\n").map((x: string) => x.trim()).filter((x: string) => x.includes("{link}")).slice(0, 20); if (l.length) ar.link_replies = l; }
+  if (typeof b.link_replies === "string") { const l = b.link_replies.split("\n").map((x: string) => x.trim()).filter(Boolean).slice(0, 20); if (l.length) ar.link_replies = l; }
   if (typeof b.pin_text === "string" && b.pin_text.includes("{link}")) ar.pin_text = b.pin_text.slice(0, 900);
   if (typeof b.dm_inbox_text === "string") ar.dm_inbox_text = b.dm_inbox_text.slice(0, 900);
   if (typeof b.public_replies === "string") ar.public_replies = b.public_replies.split("\n").map((x: string) => x.trim()).filter(Boolean).slice(0, 20);
@@ -64,6 +64,8 @@ export async function PUT(req: Request) {
   }
   const ar = await getAr();
   if (await linkModes(ar, b)) await saveAr(ar);
+  if (Array.isArray(b.link_replies)) { const l = b.link_replies.map((x: unknown) => String(x).trim()).filter(Boolean).slice(0, 20); if (l.length) { ar.link_replies = l; await saveAr(ar); } }
+  if (b.max_per_run != null) { ar.max_per_run = Math.max(1, Math.min(50, Number(b.max_per_run) || 15)); await saveAr(ar); }
   if (Array.isArray(b.public_replies)) { ar.public_replies = b.public_replies.map((x: unknown) => String(x).trim()).filter(Boolean).slice(0, 20); await saveAr(ar); }
   if (isUrl(b.default_link)) { ar.default_link = b.default_link.trim(); await saveAr(ar); }
   return Response.json({ ok: true, updated: n });

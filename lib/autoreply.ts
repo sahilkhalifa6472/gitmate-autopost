@@ -63,6 +63,8 @@ function linkText(q: Item[], link: string) {
 
 // DMs blocked: answer under the comment itself, with the repo link in the text
 async function publicLinkReply(ctx: Ctx, c: ig.IgComment, m: { id: string }, link: string, title: string): Promise<boolean> {
+  if (ctx.scan) await new Promise((r) => setTimeout(r, 7000 + Math.random() * 4000)); // the cron scan: 7-11s between replies
+  else if (!(await lock("ar_pub_gap", 20))) return false; // webhook: at most one public reply per 20s (the scan picks up the rest)
   const { ar, tok, q } = ctx;
   const user = c.from?.username || c.username || "";
   const texts = ar.link_replies?.length ? ar.link_replies : DEFAULT_AR.link_replies!;
@@ -100,7 +102,7 @@ async function postLinkComments(ctx: Ctx, all: ig.IgMedia[], max = 4) {
 }
 
 type Pending = { link: string; title: string; thumb?: string; user: string; at: number };
-type Ctx = { cfg: Awaited<ReturnType<typeof getConfig>> & { ig_user_id: string }; ar: AutoReplyConfig; tok: string; q: Item[]; pending: Record<string, Pending> };
+type Ctx = { scan?: boolean; cfg: Awaited<ReturnType<typeof getConfig>> & { ig_user_id: string }; ar: AutoReplyConfig; tok: string; q: Item[]; pending: Record<string, Pending> };
 const GATE_RE = /link|follow|done|yes|send|ok/i;
 
 // Follow gate step 2: they tapped "Send me the link" / "I followed" (or typed LINK / DONE) -> check follow, then send the link card
@@ -267,10 +269,10 @@ export async function runAutoReply(opts: { force?: boolean } = {}) {
     for (const [k, v] of Object.entries(pending)) if (Date.now() - v.at > 7 * 864e5) delete pending[k];
     const gate = ar.enabled && ar.follow_gate !== false;
 
-    const ctx: Ctx = { cfg: cfg as Ctx["cfg"], ar, tok, q, pending };
+    const ctx: Ctx = { scan: true, cfg: cfg as Ctx["cfg"], ar, tok, q, pending };
     // with webhooks working, DMs arrive instantly: the cron only scans as a slow safety net (saves Meta's hourly app limit)
     const hooked = !opts.force && Date.now() - Date.parse(ar.webhook_at || "") < 6 * 3600e3;
-    if (!hooked || (await lock("ar_scan", 25 * 60))) {
+    if (!hooked || (await lock("ar_scan", (ar.link_in_comment ? 10 : 25) * 60))) { // public replies: scan every 10 min to clear the backlog slowly
     // Step 2 of the follow gate: they tapped "Send me the link" / "I followed" -> check follow, then send the link card
     if (gate && Object.keys(pending).length) {
       for (const cv of await ig.conversations(cfg.ig_user_id, tok, 25)) {
