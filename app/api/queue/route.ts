@@ -36,7 +36,8 @@ export async function POST(req: Request) {
     cover_offset_ms: Math.max(0, Math.round(Number(b.cover_offset_ms) || 2500)),
     duration_sec: Number(b.duration_sec) || undefined,
     slug: b.slug ? String(b.slug) : undefined,
-    link: typeof b.link === "string" && /^https?:\/\//.test(b.link) ? b.link.slice(0, 500) : undefined,
+    // the comment auto-reply needs it: take "link", else the reel's "repo" (meta.json field)
+    link: [b.link, b.repo, b.meta?.repo, b.meta?.link].find((x) => typeof x === "string" && /^https?:\/\//.test(x))?.slice(0, 500),
     post_on: typeof b.post_on === "string" && /^\d{4}-\d{2}-\d{2}$/.test(b.post_on) ? b.post_on : undefined,
     added_at: new Date().toISOString(),
     status: "queued",
