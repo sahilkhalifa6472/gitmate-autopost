@@ -4,7 +4,7 @@
 // 2) someone sends the keyword in a DM -> reply with the latest links (only inside Instagram's 24h window)
 import * as ig from "./ig";
 import { handleOrderDM } from "./orders";
-import { noteInbound, salesReply } from "./salesai";
+import { noteInbound, salesReply, getSales, hasKey } from "./salesai";
 import { get, set, setAdd, setHas, setRemove, pushList, getList, lock, unlock } from "./store";
 import { getConfig, getQueue, log } from "./data";
 import { ArEvent, AutoReplyConfig, DEFAULT_AR, Item } from "./types";
@@ -21,6 +21,8 @@ const DEFAULT_GATE = "Hey {username}! 👋 Here's {title} from our reel 🔥\n\n
 const DEFAULT_FOLLOW = "Almost there {username}! 🙌\n\nThe link is for followers only. Follow {account} (1 useful repo every day), then reply \"DONE\" here 👇";
 // "git mate", "Git-Mate", "GITMATE" all count
 const hasKw = (t: string | undefined, kw: string) => !!t && t.toLowerCase().replace(/[\s._-]+/g, "").includes(kw.replace(/[\s._-]+/g, ""));
+// should this comment get an answer? keyword, or every comment when "reply to all" is on (replies inside threads only with the keyword)
+const wants = (ar: AutoReplyConfig, text: string | undefined, kw: string, isThreadReply = false) => (!!kw && hasKw(text, kw)) || (!!ar.reply_all && !isThreadReply);
 const fill = (t: string, v: Record<string, string>) => t.replace(/\{(\w+)\}/g, (m, k) => (k in v ? v[k] : m));
 const pick = <T,>(a: T[], seed: string) => a[[...seed].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7) % a.length];
 
@@ -50,6 +52,51 @@ function weekCards(q: Item[], link: string): ig.CardEl[] | null {
     title: l.title, subtitle: l.url.replace(/^https?:\/\/(www\.)?/, ""), image_url: imgs[k + 1], url: l.url,
     button: /github\.com/.test(l.url) ? "Open on GitHub" : "Open link",
   }));
+}
+
+// the link(s) as plain text for a public comment ("week:<id>" = every repo of a carousel)
+function linkText(q: Item[], link: string) {
+  if (!link.startsWith(WEEK)) return link;
+  const it = q.find((i) => i.id === Number(link.slice(WEEK.length)));
+  return (it?.links || []).map((l) => l.url).join("\n");
+}
+
+// DMs blocked: answer under the comment itself, with the repo link in the text
+async function publicLinkReply(ctx: Ctx, c: ig.IgComment, m: { id: string }, link: string, title: string): Promise<boolean> {
+  const { ar, tok, q } = ctx;
+  const user = c.from?.username || c.username || "";
+  const texts = ar.link_replies?.length ? ar.link_replies : DEFAULT_AR.link_replies!;
+  const msg = fill(pick(texts, c.id), { username: user ? "@" + user : "", link: linkText(q, link), title: title.split(":")[0] || "the repo" }).trim();
+  try { await ig.replyToComment(c.id, tok, msg); }
+  catch (e: any) {
+    if (isFatal(e.message)) throw e;
+    await setAdd("ar_done", c.id);
+    await event({ kind: "comment", username: user, text: c.text.slice(0, 200), media_id: m.id, status: "failed", note: "public link reply: " + e.message.slice(0, 400) });
+    return false;
+  }
+  await setAdd("ar_done", c.id);
+  await event({ kind: "comment", username: user, text: c.text.slice(0, 200), media_id: m.id, status: "sent", note: "link in public reply" });
+  return true;
+}
+
+// one "repo link" comment on each recent post with a link (owner pins it in the app); a few per run
+async function postLinkComments(ctx: Ctx, all: ig.IgMedia[], max = 4) {
+  const { ar, tok, q } = ctx;
+  let n = 0;
+  for (const m of all) {
+    if (n >= max) break;
+    const { link, title } = linkFor(ar, q, m.id);
+    if (!link || (await setHas("ar_pinned", m.id))) continue;
+    try {
+      const r = await ig.commentOnMedia(m.id, tok, fill(ar.pin_text || DEFAULT_AR.pin_text!, { link: linkText(q, link), title: title.split(":")[0] || "" }));
+      await setAdd("ar_pinned", m.id); n++;
+      await event({ kind: "comment", username: ctx.cfg.username || "git.mate", text: "link comment on post", media_id: m.id, status: "sent", note: `posted link comment ${r?.id || ""}, pin it in the app` });
+    } catch (e: any) {
+      if (isFatal(e.message)) throw e;
+      await event({ kind: "comment", username: ctx.cfg.username || "git.mate", text: "link comment on post", media_id: m.id, status: "failed", note: e.message.slice(0, 300) });
+    }
+  }
+  return n;
 }
 
 type Pending = { link: string; title: string; thumb?: string; user: string; at: number };
@@ -93,6 +140,7 @@ async function handleGateDM(ctx: Ctx, m: { mid: string; fromId: string; username
 // One "gitmate" comment: gate DM (or link card), then a public reply. true = sent, false = failed (marked done)
 async function handleComment(ctx: Ctx, c: ig.IgComment, m: { id: string; thumbnail_url?: string }, link: string, title: string): Promise<boolean> {
   const { cfg, ar, tok, pending } = ctx;
+  if (ar.link_in_comment) return publicLinkReply(ctx, c, m, link, title);
   const gate = ar.enabled && ar.follow_gate !== false;
   const user = c.from?.username || c.username || "";
   let how = "text";
@@ -161,7 +209,7 @@ export async function handleWebhook(body: any) {
         if (ch.field !== "comments" || !ch.value?.id || !ch.value?.media?.id) continue;
         const v = ch.value;
         const c: ig.IgComment = { id: String(v.id), text: String(v.text || ""), timestamp: new Date().toISOString(), from: v.from, username: v.from?.username };
-        if (!kw || !hasKw(c.text, kw) || c.username === cfg.username) continue;
+        if (!wants(ar, c.text, kw, !!v.parent_id) || c.username === cfg.username || c.from?.id === cfg.ig_user_id) continue;
         const { link, title } = linkFor(ar, ctx.q, String(v.media.id));
         if (!link) continue; // the cron answers it once a link is set
         if (!(await lock("arc:" + c.id, 300))) continue;
@@ -238,7 +286,9 @@ export async function runAutoReply(opts: { force?: boolean } = {}) {
 
     const counts = await get<Record<string, number>>("ar_ccount", {});
     if (ar.enabled) {
-      const media = (await ig.listMedia(cfg.ig_user_id, tok, 25)).filter((m) => Date.parse(m.timestamp) >= sinceMs - 7 * 864e5 && (m.comments_count ?? 1) > 0);
+      const all = await ig.listMedia(cfg.ig_user_id, tok, 25);
+      if (ar.pin_comment) sent += await postLinkComments(ctx, all);
+      const media = all.filter((m) => Date.parse(m.timestamp) >= sinceMs - 7 * 864e5 && (m.comments_count ?? 1) > 0);
       outer: for (const m of media) {
         if (!timeLeft() || sent >= budget) break;
         const { link, title } = linkFor(ar, q, m.id);
@@ -250,7 +300,7 @@ export async function runAutoReply(opts: { force?: boolean } = {}) {
         for (const c of comments.sort((a, b) => Date.parse(a.timestamp) - Date.parse(b.timestamp))) {
           if (Date.parse(c.timestamp) < sinceMs) continue;
           const user = c.from?.username || c.username || "";
-          if (!hasKw(c.text, kw) || user === cfg.username) continue;
+          if (!wants(ar, c.text, kw) || user === cfg.username) continue;
           if (await setHas("ar_done", c.id)) continue;
           seen++;
           if (!link) { // nothing to send yet: leave it unanswered so it goes out once a link is set
@@ -267,7 +317,9 @@ export async function runAutoReply(opts: { force?: boolean } = {}) {
     }
     }
 
-    if (ar.dm_enabled && timeLeft() && sent < budget) {
+    // the AI salesman answers DMs itself (and sends repo cards), so the fixed keyword DM would only double it
+    const aiDm = (await getSales()).enabled && (await hasKey());
+    if (ar.dm_enabled && !aiDm && timeLeft() && sent < budget) {
       const posted = q.filter((i) => i.status === "posted" && i.kind !== "carousel" && i.link).sort((a, b) => Date.parse(b.posted_at || "") - Date.parse(a.posted_at || "")).slice(0, 3);
       const links = posted.map((i) => `• ${i.title.split(":")[0]}: ${i.link}`).join("\n") || ar.default_link;
       for (const cv of await ig.conversations(cfg.ig_user_id, tok, 25)) {

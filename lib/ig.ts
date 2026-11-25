@@ -104,6 +104,11 @@ export async function replyToComment(commentId: string, token: string, message: 
   return http(`${B(token)}/${commentId}/replies`, { method: "POST", body: form({ message, access_token: token }) });
 }
 
+// a new top-level comment on our own post (Instagram's API can't pin it: pin it in the app)
+export async function commentOnMedia(mediaId: string, token: string, message: string): Promise<{ id: string }> {
+  return http(`${B(token)}/${mediaId}/comments`, { method: "POST", body: form({ message, access_token: token }) });
+}
+
 // "private reply": a DM to the person who wrote the comment (once per comment, within 7 days)
 export async function privateReply(userId: string, token: string, commentId: string, text: string) {
   return http(`${B(token)}/${userId}/messages?${tq(token)}`, json({ recipient: { comment_id: commentId }, message: { text } }));

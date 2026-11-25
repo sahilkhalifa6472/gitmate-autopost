@@ -77,6 +77,11 @@ export type AutoReplyConfig = {
   follow_gate?: boolean;
   gate_text?: string;         // {username} {title}
   follow_text?: string;       // {username} {account}      // ask "send me the link" first and only send it to followers
+  reply_all?: boolean;        // answer EVERY comment, not only ones with the keyword
+  link_in_comment?: boolean;  // put the repo link in the public reply and skip the DM (when DMs are blocked)
+  link_replies?: string[];    // public replies with the link, one picked per comment: {username} {link} {title}
+  pin_comment?: boolean;      // post one "repo link" comment on every recent post (pin it in the app)
+  pin_text?: string;          // {link} {title}
   last_run_at?: string;
   last_error?: string;
   sent_total?: number;
@@ -96,6 +101,17 @@ export const DEFAULT_AR: AutoReplyConfig = {
   days: 7,
   max_per_run: 15,
   follow_gate: true,
+  reply_all: false,
+  link_in_comment: false,
+  link_replies: [
+    "{username} here's the repo 👉 {link}",
+    "{username} link: {link} 🔥 follow @git.mate for 1 repo a day",
+    "{username} here you go 🔗 {link}",
+    "{username} repo link 👉 {link} (copy it, Instagram doesn't make links clickable)",
+    "{username} enjoy 🚀 {link}",
+  ],
+  pin_comment: false,
+  pin_text: "🔗 Repo link: {link}\n\nCopy it, or comment anything and we'll reply with the link 👇",
 };
 
 export type ArEvent = { at: string; kind: "comment" | "dm"; username: string; text: string; media_id?: string; status: "sent" | "failed" | "skipped"; note?: string };

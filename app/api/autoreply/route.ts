@@ -2,7 +2,7 @@ import { getAr, saveAr, arEvents, runAutoReply } from "@/lib/autoreply";
 import { getQueue, saveQueue, log, getConfig } from "@/lib/data";
 import * as ig from "@/lib/ig";
 import { setReplyToken } from "@/lib/replytoken";
-import { setRemove } from "@/lib/store";
+import { setRemove, set } from "@/lib/store";
 import { allowed, loggedIn, deny } from "@/lib/guard";
 
 export const dynamic = "force-dynamic";
@@ -25,9 +25,12 @@ export async function POST(req: Request) {
   const ar = await getAr();
   if (typeof b.enabled === "boolean") ar.enabled = b.enabled;
   if (typeof b.dm_enabled === "boolean") ar.dm_enabled = b.dm_enabled;
+  await linkModes(ar, b);
   if (typeof b.keyword === "string" && b.keyword.trim()) ar.keyword = b.keyword.trim().slice(0, 40);
   if (typeof b.dm_text === "string" && b.dm_text.includes("{link}")) ar.dm_text = b.dm_text.slice(0, 900);
   else if (typeof b.dm_text === "string") return Response.json({ error: "DM text must contain {link}" }, { status: 400 });
+  if (typeof b.link_replies === "string") { const l = b.link_replies.split("\n").map((x: string) => x.trim()).filter((x: string) => x.includes("{link}")).slice(0, 20); if (l.length) ar.link_replies = l; }
+  if (typeof b.pin_text === "string" && b.pin_text.includes("{link}")) ar.pin_text = b.pin_text.slice(0, 900);
   if (typeof b.dm_inbox_text === "string") ar.dm_inbox_text = b.dm_inbox_text.slice(0, 900);
   if (typeof b.public_replies === "string") ar.public_replies = b.public_replies.split("\n").map((x: string) => x.trim()).filter(Boolean).slice(0, 20);
   if (typeof b.default_link === "string") ar.default_link = isUrl(b.default_link) ? b.default_link.trim() : "";
@@ -60,9 +63,25 @@ export async function PUT(req: Request) {
     if (r.error) return Response.json(r, { status: 400 });
   }
   const ar = await getAr();
+  if (await linkModes(ar, b)) await saveAr(ar);
   if (Array.isArray(b.public_replies)) { ar.public_replies = b.public_replies.map((x: unknown) => String(x).trim()).filter(Boolean).slice(0, 20); await saveAr(ar); }
   if (isUrl(b.default_link)) { ar.default_link = b.default_link.trim(); await saveAr(ar); }
   return Response.json({ ok: true, updated: n });
+}
+
+// "reply to every comment" / "link in the public reply" / "link comment on every post" switches (dashboard or QUEUE_KEY)
+async function linkModes(ar: Awaited<ReturnType<typeof getAr>>, b: any) {
+  const before = JSON.stringify([ar.reply_all, ar.link_in_comment, ar.pin_comment]);
+  if (typeof b.reply_all === "boolean") {
+    // the scan skips posts whose comment count didn't change: forget that, so older non-keyword comments get answered too
+    if (b.reply_all && !ar.reply_all) await set("ar_ccount", {});
+    ar.reply_all = b.reply_all;
+  }
+  if (typeof b.link_in_comment === "boolean") ar.link_in_comment = b.link_in_comment;
+  if (typeof b.pin_comment === "boolean") ar.pin_comment = b.pin_comment;
+  const after = JSON.stringify([ar.reply_all, ar.link_in_comment, ar.pin_comment]);
+  if (before !== after) await log("info", `Auto-reply: every comment ${ar.reply_all ? "ON" : "off"}, link in public reply ${ar.link_in_comment ? "ON" : "off"}, link comment on posts ${ar.pin_comment ? "ON" : "off"}`);
+  return before !== after;
 }
 
 // Read-only check: does the saved token actually see comments / DMs? (counts only, sends nothing)
