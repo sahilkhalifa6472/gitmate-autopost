@@ -3,7 +3,7 @@
 // Runs on Google Gemini (cheap). Off until the owner pastes a Gemini key on the Orders page (or sets GEMINI_API_KEY in Vercel) and presses "Turn AI on" on the Orders page.
 import * as ig from "./ig";
 import { get, set, lock, pushList, getList } from "./store";
-import { getConfig, log } from "./data";
+import { getConfig, getQueue, log } from "./data";
 import { getOrders, getOrderCfg, OrderCfg, Order } from "./orders";
 
 export type SalesCfg = { enabled: boolean; followup: boolean; discount: number; notes: string };
@@ -37,7 +37,7 @@ const getSeen = () => get<Record<string, Seen>>("sales_seen", {});
 const MODELS = [...(process.env.GEMINI_MODEL ? [process.env.GEMINI_MODEL] : []), "gemini-3.5-flash-lite", "gemini-flash-lite-latest", "gemini-3.1-flash-lite", "gemini-3.8-flash"];
 const MAX_AI_PER_DAY = 12; // per person, so a chatty or looping chat can't run up the bill
 
-type Out = { reply: string; pay_buttons: boolean; needs_owner: boolean; owner_note: string };
+type Out = { reply: string; pay_buttons: boolean; needs_owner: boolean; owner_note: string; send_repos?: string[] };
 const SCHEMA = {
   type: "OBJECT",
   properties: {
@@ -45,6 +45,7 @@ const SCHEMA = {
     pay_buttons: { type: "BOOLEAN", description: "true to show the PayPal / Crypto buttons under the reply (when they are ready to pay or ask how to pay)." },
     needs_owner: { type: "BOOLEAN", description: "true when a human must step in: refund, complaint, payment problem, custom deal, anything you are not sure about." },
     owner_note: { type: "STRING", description: "If needs_owner: one short line for the owner on what they need. Otherwise empty." },
+    send_repos: { type: "ARRAY", items: { type: "STRING" }, description: "URLs copied exactly from OUR RECENT REELS to send as link cards (max 5). Empty if they did not ask for a repo from our reels." },
   },
   required: ["reply", "pay_buttons", "needs_owner", "owner_note"],
 };
@@ -59,7 +60,7 @@ WHAT WE SELL
 - How to book: 1) pay $${oc.price} (PayPal, or USDC on Solana) using the buttons, 2) send the GitHub repo (or project) link here, 3) send the payment screenshot (or Solana tx link) here. Our team checks it and DMs them their date, usually within a day. Reels go out after that, usually within a week depending on the queue.
 - Payment methods: ${[oc.paypal && "PayPal", oc.usdc && "USDC on Solana"].filter(Boolean).join(", ") || "(not set up yet, say the team will send payment details)"}. Never type payment emails or addresses yourself: set pay_buttons true and tell them to tap the button, the details arrive automatically.
 - Any project works: GitHub repos, apps (Play Store/App Store), websites, open source tools, AI projects. If it's private, a demo video or screenshots are enough.
-- To get the link of a repo from one of our reels, they should comment "gitmate" on that reel.
+- REPO LINKS FROM OUR REELS: many people DM just to get the repo from a reel (they write "gitmate", "link", "repo", the reel's name, or something vague). Then put the matching URL(s) from OUR RECENT REELS in send_repos (they arrive as GitHub link cards under your reply) and keep the reply to one short friendly line. If you can't tell which reel, send the 3 newest. Never type the URLs in the reply text, and don't pitch the paid feature in that same message.
 
 RULES
 - Never say a payment is received, verified or confirmed, and never give a date: only our team does that after checking.
@@ -94,6 +95,17 @@ async function repoInfo(url?: string) {
 const orderLine = (o?: Order) => !o ? "No order yet."
   : `Order status: ${o.status}${o.repo ? `, repo/link sent: ${o.repo}` : ", no repo link yet"}${o.proof?.length ? `, payment proof sent (${o.proof.length})` : ", no payment proof yet"}${o.date ? `, booked for ${o.date}` : ""}${o.notes?.length ? `, notes: ${o.notes.join("; ")}` : ""}.`;
 
+// repos of our latest posted reels/carousels, for "send me the link" DMs
+async function recentReels() {
+  const q = (await getQueue()).filter((i) => i.status === "posted").sort((a, b) => Date.parse(b.posted_at || "") - Date.parse(a.posted_at || "")).slice(0, 15);
+  const out: { title: string; url: string }[] = [];
+  for (const i of q) {
+    if (i.kind === "carousel") for (const l of i.links || []) out.push({ title: l.title, url: l.url });
+    else if (i.link) out.push({ title: (i.title || "").split(":")[0].trim() || i.link, url: i.link });
+  }
+  return out.filter((r, k, a) => a.findIndex((x) => x.url === r.url) === k).slice(0, 25);
+}
+
 // Ask Claude for the next DM. mode "followup" = they went quiet, one gentle nudge.
 async function draft(igsid: string, latest: string, mode: "reply" | "followup") {
   const cfg = await getConfig(); const tok = ig.replyTokenFor(cfg);
@@ -104,13 +116,14 @@ async function draft(igsid: string, latest: string, mode: "reply" | "followup") 
   const chat = msgs.slice().reverse().map((m) => `${m.from?.id === igsid ? "THEM" : "US"}: ${(m.message || "[photo/attachment]").slice(0, 600)}`);
   if (mode === "reply" && latest && !chat.some((l) => l.startsWith("THEM: " + latest.slice(0, 40)))) chat.push(`THEM: ${latest.slice(0, 600)}`);
   const proj = await repoInfo(o?.repo);
+  const reels = await recentReels();
   const task = mode === "reply"
     ? "Write our next reply to their latest message."
     : "They went quiet after showing interest. Write ONE short, friendly follow-up nudge (no pressure) that moves them to the next step. If the chat shows they declined or it's not a sales chat, return an empty reply.";
   const key = await getKey(); const t0 = Date.now();
   const body = JSON.stringify({
     systemInstruction: { parts: [{ text: SYSTEM(oc, s) }] },
-    contents: [{ role: "user", parts: [{ text: `Instagram user: @${o?.user || "unknown"}\n${orderLine(o)}\n\n${proj ? `\nTHEIR PROJECT (from GitHub):\n${proj}\n` : ""}\nChat so far (oldest first):\n${chat.join("\n") || "(empty)"}\n\n${task}` }] }],
+    contents: [{ role: "user", parts: [{ text: `Instagram user: @${o?.user || "unknown"}\n${orderLine(o)}\n\n${proj ? `\nTHEIR PROJECT (from GitHub):\n${proj}\n` : ""}\nOUR RECENT REELS (newest first):\n${reels.map((r) => `- ${r.title}: ${r.url}`).join("\n") || "(none)"}\n\nChat so far (oldest first):\n${chat.join("\n") || "(empty)"}\n\n${task}` }] }],
     generationConfig: { temperature: 0.6, maxOutputTokens: 2000, responseMimeType: "application/json", responseSchema: SCHEMA },
   });
   let j: any = null; let err = "";
@@ -130,7 +143,9 @@ async function draft(igsid: string, latest: string, mode: "reply" | "followup") 
   if (!j) throw new Error(`Gemini: ${err}`);
   try {
     const o2 = JSON.parse(j?.candidates?.[0]?.content?.parts?.map((p: any) => p.text || "").join("") || "") as Out;
-    return { reply: String(o2.reply || ""), pay_buttons: !!o2.pay_buttons, needs_owner: !!o2.needs_owner, owner_note: String(o2.owner_note || "") };
+    const ok = new Set(reels.map((r) => r.url));
+    const send_repos = (Array.isArray(o2.send_repos) ? o2.send_repos : []).map(String).filter((u, k, a) => ok.has(u) && a.indexOf(u) === k).slice(0, 5);
+    return { reply: String(o2.reply || ""), pay_buttons: !!o2.pay_buttons, needs_owner: !!o2.needs_owner, owner_note: String(o2.owner_note || ""), send_repos };
   } catch { return { reply: "", pay_buttons: false, needs_owner: true, owner_note: "AI could not answer this one" }; }
 }
 
@@ -166,6 +181,12 @@ export async function salesReply(m: { igsid: string; mid: string; text: string }
     if (now?.mid && now.mid !== m.mid) { await log("info", `Sales AI: skipped a reply to @${m.igsid}, they sent a newer message`); return true; }
     const cfg = await getConfig(); const user = (await ig.userName(m.igsid, ig.replyTokenFor(cfg))) || undefined;
     if (out.reply.trim()) await send(m.igsid, out.reply.trim(), out.pay_buttons);
+    if (out.send_repos?.length) {
+      const reels = await recentReels();
+      await ig.sendCards(cfg.ig_user_id!, ig.replyTokenFor(cfg), m.igsid, out.send_repos.map((u) => ({
+        title: reels.find((r) => r.url === u)?.title || "Repo", subtitle: u.replace(/^https?:\/\/(www\.)?/, ""), url: u, button: /github\.com/.test(u) ? "Open on GitHub" : "Open link",
+      })));
+    }
     if (out.needs_owner) { const n = await getNeeds(); n[m.igsid] = { igsid: m.igsid, user, said: m.text.slice(0, 300), why: out.owner_note || "needs you", at: new Date().toISOString() }; await saveNeeds(n); }
     await pushList("sales_log", { at: new Date().toISOString(), igsid: m.igsid, user, said: m.text.slice(0, 300), reply: out.reply, kind: "reply", buttons: out.pay_buttons, needs: out.needs_owner ? out.owner_note : undefined } satisfies SalesLog, 300);
     const s2 = await getSeen(); s2[m.igsid] = { ...(s2[m.igsid] || me), user, day, n: (me.day === day ? me.n || 0 : 0) + 1 }; await set("sales_seen", s2);

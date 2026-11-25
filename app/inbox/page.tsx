@@ -29,7 +29,7 @@ export default async function InboxPage() {
         {ar.last_error && <div className="warnbox">Last auto-reply run stopped: {ar.last_error}</div>}
         <div className="grid g2" style={{ marginTop: 16 }}>
           <div className="grid" style={{ alignContent: "start" }}>
-            <ArForm enabled={ar.enabled} dm_enabled={ar.dm_enabled} keyword={ar.keyword} dm_text={ar.dm_text} dm_inbox_text={ar.dm_inbox_text} public_replies={ar.public_replies} default_link={ar.default_link} max_per_run={ar.max_per_run} />
+            <ArForm enabled={ar.enabled} dm_enabled={ar.dm_enabled} keyword={ar.keyword} dm_text={ar.dm_text} dm_inbox_text={ar.dm_inbox_text} public_replies={ar.public_replies} default_link={ar.default_link} max_per_run={ar.max_per_run} reply_all={!!ar.reply_all} link_in_comment={!!ar.link_in_comment} pin_comment={!!ar.pin_comment} link_replies={ar.link_replies || []} pin_text={ar.pin_text || ""} />
             <div className="card">
               <h2>Activity <small>{ar.sent_total || 0} DMs sent in total{ar.last_run_at ? ` · last run ${fmt(ar.last_run_at)} IST` : ""}</small></h2>
               {events.length ? events.slice(0, 80).map((e, k) => (
